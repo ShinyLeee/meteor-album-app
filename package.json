@@ -1,0 +1,26 @@
+{
+  "version": "0.1.0",
+  "name": "vivian",
+  "private": true,
+  "scripts": {
+    "start": "meteor run",
+    "lint": "eslint .",
+    "pretest": "npm run lint --silent"
+  },
+  "dependencies": {
+    "meteor-node-stubs": "~0.2.0",
+    "react": "^15.3.1",
+    "react-dom": "^15.3.1",
+    "react-router": "^2.7.0"
+  },
+  "devDependencies": {
+    "babel-eslint": "^6.1.2",
+    "eslint": "^3.4.0",
+    "eslint-config-airbnb": "^10.0.1",
+    "eslint-import-resolver-meteor": "^0.3.3",
+    "eslint-plugin-import": "^1.14.0",
+    "eslint-plugin-jsx-a11y": "^2.2.1",
+    "eslint-plugin-meteor": "^4.0.0",
+    "eslint-plugin-react": "^6.2.0"
+  }
+}

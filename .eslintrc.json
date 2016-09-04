@@ -1,0 +1,23 @@
+{
+    "parser": "babel-eslint",
+    "parserOptions": {
+      "allowImportExportEverywhere": true
+    },
+    "plugins": [
+      "meteor"
+    ],
+    "extends": [
+      "airbnb",
+      "plugin:meteor/recommended"
+    ],
+    "settings": {
+      "import/resolver": "meteor"
+    },
+    "rules": {
+      "import/no-extraneous-dependencies": 0
+    },
+    "env": {
+      "browser": true,
+      "node": true
+    }
+}
