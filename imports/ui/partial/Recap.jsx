@@ -19,19 +19,19 @@ export default class Recap extends Component {
         <p className="recap-detail recap-detail-2">Created By Simon Lee</p>
         <ul className="recap-icons">
           <li>
-            <a className="fa fa-github" href="https://github.com/ShinyLeee" data-toggle="tooltip" data-title="Github" />
+            <a className="fa fa-github" href="https://github.com/ShinyLeee" data-toggle="tooltip" data-title="Github" title="Github" />
           </li>
           <li>
-            <a className="fa fa-wechat" data-toggle="tooltip" data-title="Wechat" />
+            <a className="fa fa-wechat" data-toggle="tooltip" data-title="Wechat" title="Wechat" />
           </li>
           <li>
-            <a className="fa fa-twitter" href="https://twitter.com/shinylee007" data-toggle="tooltip" data-title="Twitter" />
+            <a className="fa fa-twitter" href="https://twitter.com/shinylee007" data-toggle="tooltip" data-title="Twitter" title="Twitter" />
           </li>
           <li>
-            <a className="fa fa-instagram" href="https://www.instagram.com/lshinylee" data-toggle="tooltip" data-title="Instagram" title="Instagram"></a>
+            <a className="fa fa-instagram" href="https://www.instagram.com/lshinylee" data-toggle="tooltip" data-title="Instagram" title="Instagram" />
           </li>
           <li>
-            <a className="fa fa-at" href="http://www.shinylee.cn" data-toggle="tooltip" data-title="Website" />
+            <a className="fa fa-at" href="http://www.shinylee.cn" data-toggle="tooltip" data-title="Website" title="Website" />
           </li>
         </ul>
       </div>

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router';
 
 export default class NavFooter extends Component {
 
@@ -15,19 +16,19 @@ export default class NavFooter extends Component {
       <nav className="nav-footer">
         <ul>
           <li>
-            <a href="/"><i className="fa fa-home" aria-hidden="true" /></a>
+            <Link to="/"><i className="fa fa-home" aria-hidden="true" /></Link>
           </li>
           <li>
-            <a href="/"><i className="fa fa-paper-plane" aria-hidden="true" /></a>
+            <Link to="/explore"><i className="fa fa-paper-plane" aria-hidden="true" /></Link>
           </li>
           <li>
-            <a href="/"><i className="fa fa-archive" aria-hidden="true" /></a>
+            <Link to="/archive"><i className="fa fa-archive" aria-hidden="true" /></Link>
           </li>
           <li>
-            <a href="/"><i className="fa fa-search" aria-hidden="true" /></a>
+            <Link to="/search"><i className="fa fa-search" aria-hidden="true" /></Link>
           </li>
           <li>
-            <a href="/"><i className="fa fa-bars" aria-hidden="true" /></a>
+            <Link to="/404"><i className="fa fa-bars" aria-hidden="true" /></Link>
           </li>
         </ul>
       </nav>
