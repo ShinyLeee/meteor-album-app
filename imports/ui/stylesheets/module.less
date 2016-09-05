@@ -28,6 +28,8 @@
     border-color: @color-border-hover;
   }
   .nav-header-logo {
+    position: absolute;
+    left: 48%;
     display: inline-block;
     width: 32px;
     height: 32px;
@@ -45,9 +47,10 @@
 /* CONTENT GOES HERE */
 .content {
   margin-top: 58px;
+  margin-bottom: 58px;
 }
 
-/* RECAP */
+/* RECAP GOES HERE */
 .recap {
   padding-top: 48px;
   padding-bottom: 48px;
@@ -67,21 +70,20 @@
       padding-left: 12px;
       padding-right: 12px;
       font-size: 22px;
-      cursor: pointer;
     }
   }
 }
 
-/* PIC-HOLDER */
+/* PIC-HOLDER GOES HERE */
 .pic-holder {
   margin-left: -15px;
   margin-right: -15px;
-  margin-bottom: 50px;
+  margin-bottom: 58px;
   .pic-holder-info {
+    .font-s3;
     padding: 0 12px 12px;
     white-space: nowrap;
     cursor: pointer;
-    .font-s3
   }
   .pic-holder-pic {
     width: 100%;
@@ -126,7 +128,7 @@
   }
 }
 
-/* NAVFOOTER */
+/* NAVFOOTER GOES HERE */
 .nav-footer {
   position: fixed;
   left: 0;
@@ -145,4 +147,76 @@
     padding-right: 12px;
     font-size: 24px;
   }
+}
+
+/* PUBLISH GOES HERE */
+.publish-holder {
+  width: 100%;
+  padding-top: 50px;
+}
+.upload-drop {
+  padding-bottom: 20px;
+  small {
+    .font-s1;
+  }
+  .drop-error {
+    color: @color-font-error;
+  }
+}
+.upload-drop-box {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  min-height: 300px;
+  background: transparent url(http://streetwill.co/assets/svg/add-upload-2-6bc5c0c5e015c28d8b3bc9a181578822.svg) no-repeat center center;
+  border: 2px dashed #aaa;
+  text-align: center;
+  .upload-drop-file {
+    position: relative;
+    left: 0;
+    right: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    cursor: pointer;
+    opacity: 0;
+  }
+}
+
+.upload-field {
+  padding-top: 5px;
+  padding-bottom: 10px;
+  .field {
+    margin-bottom: 16px;
+    .field-control {
+      width: 100%;
+      height: 37px;
+      margin-top: 5px;
+      padding: 8px;
+      background-color: #DFDEDC;
+      border: none;
+      border-radius: 0;
+    }
+    .field-action-button {
+      display: inline-block;
+      height: 47px;
+      padding: 3px 0 2px 0;
+      border: 0;
+    }
+    .field-action-submit {
+      width: 58%;
+      background-color: #7E9EA0;
+      color: #fff;
+      i { margin-right: 5px; }
+    }
+    .field-action-reset {
+      width: 40%;
+      margin-left: 2%;
+      background-color: #eee;
+      color: @color-font-primary;
+    }
+  }
+
 }
