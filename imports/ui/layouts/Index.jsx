@@ -6,7 +6,6 @@ import React, { Component } from 'react';
 import Recap from '../partial/Recap.jsx';
 import PicHolder from '../partial/PicHolder.jsx';
 
-
 export default class Index extends Component {
 
   constructor(props) {
