@@ -25,11 +25,11 @@ export default class Publish extends Component {
           <div className="upload-field">
             <div className="field field-caption">
               <label htmlFor="caption">图片名</label>
-              <input id="caption" className="field-control" type="text" name="caption" required />
+              <input id="caption" className="form-control" type="text" name="caption" required />
             </div>
             <div className="field field-tag">
               <label htmlFor="tag">标签</label>
-              <input id="tag" className="field-control" type="text" name="tag" required />
+              <input id="tag" className="form-control" type="text" name="tag" required />
             </div>
             <div className="field field-action">
               <button type="submit" className="field-action-button field-action-submit">
