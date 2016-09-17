@@ -7,22 +7,21 @@ export default class NavHeader extends Component {
     super(props);
 
     this.state = {
-      location: 'index',
-      authenticated: true,
+      name: 'NavHeader',
     };
   }
 
   render() {
     return (
       <div className="nav-header">
-        <Link to="/publish" className="nav-header-submit pull-left">
+        <Link to="/upload" className="nav-header-submit pull-left">
           发布图片
         </Link>
         <Link to="/" className="nav-header-logo">
-          <img src="/img/logo.png" alt="logo" />
+          <img src="http://o97tuh0p2.bkt.clouddn.com/vivian/assets/logo.png" alt="logo" />
         </Link>
         <Link to="/user" className="nav-header-user pull-right">
-          <img src="/img/extra-large.jpg" alt="avatar" />
+          <img src="http://o97tuh0p2.bkt.clouddn.com/vivian/assets/extra-large.jpg" alt="avatar" />
         </Link>
       </div>
     );

@@ -6,8 +6,7 @@ export default class Recap extends Component {
     super(props);
 
     this.state = {
-      location: 'index',
-      authenticated: true,
+      name: 'Recap',
     };
   }
 

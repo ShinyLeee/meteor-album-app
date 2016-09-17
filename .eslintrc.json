@@ -14,10 +14,19 @@
       "import/resolver": "meteor"
     },
     "rules": {
+      "no-console": 0,
+      "no-alert": 0,
       "import/no-extraneous-dependencies": 0
     },
     "env": {
       "browser": true,
-      "node": true
+      "node": true,
+      "jquery": true
+    },
+    "globals": {
+      "Qiniu": true,
+      "plupload": true,
+      "FileProgress": true,
+      "mOxie": true
     }
 }

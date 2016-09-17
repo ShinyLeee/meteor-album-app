@@ -7,13 +7,50 @@ export default class NavFooter extends Component {
     super(props);
 
     this.state = {
-      location: 'index',
+      show: true,
+      name: 'NavFooter',
     };
+  }
+
+  componentDidMount() {
+    window.addEventListener('wheel', this.handleMouseWheel.bind(this));
+    window.addEventListener('touchstart', this.handleTouchStart.bind(this));
+    window.addEventListener('touchmove', this.handleTouchMove.bind(this));
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('wheel', this.handleMouseWheel.bind(this));
+    window.removeEventListener('touchstart', this.handleTouchStart.bind(this));
+    window.removeEventListener('touchmove', this.handleTouchMove.bind(this));
+  }
+
+  handleMouseWheel(e) {
+    const hasScrollBar = document.body.scrollHeight > document.body.clientHeight;
+    if (e.deltaY > 0 && !hasScrollBar) {
+      this.setState({ show: false });
+    } else {
+      this.setState({ show: true });
+    }
+  }
+
+  handleTouchStart(e) {
+    this.setState({ startPageY: e.changedTouches[0].pageY });
+  }
+
+  handleTouchMove(e) {
+    this.setState({ endPageY: e.changedTouches[0].pageY });
+    if (this.state.startPageY - this.state.endPageY > 0) {
+      this.setState({ show: false });
+    } else {
+      this.setState({ show: true });
+    }
   }
 
   render() {
     return (
-      <nav className="nav-footer">
+      <nav
+        className={`nav-footer ${this.state.show ? 'nav-footer-pinned' : 'nav-footer-unpinned'}`}
+      >
         <ul>
           <li>
             <Link to="/"><i className="fa fa-home" aria-hidden="true" /></Link>

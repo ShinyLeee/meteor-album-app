@@ -1,26 +1,41 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
+import { Meteor } from 'meteor/meteor';
+import { createContainer } from 'meteor/react-meteor-data';
 // import ReactDOM from 'react-dom';
-// import { Meteor } from 'meteor/meteor';
-// import { createContainer } from 'meteor/react-meteor-data';
+
+// Database Model
+import { Images } from '../../api/Images.js';
 
 import Recap from '../partial/Recap.jsx';
 import PicHolder from '../partial/PicHolder.jsx';
 
-export default class Index extends Component {
+class Index extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      isClick: false,
+      name: 'Index',
     };
+  }
+
+  renderPicHolder() {
+    const filteredImages = this.props.images;
+    return filteredImages.map((image) => {
+      console.log(image);
+      return (
+        <PicHolder
+          key={image._id}
+          image={image}
+        />
+      );
+    });
   }
 
   render() {
     return (
       <div className="content">
         <Recap />
-        <PicHolder />
-        <PicHolder />
+        {this.renderPicHolder()}
       </div>
     );
   }
@@ -28,4 +43,12 @@ export default class Index extends Component {
 }
 
 Index.propTypes = {
+  images: PropTypes.array.isRequired,
 };
+
+export default createContainer(() => {
+  Meteor.subscribe('images');
+  return {
+    images: Images.find({}, { sort: { createdAt: -1 } }).fetch(),
+  };
+}, Index);

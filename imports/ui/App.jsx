@@ -2,21 +2,28 @@ import React, { Component } from 'react';
 
 import NavHeader from './partial/NavHeader.jsx';
 import NavFooter from './partial/NavFooter.jsx';
+import Footer from './partial/Footer.jsx';
 
 export default class App extends Component {
 
   constructor(props) {
     super(props);
+
     this.state = {
-      isClick: false,
+      name: 'App',
+      authenticated: true,
     };
   }
 
   render() {
     return (
-      <div className="container">
+      <div
+        className="container"
+        children={this.props.children}
+      >
         <NavHeader />
         {this.props.children}
+        <Footer />
         <NavFooter />
       </div>
     );
