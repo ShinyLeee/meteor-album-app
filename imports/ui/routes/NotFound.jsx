@@ -4,7 +4,9 @@ export default class NotFound extends Component {
 
   constructor(props) {
     super(props);
-    this.setState.location = 'NotFound';
+    this.state = {
+      name: 'NotFound',
+    };
   }
 
   render() {

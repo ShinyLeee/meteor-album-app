@@ -4,9 +4,8 @@ import React, { Component, PropTypes } from 'react';
 // Database Model
 // import { Images } from '../api/Images.js';
 
-// Utilities
-import browser from '../../api/utilities.js';
-
+// Utils
+import utils from '../../api/utils.js';
 
 // JS Plugin
 import '../../../public/js/plupload.full.min';
@@ -41,7 +40,7 @@ export default class Upload extends Component {
       // save_key: true,   默认 false.若在服务端生成 uptoken 的上传策略中指定了 `sava_key`,则开启,SDK在前端将不对key进行任何处理
       domain: 'http://o97tuh0p2.bkt.clouddn.com/', // bucket 域名，下载资源时用到，**必需**
       container: 'upload-container',     // 上传区域 DOM ID，默认是 browser_button 的父元素，
-      max_file_size: '4mb',             // 最大文件体积限制
+      max_file_size: '12mb',             // 最大文件体积限制
       flash_swf_url: '../../../public/js/Moxie.swf',  // 引入 flash,相对路径
       max_retries: 3,                     // 上传失败最大重试次数
       dragdrop: true,                     // 开启可拖曳上传
@@ -69,13 +68,13 @@ export default class Upload extends Component {
           const $filelist = $('#filelist');
           // const $pickfiles = $('#pickfiles');
 
-          if (!browser.versions.mobile) {
+          if (!utils.browser.mobile) {
             // TODO Alert 2 Modal
             alert('PC端暂不支持上传图片');
             return;
           }
 
-          if (browser.versions.mobile && files.length > 1) {
+          if (utils.browser.mobile && files.length > 1) {
             alert('手机端不支持批量上传,如需批量上传请使用PC端');
             return;
           }
@@ -168,8 +167,9 @@ export default class Upload extends Component {
         FilesRemoved: () => {
           alert('删除成功');
         },
-        Error: (up, err, errTip) => {
-          throw new Meteor.Error(err, 'Uploading Error', errTip);
+        Error: (up, err) => {
+          alert(`${err.message} ${err.code}`);
+          console.error(err);
         },
         UploadComplete: () => {
           // 队列文件处理完毕后,处理相关的事情
@@ -197,7 +197,7 @@ export default class Upload extends Component {
     .val('')
     .removeAttr('checked')
     .removeAttr('selected');
-    $('#upload-container').css('background', 'transparent url(http://o97tuh0p2.bkt.clouddn.com/vivian/assets/add-upload.svg) no-repeat center center');
+    $('#upload-container').css('background', 'transparent url(http://odsiu8xnd.bkt.clouddn.com/vivian/add-upload.svg) no-repeat center center');
   }
 
   render() {

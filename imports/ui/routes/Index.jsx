@@ -20,21 +20,17 @@ class Index extends Component {
 
   renderPicHolder() {
     const filteredImages = this.props.images;
-    return filteredImages.map((image) => {
-      console.log(image);
-      return (
-        <PicHolder
-          key={image._id}
-          image={image}
-        />
-      );
-    });
+    return filteredImages.map((image) => <PicHolder key={image._id} image={image} />);
   }
 
   render() {
     return (
       <div className="content">
-        <Recap />
+        <Recap
+          title="Gallery"
+          detailFir="Vivian的私人相册"
+          detailSec="Created By Simon Lee"
+        />
         {this.renderPicHolder()}
       </div>
     );

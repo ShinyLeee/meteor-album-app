@@ -24,3 +24,5 @@ less
 simple:rest
 http
 react-meteor-data
+accounts-password
+session

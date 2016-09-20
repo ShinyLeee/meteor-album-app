@@ -8,6 +8,7 @@
     "pretest": "npm run lint --silent"
   },
   "dependencies": {
+    "bcrypt": "^0.8.7",
     "meteor-node-stubs": "~0.2.0",
     "qiniu": "^6.1.11",
     "react": "^15.3.1",

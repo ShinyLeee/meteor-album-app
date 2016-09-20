@@ -1,4 +1,5 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
+import { Meteor } from 'meteor/meteor';
 
 import NavHeader from './partial/NavHeader.jsx';
 import NavFooter from './partial/NavFooter.jsx';
@@ -10,8 +11,7 @@ export default class App extends Component {
     super(props);
 
     this.state = {
-      name: 'App',
-      authenticated: true,
+      authenticated: false,
     };
   }
 
@@ -31,9 +31,10 @@ export default class App extends Component {
 
 }
 
-App.propTypes = {
-  children: React.PropTypes.element.isRequired,
+App.defaultProps = {
+  user: Meteor.user() || null, // TODO -> fix issue
 };
 
-// export default createContainer(() => {
-// }, App);
+App.propTypes = {
+  children: PropTypes.element.isRequired,
+};

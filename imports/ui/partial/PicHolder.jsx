@@ -17,7 +17,7 @@ export default class PicHolder extends Component {
           <a>最近的<span className="caret" /></a>
         </div>
         <div className="pic-holder-pic">
-          <a>
+          <a href={this.props.image.url} target="_blank" rel="noopener noreferrer">
             <img src={this.props.image.url} alt={this.props.image.name} />
           </a>
         </div>
@@ -43,6 +43,6 @@ export default class PicHolder extends Component {
 }
 
 PicHolder.propTypes = {
-  image: PropTypes.object.required,
+  image: PropTypes.object.isRequired,
 };
 

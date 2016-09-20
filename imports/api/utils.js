@@ -1,6 +1,6 @@
-/* Detect User's Platform */
-const browser = {
-  versions: (function testVersion() {
+const utils = {
+  /* Detect User's Browser Platform */
+  browser: (function testVersion() {
     const u = navigator.userAgent;
     return {
       trident: u.indexOf('Trident') > -1, // IE内核
@@ -17,7 +17,17 @@ const browser = {
       qq: u.match(/\sQQ/i) === ' qq', //是否QQ
     };
   }()),
+  /* Detect User's Language */
   language: (navigator.browserLanguage || navigator.language).toLowerCase(),
+  /* Check String is Validate */
+  checkStr: function checkStr(str) {
+    let status = 1;
+    if (/^\d.*$/.test(str)) status = '不能以数字开头';
+    if (!/^.{6,20}$/.test(str)) status = '字符长度有误，合法长度为6-20个字符';
+    if (!/^[\w_]*$/.test(str)) status = '只能包含_,英文字母，数字';
+    if (!/^([a-z]|[A-Z])[\w_]{5,19}$/.test(str)) status = '只能包含_,英文字母，数字';
+    return status;
+  },
 };
 
-export default browser;
+export default utils;

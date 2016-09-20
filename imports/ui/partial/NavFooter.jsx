@@ -10,21 +10,24 @@ export default class NavFooter extends Component {
       show: true,
       name: 'NavFooter',
     };
+    this._handleMouseWheel = this._handleMouseWheel.bind(this);
+    this._handleTouchStart = this._handleTouchStart.bind(this);
+    this._handleTouchMove = this._handleTouchMove.bind(this);
   }
 
   componentDidMount() {
-    window.addEventListener('wheel', this.handleMouseWheel.bind(this));
-    window.addEventListener('touchstart', this.handleTouchStart.bind(this));
-    window.addEventListener('touchmove', this.handleTouchMove.bind(this));
+    window.addEventListener('wheel', this._handleMouseWheel);
+    window.addEventListener('touchstart', this._handleTouchStart);
+    window.addEventListener('touchmove', this._handleTouchMove);
   }
 
   componentWillUnmount() {
-    window.removeEventListener('wheel', this.handleMouseWheel.bind(this));
-    window.removeEventListener('touchstart', this.handleTouchStart.bind(this));
-    window.removeEventListener('touchmove', this.handleTouchMove.bind(this));
+    window.removeEventListener('wheel', this._handleMouseWheel);
+    window.removeEventListener('touchstart', this._handleTouchStart);
+    window.removeEventListener('touchmove', this._handleTouchMove);
   }
 
-  handleMouseWheel(e) {
+  _handleMouseWheel(e) {
     const hasScrollBar = document.body.scrollHeight > document.body.clientHeight;
     if (e.deltaY > 0 && !hasScrollBar) {
       this.setState({ show: false });
@@ -33,11 +36,11 @@ export default class NavFooter extends Component {
     }
   }
 
-  handleTouchStart(e) {
+  _handleTouchStart(e) {
     this.setState({ startPageY: e.changedTouches[0].pageY });
   }
 
-  handleTouchMove(e) {
+  _handleTouchMove(e) {
     this.setState({ endPageY: e.changedTouches[0].pageY });
     if (this.state.startPageY - this.state.endPageY > 0) {
       this.setState({ show: false });

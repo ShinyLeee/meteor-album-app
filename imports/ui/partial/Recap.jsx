@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 
 export default class Recap extends Component {
 
@@ -13,9 +13,9 @@ export default class Recap extends Component {
   render() {
     return (
       <div className="recap">
-        <h1 className="recap-title">Gallery</h1>
-        <p className="recap-detail recap-detail-1">Vivian的私人相册</p>
-        <p className="recap-detail recap-detail-2">Created By Simon Lee</p>
+        <h1 className="recap-title">{this.props.title}</h1>
+        <p className="recap-detail recap-detail-1">{this.props.detailFir}</p>
+        <p className="recap-detail recap-detail-2">{this.props.detailSec}</p>
         <ul className="recap-icons">
           <li>
             <a className="fa fa-github" href="https://github.com/ShinyLeee" data-toggle="tooltip" data-title="Github" title="Github" />
@@ -36,5 +36,10 @@ export default class Recap extends Component {
       </div>
     );
   }
-
 }
+
+Recap.propTypes = {
+  title: PropTypes.string.isRequired,
+  detailFir: PropTypes.string.isRequired,
+  detailSec: PropTypes.string,
+};
