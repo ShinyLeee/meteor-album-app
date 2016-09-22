@@ -18,13 +18,20 @@ const utils = {
     };
   }()),
   /* Detect User's Language */
-  language: (navigator.browserLanguage || navigator.language).toLowerCase(),
+  language: function getLang() {
+    return (
+        navigator.languages[0] ||
+        navigator.language ||
+        navigator.browserLanguage ||
+        navigator.userLanguage ||
+        'zh-CN'
+    );
+  },
   /* Check String is Validate */
   checkStr: function checkStr(str) {
     let status = 1;
     if (/^\d.*$/.test(str)) status = '不能以数字开头';
     if (!/^.{6,20}$/.test(str)) status = '字符长度有误，合法长度为6-20个字符';
-    if (!/^[\w_]*$/.test(str)) status = '只能包含_,英文字母，数字';
     if (!/^([a-z]|[A-Z])[\w_]{5,19}$/.test(str)) status = '只能包含_,英文字母，数字';
     return status;
   },

@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 
-import Recap from '../partial/Recap.jsx';
+import Recap from '../components/Recap.jsx';
 
 export default class Login extends Component {
 

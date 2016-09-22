@@ -2,13 +2,13 @@ import { Meteor } from 'meteor/meteor';
 import React from 'react';
 import { Router, Route, browserHistory, IndexRoute } from 'react-router';
 
-// route components
-import App from '../imports/ui/App.jsx';
-import Index from '../imports/ui/routes/Index.jsx';
-import Upload from '../imports/ui/routes/Upload.jsx';
-import Login from '../imports/ui/routes/Login.jsx';
-import Register from '../imports/ui/routes/Register.jsx';
-import NotFound from '../imports/ui/routes/NotFound.jsx';
+// Components
+import App from '/imports/ui/App.jsx';
+import Index from '/imports/ui/layouts/Index.jsx';
+import Upload from '/imports/ui/layouts/Upload.jsx';
+import Login from '/imports/ui/layouts/Login.jsx';
+import Register from '/imports/ui/layouts/Register.jsx';
+import NotFound from '/imports/ui/layouts/NotFound.jsx';
 
 function requireAuth(nextState, replace) {
   // Only When User is loggingIn or has logined return true

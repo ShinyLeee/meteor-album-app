@@ -1,15 +1,14 @@
 import React, { Component, PropTypes } from 'react';
 import { Meteor } from 'meteor/meteor';
 
-import NavHeader from './partial/NavHeader.jsx';
-import NavFooter from './partial/NavFooter.jsx';
-import Footer from './partial/Footer.jsx';
+import NavHeader from './components/NavHeader.jsx';
+import NavFooter from './components/NavFooter.jsx';
+import Footer from './components/Footer.jsx';
 
 export default class App extends Component {
 
   constructor(props) {
     super(props);
-
     this.state = {
       authenticated: false,
     };

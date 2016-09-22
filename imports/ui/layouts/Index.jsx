@@ -1,13 +1,12 @@
 import React, { Component, PropTypes } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
-// import ReactDOM from 'react-dom';
 
 // Database Model
-import { Images } from '../../api/Images.js';
+import { Images } from '../../api/images/image.js';
 
-import Recap from '../partial/Recap.jsx';
-import PicHolder from '../partial/PicHolder.jsx';
+import Recap from '../components/Recap.jsx';
+import PicHolder from '../components/PicHolder.jsx';
 
 class Index extends Component {
 

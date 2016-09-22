@@ -1,3 +1,4 @@
+/* eslint-disable no-alert */
 import { Meteor } from 'meteor/meteor';
 import React, { Component, PropTypes } from 'react';
 
@@ -5,7 +6,7 @@ import React, { Component, PropTypes } from 'react';
 // import { Images } from '../api/Images.js';
 
 // Utils
-import utils from '../../api/utils.js';
+import utils from '../../utils/utils.js';
 
 // JS Plugin
 import '../../../public/js/plupload.full.min';

@@ -2,11 +2,12 @@ import { Meteor } from 'meteor/meteor';
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import { Accounts } from 'meteor/accounts-base';
-
+import i18n from 'meteor/universe:i18n';
 // Utils
-import utils from '../../api/utils.js';
+import utils from '../../utils/utils.js';
 
-import Recap from '../partial/Recap.jsx';
+// Component
+import Recap from '../components/Recap.jsx';
 
 export default class Register extends Component {
 
@@ -28,6 +29,9 @@ export default class Register extends Component {
         password: pwd,
       }, (err) => {
         if (err) {
+          console.log(err);
+          alert(i18n.__('user.createUser')); // eslint-disable-line no-alert
+          alert(i18n.__('image.create')); // eslint-disable-line no-alert
           throw new Meteor.Error('user.createUser', err.message);
         }
         return this.context.router.replace('/');
