@@ -30,9 +30,18 @@ const utils = {
   /* Check String is Validate */
   checkStr: function checkStr(str) {
     let status = 1;
-    if (/^\d.*$/.test(str)) status = '不能以数字开头';
-    if (!/^.{6,20}$/.test(str)) status = '字符长度有误，合法长度为6-20个字符';
-    if (!/^([a-z]|[A-Z])[\w_]{5,19}$/.test(str)) status = '只能包含_,英文字母，数字';
+    if (/^([\d]|[_]).*$/.test(str)) {
+      status = 'beginError'; // 不能以数字或下划线开头
+      return status;
+    }
+    if (!/^.{6,20}$/.test(str)) {
+      status = 'lengthError';   // 长度必须在6-20内
+      return status;
+    }
+    if (!/^([a-z]|[A-Z])[\w_]{5,19}$/.test(str)) {
+      status = 'containError'; // 格式错误
+      return status;
+    }
     return status;
   },
 };

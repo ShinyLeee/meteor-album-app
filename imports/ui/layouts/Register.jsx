@@ -1,13 +1,14 @@
-import { Meteor } from 'meteor/meteor';
+// import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
-import { Accounts } from 'meteor/accounts-base';
-import i18n from 'meteor/universe:i18n';
-// Utils
-import utils from '../../utils/utils.js';
 
-// Component
+// Components
 import Recap from '../components/Recap.jsx';
+
+// Utils or Libs
+import utils from '../../utils/utils.js';
+import { displayAlert } from '../lib/displayAlert.js';
 
 export default class Register extends Component {
 
@@ -21,24 +22,40 @@ export default class Register extends Component {
     // Find the usr & pwd field via the React ref
     const usr = this.usrInput.value;
     const pwd = this.pwdInput.value;
+    const pwd2 = this.pwd2Input.value;
 
     const usrStatus = utils.checkStr(usr);
-    if (usrStatus === 1 && pwd.length > 6) {
+    if (usrStatus === 1) {
+      if (!pwd || !pwd2) {
+        displayAlert('error', 'user.createUser.pwdError.emptyError');
+        return false;
+      }
+      if (pwd !== pwd2) {
+        displayAlert('error', 'user.createUser.pwdError.notEqualError');
+        return false;
+      }
+      if (pwd.length < 6) {
+        displayAlert('error', 'user.createUser.pwdError.lengthError');
+        return false;
+      }
       Accounts.createUser({
         username: usr,
         password: pwd,
       }, (err) => {
         if (err) {
-          console.log(err);
-          alert(i18n.__('user.createUser')); // eslint-disable-line no-alert
-          alert(i18n.__('image.create')); // eslint-disable-line no-alert
-          throw new Meteor.Error('user.createUser', err.message);
+          console.log(err); // TODO LOG
+          displayAlert('error', 'user.createUser.unexpectedError');
+          return false;
         }
-        return this.context.router.replace('/');
+        this.context.router.replace('/');
+        displayAlert('success', 'user.login.success');
+        return true; // TODO LOG
       });
     } else {
-      throw new Meteor.Error('user.createUser', 'Password is illegal, should be reset.');
+      displayAlert('error', `user.createUser.usrError.${usrStatus}`);
+      return false;
     }
+    return true;
   }
 
   render() {
@@ -67,6 +84,16 @@ export default class Register extends Component {
                 type="password"
                 size="20"
                 ref={(ref) => { this.pwdInput = ref; }}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="password">密码确认</label>
+              <input
+                className="form-control"
+                type="password"
+                size="20"
+                ref={(ref) => { this.pwd2Input = ref; }}
                 required
               />
             </div>

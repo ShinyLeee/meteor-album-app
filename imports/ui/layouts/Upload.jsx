@@ -1,12 +1,9 @@
-/* eslint-disable no-alert */
 import { Meteor } from 'meteor/meteor';
 import React, { Component, PropTypes } from 'react';
 
-// Database Model
-// import { Images } from '../api/Images.js';
-
-// Utils
+// Utils or Libs
 import utils from '../../utils/utils.js';
+import { displayAlert } from '../lib/displayAlert.js';
 
 // JS Plugin
 import '../../../public/js/plupload.full.min';
@@ -70,13 +67,12 @@ export default class Upload extends Component {
           // const $pickfiles = $('#pickfiles');
 
           if (!utils.browser.mobile) {
-            // TODO Alert 2 Modal
-            alert('PC端暂不支持上传图片');
+            displayAlert('warning', 'PC端暂不支持上传图片');
             return;
           }
 
           if (utils.browser.mobile && files.length > 1) {
-            alert('手机端不支持批量上传,如需批量上传请使用PC端');
+            displayAlert('warning', '手机端不支持批量上传,如需批量上传请使用PC端');
             return;
           }
 
@@ -166,16 +162,16 @@ export default class Upload extends Component {
           Meteor.call('images:insert', imgObj);
         },
         FilesRemoved: () => {
-          alert('删除成功');
+          displayAlert('success', '删除成功');
         },
         Error: (up, err) => {
-          alert(`${err.message} ${err.code}`);
-          console.error(err);
+          displayAlert('error', `${err.message} ${err.code}`);
+          console.error(err); // TODO LOG
         },
         UploadComplete: () => {
           // 队列文件处理完毕后,处理相关的事情
           window.location.replace('/upload');
-          alert('上传成功');
+          displayAlert('success', '上传成功');
         },
         Key: (up, file) => {
           // 若想在前端对每个文件的key进行个性化处理，可以配置该函数

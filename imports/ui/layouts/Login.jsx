@@ -2,7 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 
+// Components
 import Recap from '../components/Recap.jsx';
+
+import { displayAlert } from '../lib/displayAlert.js';
 
 export default class Login extends Component {
 
@@ -19,9 +22,17 @@ export default class Login extends Component {
 
     Meteor.loginWithPassword(usr, pwd, (err) => {
       if (err) {
-        throw new Meteor.Error('user.login', err.message);
+        let ret = '';
+        let reason = err.reason.toLowerCase();
+        reason = reason.split(' ');
+        for (let i = 0; i < reason.length; i++) {
+          ret += reason[i];
+        }
+        displayAlert('error', `user.login.${ret}`);
+        return console.error(err); // TODO LOG
       }
-      return this.context.router.replace('/');
+      this.context.router.replace('/');
+      return displayAlert('success', 'user.login.success');
     });
   }
 
