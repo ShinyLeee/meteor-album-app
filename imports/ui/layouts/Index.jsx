@@ -1,26 +1,36 @@
-import React, { Component } from 'react';
-// import ReactDOM from 'react-dom';
-// import { Meteor } from 'meteor/meteor';
-// import { createContainer } from 'meteor/react-meteor-data';
+import React, { Component, PropTypes } from 'react';
+import { Meteor } from 'meteor/meteor';
+import { createContainer } from 'meteor/react-meteor-data';
 
-import Recap from '../partial/Recap.jsx';
-import PicHolder from '../partial/PicHolder.jsx';
+// Database Model
+import { Images } from '../../api/images/image.js';
 
-export default class Index extends Component {
+import Recap from '../components/Recap.jsx';
+import PicHolder from '../components/PicHolder.jsx';
+
+class Index extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      isClick: false,
+      name: 'Index',
     };
+  }
+
+  renderPicHolder() {
+    const filteredImages = this.props.images;
+    return filteredImages.map((image) => <PicHolder key={image._id} image={image} />);
   }
 
   render() {
     return (
       <div className="content">
-        <Recap />
-        <PicHolder />
-        <PicHolder />
+        <Recap
+          title="Gallery"
+          detailFir="Vivian的私人相册"
+          detailSec="Created By Simon Lee"
+        />
+        {this.renderPicHolder()}
       </div>
     );
   }
@@ -28,4 +38,12 @@ export default class Index extends Component {
 }
 
 Index.propTypes = {
+  images: PropTypes.array.isRequired,
 };
+
+export default createContainer(() => {
+  Meteor.subscribe('images');
+  return {
+    images: Images.find({}, { sort: { createdAt: -1 } }).fetch(),
+  };
+}, Index);

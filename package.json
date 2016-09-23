@@ -8,10 +8,14 @@
     "pretest": "npm run lint --silent"
   },
   "dependencies": {
+    "bcrypt": "^0.8.7",
     "meteor-node-stubs": "~0.2.0",
+    "qiniu": "^6.1.11",
     "react": "^15.3.1",
+    "react-addons-pure-render-mixin": "^15.3.1",
     "react-dom": "^15.3.1",
-    "react-router": "^2.7.0"
+    "react-router": "^2.7.0",
+    "react-s-alert": "^1.1.4"
   },
   "devDependencies": {
     "babel-eslint": "^6.1.2",

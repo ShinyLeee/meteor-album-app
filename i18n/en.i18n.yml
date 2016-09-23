@@ -1,0 +1,16 @@
+# USER ACTION TRANSLATION GOES HERE
+user:
+  login:
+    success: 登录成功
+    usernotfound: 该用户不存在
+    incorrectpassword: 密码输入不正确
+  createUser:
+    unexpectedError: 遇到未知错误，请联系管理员
+    usrError:
+      beginError: 用户名不能以_或数字开头
+      lengthError: 用户名长度必须在6-20之间
+      containError: 用户名格式错误
+    pwdError:
+      emptyError: 密码不能为空
+      notEqualError: 两次密码输入不相等
+      lengthError: 密码长度过短

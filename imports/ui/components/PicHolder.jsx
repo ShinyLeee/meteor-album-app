@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 
 export default class PicHolder extends Component {
 
@@ -6,8 +6,7 @@ export default class PicHolder extends Component {
     super(props);
 
     this.state = {
-      location: 'index',
-      authenticated: true,
+      name: 'PicHolder',
     };
   }
 
@@ -18,15 +17,15 @@ export default class PicHolder extends Component {
           <a>最近的<span className="caret" /></a>
         </div>
         <div className="pic-holder-pic">
-          <a>
-            <img src="/img/欧洲景色.jpg" alt="pic1" />
+          <a href={this.props.image.url} target="_blank" rel="noopener noreferrer">
+            <img src={this.props.image.url} alt={this.props.image.name} />
           </a>
         </div>
         <div className="pic-holder-action">
           <div className="pull-left">
             <a className="pic-holder-action-left">
               <i className="fa fa-heart" />
-              <span>20</span>
+              <span>{this.props.image.like}</span>
             </a>
             <a>
               <span className="fa fa-plus" />
@@ -41,5 +40,9 @@ export default class PicHolder extends Component {
       </div> /* PIC-HOLDER */
     );
   }
-
 }
+
+PicHolder.propTypes = {
+  image: PropTypes.object.isRequired,
+};
+

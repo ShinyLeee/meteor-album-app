@@ -21,3 +21,8 @@ shell-server@0.2.1            # Server-side component of the `meteor shell` comm
 twbs:bootstrap
 fortawesome:fontawesome
 less
+http
+react-meteor-data
+accounts-password
+session
+universe:i18n
