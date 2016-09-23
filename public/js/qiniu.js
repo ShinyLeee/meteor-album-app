@@ -457,7 +457,6 @@ function QiniuJsSDK() {
                     }
                     return '{' + string.join(',') + '}';
                 }
-                break;
             case 'number':
                 return obj;
             case false:

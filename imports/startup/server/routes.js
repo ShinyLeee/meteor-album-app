@@ -5,9 +5,6 @@ import { WebApp } from 'meteor/webapp';
 // Model
 import '/imports/api/images/image.js';
 
-import config from '/imports/config.js';
-
-
 Meteor.startup(() => {
   // code to run on server at startup
   // Listen to incoming HTTP requests, can only be used on the server
@@ -19,11 +16,11 @@ Meteor.startup(() => {
     // res.setHeader('Access-Control-Allow-Origin', '*');
     // res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-    const bucket = config.qiniu.bucket;
+    const bucket = Meteor.settings.private.qiniu.bucket;
     const key = 'vivian/assets/';
 
-    qiniu.conf.ACCESS_KEY = config.qiniu.ACCESS_KEY;
-    qiniu.conf.SECRET_KEY = config.qiniu.SECRET_KEY;
+    qiniu.conf.ACCESS_KEY = Meteor.settings.private.qiniu.ACCESS_KEY;
+    qiniu.conf.SECRET_KEY = Meteor.settings.private.qiniu.SECRET_KEY;
 
     const putPolicy = new qiniu.rs.PutPolicy(bucket);
 
