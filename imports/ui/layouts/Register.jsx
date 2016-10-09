@@ -1,4 +1,3 @@
-// import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
@@ -8,7 +7,7 @@ import Recap from '../components/Recap.jsx';
 
 // Utils or Libs
 import utils from '../../utils/utils.js';
-import { displayAlert } from '../lib/displayAlert.js';
+import displayAlert from '../lib/displayAlert.js';
 
 export default class Register extends Component {
 
@@ -43,9 +42,8 @@ export default class Register extends Component {
         password: pwd,
       }, (err) => {
         if (err) {
-          console.log(err); // TODO LOG
           displayAlert('error', 'user.createUser.unexpectedError');
-          return false;
+          return console.error(err); // TODO LOG
         }
         this.context.router.replace('/');
         displayAlert('success', 'user.login.success');

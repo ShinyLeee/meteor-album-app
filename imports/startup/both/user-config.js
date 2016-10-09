@@ -7,6 +7,7 @@ Accounts.config({
    *  New users with an email address will receive an address verification email.
    *
    */
+
   sendVerificationEmail: true,
 
 
@@ -17,6 +18,7 @@ Accounts.config({
    * the "Create account" link will not be available.
    *
    */
+
   forbidClientAccountCreation: false,
 
 
@@ -29,6 +31,7 @@ Accounts.config({
    * All existing users still can log in after enabling this option.
    * Example:
    */
+
   // restrictCreationByEmailDomain: 'school.edu',
 
 
@@ -39,6 +42,7 @@ Accounts.config({
    * Defaults to 90. Set to null to disable login expiration.
    *
    */
+
   loginExpirationInDays: 7,
 
 
@@ -48,6 +52,7 @@ Accounts.config({
    * encoded in base64. This option may only be specifed on the server.
    * See packages/oauth-encryption/README.md for details.
    */
+
   // oauthSecretKey: STRING,
 
 
@@ -58,5 +63,7 @@ Accounts.config({
    * Defaults to 3.
    *
    */
+
   passwordResetTokenExpirationInDays: 3,
+
 });

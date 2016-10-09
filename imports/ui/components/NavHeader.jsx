@@ -6,21 +6,14 @@ export default class NavHeader extends Component {
 
   constructor(props) {
     super(props);
-    this._handleLogout = this._handleLogout.bind(this);
-  }
-
-  _handleLogout() {
-    Meteor.logout((err) => {
-      if (err) {
-        throw new Meteor.Error('user.logout', err.message);
-      }
-      return this.context.router.replace('/login');
-    });
+    this.state = {
+      name: 'NavHeader',
+    };
   }
 
   render() {
     let userBtn;
-    if (Meteor.loggingIn() || Meteor.user()) userBtn = <Link to="/user" className="nav-header-user pull-right" onClick={this._handleLogout}><img src="http://odsiu8xnd.bkt.clouddn.com/vivian/extra-large.jpg" alt="avatar" /></Link>;
+    if (Meteor.loggingIn() || Meteor.user()) userBtn = <Link to="/user" className="nav-header-user pull-right"><img src="http://odsiu8xnd.bkt.clouddn.com/vivian/extra-large.jpg" alt="avatar" /></Link>;
     else userBtn = <Link to="/login" className="nav-header-submit pull-right">登录</Link>;
 
     return (

@@ -160,7 +160,7 @@ export default class Upload extends Component {
           };
           // $(`#${file.id}`).prop('href', sourceLink);
 
-          Meteor.call('images:insert', imgObj);
+          Meteor.call('images.insert', imgObj);
         },
         FilesRemoved: () => {
           displayAlert('success', '删除成功');

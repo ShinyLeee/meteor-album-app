@@ -1,1 +1,1 @@
-// import './hook.js';
+import './hook.js';

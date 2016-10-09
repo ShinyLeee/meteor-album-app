@@ -4,6 +4,9 @@ user:
     success: 登录成功
     usernotfound: 该用户不存在
     incorrectpassword: 密码输入不正确
+  logout:
+    success: 登出成功
+    unexpectedError: 遇到位置错误，请联系管理员
   createUser:
     unexpectedError: 遇到未知错误，请联系管理员
     usrError:
