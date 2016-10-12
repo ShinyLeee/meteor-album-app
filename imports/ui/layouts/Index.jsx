@@ -42,7 +42,7 @@ Index.propTypes = {
 };
 
 export default createContainer(() => {
-  Meteor.subscribe('images');
+  Meteor.subscribe('Images.all');
   return {
     images: Images.find({}, { sort: { createdAt: -1 } }).fetch(),
   };

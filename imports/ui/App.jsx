@@ -9,7 +9,7 @@ import NavFooter from './components/NavFooter.jsx';
 import Footer from './components/Footer.jsx';
 
 // Database Model
-import '../api/users/index.js';
+import '../api/users/user.js';
 
 import defaultUser from './lib/defaultUser.js';
 

@@ -37,7 +37,7 @@ UserContent.propTypes = {
 };
 
 export default createContainer(() => {
-  Meteor.subscribe('images');
+  Meteor.subscribe('Images.ownImages');
   return {
     images: Images.find({}, { sort: { createdAt: -1 } }).fetch(),
   };

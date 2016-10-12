@@ -17,3 +17,9 @@ user:
       emptyError: 密码不能为空
       notEqualError: 两次密码输入不相等
       lengthError: 密码长度过短
+
+# Note ACTION TRANSLATION GOES HERE
+note:
+  send:
+    success: 信息发送成功
+    error: 信息发送失败

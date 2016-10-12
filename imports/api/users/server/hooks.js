@@ -10,6 +10,7 @@ Accounts.onCreateUser((options, user) => {
     images: 0,
     notes: 0,
     collections: 0,
+    relater: null,
     avatar: 'http://odsiu8xnd.bkt.clouddn.com/vivian/extra-large.jpg',
   };
   curUser = Object.assign({}, curUser, options.profile);
