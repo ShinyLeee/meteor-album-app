@@ -28,6 +28,8 @@ import { Link } from 'react-router';
 import displayAlert from '../lib/displayAlert.js';
 import defaultUser from '../lib/defaultUser.js';
 
+import { insertNote } from '../../api/notes/methods.js';
+
 class User extends Component {
 
   constructor(props) {
@@ -94,16 +96,25 @@ class User extends Component {
   }
 
   _noteSubmit() {
-    const sendData = {
+    if (!this.state.receiver) {
+      displayAlert('error', 'note.send.receiverNotFound');
+      return;
+    }
+    insertNote.call({
       title: this.state.title,
       content: this.state.content,
       sender: this.state.sender,
       receiver: this.state.receiver,
       sendAt: this.state.sendAt,
-    };
-    Meteor.call('notes.insert', sendData);
-    this._handleClose();
-    displayAlert('success', 'note.send.success');
+    }, (err) => {
+      if (err) {
+        displayAlert('error', err.message);
+        return false;
+      }
+      this._handleClose();
+      displayAlert('success', 'note.send.success');
+      return true;
+    });
   }
 
   _handleTextFieldChange(e) {
@@ -112,11 +123,11 @@ class User extends Component {
     });
   }
 
-  _handleRelaterChange(searchText) {
+  _handleRelaterChange(value) {
     const { filterUser } = this.props;
     let relater;
     filterUser.forEach((user) => {
-      if (user.username === searchText) {
+      if (user.username === value) {
         relater = user.uid;
       }
       return true;
@@ -126,11 +137,11 @@ class User extends Component {
     });
   }
 
-  _handleReceiverChange(searchText) {
+  _handleReceiverChange(value) {
     const { filterUser } = this.props;
     let receiver;
     filterUser.forEach((user) => {
-      if (user.username === searchText) {
+      if (user.username === value) {
         receiver = user.uid;
       }
       return true;
@@ -230,6 +241,7 @@ class User extends Component {
             >
               <AutoComplete
                 onNewRequest={this._handleRelaterChange}
+                onUpdateInput={this._handleRelaterChange}
                 floatingLabelText="用户名"
                 filter={AutoComplete.caseInsensitiveFilter}
                 dataSource={this._getUsernames()}
@@ -270,7 +282,8 @@ class User extends Component {
               <Divider />
               <AutoComplete
                 onNewRequest={this._handleReceiverChange}
-                floatingLabelText="接受者"
+                onUpdateInput={this._handleReceiverChange}
+                floatingLabelText="接收者"
                 style={customeTextFieldStyle}
                 underlineShow={false}
                 filter={AutoComplete.caseInsensitiveFilter}

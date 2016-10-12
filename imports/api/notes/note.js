@@ -18,7 +18,6 @@ class NotesCollection extends Mongo.Collection {
 export const Notes = new NotesCollection('notes');
 
 Notes.schema = new SimpleSchema({
-  _id: { type: String, regEx: SimpleSchema.RegEx.Id },
   title: { type: String, max: 20 },
   content: { type: String }, // TODO max content length limit
   sender: { type: String, regEx: SimpleSchema.RegEx.Id },

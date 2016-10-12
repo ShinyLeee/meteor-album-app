@@ -1,5 +1,6 @@
 # USER ACTION TRANSLATION GOES HERE
 user:
+  accessDenied: 您不拥有此权限
   login:
     success: 登录成功
     usernotfound: 该用户不存在
@@ -23,3 +24,4 @@ note:
   send:
     success: 信息发送成功
     error: 信息发送失败
+    receiverNotFound: 接收者不存在
