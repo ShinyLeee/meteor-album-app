@@ -6,7 +6,7 @@ Meteor.publish('Images.all', function images() {
   return Images.find();
 });
 
-Meteor.publish('Images.ownImages', function images() {
+Meteor.publish('Images.ownImages', function ownImages() {
   return Images.find({
     uid: this.userId,
   });

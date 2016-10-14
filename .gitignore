@@ -2,3 +2,4 @@
 node_modules/
 npm-debug.log
 settings.json
+.meteor/local

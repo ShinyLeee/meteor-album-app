@@ -14,7 +14,7 @@ export default class Footer extends Component {
     return (
       <div className="footer">
         <div className="footer-logo">
-          <img src="http://o97tuh0p2.bkt.clouddn.com/vivian/assets/logo.png" alt="Logo" />
+          <img src="http://odsiu8xnd.bkt.clouddn.com/vivian/logo.png" alt="Logo" />
         </div>
         <p className="footer-text">Powerd By Shiny Lee</p>
       </div>

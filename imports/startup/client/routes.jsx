@@ -11,7 +11,8 @@ import Login from '/imports/ui/layouts/Login.jsx';
 import Register from '/imports/ui/layouts/Register.jsx';
 import NotFound from '/imports/ui/layouts/NotFound.jsx';
 
-import UserContent from '/imports/ui/components/UserContent.jsx';
+import UserNotes from '/imports/ui/components/UserNotes.jsx';
+import UserLiked from '/imports/ui/components/UserLiked.jsx';
 import store from '/imports/ui/store.js';
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
@@ -25,9 +26,9 @@ const Root = () => (
           <IndexRoute component={Index} onEnter={requireAuth} />
           <Route path="upload" component={Upload} onEnter={requireAuth} />
           <Route path="user" component={User} onEnter={requireAuth}>
-            <IndexRoute component={UserContent} / >
-            <Route path="notes" component={UserContent} />
-            <Redirect from="liked" to="/user" />
+            <IndexRoute component={UserNotes} />
+            <Route path="liked" component={UserLiked} />
+            <Redirect from="notes" to="/user" />
           </Route>
           <Route path="login" component={Login} onEnter={isLogin} />
           <Route path="register" component={Register} />

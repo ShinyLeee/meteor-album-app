@@ -2,6 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router';
+import classnames from 'classnames';
 
 // For Dropdown Menus
 import IconMenu from 'material-ui/IconMenu';
@@ -23,8 +25,6 @@ import ExitToAppIcon from 'material-ui/svg-icons/action/exit-to-app';
 import PersonAddIcon from 'material-ui/svg-icons/social/person-add';
 import MessageIcon from 'material-ui/svg-icons/communication/message';
 
-import { Link } from 'react-router';
-
 import displayAlert from '../lib/displayAlert.js';
 import defaultUser from '../lib/defaultUser.js';
 
@@ -35,14 +35,16 @@ class User extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      notePage: true,
+      likedPage: false,
       relateModal: false,
       noteModal: false,
-      relater: null,
-      title: '',
-      content: '',
+      relater: undefined,
+      title: undefined,
+      content: undefined,
       sender: Meteor.userId(),
-      receiver: null,
-      sendAt: new Date(),
+      receiver: undefined,
+      sendAt: undefined,
     };
     this._handleLogout = this._handleLogout.bind(this);
     this._handleAddFriend = this._handleAddFriend.bind(this);
@@ -55,6 +57,7 @@ class User extends Component {
     this._handleReceiverChange = this._handleReceiverChange.bind(this);
     this._handleSendDateChange = this._handleSendDateChange.bind(this);
     this._getUsernames = this._getUsernames.bind(this);
+    this._handleChildCompChange = this._handleChildCompChange.bind(this);
   }
 
   _getUsernames() {
@@ -105,7 +108,7 @@ class User extends Component {
       content: this.state.content,
       sender: this.state.sender,
       receiver: this.state.receiver,
-      sendAt: this.state.sendAt,
+      sendAt: this.state.sendAt || new Date(),
     }, (err) => {
       if (err) {
         displayAlert('error', err.message);
@@ -157,7 +160,20 @@ class User extends Component {
     });
   }
 
+  _handleChildCompChange() {
+    this.setState({
+      notePage: !this.state.notePage,
+      likedPage: !this.state.likedPage,
+    });
+  }
+
   render() {
+    const isNotePage = classnames('user-note', {
+      highlight: this.state.notePage,
+    });
+    const isLikedPage = classnames('user-liked', {
+      highlight: this.state.likedPage,
+    });
     const customeTextFieldStyle = {
       marginLeft: 20,
     };
@@ -221,11 +237,19 @@ class User extends Component {
             </div>
           </div>
           <div className="user-info">
-            <Link className="user-note" to="/user/notes">
+            <Link
+              className={isNotePage}
+              to="/user/notes"
+              onClick={this._handleChildCompChange}
+            >
               <span>{this.props.User.profile.notes}</span>
               <span>Notes</span>
             </Link>
-            <Link className="user-like" to="/user/liked">
+            <Link
+              className={isLikedPage}
+              to="/user/liked"
+              onClick={this._handleChildCompChange}
+            >
               <span>{this.props.User.profile.likes}</span>
               <span>Liked</span>
             </Link>
@@ -305,7 +329,7 @@ class User extends Component {
             </Dialog>
           </div>
         </div>
-        {this.props.children}
+        { React.cloneElement(this.props.children, { User: this.props.User }) }
       </div>
     );
   }

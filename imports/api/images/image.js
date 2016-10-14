@@ -1,18 +1,25 @@
 import { Mongo } from 'meteor/mongo';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 
+import incompleteCountDenormalizer from './incompleteCountDenormalizer.js';
+
 // Hook Our Own Collection Method
 class ImagesCollection extends Mongo.Collection {
   insert(image, cb) {
     const img = image;
-    img.createdAt = img.createdAt || new Date();
-    return super.insert(img, cb);
+    img.createdAt = new Date();
+    img.updatedAt = img.createdAt;
+    const result = super.insert(img, cb);
+    incompleteCountDenormalizer.afterInsertImage(img);
+    return result;
   }
   update(selector, modifier) {
     return super.update(selector, modifier);
   }
   remove(selector, cb) {
-    return super.remove(selector, cb);
+    const result = super.remove(selector, cb);
+    incompleteCountDenormalizer.afterRemoveImage(selector);
+    return result;
   }
 }
 
@@ -30,8 +37,8 @@ Images.schema = new SimpleSchema({
   download: { type: Number, defaultValue: 0, optional: true },
   private: { type: Boolean, defaultValue: false, optional: true },
   detail: { type: Object },
-  createdAt: { type: Date, defaultValue: new Date(), optional: true },
-  updatedAt: { type: Date, defaultValue: new Date(), optional: true },
+  createdAt: { type: Date },
+  updatedAt: { type: Date },
 });
 
 Images.attachSchema(Images.schema);

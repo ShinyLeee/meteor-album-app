@@ -28,7 +28,7 @@ class Index extends Component {
         <Recap
           title="Gallery"
           detailFir="Vivian的私人相册"
-          detailSec="Created By Simon Lee"
+          detailSec="Created By Shiny Lee"
         />
         {this.renderPicHolder()}
       </div>
