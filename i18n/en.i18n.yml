@@ -18,6 +18,8 @@ user:
       emptyError: 密码不能为空
       notEqualError: 两次密码输入不相等
       lengthError: 密码长度过短
+  setting:
+    success: 设置保存成功
 
 # Note ACTION TRANSLATION GOES HERE
 note:

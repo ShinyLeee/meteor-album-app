@@ -46,6 +46,7 @@ class User extends Component {
       receiver: undefined,
       sendAt: undefined,
     };
+    this._getUsernames = this._getUsernames.bind(this);
     this._handleLogout = this._handleLogout.bind(this);
     this._handleAddFriend = this._handleAddFriend.bind(this);
     this._handleSendNotes = this._handleSendNotes.bind(this);
@@ -56,7 +57,6 @@ class User extends Component {
     this._handleRelaterChange = this._handleRelaterChange.bind(this);
     this._handleReceiverChange = this._handleReceiverChange.bind(this);
     this._handleSendDateChange = this._handleSendDateChange.bind(this);
-    this._getUsernames = this._getUsernames.bind(this);
     this._handleChildCompChange = this._handleChildCompChange.bind(this);
   }
 
@@ -205,7 +205,7 @@ class User extends Component {
                   >
                     <MenuItem
                       primaryText="账号设置"
-                      containerElement={<Link to={'/user/settings'} />}
+                      containerElement={<Link to={'/setting'} />}
                       leftIcon={<SettingsIcon />}
                     />
                     <MenuItem

@@ -24,11 +24,11 @@ export const Notes = new NotesCollection('notes');
 
 Notes.schema = new SimpleSchema({
   title: { type: String, max: 20 },
-  content: { type: String }, // TODO max content length limit
-  sender: { type: String, regEx: SimpleSchema.RegEx.Id },
-  receiver: { type: String, regEx: SimpleSchema.RegEx.Id },
+  content: { type: String, label: '内容' }, // TODO max content length limit
+  sender: { type: String, label: '发送者', regEx: SimpleSchema.RegEx.Id },
+  receiver: { type: String, label: '接收者', regEx: SimpleSchema.RegEx.Id },
   isRead: { type: Boolean, defaultValue: false, optional: true },
-  sendAt: { type: Date },
+  sendAt: { type: Date, label: '发送时间' },
   createdAt: { type: Date, defaultValue: new Date(), optional: true },
 });
 

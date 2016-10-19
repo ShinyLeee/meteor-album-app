@@ -6,12 +6,18 @@ import { userCreate } from '/imports/ui/actions/actionTypes.js';
 Accounts.onCreateUser((options, user) => {
   let curUser = user;
   curUser.profile = {
+    nickname: '',
+    cover: 'http://odsiu8xnd.bkt.clouddn.com/vivian/default-cover.jpg',
+    avatar: 'http://odsiu8xnd.bkt.clouddn.com/vivian/extra-large.jpg',
     likes: 0,
     images: 0,
     notes: 0,
     collections: 0,
     relater: null,
-    avatar: 'http://odsiu8xnd.bkt.clouddn.com/vivian/extra-large.jpg',
+    settings: {
+      notification: true,
+      message: true,
+    },
   };
   curUser = Object.assign({}, curUser, options.profile);
   store.dispatch(userCreate(Object.assign({}, curUser, { time: new Date() })));

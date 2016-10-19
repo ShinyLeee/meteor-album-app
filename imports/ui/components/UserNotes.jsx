@@ -152,7 +152,7 @@ class UserNotes extends Component {
   }
 
   render() {
-    if (!this.props.dataIsReady) {
+    if (!this.props.notesIsReady) {
       return (
         <div className="text-center">
           <CircularProgress size={1} />
@@ -170,17 +170,17 @@ class UserNotes extends Component {
 }
 
 UserNotes.propTypes = {
-  dataIsReady: PropTypes.bool.isRequired,
+  notesIsReady: PropTypes.bool.isRequired,
   notes: PropTypes.array.isRequired,
   User: PropTypes.object.isRequired,
 };
 
 export default createContainer(() => {
   const dataHandle = Meteor.subscribe('Notes.ownNotes');
-  const dataIsReady = dataHandle.ready();
+  const notesIsReady = dataHandle.ready();
   const notes = Notes.find({}, { sort: { createdAt: -1 } }).fetch();
   return {
-    dataIsReady,
+    notesIsReady,
     notes,
   };
 }, UserNotes);

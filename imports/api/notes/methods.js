@@ -23,7 +23,6 @@ export const insertNote = new ValidatedMethod({
 });
 
 // Get list of all method names on Notes
-// TODO understand this
 const NOTES_METHODS = _.pluck([
   insertNote,
 ], 'name');

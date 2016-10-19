@@ -20,6 +20,7 @@ export default class Register extends Component {
     e.preventDefault();
     // Find the usr & pwd field via the React ref
     const usr = this.usrInput.value;
+    const email = this.usrEmail.value;
     const pwd = this.pwdInput.value;
     const pwd2 = this.pwd2Input.value;
 
@@ -40,6 +41,7 @@ export default class Register extends Component {
       Accounts.createUser({
         username: usr,
         password: pwd,
+        email,
       }, (err) => {
         if (err) {
           displayAlert('error', 'user.createUser.unexpectedError');
@@ -66,12 +68,24 @@ export default class Register extends Component {
         <div id="register">
           <form className="regsiter-holder">
             <div className="form-group">
-              <label htmlFor="usr">账号</label>
+              <label htmlFor="usr">用户名</label>
               <input
                 className="form-control"
                 type="text"
+                name="usr"
                 size="10"
                 ref={(ref) => { this.usrInput = ref; }}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="email">邮箱</label>
+              <input
+                className="form-control"
+                type="email"
+                name="email"
+                size="10"
+                ref={(ref) => { this.usrEmail = ref; }}
                 required
               />
             </div>
