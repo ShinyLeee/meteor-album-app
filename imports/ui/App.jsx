@@ -4,9 +4,9 @@ import { connect } from 'react-redux';
 
 // Components
 import Alert from 'react-s-alert';
-import NavHeader from './components/NavHeader.jsx';
-import NavFooter from './components/NavFooter.jsx';
-import Footer from './components/Footer.jsx';
+// import NavHeader from './components/NavHeader.jsx';
+// import NavFooter from './components/NavFooter.jsx';
+// import Footer from './components/Footer.jsx';
 
 // Database Model
 import '../api/users/user.js';
@@ -24,8 +24,7 @@ class App extends Component {
 
   render() {
     return (
-      <div className="container">
-        <NavHeader />
+      <div>
         <Alert
           stack={{ limit: 3 }}
           position="top"
@@ -33,8 +32,6 @@ class App extends Component {
           timeout={3000}
         />
         {this.props.children}
-        <Footer />
-        <NavFooter />
       </div>
     );
   }

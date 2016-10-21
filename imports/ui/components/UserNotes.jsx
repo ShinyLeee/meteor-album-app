@@ -44,9 +44,10 @@ class UserNotes extends Component {
         });
       },
       success: (data) => {
+        const bibleChap = data.chapter || data.book[0].chapter;
         this.setState({
           bibleName: title,
-          bibleChap: data.book[0].chapter,
+          bibleChap,
           bibleIsReady: true,
         });
       },
@@ -178,7 +179,10 @@ UserNotes.propTypes = {
 export default createContainer(() => {
   const dataHandle = Meteor.subscribe('Notes.ownNotes');
   const notesIsReady = dataHandle.ready();
-  const notes = Notes.find({}, { sort: { createdAt: -1 } }).fetch();
+  const notes = Notes.find({}, {
+    sort: { createdAt: -1 },
+    limit: 5,
+  }).fetch();
   return {
     notesIsReady,
     notes,
