@@ -1,6 +1,11 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router';
 
+// import IconMenu from 'material-ui/IconMenu';
+// import MenuItem from 'material-ui/MenuItem';
+// import IconButton from 'material-ui/IconButton/IconButton';
+// import MenuIcon from 'material-ui/svg-icons/navigation/menu';
+
 export default class NavFooter extends Component {
 
   constructor(props) {
@@ -8,11 +13,12 @@ export default class NavFooter extends Component {
 
     this.state = {
       show: true,
-      name: 'NavFooter',
+      location: 'index',
     };
     this._handleMouseWheel = this._handleMouseWheel.bind(this);
     this._handleTouchStart = this._handleTouchStart.bind(this);
     this._handleTouchMove = this._handleTouchMove.bind(this);
+    this._locationChange = this._locationChange.bind(this);
   }
 
   componentDidMount() {
@@ -49,6 +55,10 @@ export default class NavFooter extends Component {
     }
   }
 
+  _locationChange(location) {
+    this.setState({ location });
+  }
+
   render() {
     return (
       <nav
@@ -56,19 +66,39 @@ export default class NavFooter extends Component {
       >
         <ul>
           <li>
-            <Link to="/"><i className="fa fa-home" aria-hidden="true" /></Link>
+            <Link
+              to="/"
+              className={`${this.state.location === 'index' ? 'active' : ''}`}
+              onClick={() => this._locationChange('index')}
+            ><i className="fa fa-home" aria-hidden="true" /></Link>
           </li>
           <li>
-            <Link to="/explore"><i className="fa fa-paper-plane" aria-hidden="true" /></Link>
+            <Link
+              to="/explore"
+              className={`${this.state.location === 'explore' ? 'active' : ''}`}
+              onClick={() => this._locationChange('explore')}
+            ><i className="fa fa-paper-plane" aria-hidden="true" /></Link>
           </li>
           <li>
-            <Link to="/archive"><i className="fa fa-archive" aria-hidden="true" /></Link>
+            <Link
+              to="/archive"
+              className={`${this.state.location === 'archive' ? 'active' : ''}`}
+              onClick={() => this._locationChange('archive')}
+            ><i className="fa fa-archive" aria-hidden="true" /></Link>
           </li>
           <li>
-            <Link to="/search"><i className="fa fa-search" aria-hidden="true" /></Link>
+            <Link
+              to="/search"
+              className={`${this.state.location === 'search' ? 'active' : ''}`}
+              onClick={() => this._locationChange('search')}
+            ><i className="fa fa-search" aria-hidden="true" /></Link>
           </li>
           <li>
-            <Link to="/404"><i className="fa fa-bars" aria-hidden="true" /></Link>
+            <Link
+              to="/404"
+              className={`${this.state.location === '404' ? 'active' : ''}`}
+              onClick={() => this._locationChange('404')}
+            ><i className="fa fa-bars" aria-hidden="true" /></Link>
           </li>
         </ul>
       </nav>

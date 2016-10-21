@@ -1,9 +1,13 @@
 # USER ACTION TRANSLATION GOES HERE
 user:
+  accessDenied: 您不拥有此权限
   login:
     success: 登录成功
     usernotfound: 该用户不存在
     incorrectpassword: 密码输入不正确
+  logout:
+    success: 登出成功
+    unexpectedError: 遇到位置错误，请联系管理员
   createUser:
     unexpectedError: 遇到未知错误，请联系管理员
     usrError:
@@ -14,3 +18,12 @@ user:
       emptyError: 密码不能为空
       notEqualError: 两次密码输入不相等
       lengthError: 密码长度过短
+  setting:
+    success: 设置保存成功
+
+# Note ACTION TRANSLATION GOES HERE
+note:
+  send:
+    success: 信息发送成功
+    error: 信息发送失败
+    receiverNotFound: 接收者不存在

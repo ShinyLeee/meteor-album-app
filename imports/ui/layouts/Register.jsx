@@ -1,4 +1,3 @@
-// import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
@@ -8,7 +7,7 @@ import Recap from '../components/Recap.jsx';
 
 // Utils or Libs
 import utils from '../../utils/utils.js';
-import { displayAlert } from '../lib/displayAlert.js';
+import displayAlert from '../lib/displayAlert.js';
 
 export default class Register extends Component {
 
@@ -21,6 +20,7 @@ export default class Register extends Component {
     e.preventDefault();
     // Find the usr & pwd field via the React ref
     const usr = this.usrInput.value;
+    const email = this.usrEmail.value;
     const pwd = this.pwdInput.value;
     const pwd2 = this.pwd2Input.value;
 
@@ -41,11 +41,11 @@ export default class Register extends Component {
       Accounts.createUser({
         username: usr,
         password: pwd,
+        email,
       }, (err) => {
         if (err) {
-          console.log(err); // TODO LOG
           displayAlert('error', 'user.createUser.unexpectedError');
-          return false;
+          return console.error(err); // TODO LOG
         }
         this.context.router.replace('/');
         displayAlert('success', 'user.login.success');
@@ -68,12 +68,24 @@ export default class Register extends Component {
         <div id="register">
           <form className="regsiter-holder">
             <div className="form-group">
-              <label htmlFor="usr">账号</label>
+              <label htmlFor="usr">用户名</label>
               <input
                 className="form-control"
                 type="text"
+                name="usr"
                 size="10"
                 ref={(ref) => { this.usrInput = ref; }}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="email">邮箱</label>
+              <input
+                className="form-control"
+                type="email"
+                name="email"
+                size="10"
+                ref={(ref) => { this.usrEmail = ref; }}
                 required
               />
             </div>

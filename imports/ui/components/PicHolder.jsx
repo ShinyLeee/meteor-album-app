@@ -45,4 +45,3 @@ export default class PicHolder extends Component {
 PicHolder.propTypes = {
   image: PropTypes.object.isRequired,
 };
-

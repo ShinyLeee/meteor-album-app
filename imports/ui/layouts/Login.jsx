@@ -2,12 +2,15 @@ import { Meteor } from 'meteor/meteor';
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 
+import { connect } from 'react-redux';
+import { userLogin } from '../actions/actionTypes.js';
+
 // Components
 import Recap from '../components/Recap.jsx';
 
-import { displayAlert } from '../lib/displayAlert.js';
+import displayAlert from '../lib/displayAlert.js';
 
-export default class Login extends Component {
+class Login extends Component {
 
   constructor(props) {
     super(props);
@@ -20,6 +23,9 @@ export default class Login extends Component {
     const usr = this.usrInput.value;
     const pwd = this.pwdInput.value;
 
+    // 通过调用 connect() 注入:
+    const { dispatch } = this.props;
+
     Meteor.loginWithPassword(usr, pwd, (err) => {
       if (err) {
         let ret = '';
@@ -31,6 +37,7 @@ export default class Login extends Component {
         displayAlert('error', `user.login.${ret}`);
         return console.error(err); // TODO LOG
       }
+      dispatch(userLogin(Meteor.user()));
       this.context.router.replace('/');
       return displayAlert('success', 'user.login.success');
     });
@@ -95,9 +102,12 @@ export default class Login extends Component {
 
 Login.propTypes = {
   history: PropTypes.object.isRequired,
+  dispatch: PropTypes.func,
 };
 
 // If contextTypes is not defined, then context will be an empty object.
 Login.contextTypes = {
   router: PropTypes.object.isRequired,
 };
+
+export default connect()(Login);

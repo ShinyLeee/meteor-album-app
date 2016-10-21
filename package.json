@@ -9,13 +9,21 @@
   },
   "dependencies": {
     "bcrypt": "^0.8.7",
+    "classnames": "^2.2.5",
+    "material-ui": "^0.15.4",
     "meteor-node-stubs": "~0.2.0",
+    "moment": "^2.15.1",
     "qiniu": "^6.1.11",
     "react": "^15.3.1",
     "react-addons-pure-render-mixin": "^15.3.1",
     "react-dom": "^15.3.1",
+    "react-markdown": "^2.4.2",
+    "react-redux": "^4.4.5",
     "react-router": "^2.7.0",
-    "react-s-alert": "^1.1.4"
+    "react-s-alert": "^1.1.4",
+    "react-tap-event-plugin": "^1.0.0",
+    "redux": "^3.6.0",
+    "whatwg-fetch": "^1.0.0"
   },
   "devDependencies": {
     "babel-eslint": "^6.1.2",
@@ -25,6 +33,7 @@
     "eslint-plugin-import": "^1.14.0",
     "eslint-plugin-jsx-a11y": "^2.2.1",
     "eslint-plugin-meteor": "^4.0.0",
-    "eslint-plugin-react": "^6.2.0"
+    "eslint-plugin-react": "^6.2.0",
+    "redux-devtools": "^3.3.1"
   }
 }

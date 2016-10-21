@@ -7,7 +7,7 @@ import '/public/js/qiniu';
 
 // Utils or Libs
 import utils from '../../utils/utils.js';
-import { displayAlert } from '../lib/displayAlert.js';
+import displayAlert from '../lib/displayAlert.js';
 
 export default class Upload extends Component {
 
@@ -156,11 +156,10 @@ export default class Upload extends Component {
             tag: document.getElementById('tag').value,
             url: sourceLink,
             detail: detailObj,
-            createdAt: new Date(),
           };
           // $(`#${file.id}`).prop('href', sourceLink);
 
-          Meteor.call('images:insert', imgObj);
+          Meteor.call('images.insert', imgObj);
         },
         FilesRemoved: () => {
           displayAlert('success', '删除成功');

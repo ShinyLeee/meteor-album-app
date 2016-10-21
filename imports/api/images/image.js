@@ -1,34 +1,51 @@
-import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
-import { check } from 'meteor/check';
+import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 
-export const Images = new Mongo.Collection('images');
+import incompleteCountDenormalizer from './incompleteCountDenormalizer.js';
 
-if (Meteor.isServer) {
-  // This code only runs on the server
-  // Only publish images that are public or belong to the current user !TODOS
-  Meteor.publish('images', () => Images.find());
+// Hook Our Own Collection Method
+class ImagesCollection extends Mongo.Collection {
+  insert(image, cb) {
+    const img = image;
+    img.createdAt = new Date();
+    img.updatedAt = img.createdAt;
+    const result = super.insert(img, cb);
+    incompleteCountDenormalizer.afterInsertImage(img);
+    return result;
+  }
+  update(selector, modifier) {
+    return super.update(selector, modifier);
+  }
+  remove(selector, cb) {
+    const result = super.remove(selector, cb);
+    incompleteCountDenormalizer.afterRemoveImage(selector);
+    return result;
+  }
 }
 
-Meteor.methods({
-  'images:insert': (obj) => {
-    check(obj, Object);
-    // Make sure the user is logged in before inserting a task
-    // if (!this.userId) {
-    //   throw new Meteor.Error('not-authorized');
-    // }
-    Images.insert({
-      name: obj.name,
-      tag: obj.tag,
-      url: obj.url,
-      like: 0,
-      download: 0,
-      detail: obj.detail,
-      createdAt: obj.createdAt,
-      updatedAt: obj.createdAt,
-      deletedAt: null,
-      // owner: this.userId,
-      // username: Meteor.users.findOne(this.userId).username,
-    });
-  },
+export const Images = new ImagesCollection('images');
+
+Images.schema = new SimpleSchema({
+  _id: { type: String, regEx: SimpleSchema.RegEx.Id },
+  name: { type: String, label: '图片名', max: 20 },
+  uid: { type: String, regEx: SimpleSchema.RegEx.Id },
+  username: { type: String, label: '用户名' },
+  tag: { type: String, label: '标签' },
+  url: { type: String, label: '图片地址', regEx: SimpleSchema.RegEx.Url },
+  like: { type: Number, defaultValue: 0, optional: true },
+  liker: { type: [String], defaultValue: null, optional: true },
+  download: { type: Number, defaultValue: 0, optional: true },
+  private: { type: Boolean, defaultValue: false, optional: true },
+  detail: { type: Object, optional: true, blackbox: true },
+  createdAt: { type: Date, defaultValue: new Date(), optional: true },
+  updatedAt: { type: Date, defaultValue: new Date(), optional: true },
+});
+
+Images.attachSchema(Images.schema);
+
+// Deny all client-side updates since we will be using methods to manage this collection
+Images.deny({
+  insert() { return true; },
+  update() { return true; },
+  remove() { return true; },
 });

@@ -1,33 +1,49 @@
-import { Meteor } from 'meteor/meteor';
-import React from 'react';
-import { Router, Route, browserHistory, IndexRoute } from 'react-router';
+import React, { PropTypes } from 'react';
+import { Router, Route, browserHistory, IndexRoute, Redirect } from 'react-router';
+import { Provider } from 'react-redux';
 
 // Components
 import App from '/imports/ui/App.jsx';
 import Index from '/imports/ui/layouts/Index.jsx';
 import Upload from '/imports/ui/layouts/Upload.jsx';
+import User from '/imports/ui/layouts/User.jsx';
+import Setting from '/imports/ui/layouts/Setting.jsx';
 import Login from '/imports/ui/layouts/Login.jsx';
 import Register from '/imports/ui/layouts/Register.jsx';
 import NotFound from '/imports/ui/layouts/NotFound.jsx';
 
-function requireAuth(nextState, replace) {
-  // Only When User is loggingIn or has logined return true
-  if (Meteor.loggingIn() || Meteor.user()) return true;
-  return replace({
-    pathname: '/login',
-    state: { nextPathname: nextState.location.pathname },
-  });
-}
+import UserNotes from '/imports/ui/components/UserNotes.jsx';
+import UserLiked from '/imports/ui/components/UserLiked.jsx';
+import store from '/imports/ui/store.js';
 
-export default () => (
-  <Router history={browserHistory}>
-    <Route path="/" component={App}>
-      <IndexRoute component={Index} onEnter={requireAuth} />
-      <Route path="upload" component={Upload} onEnter={requireAuth} />
-      <Route path="login" component={Login} />
-      <Route path="register" component={Register} />
-      <Route path="404" component={NotFound} />
-      <Route path="*" component={NotFound} />
-    </Route>
-  </Router>
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import { requireAuth, isLogin } from './proxy.js';
+
+const Root = () => (
+  <Provider store={store}>
+    <MuiThemeProvider>
+      <Router history={browserHistory}>
+        <Route path="/" component={App}>
+          <IndexRoute component={Index} onEnter={requireAuth} />
+          <Route path="upload" component={Upload} onEnter={requireAuth} />
+          <Route path="user" component={User} onEnter={requireAuth}>
+            <IndexRoute component={UserNotes} />
+            <Route path="liked" component={UserLiked} />
+            <Redirect from="notes" to="/user" />
+          </Route>
+          <Route path="setting" component={Setting} onEnter={requireAuth} />
+          <Route path="login" component={Login} onEnter={isLogin} />
+          <Route path="register" component={Register} />
+          <Route path="404" component={NotFound} />
+          <Route path="*" component={NotFound} />
+        </Route>
+      </Router>
+    </MuiThemeProvider>
+  </Provider>
 );
+
+Root.propTypes = {
+  store: PropTypes.object.isRequired,
+};
+
+export default Root;

@@ -1,16 +1,19 @@
+// import { Meteor } from 'meteor/meteor';
 import React, { Component, PropTypes } from 'react';
-import { Meteor } from 'meteor/meteor';
+import { connect } from 'react-redux';
 
 // Components
 import Alert from 'react-s-alert';
-import NavHeader from './components/NavHeader.jsx';
-import NavFooter from './components/NavFooter.jsx';
-import Footer from './components/Footer.jsx';
+// import NavHeader from './components/NavHeader.jsx';
+// import NavFooter from './components/NavFooter.jsx';
+// import Footer from './components/Footer.jsx';
 
 // Database Model
-import '../api/users/index.js';
+import '../api/users/user.js';
 
-export default class App extends Component {
+import defaultUser from './lib/defaultUser.js';
+
+class App extends Component {
 
   constructor(props) {
     super(props);
@@ -21,30 +24,27 @@ export default class App extends Component {
 
   render() {
     return (
-      <div
-        className="container"
-        children={this.props.children}
-      >
-        <NavHeader />
+      <div>
         <Alert
           stack={{ limit: 3 }}
           position="top"
           effect="stackslide"
-          timeout={2000}
+          timeout={3000}
         />
         {this.props.children}
-        <Footer />
-        <NavFooter />
       </div>
     );
   }
 
 }
 
-App.defaultProps = {
-  user: Meteor.user() || null, // TODO -> fix issue
-};
-
 App.propTypes = {
+  User: PropTypes.object.isRequired,
   children: PropTypes.element.isRequired,
 };
+
+const mapStateToProps = (state) => ({
+  User: state.user || defaultUser,
+});
+
+export default connect(mapStateToProps)(App);
