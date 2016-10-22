@@ -3,6 +3,7 @@ import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 
 // Components
+import NavHeader from '../components/NavHeader.jsx';
 import Recap from '../components/Recap.jsx';
 
 // Utils or Libs
@@ -13,6 +14,9 @@ export default class Register extends Component {
 
   constructor(props) {
     super(props);
+    this.state = {
+      location: 'register',
+    };
     this._handleRegister = this._handleRegister.bind(this);
   }
 
@@ -60,67 +64,70 @@ export default class Register extends Component {
 
   render() {
     return (
-      <div className="content">
-        <Recap
-          title="注册"
-          detailFir="欢迎注册"
-        />
-        <div id="register">
-          <form className="regsiter-holder">
-            <div className="form-group">
-              <label htmlFor="usr">用户名</label>
-              <input
-                className="form-control"
-                type="text"
-                name="usr"
-                size="10"
-                ref={(ref) => { this.usrInput = ref; }}
-                required
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="email">邮箱</label>
-              <input
-                className="form-control"
-                type="email"
-                name="email"
-                size="10"
-                ref={(ref) => { this.usrEmail = ref; }}
-                required
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="password">密码(必须大于6位)</label>
-              <input
-                className="form-control"
-                type="password"
-                size="20"
-                ref={(ref) => { this.pwdInput = ref; }}
-                required
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="password">密码确认</label>
-              <input
-                className="form-control"
-                type="password"
-                size="20"
-                ref={(ref) => { this.pwd2Input = ref; }}
-                required
-              />
-            </div>
-            <div className="form-group text-center">
-              <button
-                className="btn btn-primary"
-                type="submit"
-                onClick={this._handleRegister}
-              >注册
-              </button>
-            </div>
-          </form>
-          <p className="login-footer text-center">已拥有账号?点击
-            <Link to="/login">登录</Link>
-          </p>
+      <div className="container">
+        <NavHeader location={this.state.location} />
+        <div className="content">
+          <Recap
+            title="注册"
+            detailFir="欢迎注册"
+          />
+          <div id="register">
+            <form className="regsiter-holder">
+              <div className="form-group">
+                <label htmlFor="usr">用户名</label>
+                <input
+                  className="form-control"
+                  type="text"
+                  name="usr"
+                  size="10"
+                  ref={(ref) => { this.usrInput = ref; }}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="email">邮箱</label>
+                <input
+                  className="form-control"
+                  type="email"
+                  name="email"
+                  size="10"
+                  ref={(ref) => { this.usrEmail = ref; }}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="password">密码(必须大于6位)</label>
+                <input
+                  className="form-control"
+                  type="password"
+                  size="20"
+                  ref={(ref) => { this.pwdInput = ref; }}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="password">密码确认</label>
+                <input
+                  className="form-control"
+                  type="password"
+                  size="20"
+                  ref={(ref) => { this.pwd2Input = ref; }}
+                  required
+                />
+              </div>
+              <div className="form-group text-center">
+                <button
+                  className="btn btn-primary"
+                  type="submit"
+                  onClick={this._handleRegister}
+                >注册
+                </button>
+              </div>
+            </form>
+            <p className="login-footer text-center">已拥有账号?点击
+              <Link to="/login">登录</Link>
+            </p>
+          </div>
         </div>
       </div>
     );

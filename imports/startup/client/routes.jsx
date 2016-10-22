@@ -24,7 +24,7 @@ const Root = () => (
     <MuiThemeProvider>
       <Router history={browserHistory}>
         <Route path="/" component={App}>
-          <IndexRoute component={Index} onEnter={requireAuth} />
+          <IndexRoute component={Index} />
           <Route path="upload" component={Upload} onEnter={requireAuth} />
           <Route path="user" component={User} onEnter={requireAuth}>
             <IndexRoute component={UserNotes} />

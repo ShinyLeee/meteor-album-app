@@ -17,6 +17,7 @@ import EmailIcon from 'material-ui/svg-icons/communication/email';
 
 import RaisedButton from 'material-ui/RaisedButton';
 
+import NavHeader from '../components/NavHeader.jsx';
 import displayAlert from '../lib/displayAlert.js';
 
 import { updateUser } from '../../api/users/methods.js';
@@ -28,12 +29,15 @@ class Setting extends Component {
     const { User } = this.props;
     if (User) {
       this.state = {
+        location: 'setting',
         cover: User.profile.cover,
         avatar: User.profile.avatar,
         nickname: User.profile.nickname,
         nToggle: User.profile.settings.notification,
         mToggle: User.profile.settings.message,
       };
+    } else {
+      this.state = { location: 'setting' };
     }
     this.handleTriggerCoverFile = this.handleTriggerCoverFile.bind(this);
     this.handleTriggerAvatarFile = this.handleTriggerAvatarFile.bind(this);
@@ -123,167 +127,175 @@ class Setting extends Component {
       },
     };
 
-
     if (!userIsReady) {
       return (
-        <div className="content text-center">
-          <CircularProgress style={{ top: '150px' }} size={1} />
+        <div className="container">
+          <NavHeader location={this.state.location} />
+          <div className="content text-center">
+            <CircularProgress style={{ top: '150px' }} size={1} />
+          </div>
         </div>
       );
     }
     return (
-      <div className="content">
-        <div className="setting-holder">
-          <div className="setting-upload">
-            <div className="setting-cover">
-              <img src={this.state.cover} alt="User-Cover" />
-              <div className="setting-cover-upload" onTouchTap={this.handleTriggerCoverFile} >
-                <CameraIcon style={styles.cameraIconStyle} />
-                <input
-                  style={{ display: 'none' }}
-                  type="file"
-                  ref={(ref) => { this.coverFile = ref; }}
-                  onChange={(e) => { this.handleImgChange(e, 'cover'); }}
-                />
+      <div className="container">
+        <NavHeader
+          User={User}
+          location={this.state.location}
+        />
+        <div className="content">
+          <div className="setting-holder">
+            <div className="setting-upload">
+              <div className="setting-cover">
+                <img src={this.state.cover} alt="User-Cover" />
+                <div className="setting-cover-upload" onTouchTap={this.handleTriggerCoverFile} >
+                  <CameraIcon style={styles.cameraIconStyle} />
+                  <input
+                    style={{ display: 'none' }}
+                    type="file"
+                    ref={(ref) => { this.coverFile = ref; }}
+                    onChange={(e) => { this.handleImgChange(e, 'cover'); }}
+                  />
+                </div>
+              </div>
+              <div className="setting-avatar">
+                <div className="setting-avatar-upload" onTouchTap={this.handleTriggerAvatarFile}>
+                  <Avatar src={this.state.avatar} size={60} />
+                  <input
+                    style={{ display: 'none' }}
+                    type="file"
+                    ref={(ref) => { this.avatarFile = ref; }}
+                    onChange={(e) => { this.handleImgChange(e, 'avatar'); }}
+                  />
+                </div>
+                <h2>{User.username}</h2>
               </div>
             </div>
-            <div className="setting-avatar">
-              <div className="setting-avatar-upload" onTouchTap={this.handleTriggerAvatarFile}>
-                <Avatar src={this.state.avatar} size={60} />
-                <input
-                  style={{ display: 'none' }}
-                  type="file"
-                  ref={(ref) => { this.avatarFile = ref; }}
-                  onChange={(e) => { this.handleImgChange(e, 'avatar'); }}
-                />
-              </div>
-              <h2>{User.username}</h2>
-            </div>
-          </div>
-          <Divider />
-          <List> { /* General Setting */ }
-            <Subheader style={{ paddingBottom: '32px' }}>基础资料</Subheader>
-            <ListItem
-              style={styles.liForTextFieldStyle}
-              leftIcon={<PersonIcon />}
-              disableKeyboardFocus
-              disabled
-            >
-              <TextField
-                style={styles.textFieldStyle}
-                floatingLabelText="用户名"
-                value={User.username}
+            <Divider />
+            <List> { /* General Setting */ }
+              <Subheader style={{ paddingBottom: '32px' }}>基础资料</Subheader>
+              <ListItem
+                style={styles.liForTextFieldStyle}
+                leftIcon={<PersonIcon />}
+                disableKeyboardFocus
                 disabled
-              />
-            </ListItem>
-            <ListItem
-              style={styles.liForTextFieldStyle}
-              leftIcon={<EmailIcon />}
-              disableKeyboardFocus
-              disabled
-            >
-              <TextField
-                style={styles.textFieldStyle}
-                floatingLabelText="邮箱"
-                value={User.emails[0].address}
-              />
-            </ListItem>
-            <ListItem
-              style={styles.liForTextFieldStyle}
-              leftIcon={<PersonIcon />}
-              disabled
-            >
-              <TextField
-                style={styles.textFieldStyle}
-                floatingLabelText="昵称"
-                value={this.state.nickname}
-                onChange={(e) => { this.handleTextFieldChange(e, 'nickname'); }}
-              />
-            </ListItem>
-            <ListItem
-              primaryText="头像"
-              secondaryText="更改默认头像"
-              onTouchTap={this.handleTriggerAvatarFile}
+              >
+                <TextField
+                  style={styles.textFieldStyle}
+                  floatingLabelText="用户名"
+                  value={User.username}
+                  disabled
+                />
+              </ListItem>
+              <ListItem
+                style={styles.liForTextFieldStyle}
+                leftIcon={<EmailIcon />}
+                disableKeyboardFocus
+                disabled
+              >
+                <TextField
+                  style={styles.textFieldStyle}
+                  floatingLabelText="邮箱"
+                  value={User.emails[0].address}
+                />
+              </ListItem>
+              <ListItem
+                style={styles.liForTextFieldStyle}
+                leftIcon={<PersonIcon />}
+                disabled
+              >
+                <TextField
+                  style={styles.textFieldStyle}
+                  floatingLabelText="昵称"
+                  value={this.state.nickname}
+                  onChange={(e) => { this.handleTextFieldChange(e, 'nickname'); }}
+                />
+              </ListItem>
+              <ListItem
+                primaryText="头像"
+                secondaryText="更改默认头像"
+                onTouchTap={this.handleTriggerAvatarFile}
 
+              />
+              <ListItem
+                primaryText="封底"
+                secondaryText="更改封底照片"
+                onTouchTap={this.handleTriggerCoverFile}
+              />
+              <ListItem
+                primaryText="关联"
+                secondaryText="关联独一用户"
+              />
+            </List>
+            <Divider />
+            <List> { /* Security Setting */ }
+              <Subheader>账户安全</Subheader>
+              <ListItem
+                primaryText="更改密码"
+                secondaryText="通过电子邮箱更换密码"
+              />
+              <ListItem
+                primaryText="状态"
+                secondaryText="查看当前账号详细信息"
+              />
+              <ListItem
+                primaryText="Wechat"
+                secondaryText="关联微信账号"
+              />
+            </List>
+            <Divider />
+            <List> { /* Perference Setting */ }
+              <Subheader>偏好设置</Subheader>
+              <ListItem
+                primaryText="是否接受通知"
+                rightToggle={
+                  <Toggle
+                    defaultToggled={this.state.nToggle}
+                    toggled={this.state.nToggle}
+                    onToggle={() => this.handleToggle('nToggle')}
+                  />
+                }
+              />
+              <ListItem
+                primaryText="是否接受信息"
+                rightToggle={
+                  <Toggle
+                    defaultToggled={this.state.mToggle}
+                    toggled={this.state.mToggle}
+                    onToggle={() => this.handleToggle('mToggle')}
+                  />
+                }
+              />
+            </List>
+            <Divider />
+            <List>
+              <Subheader>Hangout Notifications</Subheader>
+              <ListItem
+                leftCheckbox={<Checkbox />}
+                primaryText="Notifications"
+                secondaryText="Allow notifications"
+              />
+              <ListItem
+                leftCheckbox={<Checkbox />}
+                primaryText="Sounds"
+                secondaryText="Hangouts message"
+              />
+              <ListItem
+                leftCheckbox={<Checkbox />}
+                primaryText="Video sounds"
+                secondaryText="Hangouts video call"
+              />
+            </List>
+            <Divider />
+          </div>
+          <div className="setting-save">
+            <RaisedButton
+              style={{ width: '100%' }}
+              onTouchTap={this.handleSubmit}
+              label="保存"
+              primary
             />
-            <ListItem
-              primaryText="封底"
-              secondaryText="更改封底照片"
-              onTouchTap={this.handleTriggerCoverFile}
-            />
-            <ListItem
-              primaryText="关联"
-              secondaryText="关联独一用户"
-            />
-          </List>
-          <Divider />
-          <List> { /* Security Setting */ }
-            <Subheader>账户安全</Subheader>
-            <ListItem
-              primaryText="更改密码"
-              secondaryText="通过电子邮箱更换密码"
-            />
-            <ListItem
-              primaryText="状态"
-              secondaryText="查看当前账号详细信息"
-            />
-            <ListItem
-              primaryText="Wechat"
-              secondaryText="关联微信账号"
-            />
-          </List>
-          <Divider />
-          <List> { /* Perference Setting */ }
-            <Subheader>偏好设置</Subheader>
-            <ListItem
-              primaryText="是否接受通知"
-              rightToggle={
-                <Toggle
-                  defaultToggled={this.state.nToggle}
-                  toggled={this.state.nToggle}
-                  onToggle={() => this.handleToggle('nToggle')}
-                />
-              }
-            />
-            <ListItem
-              primaryText="是否接受信息"
-              rightToggle={
-                <Toggle
-                  defaultToggled={this.state.mToggle}
-                  toggled={this.state.mToggle}
-                  onToggle={() => this.handleToggle('mToggle')}
-                />
-              }
-            />
-          </List>
-          <Divider />
-          <List>
-            <Subheader>Hangout Notifications</Subheader>
-            <ListItem
-              leftCheckbox={<Checkbox />}
-              primaryText="Notifications"
-              secondaryText="Allow notifications"
-            />
-            <ListItem
-              leftCheckbox={<Checkbox />}
-              primaryText="Sounds"
-              secondaryText="Hangouts message"
-            />
-            <ListItem
-              leftCheckbox={<Checkbox />}
-              primaryText="Video sounds"
-              secondaryText="Hangouts video call"
-            />
-          </List>
-          <Divider />
-        </div>
-        <div className="setting-save">
-          <RaisedButton
-            style={{ width: '100%' }}
-            onTouchTap={this.handleSubmit}
-            label="保存"
-            primary
-          />
+          </div>
         </div>
       </div>
     );
