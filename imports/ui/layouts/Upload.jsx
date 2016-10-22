@@ -1,20 +1,24 @@
 import { Meteor } from 'meteor/meteor';
 import React, { Component, PropTypes } from 'react';
+import { createContainer } from 'meteor/react-meteor-data';
 
 // JS Plugin
 import '/public/js/plupload.full.min';
 import '/public/js/qiniu';
 
+import { insertImage } from '/imports/api/images/methods.js';
+import NavHeader from '../components/NavHeader.jsx';
+
 // Utils or Libs
 import utils from '../../utils/utils.js';
 import displayAlert from '../lib/displayAlert.js';
 
-export default class Upload extends Component {
+class Upload extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      name: 'Upload',
+      location: 'upload',
     };
   }
 
@@ -153,13 +157,20 @@ export default class Upload extends Component {
           };
           const imgObj = {
             name: document.getElementById('caption').value,
+            uid: Meteor.userId(),
             tag: document.getElementById('tag').value,
             url: sourceLink,
             detail: detailObj,
           };
           // $(`#${file.id}`).prop('href', sourceLink);
-
-          Meteor.call('images.insert', imgObj);
+          insertImage.call(imgObj, (err) => {
+            if (err) {
+              displayAlert('error', err.reason);
+              return false;
+            }
+            displayAlert('success', 'image.upload.success');
+            return true;
+          });
         },
         FilesRemoved: () => {
           displayAlert('success', '删除成功');
@@ -198,61 +209,80 @@ export default class Upload extends Component {
   }
 
   render() {
+    const { User } = this.props;
     return (
-      <div className="content">
-        <div className="upload-holder">
-          <div className="upload-drop">
-            <div id="upload-container" className="upload-drop-box">
-              <div id="filelist" />
-              <button id="pickfiles" type="button">继续添加图片</button>
+      <div className="container">
+        <NavHeader
+          User={User}
+          location={this.state.location}
+        />
+        <div className="content">
+          <div className="upload-holder">
+            <div className="upload-drop">
+              <div id="upload-container" className="upload-drop-box">
+                <div id="filelist" />
+                <button id="pickfiles" type="button">继续添加图片</button>
+              </div>
+              <input
+                accept="image/*"
+                type="file"
+                style={{ opacity: 0 }}
+                multiple
+                required
+              />
+              <p className="text-right">
+                <small className="drop-error pull-left" />
+                <small>只接受.jpg文件，且大小不得超过4MB</small>
+              </p>
+              <div id="preview" />
             </div>
-            <input
-              accept="image/*"
-              type="file"
-              style={{ opacity: 0 }}
-              multiple
-              required
-            />
-            <p className="text-right">
-              <small className="drop-error pull-left" />
-              <small>只接受.jpg文件，且大小不得超过4MB</small>
-            </p>
-            <div id="preview" />
-          </div>
-          <div className="upload-filelist" />
-          <div className="upload-field">
-            <div className="field field-caption">
-              <label htmlFor="caption">图片名</label>
-              <input id="caption" className="form-control" type="text" name="caption" required />
-            </div>
-            <div className="field field-tag">
-              <label htmlFor="tag">标签</label>
-              <input id="tag" className="form-control" type="text" name="tag" required />
-            </div>
-            <div className="field field-action">
-              <button
-                id="upload"
-                type="submit"
-                className="field-action-button field-action-submit"
-              >
-                <i className="fa fa-cloud-upload" />确认上传
-              </button>
-              <button
-                id="cancel"
-                type="reset"
-                className="field-action-button field-action-reset"
-                onClick={this.handleReset}
-              >撤销</button>
+            <div className="upload-filelist" />
+            <div className="upload-field">
+              <div className="field field-caption">
+                <label htmlFor="caption">图片名</label>
+                <input id="caption" className="form-control" type="text" name="caption" required />
+              </div>
+              <div className="field field-tag">
+                <label htmlFor="tag">标签</label>
+                <input id="tag" className="form-control" type="text" name="tag" required />
+              </div>
+              <div className="field field-action">
+                <button
+                  id="upload"
+                  type="submit"
+                  className="field-action-button field-action-submit"
+                >
+                  <i className="fa fa-cloud-upload" />确认上传
+                </button>
+                <button
+                  id="cancel"
+                  type="reset"
+                  className="field-action-button field-action-reset"
+                  onClick={this.handleReset}
+                >撤销</button>
+              </div>
             </div>
           </div>
         </div>
       </div>
+
     );
   }
 
 }
 
 Upload.propTypes = {
+  userIsReady: PropTypes.bool.isRequired,
+  User: PropTypes.object,
   size: PropTypes.number,
   style: PropTypes.object,
 };
+
+export default createContainer(() => {
+  const User = Meteor.user();
+  const userIsReady = !!User;
+  return {
+    userIsReady,
+    User,
+  };
+}, Upload);

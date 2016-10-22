@@ -27,3 +27,7 @@ note:
     success: 信息发送成功
     error: 信息发送失败
     receiverNotFound: 接收者不存在
+
+image:
+  upload:
+    success: 上传成功

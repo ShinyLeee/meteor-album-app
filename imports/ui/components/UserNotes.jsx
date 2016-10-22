@@ -9,7 +9,6 @@ import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
 import CircularProgress from 'material-ui/CircularProgress';
 import IconButton from 'material-ui/IconButton';
 import Dialog from 'material-ui/Dialog';
-// import FlatButton from 'material-ui/FlatButton';
 
 import ReplyIcon from 'material-ui/svg-icons/content/reply';
 import CheckBoxIcon from 'material-ui/svg-icons/toggle/check-box';
@@ -61,23 +60,25 @@ class UserNotes extends Component {
   }
 
   renderNoteCard() {
-    const filteredNotes = this.props.notes;
-    const flipReplyStyle = {
-      color: '#999',
-      MozTransform: 'scaleX(-1)',
-      WebkitTransform: 'scaleX(-1)',
-      OTransform: 'scaleX(-1)',
-      transform: 'scaleX(-1)',
+    const { notes } = this.props;
+    const styles = {
+      flipReplyStyle: {
+        color: '#999',
+        MozTransform: 'scaleX(-1)',
+        WebkitTransform: 'scaleX(-1)',
+        OTransform: 'scaleX(-1)',
+        transform: 'scaleX(-1)',
+      },
+      replyStyle: {
+        position: 'absolute',
+        right: '56px',
+      },
+      checkboxStyle: {
+        position: 'absolute',
+        right: '4px',
+      },
     };
-    const replyStyle = {
-      position: 'absolute',
-      right: '56px',
-    };
-    const checkboxStyle = {
-      position: 'absolute',
-      right: '4px',
-    };
-    return filteredNotes.map((note) => (
+    return notes.map((note) => (
       <Card
         key={note._id}
         style={{ marginBottom: '30px' }}
@@ -103,8 +104,8 @@ class UserNotes extends Component {
           <IconButton
             tooltip="回复"
             tooltipPosition="top-center"
-            iconStyle={flipReplyStyle}
-            style={replyStyle}
+            iconStyle={styles.flipReplyStyle}
+            style={styles.replyStyle}
             touch
           ><ReplyIcon />
           </IconButton>
@@ -112,7 +113,7 @@ class UserNotes extends Component {
             tooltip="标记已读"
             tooltipPosition="top-center"
             iconStyle={{ color: '#999' }}
-            style={checkboxStyle}
+            style={styles.checkboxStyle}
             touch
           ><CheckBoxIcon />
           </IconButton>

@@ -207,7 +207,7 @@ class Setting extends Component {
                 <TextField
                   style={styles.textFieldStyle}
                   floatingLabelText="昵称"
-                  value={this.state.nickname}
+                  value={this.state.nickname || ''}
                   onChange={(e) => { this.handleTextFieldChange(e, 'nickname'); }}
                 />
               </ListItem>

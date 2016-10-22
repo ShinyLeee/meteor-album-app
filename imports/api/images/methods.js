@@ -1,21 +1,35 @@
 import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
+import { _ } from 'meteor/underscore';
+import { ValidatedMethod } from 'meteor/mdg:validated-method';
+// import { SimpleSchema } from 'meteor/aldeed:simple-schema';
+import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
+
 import { Images } from './image.js';
 
-Meteor.methods({
-  'images.insert': function createImage(obj) {
-    check(obj, Object);
-    // Make sure the user is logged in before insert an image
+export const insertImage = new ValidatedMethod({
+  name: 'images.insert',
+  validate: Images.simpleSchema().validator({ clean: true, filter: false }),
+  run(image) {
     if (!this.userId) {
-      throw new Meteor.Error('not-authorized');
+      throw new Meteor.Error('user.accessDenied');
     }
-    Images.insert({
-      name: obj.name,
-      uid: this.userId,
-      username: Meteor.users.findOne(this.userId).username,
-      tag: obj.tag,
-      url: obj.url,
-      detail: obj.detail,
-    });
+    Images.insert(image);
   },
 });
+
+// Get list of all method names on Images
+const IMAGES_METHODS = _.pluck([
+  insertImage,
+], 'name');
+
+if (Meteor.isServer) {
+  // Only allow 1 user operations per connection per second
+  DDPRateLimiter.addRule({
+    name(name) {
+      return _.contains(IMAGES_METHODS, name);
+    },
+
+    // Rate limit per connection ID
+    connectionId() { return true; },
+  }, 1, 1000);
+}

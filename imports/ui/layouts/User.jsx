@@ -13,6 +13,7 @@ import IconButton from 'material-ui/IconButton/IconButton';
 import Dialog from 'material-ui/Dialog';
 import CircularProgress from 'material-ui/CircularProgress';
 import FlatButton from 'material-ui/FlatButton';
+import FloatingActionButton from 'material-ui/FloatingActionButton';
 import AutoComplete from 'material-ui/AutoComplete';
 import Divider from 'material-ui/Divider';
 import TextField from 'material-ui/TextField';
@@ -24,6 +25,7 @@ import HelpIcon from 'material-ui/svg-icons/action/help-outline';
 import ExitToAppIcon from 'material-ui/svg-icons/action/exit-to-app';
 import PersonAddIcon from 'material-ui/svg-icons/social/person-add';
 import MessageIcon from 'material-ui/svg-icons/communication/message';
+import EditIcon from 'material-ui/svg-icons/image/edit';
 
 import NavHeader from '../components/NavHeader.jsx';
 import displayAlert from '../lib/displayAlert.js';
@@ -186,12 +188,19 @@ class User extends Component {
     const isLikedPage = classnames('user-liked', {
       highlight: this.state.likedPage,
     });
-    const customeTextFieldStyle = {
-      marginLeft: 20,
-    };
-    const customModalContentStyle = {
-      width: '100%',
-      maxWidth: 'none',
+    const styles = {
+      customTextField: {
+        marginLeft: 20,
+      },
+      customModalContent: {
+        width: '100%',
+        maxWidth: 'none',
+      },
+      floatBtn: {
+        position: 'fixed',
+        right: '16px',
+        bottom: '16px',
+      },
     };
     const relateModalActions = [
       <FlatButton label="取消" onTouchTap={this.handleClose} primary />,
@@ -276,7 +285,7 @@ class User extends Component {
                 actions={relateModalActions}
                 modal={false}
                 open={this.state.relateModal}
-                contentStyle={customModalContentStyle}
+                contentStyle={styles.customModalContent}
                 onRequestClose={this.handleClose}
               >
                 <AutoComplete
@@ -294,7 +303,7 @@ class User extends Component {
                 actions={noteModalActions}
                 modal={false}
                 open={this.state.noteModal}
-                contentStyle={customModalContentStyle}
+                contentStyle={styles.customModalContent}
                 onRequestClose={this.handleClose}
               >
                 <TextField
@@ -302,7 +311,7 @@ class User extends Component {
                   name="title"
                   type="text"
                   floatingLabelText="标题"
-                  style={customeTextFieldStyle}
+                  style={styles.customTextField}
                   underlineShow={false}
                   fullWidth
                 />
@@ -312,7 +321,7 @@ class User extends Component {
                   name="content"
                   type="text"
                   floatingLabelText="内容"
-                  style={customeTextFieldStyle}
+                  style={styles.customTextField}
                   underlineShow={false}
                   rows={1}
                   rowsMax={2}
@@ -324,7 +333,7 @@ class User extends Component {
                   onNewRequest={this.handleReceiverChange}
                   onUpdateInput={this.handleReceiverChange}
                   floatingLabelText="接收者"
-                  style={customeTextFieldStyle}
+                  style={styles.customTextField}
                   underlineShow={false}
                   filter={AutoComplete.caseInsensitiveFilter}
                   dataSource={this.getUsernames()}
@@ -335,7 +344,7 @@ class User extends Component {
                 <DatePicker
                   onChange={this.handleSendDateChange}
                   floatingLabelText="发送时间"
-                  style={customeTextFieldStyle}
+                  style={styles.customTextField}
                   underlineShow={false}
                   defaultDate={this.state.sendAt}
                   value={this.state.sendAt}
@@ -347,6 +356,13 @@ class User extends Component {
           </div>
           { React.cloneElement(this.props.children, { User: curUser }) }
         </div>
+        <FloatingActionButton
+          onTouchTap={this.handleSendNotes}
+          style={styles.floatBtn}
+          secondary
+        >
+          <EditIcon />
+        </FloatingActionButton>
       </div>
 
     );
@@ -367,7 +383,7 @@ User.contextTypes = {
 };
 
 export default createContainer(() => {
-  Meteor.subscribe('registerUser');
+  Meteor.subscribe('Users.registerUser');
   const uid = Meteor.userId();
   const registerUsers = Meteor.users.find({}).fetch();
   const filterUser = [];

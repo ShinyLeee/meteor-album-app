@@ -1,10 +1,13 @@
 import React, { Component, PropTypes } from 'react';
+import { Link } from 'react-router';
 import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
+import FloatingActionButton from 'material-ui/FloatingActionButton';
 import CircularProgress from 'material-ui/CircularProgress';
+import AddIcon from 'material-ui/svg-icons/content/add';
 
 // Database Model
-import { Images } from '../../api/images/image.js';
+import { Images } from '/imports/api/images/image.js';
 
 import NavHeader from '../components/NavHeader.jsx';
 import Recap from '../components/Recap.jsx';
@@ -20,6 +23,18 @@ class Index extends Component {
 
   renderPicHolder() {
     const filteredImages = this.props.images;
+    filteredImages.map((image) => {
+      const img = image;
+      const users = Meteor.users.find({}).fetch();
+      users.map((user) => {
+        if (user._id === img.uid) {
+          img.username = user.username;
+          img.avatar = user.profile.avatar;
+        }
+        return img;
+      });
+      return img;
+    });
     return filteredImages.map((image) => <PicHolder key={image._id} image={image} />);
   }
 
@@ -28,7 +43,10 @@ class Index extends Component {
     if (!dataIsReady) {
       return (
         <div className="container">
-          <NavHeader location={this.state.location} />
+          <NavHeader
+            User={User}
+            location={this.state.location}
+          />
           <div className="content text-center">
             <CircularProgress style={{ top: '150px' }} size={1} />
           </div>
@@ -52,6 +70,13 @@ class Index extends Component {
         </div>
       );
     }
+    const styles = {
+      floatBtn: {
+        position: 'fixed',
+        right: '16px',
+        bottom: '16px',
+      },
+    };
     return (
       <div className="container">
         <NavHeader
@@ -66,6 +91,13 @@ class Index extends Component {
           />
           {this.renderPicHolder()}
         </div>
+        <FloatingActionButton
+          containerElement={<Link to="/upload" />}
+          style={styles.floatBtn}
+          secondary
+        >
+          <AddIcon />
+        </FloatingActionButton>
       </div>
     );
   }
@@ -87,6 +119,7 @@ Index.contextTypes = {
 export default createContainer(() => {
   let isGuest;
   let dataIsReady;
+  Meteor.subscribe('Users.allUser');
   const User = Meteor.user();
   const imageHandle = Meteor.subscribe('Images.all');
   const images = Images.find({}, { sort: { createdAt: -1 } }).fetch();
