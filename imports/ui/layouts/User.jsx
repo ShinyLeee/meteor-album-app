@@ -364,7 +364,6 @@ class User extends Component {
           <EditIcon />
         </FloatingActionButton>
       </div>
-
     );
   }
 

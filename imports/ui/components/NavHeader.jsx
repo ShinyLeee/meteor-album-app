@@ -148,7 +148,7 @@ export default class NavHeader extends Component {
         >
           <Subheader style={styles.DrawerHeader}>Vivian Gallery + </Subheader>
           <Divider />
-          <Menu>
+          <Menu disableAutoFocus>
             <MenuItem
               leftIcon={<HomeIcon color={styles.home ? styles.home.color : ''} />}
               primaryText="首页"
@@ -175,7 +175,7 @@ export default class NavHeader extends Component {
             />
           </Menu>
           <Divider />
-          <Menu>
+          <Menu disableAutoFocus>
             <MenuItem
               leftIcon={<SettingsIcon color={styles.setting ? styles.setting.color : ''} />}
               primaryText="设置"
