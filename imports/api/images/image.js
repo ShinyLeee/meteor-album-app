@@ -28,7 +28,7 @@ export const Images = new ImagesCollection('images');
 Images.schema = new SimpleSchema({
   name: { type: String, label: '图片名', max: 10, optional: true },
   uid: { type: String, regEx: SimpleSchema.RegEx.Id },
-  tag: { type: String, label: '标签' },
+  collection: { type: String, label: '分类' },
   url: { type: String, label: '图片地址', regEx: SimpleSchema.RegEx.Url },
   like: { type: Number, defaultValue: 0, optional: true },
   liker: { type: [String], defaultValue: null, optional: true },

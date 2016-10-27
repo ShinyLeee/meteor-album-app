@@ -1,13 +1,30 @@
 import React, { Component, PropTypes } from 'react';
 import moment from 'moment';
 
+// import HeartIcon from 'material-ui/svg-icons/action/favorite';
+import EmptyHeartIcon from 'material-ui/svg-icons/action/favorite-border';
+import AddIcon from 'material-ui/svg-icons/content/add';
+import DownloadIcon from 'material-ui/svg-icons/file/file-download';
+
 export default class PicHolder extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {
-      name: 'PicHolder',
-    };
+    this.handleAddLike = this.handleAddLike.bind(this);
+    this.handleAddCollection = this.handleAddCollection.bind(this);
+    this.handleDownload = this.handleDownload.bind(this);
+  }
+
+  handleAddLike() {
+    const { User } = this.props;
+  }
+
+  handleAddCollection() {
+    const { User } = this.props;
+  }
+
+  handleDownload() {
+    console.log('download');
   }
 
   render() {
@@ -18,10 +35,10 @@ export default class PicHolder extends Component {
           <img className="pic-holder-info-avatar" src={image.avatar} alt="User-avatar" />
           <div>
             <span className="pic-holder-info-title">
-            {image.username}
+              {image.username}
             </span>
             <span className="pic-holder-info-subtitle">
-            {moment(image.createdAt).format('YYYY-MM-DD')}
+              {moment(image.createdAt).format('YYYY-MM-DD')}
             </span>
           </div>
         </div>
@@ -32,17 +49,22 @@ export default class PicHolder extends Component {
         </div>
         <div className="pic-holder-action">
           <div className="pull-left">
-            <a className="pic-holder-action-left">
-              <i className="fa fa-heart" />
-              <span>{image.like}</span>
+            <a
+              className="pic-holder-action-left"
+              onTouchTap={this.handleAddLike}
+            >
+              <EmptyHeartIcon />
             </a>
-            <a>
-              <span className="fa fa-plus" />
+            <a onTouchTap={this.handleAddCollection}>
+              <AddIcon />
             </a>
           </div>
           <div className="pull-right">
-            <a className="pic-holder-action-right">
-              <span className="fa fa-download" />
+            <a
+              className="pic-holder-action-right"
+              onTouchTap={this.handleDownload}
+            >
+              <DownloadIcon />
             </a>
           </div> {/* ACTION RIGHT */}
         </div> {/* PIC-HOLDER ACTION */}

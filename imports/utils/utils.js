@@ -1,3 +1,35 @@
+/* eslint no-confusing-arrow: 0*/
+
+// Wrap a Promise in order to make it Cancelable.
+export const makeCancelable = (promise) => {
+  let hasCanceled_ = false;
+
+  const wrappedPromise = new Promise((resolve, reject) => {
+    promise.then((val) => {
+      if (hasCanceled_) {
+        console.log(hasCanceled_);
+        reject({ isCanceled: true });
+      } else {
+        console.log(hasCanceled_);
+        resolve(val);
+      }
+      // hasCanceled_ ? reject({ isCanceled: true }) : resolve(val);
+    }
+    );
+    promise.catch((error) =>
+      hasCanceled_ ? reject({ isCanceled: true }) : reject(error)
+    );
+  });
+
+  return {
+    promise: wrappedPromise,
+    cancel() {
+      console.log('in');
+      hasCanceled_ = true;
+    },
+  };
+};
+
 const utils = {
   /* Detect User's Browser Platform */
   browser: (function testVersion() {

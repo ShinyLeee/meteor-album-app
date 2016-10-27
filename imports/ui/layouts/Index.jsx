@@ -2,28 +2,88 @@ import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
+
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import CircularProgress from 'material-ui/CircularProgress';
 import AddIcon from 'material-ui/svg-icons/content/add';
 
-// Database Model
 import { Images } from '/imports/api/images/image.js';
 
+import Infinity from '../components/Infinity.jsx';
 import NavHeader from '../components/NavHeader.jsx';
 import Recap from '../components/Recap.jsx';
 import PicHolder from '../components/PicHolder.jsx';
+
+import { makeCancelable } from '../../utils/utils.js';
 
 class Index extends Component {
   constructor(props) {
     super(props);
     this.state = {
       location: 'home',
+      isLoading: false,
+      limit: 2,
     };
+    this.addImageFromDB = this.addImageFromDB.bind(this);
+    this.handleLoadImage = this.handleLoadImage.bind(this);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    // When dataIsReady return true start setState
+    if (nextProps.dataIsReady) {
+      this.setState({
+        images: nextProps.images,
+      });
+    }
+  }
+
+  componentWillUnmount() {
+    this.loadTimeout.cancel(); // Cancel the promise
+    // clearTimeout(this.loadTimeout);
+  }
+
+  addImageFromDB() {
+    const images = this.state.images;
+    const limit = this.state.limit;
+    const skip = images.length;
+    const tempImg = Images.find({}, {
+      sort: { createdAt: -1 },
+      limit,
+      skip,
+    }).fetch();
+    tempImg.map((image) => images.push(image));
+    return;
+  }
+
+  handleLoadImage() {
+    const loadImage = new Promise((resolve) => {
+      this.setState({ isLoading: true });
+      setTimeout(this.addImageFromDB, 1500);
+      setTimeout(resolve, 1500);
+    });
+
+    this.loadTimeout = makeCancelable(loadImage);
+    this.loadTimeout
+      .promise
+      .then(() => this.setState({ isLoading: false }))
+      .then(() => console.log('over'))
+      .catch((err) => console.log(err));
+
+
+    // this.loadTimeout
+    // .promise
+    // .then(() => {
+    //   console.log('resolved');
+    //   setTimeout(this.addImageFromDB, 1500);
+    // })
+    // .catch((reason) => console.log('isCanceled', reason.isCanceled));
+    // this.setState({ isLoading: true });
+    // this.loadTimeout = setTimeout(this.addImageFromDB, 1500);
   }
 
   renderPicHolder() {
-    const filteredImages = this.props.images;
-    filteredImages.map((image) => {
+    const images = this.state.images;
+    images.map((image) => {
       const img = image;
       const users = Meteor.users.find({}).fetch();
       users.map((user) => {
@@ -35,7 +95,19 @@ class Index extends Component {
       });
       return img;
     });
-    return filteredImages.map((image) => <PicHolder key={image._id} image={image} />);
+    return images.map((image) => (
+      <PicHolder key={image._id} User={this.props.User} image={image} />
+    ));
+  }
+
+  renderInfinite() {
+    return (<Infinity
+      onInfinityLoad={this.handleLoadImage}
+      isLoading={this.state.isLoading}
+    >
+      {this.renderPicHolder()}
+    </Infinity>
+    );
   }
 
   render() {
@@ -65,7 +137,7 @@ class Index extends Component {
               detailFir="Vivian的私人相册"
               detailSec="Created By Shiny Lee"
             />
-            {this.renderPicHolder()}
+            {this.renderInfinite()}
           </div>
         </div>
       );
@@ -89,7 +161,7 @@ class Index extends Component {
             detailFir="Vivian的私人相册"
             detailSec="Created By Shiny Lee"
           />
-          {this.renderPicHolder()}
+          {this.renderInfinite()}
         </div>
         <FloatingActionButton
           containerElement={<Link to="/upload" />}
@@ -122,7 +194,10 @@ export default createContainer(() => {
   Meteor.subscribe('Users.allUser');
   const User = Meteor.user();
   const imageHandle = Meteor.subscribe('Images.all');
-  const images = Images.find({}, { sort: { createdAt: -1 } }).fetch();
+  const images = Images.find({}, {
+    sort: { createdAt: -1 },
+    limit: 2,
+  }).fetch();
   if (typeof User === 'undefined' || User) {
     isGuest = false;
     dataIsReady = imageHandle.ready() && !!User;
