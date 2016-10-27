@@ -12,7 +12,7 @@ export default class Infinity extends Component {
     window.addEventListener('scroll', this.handleScroll);
   }
 
-  componenetWillUnmount() {
+  componentWillUnmount() {
     window.removeEventListener('scroll', this.handleScroll);
   }
 

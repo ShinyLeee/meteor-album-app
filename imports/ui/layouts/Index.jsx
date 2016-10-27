@@ -24,8 +24,8 @@ class Index extends Component {
       isLoading: false,
       limit: 2,
     };
-    this.addImageFromDB = this.addImageFromDB.bind(this);
-    this.handleLoadImage = this.handleLoadImage.bind(this);
+    this.handleAddImage = this.handleAddImage.bind(this);
+    this.onInfinityLoad = this.onInfinityLoad.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -38,11 +38,28 @@ class Index extends Component {
   }
 
   componentWillUnmount() {
-    this.loadTimeout.cancel(); // Cancel the promise
-    // clearTimeout(this.loadTimeout);
+    if (this.loadTimeout) {
+      this.loadTimeout.cancel(); // Cancel the promise
+    }
   }
 
-  addImageFromDB() {
+  onInfinityLoad() {
+    const loadImage = new Promise((resolve) => {
+      this.setState({ isLoading: true });
+      setTimeout(this.handleAddImage, 1500);
+      setTimeout(resolve, 1500);
+    });
+
+    this.loadTimeout = makeCancelable(loadImage);
+    this.loadTimeout
+      .promise
+      .then(() => {
+        this.setState({ isLoading: false });
+      })
+      .catch((err) => console.log(err));
+  }
+
+  handleAddImage() {
     const images = this.state.images;
     const limit = this.state.limit;
     const skip = images.length;
@@ -53,32 +70,6 @@ class Index extends Component {
     }).fetch();
     tempImg.map((image) => images.push(image));
     return;
-  }
-
-  handleLoadImage() {
-    const loadImage = new Promise((resolve) => {
-      this.setState({ isLoading: true });
-      setTimeout(this.addImageFromDB, 1500);
-      setTimeout(resolve, 1500);
-    });
-
-    this.loadTimeout = makeCancelable(loadImage);
-    this.loadTimeout
-      .promise
-      .then(() => this.setState({ isLoading: false }))
-      .then(() => console.log('over'))
-      .catch((err) => console.log(err));
-
-
-    // this.loadTimeout
-    // .promise
-    // .then(() => {
-    //   console.log('resolved');
-    //   setTimeout(this.addImageFromDB, 1500);
-    // })
-    // .catch((reason) => console.log('isCanceled', reason.isCanceled));
-    // this.setState({ isLoading: true });
-    // this.loadTimeout = setTimeout(this.addImageFromDB, 1500);
   }
 
   renderPicHolder() {
@@ -102,7 +93,7 @@ class Index extends Component {
 
   renderInfinite() {
     return (<Infinity
-      onInfinityLoad={this.handleLoadImage}
+      onInfinityLoad={this.onInfinityLoad}
       isLoading={this.state.isLoading}
     >
       {this.renderPicHolder()}
