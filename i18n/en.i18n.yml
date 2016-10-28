@@ -28,6 +28,14 @@ note:
     error: 信息发送失败
     receiverNotFound: 接收者不存在
 
+# Image ACTION TRANSLATION GOES HERE
 image:
+  like:
+    forbidden: 未登录用户暂不支持点赞
   upload:
     success: 上传成功
+
+# Authority ACTION TRANSLATION GOES HERE
+authority:
+  accessDenied: 您不拥有此权限
+  likeImageDenied: 未登录用户暂不支持点赞

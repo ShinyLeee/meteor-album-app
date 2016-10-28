@@ -1,10 +1,12 @@
 import React, { Component, PropTypes } from 'react';
 
+import IconButton from 'material-ui/IconButton';
+import { Github, Wechat, Twitter, Instagram, Website } from './SvgIcons.jsx';
+
 export default class Recap extends Component {
 
   constructor(props) {
     super(props);
-
     this.state = {
       name: 'Recap',
     };
@@ -17,21 +19,41 @@ export default class Recap extends Component {
         <p className="recap-detail recap-detail-1">{this.props.detailFir}</p>
         <p className="recap-detail recap-detail-2">{this.props.detailSec}</p>
         <ul className="recap-icons">
-          <li>
-            <a className="fa fa-github" href="https://github.com/ShinyLeee" data-toggle="tooltip" data-title="Github" title="Github" />
-          </li>
-          <li>
-            <a className="fa fa-wechat" data-toggle="tooltip" data-title="Wechat" title="Wechat" />
-          </li>
-          <li>
-            <a className="fa fa-twitter" href="https://twitter.com/shinylee007" data-toggle="tooltip" data-title="Twitter" title="Twitter" />
-          </li>
-          <li>
-            <a className="fa fa-instagram" href="https://www.instagram.com/lshinylee" data-toggle="tooltip" data-title="Instagram" title="Instagram" />
-          </li>
-          <li>
-            <a className="fa fa-at" href="http://www.shinylee.cn" data-toggle="tooltip" data-title="Website" title="Website" />
-          </li>
+          <IconButton
+            href="https://github.com/ShinyLeee"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Github color="#999" hoverColor="#222" />
+          </IconButton>
+          <IconButton
+            href="https://twitter.com/shinylee007"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Wechat color="#999" hoverColor="#222" />
+          </IconButton>
+          <IconButton
+            href="https://twitter.com/shinylee007"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Twitter color="#999" hoverColor="#222" />
+          </IconButton>
+          <IconButton
+            href="https://www.instagram.com/lshinylee"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Instagram color="#999" hoverColor="#222" />
+          </IconButton>
+          <IconButton
+            href="http://www.shinylee.cn"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Website color="#999" hoverColor="#222" />
+          </IconButton>
         </ul>
       </div>
     );

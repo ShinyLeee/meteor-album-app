@@ -158,7 +158,7 @@ class Upload extends Component {
           const imgObj = {
             name: document.getElementById('caption').value,
             uid: Meteor.userId(),
-            tag: document.getElementById('tag').value,
+            collection: document.getElementById('collection').value,
             url: sourceLink,
             detail: detailObj,
           };
@@ -242,9 +242,9 @@ class Upload extends Component {
                 <label htmlFor="caption">图片名</label>
                 <input id="caption" className="form-control" type="text" name="caption" required />
               </div>
-              <div className="field field-tag">
-                <label htmlFor="tag">标签</label>
-                <input id="tag" className="form-control" type="text" name="tag" required />
+              <div className="field field-collection">
+                <label htmlFor="collection">标签</label>
+                <input id="collection" className="form-control" type="text" name="collection" required />
               </div>
               <div className="field field-action">
                 <button

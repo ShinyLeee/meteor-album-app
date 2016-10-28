@@ -11,6 +11,14 @@ const incompleteCountDenormalizer = {
     });
   },
 
+  afterLikeImage(liker) {
+    Meteor.users.update({ username: liker }, {
+      $inc: {
+        'profile.likes': 1,
+      },
+    });
+  },
+
   afterRemoveImage(selector) {
     console.log(selector);
   },

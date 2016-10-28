@@ -354,7 +354,7 @@ class User extends Component {
               </Dialog>
             </div>
           </div>
-          { React.cloneElement(this.props.children, { User: curUser }) }
+          { this.props.children }
         </div>
         <FloatingActionButton
           onTouchTap={this.handleSendNotes}

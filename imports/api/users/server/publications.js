@@ -9,6 +9,6 @@ Meteor.publish('Users.registerUser', function registerUser() {
   return Meteor.users.find({
     _id: { $ne: this.userId },
   }, {
-    fields: { username: 1 },
+    fields: { username: 1, profile: 1 },
   });
 });

@@ -3,6 +3,8 @@ import { Link } from 'react-router';
 import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
 
+import LazyLoad from 'react-lazyload';
+
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import CircularProgress from 'material-ui/CircularProgress';
 import AddIcon from 'material-ui/svg-icons/content/add';
@@ -22,7 +24,6 @@ class Index extends Component {
     this.state = {
       location: 'home',
       isLoading: false,
-      limit: 2,
     };
     this.handleAddImage = this.handleAddImage.bind(this);
     this.onInfinityLoad = this.onInfinityLoad.bind(this);
@@ -61,7 +62,7 @@ class Index extends Component {
 
   handleAddImage() {
     const images = this.state.images;
-    const limit = this.state.limit;
+    const limit = this.props.limit;
     const skip = images.length;
     const tempImg = Images.find({}, {
       sort: { createdAt: -1 },
@@ -74,6 +75,10 @@ class Index extends Component {
 
   renderPicHolder() {
     const images = this.state.images;
+    /**
+     * Get the Image Uploader's
+     * name and avatar url
+     */
     images.map((image) => {
       const img = image;
       const users = Meteor.users.find({}).fetch();
@@ -87,7 +92,9 @@ class Index extends Component {
       return img;
     });
     return images.map((image) => (
-      <PicHolder key={image._id} User={this.props.User} image={image} />
+      <LazyLoad key={image._id} height={200} offset={100} once>
+        <PicHolder User={this.props.User} image={image} />
+      </LazyLoad>
     ));
   }
 
@@ -155,8 +162,8 @@ class Index extends Component {
           {this.renderInfinite()}
         </div>
         <FloatingActionButton
-          containerElement={<Link to="/upload" />}
           style={styles.floatBtn}
+          containerElement={<Link to="/upload" />}
           secondary
         >
           <AddIcon />
@@ -172,6 +179,7 @@ Index.propTypes = {
   dataIsReady: PropTypes.bool.isRequired,
   User: PropTypes.object,
   images: PropTypes.array.isRequired,
+  limit: PropTypes.number.isRequired,
 };
 
 // If contextTypes is not defined, then context will be an empty object.
@@ -179,7 +187,11 @@ Index.contextTypes = {
   router: PropTypes.object.isRequired,
 };
 
+
 export default createContainer(() => {
+  // Define How much picture render in the first time
+  const limit = 5;
+
   let isGuest;
   let dataIsReady;
   Meteor.subscribe('Users.allUser');
@@ -187,7 +199,7 @@ export default createContainer(() => {
   const imageHandle = Meteor.subscribe('Images.all');
   const images = Images.find({}, {
     sort: { createdAt: -1 },
-    limit: 2,
+    limit,
   }).fetch();
   if (typeof User === 'undefined' || User) {
     isGuest = false;
@@ -201,5 +213,6 @@ export default createContainer(() => {
     images,
     dataIsReady,
     isGuest,
+    limit,
   };
 }, Index);
