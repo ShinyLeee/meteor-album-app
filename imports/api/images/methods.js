@@ -23,18 +23,35 @@ export const likeImage = new ValidatedMethod({
   name: 'images.like',
   validate: new SimpleSchema({
     imageId: { type: String, regEx: SimpleSchema.RegEx.Id },
-    liker: { type: String },
+    liker: { type: String, regEx: SimpleSchema.RegEx.Id },
   }).validator({ clean: true, filter: false }),
   run({ imageId, liker }) {
-    // const image = Images.findOne(imageId);
     if (!this.userId) {
       throw new Meteor.Error('user.accessDenied');
     }
     Images.update(imageId, {
       $inc: { likes: 1 },
-      $push: { liker },
+      $addToSet: { liker }, // Only push a value which is not exist in this array
     });
     incompleteCountDenormalizer.afterLikeImage(liker);
+  },
+});
+
+export const unlikeImage = new ValidatedMethod({
+  name: 'images.unlike',
+  validate: new SimpleSchema({
+    imageId: { type: String, regEx: SimpleSchema.RegEx.Id },
+    unliker: { type: String, regEx: SimpleSchema.RegEx.Id },
+  }).validator({ clean: true, filter: false }),
+  run({ imageId, unliker }) {
+    if (!this.userId) {
+      throw new Meteor.Error('user.accessDenied');
+    }
+    Images.update(imageId, {
+      $inc: { likes: -1 },
+      $pull: { liker: unliker },
+    });
+    incompleteCountDenormalizer.afterUnlikeImage(unliker);
   },
 });
 
@@ -42,6 +59,7 @@ export const likeImage = new ValidatedMethod({
 const IMAGES_METHODS = _.pluck([
   insertImage,
   likeImage,
+  unlikeImage,
 ], 'name');
 
 if (Meteor.isServer) {

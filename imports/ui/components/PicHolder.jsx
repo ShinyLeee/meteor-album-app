@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import { connect } from 'react-redux';
 import moment from 'moment';
 
 import { Card, CardHeader, CardActions, CardMedia } from 'material-ui/Card';
@@ -8,24 +9,36 @@ import EmptyHeartIcon from 'material-ui/svg-icons/action/favorite-border';
 import ReplyIcon from 'material-ui/svg-icons/content/reply';
 import CommentIcon from 'material-ui/svg-icons/communication/chat-bubble-outline';
 
-import displayAlert from '../lib/displayAlert.js';
-import { likeImage } from '../../api/images/methods.js';
+import { makeCancelable } from '/imports/utils/utils.js';
+import { likeImage, unlikeImage } from '/imports/api/images/methods.js';
 
-export default class PicHolder extends Component {
+import displayAlert from '../lib/displayAlert.js';
+import { zoomerOpen } from '../actions/actionTypes.js';
+
+class PicHolder extends Component {
 
   constructor(props) {
     super(props);
+    this.state = {
+      zoomer: false,
+    };
     this.handleAddLike = this.handleAddLike.bind(this);
-    this.handleZoomImage = this.handleZoomImage.bind(this);
+    this.handleRemoveLike = this.handleRemoveLike.bind(this);
     this.handleForbidden = this.handleForbidden.bind(this);
-    this.hasLiked = this.hasLiked.bind(this);
+    this.handleZoomImage = this.handleZoomImage.bind(this);
+  }
+
+  componentWillUnmount() {
+    if (this.zoomPromise) {
+      this.zoomPromise.cancel();
+    }
   }
 
   handleAddLike() {
     const { User, image } = this.props;
 
     const imageId = image._id;
-    const liker = User.username;
+    const liker = User._id;
 
     likeImage.call({
       imageId,
@@ -39,56 +52,91 @@ export default class PicHolder extends Component {
     });
   }
 
-  handleZoomImage() {
-    console.log('in');
+  handleRemoveLike() {
+    const { User, image } = this.props;
+
+    const imageId = image._id;
+    const unliker = User._id;
+
+    unlikeImage.call({
+      imageId,
+      unliker,
+    }, (err) => {
+      if (err) {
+        displayAlert('error', err.message);
+        return false;
+      }
+      return true;
+    });
   }
 
   handleForbidden() {
     displayAlert('warning', 'image.like.forbidden');
   }
 
-  hasLiked() {
+  handleZoomImage(image) {
+    const { dispatch } = this.props;
+    const zoomImage = new Promise((resolve) => {
+      this.setState({ zoomer: true }, resolve);
+    });
+
+    this.zoomPromise = makeCancelable(zoomImage);
+    this.zoomPromise
+      .promise
+      .then(() => {
+        dispatch(zoomerOpen(image));
+      })
+      .then(() => {
+        document.body.style.overflowY = 'hidden';
+      })
+      .catch((err) => console.log(err)); // eslint-disable-line no-console
+  }
+
+  renderLikeIcon() {
     const { User, image } = this.props;
 
-    if (!User) {
-      return (
-        <IconButton
-          key={2}
-          onTouchTap={this.handleForbidden}
-        >
-          <EmptyHeartIcon />
-        </IconButton>);
-    }
-
     const likers = image.liker;
-    const curUser = User.username;
+    const curUser = User._id;
 
-    if (likers.length === 0) {
-      return (
-        <IconButton
-          key={2}
-          onTouchTap={this.handleAddLike}
-        >
-          <EmptyHeartIcon />
-        </IconButton>);
-    }
+    /**
+     * Default:
+     * If User is login but not liked the pic, return EmptyHeartIcon, click wll add like
+     *
+     * If User is in Guest status, click return warning 'forbidden'
+     *
+     * If User is login and liked the pic, click will remove like
+    */
+    let LikeOrUnlikeBtn = (
+      <IconButton key={'addLikeIcon'} onTouchTap={this.handleAddLike}>
+        <EmptyHeartIcon />
+      </IconButton>
+    );
 
-    /* eslint no-confusing-arrow: 0 */
-    return likers.map((liker) => (
-      liker === curUser ?
-        <IconButton
-          key={1}
-          iconStyle={{ color: '#f15151' }}
-        >
-          <HeartIcon />
-        </IconButton> :
-        <IconButton
-          key={2}
-          onTouchTap={this.handleAddLike}
-        >
+    if (!User) {
+      LikeOrUnlikeBtn = (
+        <IconButton key={'addLikeIcon'} onTouchTap={this.handleForbidden}>
           <EmptyHeartIcon />
         </IconButton>
-    ));
+      );
+      return LikeOrUnlikeBtn;
+    }
+
+    likers.map((liker) => {
+      if (liker === curUser) {
+        LikeOrUnlikeBtn = (
+          <IconButton
+            key={'removeLikeIcon'}
+            onTouchTap={this.handleRemoveLike}
+            iconStyle={{ color: '#f15151' }}
+          >
+            <HeartIcon />
+          </IconButton>
+        );
+      }
+      return false;
+    });
+
+    return LikeOrUnlikeBtn;
   }
 
   render() {
@@ -96,6 +144,9 @@ export default class PicHolder extends Component {
     const styles = {
       cardContainer: {
         marginBottom: '50px',
+      },
+      cardMedia: {
+        cursor: 'zoom-in',
       },
       flipReplyStyle: {
         MozTransform: 'scaleX(-1)',
@@ -112,11 +163,14 @@ export default class PicHolder extends Component {
             subtitle={moment(image.createdAt).format('YYYY-MM-DD')}
             avatar={image.avatar}
           />
-          <CardMedia onTouchTap={this.handleZoomImage}>
+          <CardMedia
+            mediaStyle={styles.cardMedia}
+            onTouchTap={() => this.handleZoomImage(image)}
+          >
             <img src={image.url} alt={image.name} />
           </CardMedia>
           <CardActions>
-            { this.hasLiked() }
+            { this.renderLikeIcon() }
             <IconButton>
               <CommentIcon />
             </IconButton>
@@ -133,4 +187,7 @@ export default class PicHolder extends Component {
 PicHolder.propTypes = {
   User: PropTypes.object,
   image: PropTypes.object.isRequired,
+  dispatch: PropTypes.func.isRequired,
 };
+
+export default connect()(PicHolder);

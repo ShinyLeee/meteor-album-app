@@ -85,55 +85,53 @@ class UserNotes extends Component {
         right: '4px',
       },
     };
-    return notes.map((note) => {  /* eslint arrow-body-style: 0 */
-      return registerUsers.map((user) => {
-        if (note.sender === user._id) {
-          return (
-            <Card
-              key={note._id}
-              style={{ marginBottom: '30px' }}
-              initiallyExpanded
-            >
-              <CardHeader
-                title={note.title}
-                subtitle={moment(note.sendAt).format('YYYY-MM-DD')}
-                avatar={user.profile.avatar}
-                actAsExpander
-                showExpandableButton
-              />
-              <CardText expandable>
-                <div className="markdown-holder">
-                  <ReactMarkdown
-                    className="markdown"
-                    source={note.content}
-                    onLinkClick={this.handleLinkClick}
-                  />
-                </div>
-              </CardText>
-              <CardActions style={{ height: '58px' }}>
-                <IconButton
-                  tooltip="回复"
-                  tooltipPosition="top-center"
-                  iconStyle={styles.flipReplyStyle}
-                  style={styles.replyStyle}
-                  touch
-                ><ReplyIcon />
-                </IconButton>
-                <IconButton
-                  tooltip="标记已读"
-                  tooltipPosition="top-center"
-                  iconStyle={{ color: '#999' }}
-                  style={styles.checkboxStyle}
-                  touch
-                ><CheckBoxIcon />
-                </IconButton>
-              </CardActions>
-            </Card>
-          );
-        }
-        return false;
-      });
-    });
+    return notes.map((note) => registerUsers.map((user) => {
+      if (note.sender === user._id) {
+        return (
+          <Card
+            key={note._id}
+            style={{ marginBottom: '30px' }}
+            initiallyExpanded
+          >
+            <CardHeader
+              title={note.title}
+              subtitle={moment(note.sendAt).format('YYYY-MM-DD')}
+              avatar={user.profile.avatar}
+              actAsExpander
+              showExpandableButton
+            />
+            <CardText expandable>
+              <div className="markdown-holder">
+                <ReactMarkdown
+                  className="markdown"
+                  source={note.content}
+                  onLinkClick={this.handleLinkClick}
+                />
+              </div>
+            </CardText>
+            <CardActions style={{ height: '58px' }}>
+              <IconButton
+                tooltip="回复"
+                tooltipPosition="top-center"
+                iconStyle={styles.flipReplyStyle}
+                style={styles.replyStyle}
+                touch
+              ><ReplyIcon />
+              </IconButton>
+              <IconButton
+                tooltip="标记已读"
+                tooltipPosition="top-center"
+                iconStyle={{ color: '#999' }}
+                style={styles.checkboxStyle}
+                touch
+              ><CheckBoxIcon />
+              </IconButton>
+            </CardActions>
+          </Card>
+        );
+      }
+      return false;
+    }));
   }
 
   renderModalContent() {
@@ -192,10 +190,8 @@ UserNotes.propTypes = {
 };
 
 export default createContainer(() => {
-  const userHandle = Meteor.subscribe('Users.registerUser');
   const noteHandle = Meteor.subscribe('Notes.ownNotes');
-  const dataIsReady = noteHandle.ready() && userHandle.ready();
-  const registerUsers = Meteor.users.find({}).fetch();
+  const dataIsReady = noteHandle.ready();
   const notes = Notes.find({}, {
     sort: { createdAt: -1 },
     limit: 5,
@@ -203,6 +199,5 @@ export default createContainer(() => {
   return {
     dataIsReady,
     notes,
-    registerUsers,
   };
 }, UserNotes);

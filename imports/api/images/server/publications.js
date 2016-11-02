@@ -11,3 +11,9 @@ Meteor.publish('Images.ownImages', function ownImages() {
     uid: this.userId,
   });
 });
+
+Meteor.publish('Images.likedImages', function likedImages() {
+  return Images.find({
+    liker: { $in: [this.userId] },
+  });
+});

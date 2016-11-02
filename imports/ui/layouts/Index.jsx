@@ -2,21 +2,20 @@ import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
-
 import LazyLoad from 'react-lazyload';
 
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import CircularProgress from 'material-ui/CircularProgress';
 import AddIcon from 'material-ui/svg-icons/content/add';
 
+import { makeCancelable } from '/imports/utils/utils.js';
 import { Images } from '/imports/api/images/image.js';
 
 import Infinity from '../components/Infinity.jsx';
 import NavHeader from '../components/NavHeader.jsx';
 import Recap from '../components/Recap.jsx';
 import PicHolder from '../components/PicHolder.jsx';
-
-import { makeCancelable } from '../../utils/utils.js';
+import ZoomerHolder from '../components/ZoomerHolder.jsx';
 
 class Index extends Component {
   constructor(props) {
@@ -25,8 +24,8 @@ class Index extends Component {
       location: 'home',
       isLoading: false,
     };
-    this.handleAddImage = this.handleAddImage.bind(this);
     this.onInfinityLoad = this.onInfinityLoad.bind(this);
+    this.handleAddImage = this.handleAddImage.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -39,8 +38,10 @@ class Index extends Component {
   }
 
   componentWillUnmount() {
-    if (this.loadTimeout) {
-      this.loadTimeout.cancel(); // Cancel the promise
+    // If lifecyle is in componentWillUnmount,
+    // But the promise still in progress then Cancel the promise
+    if (this.loadPromise) {
+      this.loadPromise.cancel();
     }
   }
 
@@ -51,13 +52,13 @@ class Index extends Component {
       setTimeout(resolve, 1500);
     });
 
-    this.loadTimeout = makeCancelable(loadImage);
-    this.loadTimeout
+    this.loadPromise = makeCancelable(loadImage);
+    this.loadPromise
       .promise
       .then(() => {
         this.setState({ isLoading: false });
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.log(err)); // eslint-disable-line no-console
   }
 
   handleAddImage() {
@@ -104,6 +105,7 @@ class Index extends Component {
       isLoading={this.state.isLoading}
     >
       {this.renderPicHolder()}
+      <ZoomerHolder />
     </Infinity>
     );
   }
@@ -180,6 +182,7 @@ Index.propTypes = {
   User: PropTypes.object,
   images: PropTypes.array.isRequired,
   limit: PropTypes.number.isRequired,
+  dispatch: PropTypes.func,
 };
 
 // If contextTypes is not defined, then context will be an empty object.
@@ -187,9 +190,8 @@ Index.contextTypes = {
   router: PropTypes.object.isRequired,
 };
 
-
 export default createContainer(() => {
-  // Define How much picture render in the first time
+  // Define How many pictures render in the first time
   const limit = 5;
 
   let isGuest;

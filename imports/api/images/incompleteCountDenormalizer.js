@@ -12,15 +12,19 @@ const incompleteCountDenormalizer = {
   },
 
   afterLikeImage(liker) {
-    Meteor.users.update({ username: liker }, {
+    Meteor.users.update(liker, {
       $inc: {
         'profile.likes': 1,
       },
     });
   },
 
-  afterRemoveImage(selector) {
-    console.log(selector);
+  afterUnlikeImage(unliker) {
+    Meteor.users.update(unliker, {
+      $inc: {
+        'profile.likes': -1,
+      },
+    });
   },
 
 };

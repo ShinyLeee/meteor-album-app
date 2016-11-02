@@ -354,7 +354,12 @@ class User extends Component {
               </Dialog>
             </div>
           </div>
-          { this.props.children }
+          {
+            React.cloneElement(this.props.children, {
+              curUser: this.props.curUser,
+              registerUsers: this.props.registerUsers,
+            })
+          }
         </div>
         <FloatingActionButton
           onTouchTap={this.handleSendNotes}
@@ -373,6 +378,7 @@ User.propTypes = {
   curUser: PropTypes.object,
   userIsReady: PropTypes.bool.isRequired,
   filterUser: PropTypes.array,
+  registerUsers: PropTypes.array,
   children: PropTypes.element.isRequired,
 };
 
@@ -399,6 +405,7 @@ export default createContainer(() => {
   return {
     curUser,
     userIsReady,
+    registerUsers,
     filterUser,
   };
 }, User);

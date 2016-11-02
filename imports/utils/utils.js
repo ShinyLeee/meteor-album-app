@@ -1,14 +1,12 @@
-/* eslint no-confusing-arrow: 0*/
-
 // Wrap a Promise in order to make it Cancelable.
 export const makeCancelable = (promise) => {
   let hasCanceled_ = false;
 
   const wrappedPromise = new Promise((resolve, reject) => {
-    promise.then((val) =>
+    promise.then((val) => // eslint-disable-line no-confusing-arrow
       hasCanceled_ ? reject({ isCanceled: true }) : resolve(val)
     );
-    promise.catch((error) =>
+    promise.catch((error) => // eslint-disable-line no-confusing-arrow
       hasCanceled_ ? reject({ isCanceled: true }) : reject(error)
     );
   });

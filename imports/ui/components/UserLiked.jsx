@@ -4,8 +4,7 @@ import { createContainer } from 'meteor/react-meteor-data';
 
 import CircularProgress from 'material-ui/CircularProgress';
 
-// Database Model
-import { Images } from '../../api/images/image.js';
+import { Images } from '/imports/api/images/image.js';
 
 import PicHolder from '../components/PicHolder.jsx';
 
@@ -19,8 +18,16 @@ class UserLiked extends Component {
   }
 
   renderPicHolder() {
-    const filteredImages = this.props.images;
-    return filteredImages.map((image) => <PicHolder key={image._id} image={image} />);
+    const { images, curUser, registerUsers } = this.props;
+    return images.map((image) => registerUsers.map((user) => {
+      if (image.uid === user._id) {
+        const img = image;
+        img.username = user.username;
+        img.avatar = user.profile.avatar;
+        return <PicHolder key={image._id} User={curUser} image={img} />;
+      }
+      return false;
+    }));
   }
 
   render() {
@@ -43,11 +50,13 @@ class UserLiked extends Component {
 UserLiked.propTypes = {
   dataIsReady: PropTypes.bool.isRequired,
   images: PropTypes.array.isRequired,
+  curUser: PropTypes.object.isRequired,
+  registerUsers: PropTypes.array,
 };
 
 export default createContainer(() => {
-  const dataHandle = Meteor.subscribe('Images.ownImages');
-  const dataIsReady = dataHandle.ready();
+  const imageHandle = Meteor.subscribe('Images.likedImages');
+  const dataIsReady = imageHandle.ready();
   const images = Images.find({}, { sort: { createdAt: -1 } }).fetch();
   return {
     dataIsReady,

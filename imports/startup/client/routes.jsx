@@ -2,7 +2,6 @@ import React, { PropTypes } from 'react';
 import { Router, Route, browserHistory, IndexRoute, Redirect } from 'react-router';
 import { Provider } from 'react-redux';
 
-// Components
 import App from '/imports/ui/App.jsx';
 import Index from '/imports/ui/layouts/Index.jsx';
 import Upload from '/imports/ui/layouts/Upload.jsx';
