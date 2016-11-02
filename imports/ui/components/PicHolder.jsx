@@ -95,9 +95,6 @@ class PicHolder extends Component {
   renderLikeIcon() {
     const { User, image } = this.props;
 
-    const likers = image.liker;
-    const curUser = User._id;
-
     /**
      * Default:
      * If User is login but not liked the pic, return EmptyHeartIcon, click wll add like
@@ -120,6 +117,9 @@ class PicHolder extends Component {
       );
       return LikeOrUnlikeBtn;
     }
+
+    const likers = image.liker;
+    const curUser = User._id;
 
     likers.map((liker) => {
       if (liker === curUser) {

@@ -1,11 +1,8 @@
 import React, { Component, PropTypes } from 'react';
-import { Meteor } from 'meteor/meteor';
-import { createContainer } from 'meteor/react-meteor-data';
-import CircularProgress from 'material-ui/CircularProgress';
 
 import NavHeader from '../components/NavHeader.jsx';
 
-class NotFound extends Component {
+export default class NotFound extends Component {
 
   constructor(props) {
     super(props);
@@ -15,17 +12,7 @@ class NotFound extends Component {
   }
 
   render() {
-    const { User, userIsReady } = this.props;
-    if (!userIsReady) {
-      return (
-        <div className="container">
-          <NavHeader location={this.state.location} />
-          <div className="content text-center">
-            <CircularProgress style={{ top: '150px' }} size={1} />
-          </div>
-        </div>
-      );
-    }
+    const { User } = this.props;
     return (
       <div className="container">
         <NavHeader
@@ -47,14 +34,4 @@ class NotFound extends Component {
 
 NotFound.propTypes = {
   User: PropTypes.object,
-  userIsReady: PropTypes.bool.isRequired,
 };
-
-export default createContainer(() => {
-  const User = Meteor.user();
-  const userIsReady = !!User;
-  return {
-    userIsReady,
-    User,
-  };
-}, NotFound);

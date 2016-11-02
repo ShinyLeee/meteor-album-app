@@ -32,7 +32,7 @@ import displayAlert from '../lib/displayAlert.js';
 
 import { insertNote } from '../../api/notes/methods.js';
 
-class User extends Component {
+class UserPage extends Component {
 
   constructor(props) {
     super(props);
@@ -54,7 +54,6 @@ class User extends Component {
     this.handleAddFriend = this.handleAddFriend.bind(this);
     this.handleSendNotes = this.handleSendNotes.bind(this);
     this.handleClose = this.handleClose.bind(this);
-    this.relateSubmit = this.relateSubmit.bind(this);
     this.noteSubmit = this.noteSubmit.bind(this);
     this.handleTextFieldChange = this.handleTextFieldChange.bind(this);
     this.handleRelaterChange = this.handleRelaterChange.bind(this);
@@ -73,7 +72,8 @@ class User extends Component {
     Meteor.logout((err) => {
       if (err) {
         displayAlert('error', 'user.logout.unexpectedError');
-        return console.error(err); // TODO LOG
+        // TODO LOG
+        return console.error(err); // eslint-disable-line no-console
       }
       this.context.router.replace('/login');
       displayAlert('success', 'user.logout.success');
@@ -94,11 +94,6 @@ class User extends Component {
       relateModal: false,
       noteModal: false,
     });
-  }
-
-  relateSubmit() {
-    // const relater = this.state.receiver;
-    // Meteor.call('users.relate', relater);
   }
 
   noteSubmit() {
@@ -171,8 +166,8 @@ class User extends Component {
   }
 
   render() {
-    const { curUser, userIsReady } = this.props;
-    if (!userIsReady) {
+    const { User } = this.props;
+    if (!User) {
       return (
         <div className="container">
           <NavHeader location={this.state.location} />
@@ -213,7 +208,7 @@ class User extends Component {
     return (
       <div className="container">
         <NavHeader
-          User={curUser}
+          User={User}
           location={this.state.location}
         />
         <div className="content">
@@ -221,7 +216,7 @@ class User extends Component {
             <div className="user-panel">
               <div className="user-header">
                 <div className="user-avatar">
-                  <img src={curUser.profile.avatar} alt="user-avatar" />
+                  <img src={User.profile.avatar} alt="user-avatar" />
                   <div className="user-action">
                     <IconMenu
                       iconButtonElement={<IconButton><MoreHorizIcon color="#999" /></IconButton>}
@@ -257,7 +252,7 @@ class User extends Component {
                   </div>
                 </div>
                 <div className="user-name">
-                  <h1>{curUser.username}</h1>
+                  <h1>{User.username}</h1>
                 </div>
               </div>
             </div>
@@ -267,7 +262,7 @@ class User extends Component {
                 to="/user/notes"
                 onClick={this.handleChildCompChange}
               >
-                <span>{curUser.profile.notes}</span>
+                <span>{User.profile.notes}</span>
                 <span>Notes</span>
               </Link>
               <Link
@@ -275,7 +270,7 @@ class User extends Component {
                 to="/user/liked"
                 onClick={this.handleChildCompChange}
               >
-                <span>{curUser.profile.likes}</span>
+                <span>{User.profile.likes}</span>
                 <span>Liked</span>
               </Link>
             </div>
@@ -356,7 +351,7 @@ class User extends Component {
           </div>
           {
             React.cloneElement(this.props.children, {
-              curUser: this.props.curUser,
+              User: this.props.User,
               registerUsers: this.props.registerUsers,
             })
           }
@@ -374,16 +369,15 @@ class User extends Component {
 
 }
 
-User.propTypes = {
-  curUser: PropTypes.object,
-  userIsReady: PropTypes.bool.isRequired,
+UserPage.propTypes = {
+  User: PropTypes.object,
   filterUser: PropTypes.array,
   registerUsers: PropTypes.array,
   children: PropTypes.element.isRequired,
 };
 
 // If contextTypes is not defined, then context will be an empty object.
-User.contextTypes = {
+UserPage.contextTypes = {
   router: PropTypes.object.isRequired,
 };
 
@@ -392,8 +386,6 @@ export default createContainer(() => {
   const uid = Meteor.userId();
   const registerUsers = Meteor.users.find({}).fetch();
   const filterUser = [];
-  const curUser = Meteor.user();
-  const userIsReady = !!curUser;
   registerUsers.forEach(user => {
     if (user._id === uid) return false;
     filterUser.push({
@@ -403,9 +395,7 @@ export default createContainer(() => {
     return true;
   });
   return {
-    curUser,
-    userIsReady,
     registerUsers,
     filterUser,
   };
-}, User);
+}, UserPage);

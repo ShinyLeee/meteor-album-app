@@ -1,22 +1,34 @@
 import React, { Component, PropTypes } from 'react';
-import { connect } from 'react-redux';
-
 import Alert from 'react-s-alert';
+import { Meteor } from 'meteor/meteor';
+import { createContainer } from 'meteor/react-meteor-data';
 
-import '/imports/api/users/user.js';
-
-import defaultUser from './lib/defaultUser.js';
+import CircularProgress from 'material-ui/CircularProgress';
+import NavHeader from './components/NavHeader.jsx';
 
 class App extends Component {
-
   constructor(props) {
     super(props);
-    this.state = {
-      authenticated: false,
-    };
+    this.state = ({
+      location: 'index',
+    });
   }
 
   render() {
+    const { userIsReady, User } = this.props;
+    if (!userIsReady) {
+      return (
+        <div className="container">
+          <NavHeader
+            User={User}
+            location={this.state.location}
+          />
+          <div className="content text-center">
+            <CircularProgress style={{ top: '150px' }} size={1} />
+          </div>
+        </div>
+      );
+    }
     return (
       <div>
         <Alert
@@ -25,7 +37,7 @@ class App extends Component {
           effect="stackslide"
           timeout={3000}
         />
-        {this.props.children}
+        { React.cloneElement(this.props.children, { User }) }
       </div>
     );
   }
@@ -33,12 +45,18 @@ class App extends Component {
 }
 
 App.propTypes = {
-  User: PropTypes.object.isRequired,
+  User: PropTypes.object,
+  userIsReady: PropTypes.bool.isRequired,
   children: PropTypes.element.isRequired,
 };
 
-const mapStateToProps = (state) => ({
-  User: state.user || defaultUser,
-});
-
-export default connect(mapStateToProps)(App);
+export default createContainer(() => {
+  let userIsReady;
+  const User = Meteor.user();
+  if (typeof User === 'undefined' || User) userIsReady = !!User;
+  else userIsReady = true;
+  return {
+    User,
+    userIsReady,
+  };
+}, App);

@@ -1,19 +1,16 @@
 import { Meteor } from 'meteor/meteor';
 import React, { Component, PropTypes } from 'react';
-import { createContainer } from 'meteor/react-meteor-data';
 
-// JS Plugin
 import '/public/js/plupload.full.min';
 import '/public/js/qiniu';
 
 import { insertImage } from '/imports/api/images/methods.js';
 import NavHeader from '../components/NavHeader.jsx';
 
-// Utils or Libs
 import utils from '../../utils/utils.js';
 import displayAlert from '../lib/displayAlert.js';
 
-class Upload extends Component {
+export default class Upload extends Component {
 
   constructor(props) {
     super(props);
@@ -133,7 +130,7 @@ class Upload extends Component {
         // },
         UploadProgress: (up, file) => {
           // 每个文件上传时,处理相关的事情
-          console.log(file.percent);
+          console.log(file.percent); // eslint-disable-line no-console
         },
         FileUploaded: (up, file, info) => {
           // 每个文件上传成功后,处理相关的事情
@@ -176,8 +173,9 @@ class Upload extends Component {
           displayAlert('success', '删除成功');
         },
         Error: (up, err) => {
+          // TODO LOG
           displayAlert('error', `${err.message} ${err.code}`);
-          console.error(err); // TODO LOG
+          console.error(err); // eslint-disable-line no-console
         },
         UploadComplete: () => {
           // 队列文件处理完毕后,处理相关的事情
@@ -272,17 +270,7 @@ class Upload extends Component {
 }
 
 Upload.propTypes = {
-  userIsReady: PropTypes.bool.isRequired,
   User: PropTypes.object,
   size: PropTypes.number,
   style: PropTypes.object,
 };
-
-export default createContainer(() => {
-  const User = Meteor.user();
-  const userIsReady = !!User;
-  return {
-    userIsReady,
-    User,
-  };
-}, Upload);

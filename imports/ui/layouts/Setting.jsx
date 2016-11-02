@@ -1,6 +1,4 @@
 import React, { Component, PropTypes } from 'react';
-import { Meteor } from 'meteor/meteor';
-import { createContainer } from 'meteor/react-meteor-data';
 
 import CircularProgress from 'material-ui/CircularProgress';
 import { List, ListItem } from 'material-ui/List';
@@ -22,7 +20,7 @@ import displayAlert from '../lib/displayAlert.js';
 
 import { updateUser } from '../../api/users/methods.js';
 
-class Setting extends Component {
+export default class Setting extends Component {
 
   constructor(props) {
     super(props);
@@ -113,7 +111,17 @@ class Setting extends Component {
   }
 
   render() {
-    const { User, userIsReady } = this.props;
+    const { User } = this.props;
+    if (!User) {
+      return (
+        <div className="container">
+          <NavHeader location={this.state.location} />
+          <div className="content text-center">
+            <CircularProgress style={{ top: '150px' }} size={1} />
+          </div>
+        </div>
+      );
+    }
     const styles = {
       cameraIconStyle: {
         height: '38px',
@@ -126,17 +134,6 @@ class Setting extends Component {
         marginTop: '-30px',
       },
     };
-
-    if (!userIsReady) {
-      return (
-        <div className="container">
-          <NavHeader location={this.state.location} />
-          <div className="content text-center">
-            <CircularProgress style={{ top: '150px' }} size={1} />
-          </div>
-        </div>
-      );
-    }
     return (
       <div className="container">
         <NavHeader
@@ -305,14 +302,4 @@ class Setting extends Component {
 
 Setting.propTypes = {
   User: PropTypes.object,
-  userIsReady: PropTypes.bool.isRequired,
 };
-
-export default createContainer(() => {
-  const User = Meteor.user();
-  const userIsReady = !!User;
-  return {
-    userIsReady,
-    User,
-  };
-}, Setting);

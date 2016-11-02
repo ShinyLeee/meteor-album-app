@@ -111,7 +111,7 @@ class Index extends Component {
   }
 
   render() {
-    const { User, dataIsReady, isGuest } = this.props;
+    const { User, dataIsReady } = this.props;
     if (!dataIsReady) {
       return (
         <div className="container">
@@ -125,7 +125,7 @@ class Index extends Component {
         </div>
       );
     }
-    if (isGuest) {
+    if (!User) {
       return (
         <div className="container">
           <NavHeader
@@ -177,9 +177,8 @@ class Index extends Component {
 }
 
 Index.propTypes = {
-  isGuest: PropTypes.bool.isRequired,
-  dataIsReady: PropTypes.bool.isRequired,
   User: PropTypes.object,
+  dataIsReady: PropTypes.bool.isRequired,
   images: PropTypes.array.isRequired,
   limit: PropTypes.number.isRequired,
   dispatch: PropTypes.func,
@@ -194,27 +193,16 @@ export default createContainer(() => {
   // Define How many pictures render in the first time
   const limit = 5;
 
-  let isGuest;
-  let dataIsReady;
   Meteor.subscribe('Users.allUser');
-  const User = Meteor.user();
   const imageHandle = Meteor.subscribe('Images.all');
+  const dataIsReady = imageHandle.ready();
   const images = Images.find({}, {
     sort: { createdAt: -1 },
     limit,
   }).fetch();
-  if (typeof User === 'undefined' || User) {
-    isGuest = false;
-    dataIsReady = imageHandle.ready() && !!User;
-  } else {
-    isGuest = true;
-    dataIsReady = imageHandle.ready();
-  }
   return {
-    User,
     images,
     dataIsReady,
-    isGuest,
     limit,
   };
 }, Index);
