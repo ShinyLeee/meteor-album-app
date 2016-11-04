@@ -25,3 +25,4 @@ universe:i18n
 aldeed:simple-schema
 aldeed:collection2
 mdg:validated-method
+percolate:migrations

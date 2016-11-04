@@ -6,6 +6,7 @@ import App from '/imports/ui/App.jsx';
 import Index from '/imports/ui/layouts/Index.jsx';
 import Upload from '/imports/ui/layouts/Upload.jsx';
 import User from '/imports/ui/layouts/User.jsx';
+import Collection from '/imports/ui/layouts/Collection.jsx';
 import Setting from '/imports/ui/layouts/Setting.jsx';
 import Login from '/imports/ui/layouts/Login.jsx';
 import Register from '/imports/ui/layouts/Register.jsx';
@@ -30,6 +31,7 @@ const Root = () => (
             <Route path="liked" component={UserLiked} />
             <Redirect from="notes" to="/user" />
           </Route>
+          <Route path="collection" component={Collection} onEnter={requireAuth} />
           <Route path="setting" component={Setting} onEnter={requireAuth} />
           <Route path="login" component={Login} onEnter={isLogin} />
           <Route path="register" component={Register} />

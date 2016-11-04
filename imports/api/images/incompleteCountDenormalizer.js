@@ -11,6 +11,15 @@ const incompleteCountDenormalizer = {
     });
   },
 
+  afterRemoveImage(image) {
+    const uid = image.uid;
+    Meteor.users.update(uid, {
+      $inc: {
+        'profile.images': -1,
+      },
+    });
+  },
+
   afterLikeImage(liker) {
     Meteor.users.update(liker, {
       $inc: {

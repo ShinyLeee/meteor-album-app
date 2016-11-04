@@ -4,6 +4,9 @@ import './fixtures.js';
 // This defines routes only for RESTful API
 import './routes.js';
 
-// This defines all the collections, publications and methods that the application provides
-// as an API to the client.
+// This defines all the collections, publications and methods
+// that the application provides as an API to the client.
 import './register-api.js';
+
+// This defines all DataBase Migrations history
+import './migrations.js';
