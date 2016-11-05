@@ -14,7 +14,7 @@ class CollectionCollection extends Mongo.Collection {
   }
   remove(selector, cb) {
     const result = super.remove(selector, cb);
-    // incompleteCountDenormalizer.afterRemoveImage(selector);
+    incompleteCountDenormalizer.afterRemoveCollection(selector);
     return result;
   }
 }

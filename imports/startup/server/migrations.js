@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { _ } from 'meteor/underscore';
 import { Migrations } from 'meteor/percolate:migrations';
 
@@ -26,38 +25,28 @@ Migrations.config({
 Migrations.add({
   version: 1,
   up() {
-    // This is how to get access to the raw MongoDB node
-    // collection that the Meteor server collection wraps
-    const batch = Collections.rawCollection().initializeUnorderedBulkOp();
+    const newCols = [];
 
-    // Mongo throws an error if we execute a batch operation without actual operations,
-    // e.g. when Images was empty.
-    let newCols = [];
-    let hasUpdates = false;
-
-    Images.find().forEach((image) => {
-      newCols.push({ uid: image.uid, name: image.collection });
+    Images.find({}, {
+      sort: [['uid', 'asc'], ['collection', 'asc']],
+    }).forEach((image) => {
+      newCols.push({
+        uid: image.uid,
+        name: image.collection,
+        quantity: 1,
+      });
     });
 
-    newCols = _.sortBy(newCols, 'uid');
     for (let i = 0; i < newCols.length - 1; i++) {
-      if (_.isEqual(newCols[i], newCols[i + 1])) {
-        delete newCols[i];
+      if (newCols[i].uid === newCols[i + 1].uid && newCols[i].name === newCols[i + 1].name) {
+        newCols[i + 1].quantity = newCols[i].quantity + 1;
+        newCols.splice(i, 1);
+        i--;
       }
     }
     _.each(newCols, (newCol) => {
-      batch.insert(newCol);
-      hasUpdates = true;
+      Collections.insert(newCol);
     });
-
-
-    if (hasUpdates) {
-      // We need to wrap the async function to get a synchronous API that migrations expects
-      const execute = Meteor.wrapAsync(batch.execute, batch);
-      return execute();
-    }
-
-    return true;
   },
   down() {
     Collections.rawCollection().drop();
