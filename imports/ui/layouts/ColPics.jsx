@@ -17,11 +17,11 @@ import Recap from '../components/Recap.jsx';
 import PicHolder from '../components/PicHolder.jsx';
 import ZoomerHolder from '../components/ZoomerHolder.jsx';
 
-class Index extends Component {
+class ColPics extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      location: 'home',
+      location: 'collection',
       isLoading: false,
     };
     this.onInfinityLoad = this.onInfinityLoad.bind(this);
@@ -111,7 +111,7 @@ class Index extends Component {
   }
 
   render() {
-    const { User, dataIsReady } = this.props;
+    const { User, colName, dataIsReady } = this.props;
     if (!dataIsReady) {
       return (
         <div className="container">
@@ -121,23 +121,6 @@ class Index extends Component {
           />
           <div className="content text-center">
             <CircularProgress style={{ top: '150px' }} size={1} />
-          </div>
-        </div>
-      );
-    }
-    if (!User) {
-      return (
-        <div className="container">
-          <NavHeader
-            location={this.state.location}
-          />
-          <div className="content">
-            <Recap
-              title="Gallery"
-              detailFir="Vivian的私人相册"
-              detailSec="Created By Shiny Lee"
-            />
-            {this.renderInfinite()}
           </div>
         </div>
       );
@@ -157,9 +140,8 @@ class Index extends Component {
         />
         <div className="content">
           <Recap
-            title="Gallery"
-            detailFir="Vivian的私人相册"
-            detailSec="Created By Shiny Lee"
+            title="Collection"
+            detailFir={colName}
           />
           {this.renderInfinite()}
         </div>
@@ -176,27 +158,30 @@ class Index extends Component {
 
 }
 
-Index.propTypes = {
+ColPics.propTypes = {
   User: PropTypes.object,
   dataIsReady: PropTypes.bool.isRequired,
+  colName: PropTypes.string.isRequired,
   images: PropTypes.array.isRequired,
   limit: PropTypes.number.isRequired,
 };
 
-export default createContainer(() => {
+export default createContainer(({ params }) => {
   // Define How many pictures render in the first time
   const limit = 5;
 
   Meteor.subscribe('Users.allUser');
-  const imageHandle = Meteor.subscribe('Images.all');
+  const { colName } = params;
+  const imageHandle = Meteor.subscribe('Images.inCollection', colName);
   const dataIsReady = imageHandle.ready();
   const images = Images.find({}, {
     sort: { createdAt: -1 },
     limit,
   }).fetch();
   return {
+    colName,
     images,
     dataIsReady,
     limit,
   };
-}, Index);
+}, ColPics);

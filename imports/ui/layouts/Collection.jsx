@@ -1,15 +1,19 @@
+import { Meteor } from 'meteor/meteor';
+import { createContainer } from 'meteor/react-meteor-data';
 import React, { Component, PropTypes } from 'react';
-// import { Meteor } from 'meteor/meteor';
-// import { createContainer } from 'meteor/react-meteor-data';
+import { Link } from 'react-router';
 
 import FloatingActionButton from 'material-ui/FloatingActionButton';
-// import CircularProgress from 'material-ui/CircularProgress';
+import CircularProgress from 'material-ui/CircularProgress';
 import AddIcon from 'material-ui/svg-icons/content/add';
+
+import { Collections } from '/imports/api/collections/collection.js';
 
 import NavHeader from '../components/NavHeader.jsx';
 import Recap from '../components/Recap.jsx';
+import ColHolder from '../components/ColHolder.jsx';
 
-export default class Collection extends Component {
+class Collection extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -17,13 +21,36 @@ export default class Collection extends Component {
     };
   }
 
+  renderColHolder() {
+    const { User, cols } = this.props;
+    return cols.map((col) => (
+      <ColHolder key={col._id} User={User} col={col} />
+    ));
+  }
+
   render() {
-    const { User } = this.props;
+    const { User, dataIsReady } = this.props;
+    if (!dataIsReady) {
+      return (
+        <div className="container">
+          <NavHeader
+            User={User}
+            location={this.state.location}
+          />
+          <div className="content text-center">
+            <CircularProgress style={{ top: '150px' }} size={1} />
+          </div>
+        </div>
+      );
+    }
     const styles = {
       floatBtn: {
         position: 'fixed',
         right: '16px',
         bottom: '16px',
+      },
+      colContainer: {
+        padding: '0 12px',
       },
     };
     return (
@@ -38,9 +65,13 @@ export default class Collection extends Component {
             detailFir="所有经过分类的图片都在这里"
             detailSec="没有分类的图片都在默认分类集里"
           />
+          <div className="col-container" style={styles.colContainer}>
+            {this.renderColHolder()}
+          </div>
         </div>
         <FloatingActionButton
           style={styles.floatBtn}
+          containerElement={<Link to="/upload" />}
           secondary
         >
           <AddIcon />
@@ -53,4 +84,16 @@ export default class Collection extends Component {
 
 Collection.propTypes = {
   User: PropTypes.object,
+  dataIsReady: PropTypes.bool.isRequired,
+  cols: PropTypes.array.isRequired,
 };
+
+export default createContainer(() => {
+  const colHandle = Meteor.subscribe('Collections.own');
+  const dataIsReady = colHandle.ready();
+  const cols = Collections.find({}, { sort: { createdAt: -1 } }).fetch();
+  return {
+    cols,
+    dataIsReady,
+  };
+}, Collection);

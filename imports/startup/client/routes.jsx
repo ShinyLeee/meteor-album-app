@@ -7,6 +7,7 @@ import Index from '/imports/ui/layouts/Index.jsx';
 import Upload from '/imports/ui/layouts/Upload.jsx';
 import User from '/imports/ui/layouts/User.jsx';
 import Collection from '/imports/ui/layouts/Collection.jsx';
+import ColPics from '/imports/ui/layouts/ColPics.jsx';
 import Setting from '/imports/ui/layouts/Setting.jsx';
 import Login from '/imports/ui/layouts/Login.jsx';
 import Register from '/imports/ui/layouts/Register.jsx';
@@ -32,6 +33,7 @@ const Root = () => (
             <Redirect from="notes" to="/user" />
           </Route>
           <Route path="collection" component={Collection} onEnter={requireAuth} />
+          <Route path="collection/:colName" component={ColPics} onEnter={requireAuth} />
           <Route path="setting" component={Setting} onEnter={requireAuth} />
           <Route path="login" component={Login} onEnter={isLogin} />
           <Route path="register" component={Register} />

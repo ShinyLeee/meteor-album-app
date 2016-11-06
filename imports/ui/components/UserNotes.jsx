@@ -60,7 +60,7 @@ class UserNotes extends Component {
   }
 
   renderNoteCard() {
-    const { registerUsers, notes } = this.props;
+    const { otherUsers, notes } = this.props;
     if (notes.length === 0) {
       return (
         <div className="text-center">
@@ -85,7 +85,7 @@ class UserNotes extends Component {
         right: '4px',
       },
     };
-    return notes.map((note) => registerUsers.map((user) => {
+    return notes.map((note) => otherUsers.map((user) => {
       if (note.sender === user._id) {
         return (
           <Card
@@ -186,7 +186,7 @@ class UserNotes extends Component {
 UserNotes.propTypes = {
   dataIsReady: PropTypes.bool.isRequired,
   notes: PropTypes.array.isRequired,
-  registerUsers: PropTypes.array.isRequired,
+  otherUsers: PropTypes.array.isRequired,
 };
 
 export default createContainer(() => {

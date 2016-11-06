@@ -18,13 +18,13 @@ class UserLiked extends Component {
   }
 
   renderPicHolder() {
-    const { images, curUser, registerUsers } = this.props;
-    return images.map((image) => registerUsers.map((user) => {
+    const { images, User, otherUsers } = this.props;
+    return images.map((image) => otherUsers.map((user) => {
       if (image.uid === user._id) {
         const img = image;
         img.username = user.username;
         img.avatar = user.profile.avatar;
-        return <PicHolder key={image._id} User={curUser} image={img} />;
+        return <PicHolder key={image._id} User={User} image={img} />;
       }
       return false;
     }));
@@ -50,8 +50,8 @@ class UserLiked extends Component {
 UserLiked.propTypes = {
   dataIsReady: PropTypes.bool.isRequired,
   images: PropTypes.array.isRequired,
-  curUser: PropTypes.object.isRequired,
-  registerUsers: PropTypes.array,
+  User: PropTypes.object.isRequired,
+  otherUsers: PropTypes.array,
 };
 
 export default createContainer(() => {

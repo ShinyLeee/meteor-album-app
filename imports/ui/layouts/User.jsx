@@ -352,7 +352,7 @@ class UserPage extends Component {
           {
             React.cloneElement(this.props.children, {
               User: this.props.User,
-              registerUsers: this.props.registerUsers,
+              otherUsers: this.props.otherUsers,
             })
           }
         </div>
@@ -372,7 +372,7 @@ class UserPage extends Component {
 UserPage.propTypes = {
   User: PropTypes.object,
   filterUser: PropTypes.array,
-  registerUsers: PropTypes.array,
+  otherUsers: PropTypes.array,
   children: PropTypes.element.isRequired,
 };
 
@@ -382,11 +382,11 @@ UserPage.contextTypes = {
 };
 
 export default createContainer(() => {
-  Meteor.subscribe('Users.registerUser');
+  Meteor.subscribe('Users.otherUsers');
   const uid = Meteor.userId();
-  const registerUsers = Meteor.users.find({}).fetch();
+  const otherUsers = Meteor.users.find({}).fetch();
   const filterUser = [];
-  registerUsers.forEach(user => {
+  otherUsers.forEach(user => {
     if (user._id === uid) return false;
     filterUser.push({
       uid: user._id,
@@ -395,7 +395,7 @@ export default createContainer(() => {
     return true;
   });
   return {
-    registerUsers,
+    otherUsers,
     filterUser,
   };
 }, UserPage);
