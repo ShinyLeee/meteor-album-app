@@ -1,6 +1,5 @@
 import React, { Component, PropTypes } from 'react';
 
-import CircularProgress from 'material-ui/CircularProgress';
 import { List, ListItem } from 'material-ui/List';
 import TextField from 'material-ui/TextField';
 import Subheader from 'material-ui/Subheader';
@@ -8,54 +7,35 @@ import Divider from 'material-ui/Divider';
 import Checkbox from 'material-ui/Checkbox';
 import Toggle from 'material-ui/Toggle';
 import Avatar from 'material-ui/Avatar';
-
+import RaisedButton from 'material-ui/RaisedButton';
 import CameraIcon from 'material-ui/svg-icons/image/photo-camera';
 import PersonIcon from 'material-ui/svg-icons/social/person';
 import EmailIcon from 'material-ui/svg-icons/communication/email';
 
-import RaisedButton from 'material-ui/RaisedButton';
+import { updateUser } from '/imports/api/users/methods.js';
 
 import NavHeader from '../components/NavHeader.jsx';
 import displayAlert from '../lib/displayAlert.js';
-
-import { updateUser } from '../../api/users/methods.js';
 
 export default class Setting extends Component {
 
   constructor(props) {
     super(props);
     const { User } = this.props;
-    if (User) {
-      this.state = {
-        location: 'setting',
-        cover: User.profile.cover,
-        avatar: User.profile.avatar,
-        nickname: User.profile.nickname,
-        nToggle: User.profile.settings.notification,
-        mToggle: User.profile.settings.message,
-      };
-    } else {
-      this.state = { location: 'setting' };
-    }
+    this.state = {
+      location: 'setting',
+      cover: User.profile.cover,
+      avatar: User.profile.avatar,
+      nickname: User.profile.nickname,
+      nToggle: User.profile.settings.notification,
+      mToggle: User.profile.settings.message,
+    };
     this.handleTriggerCoverFile = this.handleTriggerCoverFile.bind(this);
     this.handleTriggerAvatarFile = this.handleTriggerAvatarFile.bind(this);
     this.handleImgChange = this.handleImgChange.bind(this);
     this.handleTextFieldChange = this.handleTextFieldChange.bind(this);
     this.handleToggle = this.handleToggle.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-  }
-
-  componentWillReceiveProps(nextProps) {
-    // When userIsReady return true start setState
-    if (nextProps.userIsReady) {
-      this.setState({
-        cover: nextProps.User.profile.cover,
-        avatar: nextProps.User.profile.avatar,
-        nickname: nextProps.User.profile.nickname,
-        nToggle: nextProps.User.profile.settings.notification,
-        mToggle: nextProps.User.profile.settings.message,
-      });
-    }
   }
 
   handleTriggerCoverFile() {
@@ -112,16 +92,6 @@ export default class Setting extends Component {
 
   render() {
     const { User } = this.props;
-    if (!User) {
-      return (
-        <div className="container">
-          <NavHeader location={this.state.location} />
-          <div className="content text-center">
-            <CircularProgress style={{ top: '150px' }} size={1} />
-          </div>
-        </div>
-      );
-    }
     const styles = {
       cameraIconStyle: {
         height: '38px',

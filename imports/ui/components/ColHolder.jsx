@@ -15,31 +15,34 @@ export default class ColHolder extends Component {
   render() {
     const { User, col } = this.props;
     const styles = {
-      colCover: {
-        backgroundColor: 'transparent',
+      colHolder: {
         backgroundImage: `url(${col.cover})`,
         backgroundSize: 'cover',
         backgroundPosition: '50%',
       },
     };
     return (
-      <div className="col-holder" onTouchTap={() => this.handleAccessCol(col.name)}>
-        <div className="col-cover" style={styles.colCover}>
+      <div
+        className="col-holder"
+        style={styles.colHolder}
+        onTouchTap={() => this.handleAccessCol(col.name)}
+      >
+        <div className="col-cover">
           <div className="col-background" />
-        </div>
-        <div className="col-header">
-          <h4 className="col-header-time">
-            {moment(col.createdAt).format('YYYY-MM-DD')}
-          </h4>
-          <h2 className="col-header-name">
-            {col.name}
-          </h2>
-        </div>
-        <div className="col-footer">
-          <img src={User.profile.avatar} alt={User.username} className="col-footer-avatar" />
-          <span className="col-footer-username">
-            {User.username}
-          </span>
+          <div className="col-header">
+            <h4 className="col-header-time">
+              {moment(col.createdAt).format('YYYY-MM-DD')}
+            </h4>
+            <h2 className="col-header-name">
+              {col.name}
+            </h2>
+          </div>
+          <div className="col-footer">
+            <img src={User.profile.avatar} alt={User.username} className="col-footer-avatar" />
+            <span className="col-footer-username">
+              {User.username}
+            </span>
+          </div>
         </div>
       </div>
     );
@@ -52,6 +55,6 @@ ColHolder.contextTypes = {
 };
 
 ColHolder.propTypes = {
-  User: PropTypes.object,
+  User: PropTypes.object.isRequired,
   col: PropTypes.object.isRequired,
 };

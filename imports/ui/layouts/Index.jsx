@@ -125,23 +125,6 @@ class Index extends Component {
         </div>
       );
     }
-    if (!User) {
-      return (
-        <div className="container">
-          <NavHeader
-            location={this.state.location}
-          />
-          <div className="content">
-            <Recap
-              title="Gallery"
-              detailFir="Vivian的私人相册"
-              detailSec="Created By Shiny Lee"
-            />
-            {this.renderInfinite()}
-          </div>
-        </div>
-      );
-    }
     const styles = {
       floatBtn: {
         position: 'fixed',
@@ -160,16 +143,22 @@ class Index extends Component {
             title="Gallery"
             detailFir="Vivian的私人相册"
             detailSec="Created By Shiny Lee"
+            showIcon
           />
           {this.renderInfinite()}
         </div>
-        <FloatingActionButton
-          style={styles.floatBtn}
-          containerElement={<Link to="/upload" />}
-          secondary
-        >
-          <AddIcon />
-        </FloatingActionButton>
+        {
+          // If User has login, show Floating Button
+          User ? (
+            <FloatingActionButton
+              style={styles.floatBtn}
+              containerElement={<Link to="/upload" />}
+              secondary
+            >
+              <AddIcon />
+            </FloatingActionButton>
+          ) : null
+        }
       </div>
     );
   }

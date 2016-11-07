@@ -49,7 +49,8 @@ export default class Register extends Component {
       }, (err) => {
         if (err) {
           displayAlert('error', 'user.createUser.unexpectedError');
-          return console.error(err); // TODO LOG
+          // TODO LOG
+          return console.error(err); // eslint-disable-line no-console
         }
         this.context.router.replace('/');
         displayAlert('success', 'user.login.success');

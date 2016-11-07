@@ -17,7 +17,7 @@ export default class Infinity extends Component {
   }
 
   handleScroll() {
-    const offset = document.body.offsetHeight - (window.innerHeight + window.scrollY);
+    const offset = document.body.scrollHeight - (window.innerHeight + window.scrollY);
     const { offsetToBottom, onInfinityLoad, isLoading } = this.props;
     if (offset <= offsetToBottom && !isLoading) {
       onInfinityLoad();

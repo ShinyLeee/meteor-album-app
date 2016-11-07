@@ -37,7 +37,14 @@ class App extends Component {
           effect="stackslide"
           timeout={3000}
         />
-        { React.cloneElement(this.props.children, { User }) }
+        {
+          // React validates propTypes on elements when those elements are created,
+          // rather than when they're about to render.
+          // This means that any prop types with isRequired will fail validation
+          // when those props are supplied via this approach. In these cases,
+          // you should not specify isRequired for those props.
+          React.cloneElement(this.props.children, { User })
+        }
       </div>
     );
   }

@@ -40,6 +40,7 @@ class ZoomerHolder extends Component {
         backgroundColor: '#68655B',
         backgroundImage: `url(${image.url})`,
         backgroundSize: 'cover',
+        backgroundPosition: '50%',
       },
       iconButton: {
         color: '#fff',
