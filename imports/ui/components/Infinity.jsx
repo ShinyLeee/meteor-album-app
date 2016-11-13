@@ -1,6 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import CircularProgress from 'material-ui/CircularProgress';
 
+import { on, off } from '/imports/utils/events.js';
+
 export default class Infinity extends Component {
 
   constructor(props) {
@@ -9,11 +11,11 @@ export default class Infinity extends Component {
   }
 
   componentDidMount() {
-    window.addEventListener('scroll', this.handleScroll);
+    on(window, 'scroll', this.handleScroll);
   }
 
   componentWillUnmount() {
-    window.removeEventListener('scroll', this.handleScroll);
+    off(window, 'scroll', this.handleScroll);
   }
 
   handleScroll() {

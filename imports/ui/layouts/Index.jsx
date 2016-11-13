@@ -39,7 +39,7 @@ class Index extends Component {
 
   componentWillUnmount() {
     // If lifecyle is in componentWillUnmount,
-    // But the promise still in progress then Cancel the promise
+    // But if promise still in progress then Cancel the promise
     if (this.loadPromise) {
       this.loadPromise.cancel();
     }

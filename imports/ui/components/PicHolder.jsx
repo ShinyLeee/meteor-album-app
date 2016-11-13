@@ -87,7 +87,7 @@ class PicHolder extends Component {
         dispatch(zoomerOpen(image));
       })
       .then(() => {
-        document.body.style.overflowY = 'hidden';
+        document.body.style.overflow = 'hidden';
       })
       .catch((err) => console.log(err)); // eslint-disable-line no-console
   }

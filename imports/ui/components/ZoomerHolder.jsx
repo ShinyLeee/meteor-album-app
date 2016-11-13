@@ -21,7 +21,7 @@ class ZoomerHolder extends Component {
 
   handleClose() {
     const { dispatch } = this.props;
-    document.body.style.overflowY = 'scroll';
+    document.body.style.overflow = '';
     dispatch(zoomerClose());
   }
 
