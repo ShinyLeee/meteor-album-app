@@ -5,6 +5,7 @@ import { createContainer } from 'meteor/react-meteor-data';
 
 import CircularProgress from 'material-ui/CircularProgress';
 import NavHeader from './components/NavHeader.jsx';
+import Uploader from './components/Uploader.jsx';
 
 class App extends Component {
   constructor(props) {
@@ -19,10 +20,7 @@ class App extends Component {
     if (!userIsReady) {
       return (
         <div className="container">
-          <NavHeader
-            User={User}
-            location={this.state.location}
-          />
+          <NavHeader loading />
           <div className="content text-center">
             <CircularProgress style={{ top: '150px' }} size={1} />
           </div>
@@ -45,6 +43,7 @@ class App extends Component {
           // you should not specify isRequired for those props.
           React.cloneElement(this.props.children, { User })
         }
+        <Uploader User={User} multiple />
       </div>
     );
   }

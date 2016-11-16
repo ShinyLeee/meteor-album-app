@@ -14,6 +14,7 @@
     "material-ui": "^0.15.4",
     "meteor-node-stubs": "~0.2.0",
     "moment": "^2.15.1",
+    "node-uuid": "^1.4.7",
     "qiniu": "^6.1.11",
     "radium": "^0.18.1",
     "react": "^15.3.1",

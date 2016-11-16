@@ -32,6 +32,21 @@ import displayAlert from '../lib/displayAlert.js';
 
 import { insertNote } from '../../api/notes/methods.js';
 
+const styles = {
+  customTextField: {
+    marginLeft: 20,
+  },
+  customModalContent: {
+    width: '100%',
+    maxWidth: 'none',
+  },
+  floatBtn: {
+    position: 'fixed',
+    right: '16px',
+    bottom: '16px',
+  },
+};
+
 class UserPage extends Component {
 
   constructor(props) {
@@ -165,38 +180,14 @@ class UserPage extends Component {
     });
   }
 
-  render() {
+  renderContent() {
     const { User } = this.props;
-    if (!User) {
-      return (
-        <div className="container">
-          <NavHeader location={this.state.location} />
-          <div className="content text-center">
-            <CircularProgress style={{ top: '150px' }} size={1} />
-          </div>
-        </div>
-      );
-    }
     const isNotePage = classnames('user-note', {
       highlight: this.state.notePage,
     });
     const isLikedPage = classnames('user-liked', {
       highlight: this.state.likedPage,
     });
-    const styles = {
-      customTextField: {
-        marginLeft: 20,
-      },
-      customModalContent: {
-        width: '100%',
-        maxWidth: 'none',
-      },
-      floatBtn: {
-        position: 'fixed',
-        right: '16px',
-        bottom: '16px',
-      },
-    };
     const relateModalActions = [
       <FlatButton label="取消" onTouchTap={this.handleClose} primary />,
       <FlatButton label="申请关联" onTouchTap={this.relateSubmit} primary />,
@@ -206,149 +197,161 @@ class UserPage extends Component {
       <FlatButton label="确定发送" onTouchTap={this.noteSubmit} primary />,
     ];
     return (
-      <div className="container">
-        <NavHeader
-          User={User}
-          location={this.state.location}
-        />
-        <div className="content">
-          <div className="user-holder">
-            <div className="user-panel">
-              <div className="user-header">
-                <div className="user-avatar">
-                  <img src={User.profile.avatar} alt="user-avatar" />
-                  <div className="user-action">
-                    <IconMenu
-                      iconButtonElement={<IconButton><MoreHorizIcon color="#999" /></IconButton>}
-                      anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
-                      targetOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-                    >
-                      <MenuItem
-                        primaryText="账号设置"
-                        containerElement={<Link to={'/setting'} />}
-                        leftIcon={<SettingsIcon />}
-                      />
-                      <MenuItem
-                        primaryText="关联用户"
-                        leftIcon={<PersonAddIcon />}
-                        onTouchTap={this.handleAddFriend}
-                      />
-                      <MenuItem
-                        primaryText="发送信息"
-                        leftIcon={<MessageIcon />}
-                        onTouchTap={this.handleSendNotes}
-                      />
-                      <MenuItem
-                        primaryText="帮助"
-                        containerElement={<Link to={'/help'} />}
-                        leftIcon={<HelpIcon />}
-                      />
-                      <MenuItem
-                        primaryText="登出"
-                        leftIcon={<ExitToAppIcon />}
-                        onTouchTap={this.handleLogout}
-                      />
-                    </IconMenu>
-                  </div>
-                </div>
-                <div className="user-name">
-                  <h1>{User.username}</h1>
-                </div>
+      <div className="user-holder">
+        <div className="user-panel">
+          <div className="user-header">
+            <div className="user-avatar">
+              <img src={User.profile.avatar} alt="user-avatar" />
+              <div className="user-action">
+                <IconMenu
+                  iconButtonElement={<IconButton><MoreHorizIcon color="#999" /></IconButton>}
+                  anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
+                  targetOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                >
+                  <MenuItem
+                    primaryText="账号设置"
+                    containerElement={<Link to={'/setting'} />}
+                    leftIcon={<SettingsIcon />}
+                  />
+                  <MenuItem
+                    primaryText="关联用户"
+                    leftIcon={<PersonAddIcon />}
+                    onTouchTap={this.handleAddFriend}
+                  />
+                  <MenuItem
+                    primaryText="发送信息"
+                    leftIcon={<MessageIcon />}
+                    onTouchTap={this.handleSendNotes}
+                  />
+                  <MenuItem
+                    primaryText="帮助"
+                    containerElement={<Link to={'/help'} />}
+                    leftIcon={<HelpIcon />}
+                  />
+                  <MenuItem
+                    primaryText="登出"
+                    leftIcon={<ExitToAppIcon />}
+                    onTouchTap={this.handleLogout}
+                  />
+                </IconMenu>
               </div>
             </div>
-            <div className="user-info">
-              <Link
-                className={isNotePage}
-                to="/user/notes"
-                onClick={this.handleChildCompChange}
-              >
-                <span>{User.profile.notes}</span>
-                <span>Notes</span>
-              </Link>
-              <Link
-                className={isLikedPage}
-                to="/user/liked"
-                onClick={this.handleChildCompChange}
-              >
-                <span>{User.profile.likes}</span>
-                <span>Liked</span>
-              </Link>
-            </div>
-            <div className="user-modal">
-              <Dialog
-                title="关联"
-                actions={relateModalActions}
-                modal={false}
-                open={this.state.relateModal}
-                contentStyle={styles.customModalContent}
-                onRequestClose={this.handleClose}
-              >
-                <AutoComplete
-                  onNewRequest={this.handleRelaterChange}
-                  onUpdateInput={this.handleRelaterChange}
-                  floatingLabelText="用户名"
-                  filter={AutoComplete.caseInsensitiveFilter}
-                  dataSource={this.getUsernames()}
-                />
-                <br />
-                注: 请关联你的男朋友或者女朋友
-              </Dialog>
-              <Dialog
-                title="发送信息"
-                actions={noteModalActions}
-                modal={false}
-                open={this.state.noteModal}
-                contentStyle={styles.customModalContent}
-                onRequestClose={this.handleClose}
-              >
-                <TextField
-                  onChange={this.handleTextFieldChange}
-                  name="title"
-                  type="text"
-                  floatingLabelText="标题"
-                  style={styles.customTextField}
-                  underlineShow={false}
-                  fullWidth
-                />
-                <Divider />
-                <TextField
-                  onChange={this.handleTextFieldChange}
-                  name="content"
-                  type="text"
-                  floatingLabelText="内容"
-                  style={styles.customTextField}
-                  underlineShow={false}
-                  rows={1}
-                  rowsMax={2}
-                  fullWidth
-                  multiLine
-                />
-                <Divider />
-                <AutoComplete
-                  onNewRequest={this.handleReceiverChange}
-                  onUpdateInput={this.handleReceiverChange}
-                  floatingLabelText="接收者"
-                  style={styles.customTextField}
-                  underlineShow={false}
-                  filter={AutoComplete.caseInsensitiveFilter}
-                  dataSource={this.getUsernames()}
-                  openOnFocus
-                  fullWidth
-                />
-                <Divider />
-                <DatePicker
-                  onChange={this.handleSendDateChange}
-                  floatingLabelText="发送时间"
-                  style={styles.customTextField}
-                  underlineShow={false}
-                  defaultDate={this.state.sendAt}
-                  value={this.state.sendAt}
-                />
-                <Divider />
-                <br />
-              </Dialog>
+            <div className="user-name">
+              <h1>{User.username}</h1>
             </div>
           </div>
+        </div>
+        <div className="user-info">
+          <Link
+            className={isNotePage}
+            to="/user/notes"
+            onClick={this.handleChildCompChange}
+          >
+            <span>{User.profile.notes}</span>
+            <span>Notes</span>
+          </Link>
+          <Link
+            className={isLikedPage}
+            to="/user/liked"
+            onClick={this.handleChildCompChange}
+          >
+            <span>{User.profile.likes}</span>
+            <span>Liked</span>
+          </Link>
+        </div>
+        <div className="user-modal">
+          <Dialog
+            title="关联"
+            actions={relateModalActions}
+            modal={false}
+            open={this.state.relateModal}
+            contentStyle={styles.customModalContent}
+            onRequestClose={this.handleClose}
+          >
+            <AutoComplete
+              onNewRequest={this.handleRelaterChange}
+              onUpdateInput={this.handleRelaterChange}
+              floatingLabelText="用户名"
+              filter={AutoComplete.caseInsensitiveFilter}
+              dataSource={this.getUsernames()}
+            />
+            <br />
+            注: 请关联你的男朋友或者女朋友
+          </Dialog>
+          <Dialog
+            title="发送信息"
+            actions={noteModalActions}
+            modal={false}
+            open={this.state.noteModal}
+            contentStyle={styles.customModalContent}
+            onRequestClose={this.handleClose}
+          >
+            <TextField
+              onChange={this.handleTextFieldChange}
+              name="title"
+              type="text"
+              floatingLabelText="标题"
+              style={styles.customTextField}
+              underlineShow={false}
+              fullWidth
+            />
+            <Divider />
+            <TextField
+              onChange={this.handleTextFieldChange}
+              name="content"
+              type="text"
+              floatingLabelText="内容"
+              style={styles.customTextField}
+              underlineShow={false}
+              rows={1}
+              rowsMax={2}
+              fullWidth
+              multiLine
+            />
+            <Divider />
+            <AutoComplete
+              onNewRequest={this.handleReceiverChange}
+              onUpdateInput={this.handleReceiverChange}
+              floatingLabelText="接收者"
+              style={styles.customTextField}
+              underlineShow={false}
+              filter={AutoComplete.caseInsensitiveFilter}
+              dataSource={this.getUsernames()}
+              openOnFocus
+              fullWidth
+            />
+            <Divider />
+            <DatePicker
+              onChange={this.handleSendDateChange}
+              floatingLabelText="发送时间"
+              style={styles.customTextField}
+              underlineShow={false}
+              defaultDate={this.state.sendAt}
+              value={this.state.sendAt}
+            />
+            <Divider />
+            <br />
+          </Dialog>
+        </div>
+      </div>
+    )
+  }
+
+  renderLoader() {
+    return (
+      <div className="content text-center">
+        <CircularProgress style={{ top: '150px' }} size={1} />
+      </div>
+    );
+  }
+
+  render() {
+    const { User } = this.props;
+    return (
+      <div className="container">
+        <NavHeader User={User} location={this.state.location} primary />
+        <div className="content">
+          { User ? this.renderContent() : this.renderLoader() }
           {
             React.cloneElement(this.props.children, {
               User: this.props.User,

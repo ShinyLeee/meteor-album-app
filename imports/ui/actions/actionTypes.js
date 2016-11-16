@@ -21,3 +21,12 @@ export const zoomerOpen = (image) => ({
 export const zoomerClose = () => ({
   type: 'ZOOMER_CLOSE',
 });
+
+export const uploaderStart = (uploader) => ({
+  type: 'UPLOADER_START',
+  uploader,
+});
+
+export const uploaderStop = () => ({
+  type: 'UPLOADER_STOP',
+});

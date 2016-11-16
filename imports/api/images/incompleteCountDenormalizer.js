@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Collections } from '../collections/collection.js';
 
 const incompleteCountDenormalizer = {
 
@@ -8,6 +9,16 @@ const incompleteCountDenormalizer = {
       $inc: {
         'profile.images': 1,
       },
+    }, (err) => {
+      if (err) {
+        console.log(err); // eslint-disable-line no-console
+      }
+      Collections.update({
+        uid,
+        name: image.collection,
+      }, {
+        $inc: { quantity: 1 },
+      });
     });
   },
 
@@ -17,6 +28,16 @@ const incompleteCountDenormalizer = {
       $inc: {
         'profile.images': -1,
       },
+    }, (err) => {
+      if (err) {
+        console.log(err); // eslint-disable-line no-console
+      }
+      Collections.update({
+        uid,
+        name: image.collection,
+      }, {
+        $inc: { quantity: -1 },
+      });
     });
   },
 

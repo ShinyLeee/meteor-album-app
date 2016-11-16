@@ -17,6 +17,19 @@ import { updateUser } from '/imports/api/users/methods.js';
 import NavHeader from '../components/NavHeader.jsx';
 import displayAlert from '../lib/displayAlert.js';
 
+const styles = {
+  cameraIconStyle: {
+    height: '38px',
+    color: '#fff',
+  },
+  liForTextFieldStyle: {
+    padding: '0 16px 16px 72px',
+  },
+  textFieldStyle: {
+    marginTop: '-30px',
+  },
+};
+
 export default class Setting extends Component {
 
   constructor(props) {
@@ -92,24 +105,9 @@ export default class Setting extends Component {
 
   render() {
     const { User } = this.props;
-    const styles = {
-      cameraIconStyle: {
-        height: '38px',
-        color: '#fff',
-      },
-      liForTextFieldStyle: {
-        padding: '0 16px 16px 72px',
-      },
-      textFieldStyle: {
-        marginTop: '-30px',
-      },
-    };
     return (
       <div className="container">
-        <NavHeader
-          User={User}
-          location={this.state.location}
-        />
+        <NavHeader User={User} location={this.state.location} primary />
         <div className="content">
           <div className="setting-holder">
             <div className="setting-upload">

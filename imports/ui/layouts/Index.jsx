@@ -17,6 +17,14 @@ import Recap from '../components/Recap.jsx';
 import PicHolder from '../components/PicHolder.jsx';
 import ZoomerHolder from '../components/ZoomerHolder.jsx';
 
+const styles = {
+  floatBtn: {
+    position: 'fixed',
+    right: '16px',
+    bottom: '16px',
+  },
+};
+
 class Index extends Component {
   constructor(props) {
     super(props);
@@ -110,34 +118,19 @@ class Index extends Component {
     );
   }
 
+  renderLoader() {
+    return (
+      <div className="content text-center">
+        <CircularProgress style={{ top: '150px' }} size={1} />
+      </div>
+    );
+  }
+
   render() {
     const { User, dataIsReady } = this.props;
-    if (!dataIsReady) {
-      return (
-        <div className="container">
-          <NavHeader
-            User={User}
-            location={this.state.location}
-          />
-          <div className="content text-center">
-            <CircularProgress style={{ top: '150px' }} size={1} />
-          </div>
-        </div>
-      );
-    }
-    const styles = {
-      floatBtn: {
-        position: 'fixed',
-        right: '16px',
-        bottom: '16px',
-      },
-    };
     return (
       <div className="container">
-        <NavHeader
-          User={User}
-          location={this.state.location}
-        />
+        <NavHeader User={User} location={this.state.location} primary />
         <div className="content">
           <Recap
             title="Gallery"
@@ -145,7 +138,7 @@ class Index extends Component {
             detailSec="Created By Shiny Lee"
             showIcon
           />
-          {this.renderInfinite()}
+          { dataIsReady ? this.renderInfinite() : this.renderLoader() }
         </div>
         {
           // If User has login, show Floating Button

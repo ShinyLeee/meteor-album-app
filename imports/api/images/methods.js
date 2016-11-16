@@ -16,6 +16,7 @@ export const insertImage = new ValidatedMethod({
       throw new Meteor.Error('user.accessDenied');
     }
     Images.insert(image);
+    return true;
   },
 });
 

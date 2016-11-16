@@ -23,7 +23,7 @@ export default class Justified extends Component {
       fullWidthBreakoutRowCadence,
     } = this.props;
 
-    const ratio = images.map((image) => image.detail.ratio);
+    const ratio = images.map((image) => image.ratio);
     const geometry = justifiedLayout(
       ratio,
       {
@@ -56,9 +56,19 @@ export default class Justified extends Component {
           height: `${img.height}px`,
           top: `${img.top}px`,
           left: `${img.left}px`,
+          backgroundColor: '#eee',
+          overflow: 'hidden',
         }}
       >
-        <img src={img.url} alt={img.name} style={{ width: '100%', height: '100%' }} />
+        <img
+          src={`${img.url}?imageView2/0/w/${img.width * 2}`} // TODO wait for adjust
+          alt={img.name}
+          style={{
+            width: '100%',
+            height: '100%',
+            transition: 'transform .135s cubic-bezier(0.0,0.0,0.2,1),opacity linear .15s',
+          }}
+        />
       </div>
     ));
   }
@@ -77,8 +87,8 @@ export default class Justified extends Component {
 Justified.defaultProps = {
   containerWidth: 375,
   containerPadding: 0,
-  targetRowHeight: 150,
-  targetRowHeightTolerance: 0.25,
+  targetRowHeight: 200,
+  targetRowHeightTolerance: 0.15,
   boxSpacing: 4,
   fullWidthBreakoutRowCadence: false,
   justifiedContainer: 'justified-container',

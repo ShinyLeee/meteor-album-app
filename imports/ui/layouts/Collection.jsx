@@ -13,6 +13,17 @@ import NavHeader from '../components/NavHeader.jsx';
 import Recap from '../components/Recap.jsx';
 import ColHolder from '../components/ColHolder.jsx';
 
+const styles = {
+  floatBtn: {
+    position: 'fixed',
+    right: '16px',
+    bottom: '16px',
+  },
+  colContainer: {
+    padding: '0 12px',
+  },
+};
+
 class Collection extends Component {
   constructor(props) {
     super(props);
@@ -28,37 +39,19 @@ class Collection extends Component {
     ));
   }
 
+  renderLoader() {
+    return (
+      <div className="content text-center">
+        <CircularProgress style={{ top: '150px' }} size={1} />
+      </div>
+    );
+  }
+
   render() {
     const { User, dataIsReady } = this.props;
-    if (!dataIsReady) {
-      return (
-        <div className="container">
-          <NavHeader
-            User={User}
-            location={this.state.location}
-          />
-          <div className="content text-center">
-            <CircularProgress style={{ top: '150px' }} size={1} />
-          </div>
-        </div>
-      );
-    }
-    const styles = {
-      floatBtn: {
-        position: 'fixed',
-        right: '16px',
-        bottom: '16px',
-      },
-      colContainer: {
-        padding: '0 12px',
-      },
-    };
     return (
       <div className="container">
-        <NavHeader
-          User={User}
-          location={this.state.location}
-        />
+        <NavHeader User={User} location={this.state.location} primary />
         <div className="content">
           <Recap
             title="Collection"
@@ -66,7 +59,7 @@ class Collection extends Component {
             detailSec="没有分类的图片都在默认分类集里"
           />
           <div className="col-container" style={styles.colContainer}>
-            {this.renderColHolder()}
+            { dataIsReady ? this.renderColHolder() : this.renderLoader() }
           </div>
         </div>
         <FloatingActionButton

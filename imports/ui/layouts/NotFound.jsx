@@ -15,10 +15,7 @@ export default class NotFound extends Component {
     const { User } = this.props;
     return (
       <div className="container">
-        <NavHeader
-          User={User}
-          location={this.state.location}
-        />
+        <NavHeader User={User} location={this.state.location} primary />
         <div className="content">
           <div className="recap">
             <h1 className="recap-title">404 Not Found</h1>

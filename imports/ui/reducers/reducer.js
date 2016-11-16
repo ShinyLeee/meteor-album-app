@@ -21,3 +21,14 @@ export const zoomer = (state = null, action) => {
       return state;
   }
 };
+
+export const uploader = (state = null, action) => {
+  switch (action.type) {
+    case 'UPLOADER_START':
+      return Object.assign(action.uploader, { open: true });
+    case 'UPLOADER_STOP':
+      return null;
+    default:
+      return state;
+  }
+};

@@ -21,8 +21,47 @@ import ExploreIcon from 'material-ui/svg-icons/action/explore';
 import SettingsIcon from 'material-ui/svg-icons/action/settings';
 import FeedbackIcon from 'material-ui/svg-icons/action/feedback';
 import HelpIcon from 'material-ui/svg-icons/action/help';
-
 import { purple500 } from 'material-ui/styles/colors';
+
+const styles = {
+  AppBar: {
+    position: 'fixed',
+    backgroundColor: purple500,
+  },
+  AppBarTitle: {
+    fontSize: '20px',
+    cursor: 'pointer',
+  },
+  AppBarIconElementRight: {
+    marginTop: 0,
+    marginRight: 0,
+  },
+  DrawerHeader: {
+    padding: '10px 16px 10px 20px',
+    fontFamily: 'Microsoft Yahei',
+    fontSize: '22px',
+  },
+  AppBarIcon: {
+    top: '8px',
+  },
+  AppBarIconSvg: {
+    width: '28px',
+    height: '28px',
+    color: '#fff',
+  },
+  AppBarIconBtnForAvatar: {
+    left: '10px',
+    bottom: '6px',
+    padding: 0,
+  },
+  AppBarIconBtnForLogin: {
+    marginRight: '12px',
+  },
+  AppBarLoginBtn: {
+    margin: '12px 0 0 0',
+    color: '#fff',
+  },
+};
 
 export default class NavHeader extends Component {
 
@@ -31,39 +70,18 @@ export default class NavHeader extends Component {
     this.state = {
       drawer: false,
     };
-    this.handleTitleTouchTap = this.handleTitleTouchTap.bind(this);
+    this.handlePrimaryTitleTouchTap = this.handlePrimaryTitleTouchTap.bind(this);
   }
 
-  handleTitleTouchTap() {
+
+  handlePrimaryTitleTouchTap() {
     this.context.router.replace('/');
   }
 
-  renderIconEleRight(User) {
-    const styles = {
-      AppBarIcon: {
-        top: '8px',
-      },
-      AppBarIconSvg: {
-        width: '28px',
-        height: '28px',
-        color: '#fff',
-      },
-      AppBarIconBtnForAvatar: {
-        left: '10px',
-        bottom: '6px',
-        padding: 0,
-      },
-      AppBarIconBtnForLogin: {
-        marginRight: '12px',
-      },
-      AppBarLoginBtn: {
-        margin: '12px 0 0 0',
-        color: '#fff',
-      },
-    };
+  renderPrimaryIconRight(User) {
     if (Meteor.loggingIn() || User) {
-      const defaultSrc = 'http://odsiu8xnd.bkt.clouddn.com/vivian/default-avatar.jpg';
-      const avatarSrc = this.props.User ? this.props.User.profile.avatar : defaultSrc;
+      const defaultSrc = '//odsiu8xnd.bkt.clouddn.com/vivian/default-avatar.jpg?imageView2/0/w/40/h/40'; // eslint-disable-line
+      const avatarSrc = User ? User.profile.avatar : defaultSrc;
       return (
         <div>
           <IconButton
@@ -106,29 +124,8 @@ export default class NavHeader extends Component {
     );
   }
 
-  render() {
+  renderPrimaryNavHeader() {
     const { User, location } = this.props;
-    const styles = {
-      AppBar: {
-        position: 'fixed',
-        backgroundColor: purple500,
-      },
-      AppBarTitle: {
-        cursor: 'pointer',
-      },
-      AppBarIconElementRight: {
-        marginTop: 0,
-        marginRight: 0,
-      },
-      DrawerHeader: {
-        padding: '10px 16px 10px 20px',
-        fontFamily: 'Microsoft Yahei',
-        fontSize: '22px',
-      },
-    };
-    if (location) {
-      styles[location] = { color: purple500 };
-    }
     return (
       <div className="NavHeader-container">
         <AppBar
@@ -136,51 +133,51 @@ export default class NavHeader extends Component {
           title="Gallery +"
           titleStyle={styles.AppBarTitle}
           onLeftIconButtonTouchTap={() => { this.setState({ drawer: true }); }}
-          onTitleTouchTap={this.handleTitleTouchTap}
-          iconElementRight={this.renderIconEleRight(User)}
+          onTitleTouchTap={this.handlePrimaryTitleTouchTap}
+          iconElementRight={this.renderPrimaryIconRight(User)}
           iconStyleRight={styles.AppBarIconElementRight}
         />
         <Drawer
           docked={false}
-          width={300}
+          width={280}
           open={this.state.drawer}
           onRequestChange={(open) => this.setState({ drawer: open })}
         >
           <Subheader style={styles.DrawerHeader}>Vivian Gallery + </Subheader>
           <Divider />
-          <Menu disableAutoFocus>
+          <Menu width="100%" disableAutoFocus>
             <MenuItem
-              leftIcon={<HomeIcon color={styles.home ? styles.home.color : ''} />}
+              leftIcon={<HomeIcon color={location === 'home' ? purple500 : ''} />}
               primaryText="首页"
               containerElement={<Link to="/" />}
-              style={styles.home}
+              style={{ color: location === 'home' ? purple500 : '#000' }}
             />
             <MenuItem
-              leftIcon={<UserIcon color={styles.user ? styles.user.color : ''} />}
+              leftIcon={<UserIcon color={location === 'user' ? purple500 : ''} />}
               primaryText="个人资料"
               containerElement={<Link to="/user" />}
-              style={styles.user}
+              style={{ color: location === 'user' ? purple500 : '#000' }}
             />
             <MenuItem
-              leftIcon={<CameraIcon color={styles.collection ? styles.collection.color : ''} />}
+              leftIcon={<CameraIcon color={location === 'collection' ? purple500 : ''} />}
               primaryText="收藏集"
               containerElement={<Link to="/collection" />}
-              style={styles.collection}
+              style={{ color: location === 'collection' ? purple500 : '#000' }}
             />
             <MenuItem
-              leftIcon={<ExploreIcon color={styles.explore ? styles.explore.color : ''} />}
+              leftIcon={<ExploreIcon color={location === 'explore' ? purple500 : ''} />}
               primaryText="探索"
               containerElement={<Link to="/explore" />}
-              style={styles.explore}
+              style={{ color: location === 'explore' ? purple500 : '#000' }}
             />
           </Menu>
           <Divider />
-          <Menu disableAutoFocus>
+          <Menu width="100%" disableAutoFocus>
             <MenuItem
-              leftIcon={<SettingsIcon color={styles.setting ? styles.setting.color : ''} />}
+              leftIcon={<SettingsIcon color={location === 'setting' ? purple500 : ''} />}
               primaryText="设置"
               containerElement={<Link to="/setting" />}
-              style={styles.setting}
+              style={{ color: location === 'setting' ? purple500 : '#000' }}
             />
             <MenuItem
               leftIcon={<FeedbackIcon />}
@@ -196,11 +193,85 @@ export default class NavHeader extends Component {
     );
   }
 
+  render() {
+    const {
+      loading,
+      primary,
+      title,
+      showMenuIconButton,
+      onTitleTouchTap,
+      iconElementLeft,
+      iconElementRight,
+      onLeftIconButtonTouchTap,
+    } = this.props;
+
+    if (loading) {
+      return (
+        <AppBar
+          style={styles.AppBar}
+          titleStyle={styles.AppBarTitle}
+          title="登录中..."
+        />
+      );
+    }
+    if (primary) {
+      return this.renderPrimaryNavHeader();
+    }
+    return (
+      <AppBar
+        style={styles.AppBar}
+        titleStyle={styles.AppBarTitle}
+        title={title}
+        showMenuIconButton={showMenuIconButton}
+        onTitleTouchTap={onTitleTouchTap}
+        iconElementLeft={iconElementLeft}
+        iconElementRight={iconElementRight}
+        onLeftIconButtonTouchTap={onLeftIconButtonTouchTap}
+      />
+    );
+  }
+
 }
 
 NavHeader.propTypes = {
-  location: PropTypes.string.isRequired,
+  loading: PropTypes.bool,
+  /**
+   * primary:
+   *
+   * If true, we render a common NavHeader,
+   *   LeftIcon is Menu Icon --> click activate Drawer,
+   *   Title is Gallery +,
+   *   RightIcon is Search & Notification & Avatar,
+   *
+   * if false, we need to set icon & title by yourself,
+   */
+  primary: PropTypes.bool,
+  /**
+   * location:
+   *
+   * Render different NavHeader acting style,
+   * When Primary prop is True.
+   * Accroding to location's specfic value.
+   */
+  location: PropTypes.string,
+  /**
+   * User:
+   *
+   * Current User, display avatar
+   */
   User: PropTypes.object,
+  /**
+   * Below:
+   *
+   * The below props are all pass to AppBar Component,
+   * when primary is false.
+   */
+  title: PropTypes.string,
+  showMenuIconButton: PropTypes.bool,
+  onTitleTouchTap: PropTypes.func,
+  iconElementLeft: PropTypes.element,
+  iconElementRight: PropTypes.element,
+  onLeftIconButtonTouchTap: PropTypes.func,
 };
 
 // If contextTypes is not defined, then context will be an empty object.

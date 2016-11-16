@@ -66,7 +66,7 @@ export default class Register extends Component {
   render() {
     return (
       <div className="container">
-        <NavHeader location={this.state.location} />
+        <NavHeader location={this.state.location} primary />
         <div className="content">
           <Recap
             title="注册"

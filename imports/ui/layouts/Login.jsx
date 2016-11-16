@@ -39,7 +39,8 @@ class Login extends Component {
           ret += reason[i];
         }
         displayAlert('error', `user.login.${ret}`);
-        return console.error(err); // TODO LOG
+        // TODO LOG
+        return console.error(err); // eslint-disable-line no-console
       }
       dispatch(userLogin(Meteor.user()));
       this.context.router.replace('/');
@@ -50,7 +51,7 @@ class Login extends Component {
   render() {
     return (
       <div className="container">
-        <NavHeader location={this.state.location} />
+        <NavHeader location={this.state.location} primary />
         <div className="content">
           <Recap
             title="登录"
