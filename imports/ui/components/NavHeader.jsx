@@ -26,6 +26,7 @@ import { purple500 } from 'material-ui/styles/colors';
 const styles = {
   AppBar: {
     position: 'fixed',
+    top: 0,
     backgroundColor: purple500,
   },
   AppBarTitle: {
@@ -51,10 +52,11 @@ const styles = {
   },
   AppBarIconBtnForAvatar: {
     left: '10px',
-    bottom: '6px',
+    top: '12px',
     padding: 0,
   },
   AppBarIconBtnForLogin: {
+    top: '8px',
     marginRight: '12px',
   },
   AppBarLoginBtn: {

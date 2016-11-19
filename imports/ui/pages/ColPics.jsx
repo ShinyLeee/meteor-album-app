@@ -110,7 +110,7 @@ class ColPics extends Component {
   renderLoader() {
     return (
       <div className="content text-center">
-        <CircularProgress style={{ top: '150px' }} size={1} />
+        <CircularProgress style={{ top: '150px' }} />
       </div>
     );
   }

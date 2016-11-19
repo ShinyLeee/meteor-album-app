@@ -12,8 +12,22 @@ import CommentIcon from 'material-ui/svg-icons/communication/chat-bubble-outline
 import { makeCancelable } from '/imports/utils/utils.js';
 import { likeImage, unlikeImage } from '/imports/api/images/methods.js';
 
-import displayAlert from '../lib/displayAlert.js';
-import { zoomerOpen } from '../actions/actionTypes.js';
+import { zoomerOpen, snackBarOpen } from '../actions/actionTypes.js';
+
+const styles = {
+  cardContainer: {
+    marginBottom: '50px',
+  },
+  cardMedia: {
+    cursor: 'zoom-in',
+  },
+  flipReplyStyle: {
+    MozTransform: 'scaleX(-1)',
+    WebkitTransform: 'scaleX(-1)',
+    OTransform: 'scaleX(-1)',
+    transform: 'scaleX(-1)',
+  },
+};
 
 class PicHolder extends Component {
 
@@ -35,7 +49,7 @@ class PicHolder extends Component {
   }
 
   handleAddLike() {
-    const { User, image } = this.props;
+    const { User, image, dispatch } = this.props;
 
     const imageId = image._id;
     const liker = User._id;
@@ -45,7 +59,7 @@ class PicHolder extends Component {
       liker,
     }, (err) => {
       if (err) {
-        displayAlert('error', err.message);
+        dispatch(snackBarOpen(err.message));
         return false;
       }
       return true;
@@ -53,7 +67,7 @@ class PicHolder extends Component {
   }
 
   handleRemoveLike() {
-    const { User, image } = this.props;
+    const { User, image, dispatch } = this.props;
 
     const imageId = image._id;
     const unliker = User._id;
@@ -63,7 +77,7 @@ class PicHolder extends Component {
       unliker,
     }, (err) => {
       if (err) {
-        displayAlert('error', err.message);
+        dispatch(snackBarOpen(err.message));
         return false;
       }
       return true;
@@ -71,7 +85,8 @@ class PicHolder extends Component {
   }
 
   handleForbidden() {
-    displayAlert('warning', 'image.like.forbidden');
+    const { dispatch } = this.props;
+    dispatch(snackBarOpen('您不拥有此权限'));
   }
 
   handleZoomImage(image) {
@@ -141,20 +156,6 @@ class PicHolder extends Component {
 
   render() {
     const { image } = this.props;
-    const styles = {
-      cardContainer: {
-        marginBottom: '50px',
-      },
-      cardMedia: {
-        cursor: 'zoom-in',
-      },
-      flipReplyStyle: {
-        MozTransform: 'scaleX(-1)',
-        WebkitTransform: 'scaleX(-1)',
-        OTransform: 'scaleX(-1)',
-        transform: 'scaleX(-1)',
-      },
-    };
     return (
       <div className="pic-holder">
         <Card containerStyle={styles.cardContainer}>

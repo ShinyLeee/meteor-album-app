@@ -3,8 +3,7 @@ import { connect } from 'react-redux';
 import uuid from 'node-uuid';
 
 import { insertImage } from '/imports/api/images/methods.js';
-import { uploaderStop } from '../actions/actionTypes.js';
-import displayAlert from '../lib/displayAlert.js';
+import { uploaderStop, snackBarOpen } from '../actions/actionTypes.js';
 
 class Uploader extends Component {
 
@@ -126,7 +125,7 @@ class Uploader extends Component {
     return insertImage.call(image, (err) => {
       if (err) {
         dispatch(uploaderStop());
-        displayAlert('error', err.reason);
+        dispatch(snackBarOpen(err.message));
       }
       // console.log(file, image);
     });
@@ -134,7 +133,7 @@ class Uploader extends Component {
 
   finishUpload(err) {
     const { dispatch } = this.props;
-    const { total, current } = this.state;
+    const { current } = this.state;
     if (err) {
       this.setState({
         pace: 0,
@@ -144,13 +143,12 @@ class Uploader extends Component {
         uploading: false,
       });
       dispatch(uploaderStop());
+      dispatch(snackBarOpen('上传失败'));
       console.log(err); // eslint-disable-line no-console
       return;
     }
-    const successMsg = `共上传${total}个文件, 其中成功上传${current}个文件, 
-    上传失败${total - current}个文件`;
+    const successMsg = `成功上传${current}个文件`;
 
-    displayAlert('success', successMsg);
     this.setState({
       pace: 0,
       current: 0,
@@ -159,6 +157,7 @@ class Uploader extends Component {
       uploading: false,
     });
     dispatch(uploaderStop());
+    dispatch(snackBarOpen(successMsg));
     console.log('Upload Success'); // eslint-disable-line no-console
   }
 
@@ -168,7 +167,6 @@ class Uploader extends Component {
     if (xhr && xhr.readyState !== 4) {
       xhr.abort();
       const stopMsg = `您取消了上传文件, 已成功上传${this.state.current}个文件`;
-      displayAlert('success', stopMsg);
       this.setState({
         pace: 0,
         current: 0,
@@ -177,6 +175,7 @@ class Uploader extends Component {
         uploading: false,
       });
       dispatch(uploaderStop());
+      dispatch(snackBarOpen(stopMsg));
     }
   }
 

@@ -85,7 +85,7 @@ export default class Justified extends Component {
 
 
 Justified.defaultProps = {
-  containerWidth: 375,
+  containerWidth: document.body.clientWidth,
   containerPadding: 0,
   targetRowHeight: 200,
   targetRowHeightTolerance: 0.15,

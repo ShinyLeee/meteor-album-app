@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
+import { connect } from 'react-redux';
 import classnames from 'classnames';
 
 // For Dropdown Menus
@@ -27,10 +28,9 @@ import PersonAddIcon from 'material-ui/svg-icons/social/person-add';
 import MessageIcon from 'material-ui/svg-icons/communication/message';
 import EditIcon from 'material-ui/svg-icons/image/edit';
 
+import { insertNote } from '/imports/api/notes/methods.js';
 import NavHeader from '../components/NavHeader.jsx';
-import displayAlert from '../lib/displayAlert.js';
-
-import { insertNote } from '../../api/notes/methods.js';
+import { snackBarOpen } from '../actions/actionTypes.js';
 
 const styles = {
   customTextField: {
@@ -84,14 +84,16 @@ class UserPage extends Component {
   }
 
   handleLogout() {
+    const { dispatch } = this.props;
     Meteor.logout((err) => {
       if (err) {
-        displayAlert('error', 'user.logout.unexpectedError');
+        dispatch(snackBarOpen('发生未知错误'));
         // TODO LOG
-        return console.error(err); // eslint-disable-line no-console
+        console.error(err); // eslint-disable-line no-console
+        return false;
       }
       this.context.router.replace('/login');
-      displayAlert('success', 'user.logout.success');
+      dispatch(snackBarOpen('成功登出'));
       return true;
     });
   }
@@ -112,8 +114,9 @@ class UserPage extends Component {
   }
 
   noteSubmit() {
+    const { dispatch } = this.props;
     if (!this.state.receiver) {
-      displayAlert('error', 'note.send.receiverNotFound');
+      dispatch(snackBarOpen('接收者不存在'));
       return;
     }
     insertNote.call({
@@ -124,11 +127,11 @@ class UserPage extends Component {
       sendAt: this.state.sendAt || new Date(),
     }, (err) => {
       if (err) {
-        displayAlert('error', err.message);
+        dispatch(snackBarOpen(err.message));
         return false;
       }
       this.handleClose();
-      displayAlert('success', 'note.send.success');
+      dispatch(snackBarOpen('发送成功'));
       return true;
     });
   }
@@ -334,13 +337,13 @@ class UserPage extends Component {
           </Dialog>
         </div>
       </div>
-    )
+    );
   }
 
   renderLoader() {
     return (
       <div className="content text-center">
-        <CircularProgress style={{ top: '150px' }} size={1} />
+        <CircularProgress style={{ top: '150px' }} />
       </div>
     );
   }
@@ -377,6 +380,7 @@ UserPage.propTypes = {
   filterUser: PropTypes.array,
   otherUsers: PropTypes.array,
   children: PropTypes.element.isRequired,
+  dispatch: PropTypes.func,
 };
 
 // If contextTypes is not defined, then context will be an empty object.
@@ -384,7 +388,7 @@ UserPage.contextTypes = {
   router: PropTypes.object.isRequired,
 };
 
-export default createContainer(() => {
+const MeteorContainer = createContainer(() => {
   Meteor.subscribe('Users.otherUsers');
   const uid = Meteor.userId();
   const otherUsers = Meteor.users.find({}).fetch();
@@ -402,3 +406,5 @@ export default createContainer(() => {
     filterUser,
   };
 }, UserPage);
+
+export default connect()(MeteorContainer);

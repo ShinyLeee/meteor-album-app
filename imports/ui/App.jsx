@@ -1,9 +1,9 @@
 import React, { Component, PropTypes } from 'react';
-import Alert from 'react-s-alert';
 import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
 
 import CircularProgress from 'material-ui/CircularProgress';
+import SnackBar from './components/SnackBar.jsx';
 import NavHeader from './components/NavHeader.jsx';
 import Uploader from './components/Uploader.jsx';
 
@@ -22,19 +22,14 @@ class App extends Component {
         <div className="container">
           <NavHeader loading />
           <div className="content text-center">
-            <CircularProgress style={{ top: '150px' }} size={1} />
+            <CircularProgress style={{ top: '150px' }} />
           </div>
         </div>
       );
     }
     return (
       <div>
-        <Alert
-          stack={{ limit: 3 }}
-          position="top"
-          effect="stackslide"
-          timeout={3000}
-        />
+        <SnackBar />
         {
           // React validates propTypes on elements when those elements are created,
           // rather than when they're about to render.

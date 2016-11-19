@@ -9,11 +9,10 @@ import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
 import CircularProgress from 'material-ui/CircularProgress';
 import IconButton from 'material-ui/IconButton';
 import Dialog from 'material-ui/Dialog';
-
 import ReplyIcon from 'material-ui/svg-icons/content/reply';
 import CheckBoxIcon from 'material-ui/svg-icons/toggle/check-box';
 
-import { Notes } from '../../api/notes/note.js';
+import { Notes } from '/imports/api/notes/note.js';
 
 class UserNotes extends Component {
 
@@ -143,7 +142,7 @@ class UserNotes extends Component {
           onRequestClose={this.handleClose}
         >
           <div className="text-center">
-            <CircularProgress size={0.6} />
+            <CircularProgress />
           </div>
         </Dialog>
       );
@@ -169,7 +168,7 @@ class UserNotes extends Component {
     if (!this.props.dataIsReady) {
       return (
         <div className="text-center">
-          <CircularProgress size={1} />
+          <CircularProgress />
         </div>
       );
     }

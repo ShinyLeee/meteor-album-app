@@ -22,11 +22,5 @@
       "browser": true,
       "node": true,
       "jquery": true
-    },
-    "globals": {
-      "Qiniu": true,
-      "plupload": true,
-      "FileProgress": true,
-      "mOxie": true
     }
 }

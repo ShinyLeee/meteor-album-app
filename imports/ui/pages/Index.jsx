@@ -1,12 +1,8 @@
 import React, { Component, PropTypes } from 'react';
-import { Link } from 'react-router';
 import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
 import LazyLoad from 'react-lazyload';
-
-import FloatingActionButton from 'material-ui/FloatingActionButton';
 import CircularProgress from 'material-ui/CircularProgress';
-import AddIcon from 'material-ui/svg-icons/content/add';
 
 import { makeCancelable } from '/imports/utils/utils.js';
 import { Images } from '/imports/api/images/image.js';
@@ -16,14 +12,6 @@ import NavHeader from '../components/NavHeader.jsx';
 import Recap from '../components/Recap.jsx';
 import PicHolder from '../components/PicHolder.jsx';
 import ZoomerHolder from '../components/ZoomerHolder.jsx';
-
-const styles = {
-  floatBtn: {
-    position: 'fixed',
-    right: '16px',
-    bottom: '16px',
-  },
-};
 
 class Index extends Component {
   constructor(props) {
@@ -101,7 +89,7 @@ class Index extends Component {
       return img;
     });
     return images.map((image) => (
-      <LazyLoad key={image._id} height={200} offset={100} once>
+      <LazyLoad key={image._id} height={300} once>
         <PicHolder User={this.props.User} image={image} />
       </LazyLoad>
     ));
@@ -121,7 +109,7 @@ class Index extends Component {
   renderLoader() {
     return (
       <div className="content text-center">
-        <CircularProgress style={{ top: '150px' }} size={1} />
+        <CircularProgress style={{ top: '150px' }} />
       </div>
     );
   }
@@ -140,18 +128,6 @@ class Index extends Component {
           />
           { dataIsReady ? this.renderInfinite() : this.renderLoader() }
         </div>
-        {
-          // If User has login, show Floating Button
-          User ? (
-            <FloatingActionButton
-              style={styles.floatBtn}
-              containerElement={<Link to="/upload" />}
-              secondary
-            >
-              <AddIcon />
-            </FloatingActionButton>
-          ) : null
-        }
       </div>
     );
   }

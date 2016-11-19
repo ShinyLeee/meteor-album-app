@@ -1,13 +1,3 @@
-export const userCreate = (user) => ({
-  type: 'USER_CREATE',
-  user,
-});
-
-export const userLogin = (user) => ({
-  type: 'USER_LOGIN',
-  user,
-});
-
 export const userLogout = (user) => ({
   type: 'USER_LOGOUT',
   user,
@@ -29,4 +19,14 @@ export const uploaderStart = (uploader) => ({
 
 export const uploaderStop = () => ({
   type: 'UPLOADER_STOP',
+});
+
+export const snackBarOpen = (message, config) => ({
+  type: 'SNACKBAR_OPEN',
+  message,
+  config,
+});
+
+export const snackBarClose = () => ({
+  type: 'SNACKBAR_CLOSE',
 });

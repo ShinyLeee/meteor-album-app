@@ -34,7 +34,7 @@ class UserLiked extends Component {
     if (!this.props.dataIsReady) {
       return (
         <div className="text-center">
-          <CircularProgress size={1} />
+          <CircularProgress />
         </div>
       );
     }

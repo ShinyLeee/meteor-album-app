@@ -11,10 +11,14 @@ html, button, input, textarea, select {
 }
 
 html {
+  margin: 0;
+  padding: 0;
   height: 100%;
 }
 
 body {
+  margin: 0;
+  padding: 0;
   height: 100%;
   .type-regular;
   color: @color-font-primary;
@@ -83,6 +87,7 @@ ul {
 }
 
 a {
+  text-decoration: none;
   color: @color-font-primary;
   -webkit-transition: all .2s ease-in-out;
   transition: all .2s ease-in-out;
@@ -97,6 +102,14 @@ input[type=text] {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none; 
+}
+
+#app {
+  overflow-x: hidden;
+}
+
+.text-center {
+  text-align: center;
 }
 
 .active {

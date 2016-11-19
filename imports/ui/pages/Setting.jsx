@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import { connect } from 'react-redux';
 
 import { List, ListItem } from 'material-ui/List';
 import TextField from 'material-ui/TextField';
@@ -11,11 +12,10 @@ import RaisedButton from 'material-ui/RaisedButton';
 import CameraIcon from 'material-ui/svg-icons/image/photo-camera';
 import PersonIcon from 'material-ui/svg-icons/social/person';
 import EmailIcon from 'material-ui/svg-icons/communication/email';
-
 import { updateUser } from '/imports/api/users/methods.js';
 
 import NavHeader from '../components/NavHeader.jsx';
-import displayAlert from '../lib/displayAlert.js';
+import { snackBarOpen } from '../actions/actionTypes.js';
 
 const styles = {
   cameraIconStyle: {
@@ -30,7 +30,7 @@ const styles = {
   },
 };
 
-export default class Setting extends Component {
+class Setting extends Component {
 
   constructor(props) {
     super(props);
@@ -85,6 +85,7 @@ export default class Setting extends Component {
   }
 
   handleSubmit() {
+    const { dispatch } = this.props;
     updateUser.call({
       nickname: this.state.nickname,
       cover: this.state.cover,
@@ -95,10 +96,10 @@ export default class Setting extends Component {
       },
     }, (err) => {
       if (err) {
-        displayAlert('error', err.reason);
+        dispatch(snackBarOpen(err.message));
         return false;
       }
-      displayAlert('success', 'user.setting.success');
+      dispatch(snackBarOpen('设置保存成功'));
       return true;
     });
   }
@@ -270,4 +271,7 @@ export default class Setting extends Component {
 
 Setting.propTypes = {
   User: PropTypes.object,
+  dispatch: PropTypes.func,
 };
+
+export default connect()(Setting);
