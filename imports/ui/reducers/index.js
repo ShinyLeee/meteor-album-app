@@ -1,8 +1,10 @@
 import { combineReducers } from 'redux';
-import userReducer from './userReducer';
+import { zoomer, uploader, snackBar } from './reducer';
 
 const reducers = combineReducers({
-  user: userReducer,
+  zoomer,
+  uploader,
+  snackBar,
 });
 
 export default reducers;

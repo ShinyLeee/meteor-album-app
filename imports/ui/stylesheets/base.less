@@ -10,7 +10,16 @@ html, button, input, textarea, select {
   -moz-osx-font-smoothing: grayscale;
 }
 
+html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
 body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
   .type-regular;
   color: @color-font-primary;
   font-size: 16px; //this sets the baseline so we can use multiples of 4 & (r)ems
@@ -78,6 +87,7 @@ ul {
 }
 
 a {
+  text-decoration: none;
   color: @color-font-primary;
   -webkit-transition: all .2s ease-in-out;
   transition: all .2s ease-in-out;
@@ -94,10 +104,36 @@ input[type=text] {
   appearance: none; 
 }
 
+#app {
+  overflow-x: hidden;
+}
+
+.text-center {
+  text-align: center;
+}
+
 .active {
   color: @color-font-prominent;
 }
 
 .highlight {
   color: @color-font-prominent;
+}
+
+.fade-enter {
+  opacity: 0.01;
+}
+
+.fade-enter.fade-enter-active {
+  opacity: 1;
+  transition: opacity 500ms ease-in;
+}
+
+.fade-leave {
+  opacity: 1;
+}
+
+.fade-leave.fade-leave-active {
+  opacity: 0.01;
+  transition: opacity 300ms ease-in;
 }

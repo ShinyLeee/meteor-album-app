@@ -1,21 +1,76 @@
 import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
+import { _ } from 'meteor/underscore';
+import { ValidatedMethod } from 'meteor/mdg:validated-method';
+import { SimpleSchema } from 'meteor/aldeed:simple-schema';
+import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
+
 import { Images } from './image.js';
 
-Meteor.methods({
-  'images.insert': function createImage(obj) {
-    check(obj, Object);
-    // Make sure the user is logged in before insert an image
+import incompleteCountDenormalizer from './incompleteCountDenormalizer.js';
+
+export const insertImage = new ValidatedMethod({
+  name: 'images.insert',
+  validate: Images.simpleSchema().validator({ clean: true, filter: false }),
+  run(image) {
     if (!this.userId) {
-      throw new Meteor.Error('not-authorized');
+      throw new Meteor.Error('user.accessDenied');
     }
-    Images.insert({
-      name: obj.name,
-      uid: this.userId,
-      username: Meteor.users.findOne(this.userId).username,
-      tag: obj.tag,
-      url: obj.url,
-      detail: obj.detail,
-    });
+    Images.insert(image);
+    return true;
   },
 });
+
+export const likeImage = new ValidatedMethod({
+  name: 'images.like',
+  validate: new SimpleSchema({
+    imageId: { type: String, regEx: SimpleSchema.RegEx.Id },
+    liker: { type: String, regEx: SimpleSchema.RegEx.Id },
+  }).validator({ clean: true, filter: false }),
+  run({ imageId, liker }) {
+    if (!this.userId) {
+      throw new Meteor.Error('user.accessDenied');
+    }
+    Images.update(imageId, {
+      $inc: { likes: 1 },
+      $addToSet: { liker }, // Only push a value which is not exist in this array
+    });
+    incompleteCountDenormalizer.afterLikeImage(liker);
+  },
+});
+
+export const unlikeImage = new ValidatedMethod({
+  name: 'images.unlike',
+  validate: new SimpleSchema({
+    imageId: { type: String, regEx: SimpleSchema.RegEx.Id },
+    unliker: { type: String, regEx: SimpleSchema.RegEx.Id },
+  }).validator({ clean: true, filter: false }),
+  run({ imageId, unliker }) {
+    if (!this.userId) {
+      throw new Meteor.Error('user.accessDenied');
+    }
+    Images.update(imageId, {
+      $inc: { likes: -1 },
+      $pull: { liker: unliker },
+    });
+    incompleteCountDenormalizer.afterUnlikeImage(unliker);
+  },
+});
+
+// Get list of all method names on Images
+const IMAGES_METHODS = _.pluck([
+  insertImage,
+  likeImage,
+  unlikeImage,
+], 'name');
+
+if (Meteor.isServer) {
+  // Only allow 1 user operations per connection per second
+  DDPRateLimiter.addRule({
+    name(name) {
+      return _.contains(IMAGES_METHODS, name);
+    },
+
+    // Rate limit per connection ID
+    connectionId() { return true; },
+  }, 1, 1000);
+}

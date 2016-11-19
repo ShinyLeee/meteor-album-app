@@ -1,4 +1,26 @@
+// Wrap a Promise in order to make it Cancelable.
+export const makeCancelable = (promise) => {
+  let hasCanceled_ = false;
+
+  const wrappedPromise = new Promise((resolve, reject) => {
+    promise.then((val) => // eslint-disable-line no-confusing-arrow
+      hasCanceled_ ? reject({ isCanceled: true }) : resolve(val)
+    );
+    promise.catch((error) => // eslint-disable-line no-confusing-arrow
+      hasCanceled_ ? reject({ isCanceled: true }) : reject(error)
+    );
+  });
+
+  return {
+    promise: wrappedPromise,
+    cancel() {
+      hasCanceled_ = true;
+    },
+  };
+};
+
 const utils = {
+  randomId: () => Math.random().toString(36).split('.')[1],
   /* Detect User's Browser Platform */
   browser: (function testVersion() {
     const u = navigator.userAgent;
@@ -18,31 +40,35 @@ const utils = {
     };
   }()),
   /* Detect User's Language */
-  language: function getLang() {
-    return (
-        navigator.languages[0] ||
-        navigator.language ||
-        navigator.browserLanguage ||
-        navigator.userLanguage ||
-        'zh-CN'
-    );
-  },
+  // language: function getLang() {
+  //   return (
+  //       navigator.languages[0] ||
+  //       navigator.language ||
+  //       navigator.browserLanguage ||
+  //       navigator.userLanguage ||
+  //       'zh-CN'
+  //   );
+  // },
   /* Check String is Validate */
-  checkStr: function checkStr(str) {
-    let status = 1;
-    if (/^([\d]|[_]).*$/.test(str)) {
-      status = 'beginError'; // 不能以数字或下划线开头
-      return status;
-    }
-    if (!/^.{6,20}$/.test(str)) {
-      status = 'lengthError';   // 长度必须在6-20内
-      return status;
-    }
-    if (!/^([a-z]|[A-Z])[\w_]{5,19}$/.test(str)) {
-      status = 'containError'; // 格式错误
-      return status;
-    }
-    return status;
+  // checkStr: function checkStr(str) {
+  //   let status = 1;
+  //   if (/^([\d]|[_]).*$/.test(str)) {
+  //     status = 'beginError'; // 不能以数字或下划线开头
+  //     return status;
+  //   }
+  //   if (!/^.{6,20}$/.test(str)) {
+  //     status = 'lengthError';   // 长度必须在6-20内
+  //     return status;
+  //   }
+  //   if (!/^([a-z]|[A-Z])[\w_]{5,19}$/.test(str)) {
+  //     status = 'containError'; // 格式错误
+  //     return status;
+  //   }
+  //   return status;
+  // },
+  validateEmail: function validateEmail(email) {
+    const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/; // eslint-disable-line max-len
+    return re.test(email);
   },
 };
 

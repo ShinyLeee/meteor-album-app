@@ -9,12 +9,10 @@ import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
 import CircularProgress from 'material-ui/CircularProgress';
 import IconButton from 'material-ui/IconButton';
 import Dialog from 'material-ui/Dialog';
-// import FlatButton from 'material-ui/FlatButton';
-
 import ReplyIcon from 'material-ui/svg-icons/content/reply';
 import CheckBoxIcon from 'material-ui/svg-icons/toggle/check-box';
 
-import { Notes } from '../../api/notes/note.js';
+import { Notes } from '/imports/api/notes/note.js';
 
 class UserNotes extends Component {
 
@@ -61,64 +59,78 @@ class UserNotes extends Component {
   }
 
   renderNoteCard() {
-    const filteredNotes = this.props.notes;
-    const flipReplyStyle = {
-      color: '#999',
-      MozTransform: 'scaleX(-1)',
-      WebkitTransform: 'scaleX(-1)',
-      OTransform: 'scaleX(-1)',
-      transform: 'scaleX(-1)',
+    const { otherUsers, notes } = this.props;
+    if (notes.length === 0) {
+      return (
+        <div className="text-center">
+          暂未收到卡片
+        </div>
+      );
+    }
+    const styles = {
+      flipReplyStyle: {
+        color: '#999',
+        MozTransform: 'scaleX(-1)',
+        WebkitTransform: 'scaleX(-1)',
+        OTransform: 'scaleX(-1)',
+        transform: 'scaleX(-1)',
+      },
+      replyStyle: {
+        position: 'absolute',
+        right: '56px',
+      },
+      checkboxStyle: {
+        position: 'absolute',
+        right: '4px',
+      },
     };
-    const replyStyle = {
-      position: 'absolute',
-      right: '56px',
-    };
-    const checkboxStyle = {
-      position: 'absolute',
-      right: '4px',
-    };
-    return filteredNotes.map((note) => (
-      <Card
-        key={note._id}
-        style={{ marginBottom: '30px' }}
-        initiallyExpanded
-      >
-        <CardHeader
-          title={note.title}
-          subtitle={moment(note.sendAt).format('YYYY-MM-DD')}
-          avatar={this.props.User.profile.avatar}
-          actAsExpander
-          showExpandableButton
-        />
-        <CardText expandable>
-          <div className="markdown-holder">
-            <ReactMarkdown
-              className="markdown"
-              source={note.content}
-              onLinkClick={this.handleLinkClick}
+    return notes.map((note) => otherUsers.map((user) => {
+      if (note.sender === user._id) {
+        return (
+          <Card
+            key={note._id}
+            style={{ marginBottom: '30px' }}
+            initiallyExpanded
+          >
+            <CardHeader
+              title={note.title}
+              subtitle={moment(note.sendAt).format('YYYY-MM-DD')}
+              avatar={user.profile.avatar}
+              actAsExpander
+              showExpandableButton
             />
-          </div>
-        </CardText>
-        <CardActions style={{ height: '58px' }}>
-          <IconButton
-            tooltip="回复"
-            tooltipPosition="top-center"
-            iconStyle={flipReplyStyle}
-            style={replyStyle}
-            touch
-          ><ReplyIcon />
-          </IconButton>
-          <IconButton
-            tooltip="标记已读"
-            tooltipPosition="top-center"
-            iconStyle={{ color: '#999' }}
-            style={checkboxStyle}
-            touch
-          ><CheckBoxIcon />
-          </IconButton>
-        </CardActions>
-      </Card>
-    ));
+            <CardText expandable>
+              <div className="markdown-holder">
+                <ReactMarkdown
+                  className="markdown"
+                  source={note.content}
+                  onLinkClick={this.handleLinkClick}
+                />
+              </div>
+            </CardText>
+            <CardActions style={{ height: '58px' }}>
+              <IconButton
+                tooltip="回复"
+                tooltipPosition="top-center"
+                iconStyle={styles.flipReplyStyle}
+                style={styles.replyStyle}
+                touch
+              ><ReplyIcon />
+              </IconButton>
+              <IconButton
+                tooltip="标记已读"
+                tooltipPosition="top-center"
+                iconStyle={{ color: '#999' }}
+                style={styles.checkboxStyle}
+                touch
+              ><CheckBoxIcon />
+              </IconButton>
+            </CardActions>
+          </Card>
+        );
+      }
+      return false;
+    }));
   }
 
   renderModalContent() {
@@ -130,7 +142,7 @@ class UserNotes extends Component {
           onRequestClose={this.handleClose}
         >
           <div className="text-center">
-            <CircularProgress size={0.6} />
+            <CircularProgress />
           </div>
         </Dialog>
       );
@@ -153,10 +165,10 @@ class UserNotes extends Component {
   }
 
   render() {
-    if (!this.props.notesIsReady) {
+    if (!this.props.dataIsReady) {
       return (
         <div className="text-center">
-          <CircularProgress size={1} />
+          <CircularProgress />
         </div>
       );
     }
@@ -171,20 +183,20 @@ class UserNotes extends Component {
 }
 
 UserNotes.propTypes = {
-  notesIsReady: PropTypes.bool.isRequired,
+  dataIsReady: PropTypes.bool.isRequired,
   notes: PropTypes.array.isRequired,
-  User: PropTypes.object.isRequired,
+  otherUsers: PropTypes.array.isRequired,
 };
 
 export default createContainer(() => {
-  const dataHandle = Meteor.subscribe('Notes.ownNotes');
-  const notesIsReady = dataHandle.ready();
+  const noteHandle = Meteor.subscribe('Notes.ownNotes');
+  const dataIsReady = noteHandle.ready();
   const notes = Notes.find({}, {
     sort: { createdAt: -1 },
     limit: 5,
   }).fetch();
   return {
-    notesIsReady,
+    dataIsReady,
     notes,
   };
 }, UserNotes);

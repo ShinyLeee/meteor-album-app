@@ -26,17 +26,15 @@ class ImagesCollection extends Mongo.Collection {
 export const Images = new ImagesCollection('images');
 
 Images.schema = new SimpleSchema({
-  _id: { type: String, regEx: SimpleSchema.RegEx.Id },
-  name: { type: String, label: '图片名', max: 20 },
+  name: { type: String, label: '图片名', max: 10, optional: true },
   uid: { type: String, regEx: SimpleSchema.RegEx.Id },
-  username: { type: String, label: '用户名' },
-  tag: { type: String, label: '标签' },
-  url: { type: String, label: '图片地址', regEx: SimpleSchema.RegEx.Url },
-  like: { type: Number, defaultValue: 0, optional: true },
-  liker: { type: [String], defaultValue: null, optional: true },
+  collection: { type: String, label: '分类' },
+  ratio: { type: Number, label: '图片纵横比', decimal: true },
+  url: { type: String, label: '图片地址' },
+  likes: { type: Number, defaultValue: 0, optional: true },
+  liker: { type: [String], defaultValue: [], optional: true },
   download: { type: Number, defaultValue: 0, optional: true },
   private: { type: Boolean, defaultValue: false, optional: true },
-  detail: { type: Object, optional: true, blackbox: true },
   createdAt: { type: Date, defaultValue: new Date(), optional: true },
   updatedAt: { type: Date, defaultValue: new Date(), optional: true },
 });

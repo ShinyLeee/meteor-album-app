@@ -1,37 +1,44 @@
-// import { Meteor } from 'meteor/meteor';
 import React, { Component, PropTypes } from 'react';
-import { connect } from 'react-redux';
+import { Meteor } from 'meteor/meteor';
+import { createContainer } from 'meteor/react-meteor-data';
 
-// Components
-import Alert from 'react-s-alert';
-// import NavHeader from './components/NavHeader.jsx';
-// import NavFooter from './components/NavFooter.jsx';
-// import Footer from './components/Footer.jsx';
-
-// Database Model
-import '../api/users/user.js';
-
-import defaultUser from './lib/defaultUser.js';
+import CircularProgress from 'material-ui/CircularProgress';
+import SnackBar from './components/SnackBar.jsx';
+import NavHeader from './components/NavHeader.jsx';
+import Uploader from './components/Uploader.jsx';
 
 class App extends Component {
-
   constructor(props) {
     super(props);
-    this.state = {
-      authenticated: false,
-    };
+    this.state = ({
+      location: 'index',
+    });
   }
 
   render() {
+    const { userIsReady, User } = this.props;
+    if (!userIsReady) {
+      return (
+        <div className="container">
+          <NavHeader loading />
+          <div className="content text-center">
+            <CircularProgress style={{ top: '150px' }} />
+          </div>
+        </div>
+      );
+    }
     return (
       <div>
-        <Alert
-          stack={{ limit: 3 }}
-          position="top"
-          effect="stackslide"
-          timeout={3000}
-        />
-        {this.props.children}
+        <SnackBar />
+        {
+          // React validates propTypes on elements when those elements are created,
+          // rather than when they're about to render.
+          // This means that any prop types with isRequired will fail validation
+          // when those props are supplied via this approach. In these cases,
+          // you should not specify isRequired for those props.
+          React.cloneElement(this.props.children, { User })
+        }
+        <Uploader User={User} multiple />
       </div>
     );
   }
@@ -39,12 +46,18 @@ class App extends Component {
 }
 
 App.propTypes = {
-  User: PropTypes.object.isRequired,
+  User: PropTypes.object,
+  userIsReady: PropTypes.bool.isRequired,
   children: PropTypes.element.isRequired,
 };
 
-const mapStateToProps = (state) => ({
-  User: state.user || defaultUser,
-});
-
-export default connect(mapStateToProps)(App);
+export default createContainer(() => {
+  let userIsReady;
+  const User = Meteor.user();
+  if (typeof User === 'undefined' || User) userIsReady = !!User;
+  else userIsReady = true;
+  return {
+    User,
+    userIsReady,
+  };
+}, App);

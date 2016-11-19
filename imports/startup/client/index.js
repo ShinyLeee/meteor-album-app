@@ -24,7 +24,6 @@ const noScalable = () => {
 };
 
 Meteor.startup(() => {
-  // i18n.setLocale(utils.language()); // SOME ERROR HERE
   noScalable();
   injectTapEventPlugin();
   render(renderRoutes(), document.getElementById('app'));
