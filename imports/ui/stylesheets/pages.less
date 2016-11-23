@@ -1,0 +1,141 @@
+/* USER GOES HERE */
+.user-holder {
+  padding-top: 36px;
+  padding-bottom: 36px;
+  color: @color-font-prominent;
+  text-align: center;
+}
+
+.user-panel, {
+  margin-bottom: 20px;
+  .user-header {
+    margin-bottom: 20px;
+    .user-avatar {
+      position: relative;
+      display: inline-block;
+      width: 100%;
+      img {
+        width: 96px;
+        height: 96px;
+        border-radius: 50%;
+        border: 1px solid rgba(0, 0, 0, .1);
+        vertical-align: middle;
+      }
+      .user-action {
+        position: absolute;
+        right: 10px;
+        top: 30px;
+        border: 1px solid @color-border;
+        border-radius: 6px;
+        box-shadow: 1px 1px 5px rgba(0,0,0,.3);
+      }
+    }
+  }
+}
+
+.user-info {
+  margin-bottom: 30px;
+  .user-liked, .user-note {
+    display: inline-block;
+    min-width: 94px;
+    span { 
+      display: block;
+      font-size: 24px;
+      font-weight: 700;
+    }
+  }
+}
+
+/* route /setting */
+.setting-holder {
+  .setting-cover {
+    position: relative;
+    img { width: 100% }
+    .setting-cover-upload {
+      position: absolute;
+      right: 24px;
+      bottom: 24px;
+      width: 38px;
+      height: 38px;
+      background: rgba(0,0,0,0.26);
+      border-radius: 50%;
+      text-align: center;
+      cursor: pointer;
+    }
+  }
+  .setting-avatar {
+    padding: 0 24px;
+    .setting-avatar-upload {
+      position: relative;
+      width: 60px;
+      height: 60px;
+      margin-top: -30px;
+      cursor: pointer;
+    }
+  }
+}
+
+.setting-save {
+  width: 100%;
+  padding: 32px;
+  text-align: center;
+}
+
+/* route /collection/:colName */
+.col-pics-holder {
+  padding-top: 64px;
+}
+
+.col-pics-header {
+  & > .col-pics-name {
+    margin: 0 16px 0 72px;
+    color: #212121;
+    font-size: 34px;
+    font-weight: bold;
+  }
+  & > .col-pics-duration {
+    padding: 6px 16px 16px 72px;
+    color: #757575;
+    font-size: 13px;
+  }
+}
+
+.justified-container {
+  position: relative;
+  & > .justified-day-group {
+    position: relative;
+    width: 100%;
+    margin-top: 48px;
+    & > .justified-day-group-title {
+      position: absolute;
+      left: 0;
+      top: -48px;
+      width: 100%;
+      height: 48px;
+      line-height: 48px;
+      color: #212121;
+      font-size: 14px;
+      text-indent: 8px;
+    }
+  }
+  & .justified-image-holder {
+    position: absolute;
+    background-color: #eee;
+    transform: translate3d(0px, 0px, 0px);
+    overflow: hidden;
+    & .justified-image-click-background {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0.3) 0, transparent 30%, transparent 70%, rgba(0, 0, 0, 0.3));
+    }
+    & img {
+      width: 100%;
+      height: 100%;
+      -webkit-transition: -webkit-transform .135s cubic-bezier(0.0,0.0,0.2,1);
+      -webkit-transition: transform .135s cubic-bezier(0.0,0.0,0.2,1);
+      transition: transform .135s cubic-bezier(0.0,0.0,0.2,1);
+    }
+  }
+}

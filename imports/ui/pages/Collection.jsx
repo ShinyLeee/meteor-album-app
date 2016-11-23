@@ -19,7 +19,7 @@ const styles = {
     right: '16px',
     bottom: '16px',
   },
-  colContainer: {
+  colHolder: {
     padding: '0 12px',
   },
 };
@@ -58,7 +58,7 @@ class Collection extends Component {
             detailFir="所有经过分类的图片都在这里"
             detailSec="没有分类的图片都在默认分类集里"
           />
-          <div className="col-container" style={styles.colContainer}>
+          <div className="col-holder-container" style={styles.colHolder}>
             { dataIsReady ? this.renderColHolder() : this.renderLoader() }
           </div>
         </div>

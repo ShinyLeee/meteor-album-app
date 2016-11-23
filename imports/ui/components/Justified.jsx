@@ -1,8 +1,9 @@
-import React, { Component, PropTypes } from 'react';
+import React, { PureComponent, PropTypes } from 'react';
 import { _ } from 'meteor/underscore';
 import justifiedLayout from 'justified-layout';
+import moment from 'moment';
 
-export default class Justified extends Component {
+export default class Justified extends PureComponent {
 
   constructor(props) {
     super(props);
@@ -14,42 +15,135 @@ export default class Justified extends Component {
   renderJustified() {
     const {
       images,
+      editing,
+      galleryShowingType,
       containerWidth,
       containerPadding,
       targetRowHeight,
       targetRowHeightTolerance,
       boxSpacing,
-      boxContainer,
       fullWidthBreakoutRowCadence,
     } = this.props;
 
-    const ratio = images.map((image) => image.ratio);
-    const geometry = justifiedLayout(
-      ratio,
-      {
-        containerWidth,
-        containerPadding,
-        targetRowHeight,
-        targetRowHeightTolerance,
-        boxSpacing,
-        fullWidthBreakoutRowCadence,
+    if (galleryShowingType === 'nested') {
+      const ratio = images.map((image) => image.ratio);
+      const geometry = justifiedLayout(
+        ratio,
+        {
+          containerWidth,
+          containerPadding,
+          targetRowHeight,
+          targetRowHeightTolerance,
+          boxSpacing,
+          fullWidthBreakoutRowCadence,
+        }
+      );
+
+      const imgs = [];
+
+      for (let i = 0; i < images.length; i++) {
+        imgs.push(_.extend(images[i], geometry.boxes[i]));
       }
+
+      if (images.length !== geometry.boxes.length) {
+        console.error('Images\' length not equal with geometry.boxes, Please check it.'); // eslint-disable-line
+      }
+      return imgs.map((img) => {
+        const imageHolderStyle = {
+          width: `${img.width}px`,
+          height: `${img.height}px`,
+          top: `${img.top}px`,
+          left: `${img.left}px`,
+        };
+        return (
+          <div key={img._id} className="justified-image-holder" style={imageHolderStyle}>
+            <img src={`${img.url}?imageView2/0/w/${img.width * 2}`} alt={img.name} />
+          </div>
+        );
+      });
+    }
+
+    let flag = true;
+    const ratios = [];
+    const geometrys = [];
+    const dayGroupTops = [];
+
+    const dayGroupImages = _.groupBy(images, (image) => moment(image.createdAt).format('YYYYMMDD'));
+    _.map(dayGroupImages, (dayGroupImage, day) => {
+      ratios[day] = _.map(dayGroupImage, (image) => image.ratio);
+      geometrys[day] = justifiedLayout(
+        ratios[day],
+        {
+          containerWidth,
+          containerPadding,
+          targetRowHeight,
+          targetRowHeightTolerance,
+          boxSpacing,
+          fullWidthBreakoutRowCadence,
+        }
+      );
+    });
+
+    _.reduce(geometrys, (prev, cur, curIndex) => {
+      if (flag) {
+        dayGroupTops[curIndex] = prev;
+        flag = false;
+        return cur.containerHeight;
+      }
+      dayGroupTops[curIndex] = prev;
+      const next = prev + cur.containerHeight;
+      return next;
+    }, 0);
+
+    const imageBgdStyle = editing ? { opacity: 1 } : {};
+    return (
+      _.map(dayGroupImages, (dayGroupImage, day) => {
+        const showDay = day.split('');
+        showDay[3] += '年';
+        showDay[5] += '月';
+        showDay[7] += '日';
+        showDay.join('');
+        const dayGroupStyle = {
+          height: geometrys[day].containerHeight,
+        };
+        return (
+          <div key={day} className="justified-day-group" style={dayGroupStyle}>
+            <div className="justified-day-group-title">{showDay}</div>
+            {
+              _.map(dayGroupImage, (img, i) => {
+                const id = img._id;
+                // TODO wait for adjust
+                const imgSrc = `${img.url}?imageView2/0/w/${geometrys[day].boxes[i].width * 2}`;
+                const imageHolderStyle = {
+                  left: `${geometrys[day].boxes[i].left}px`,
+                  top: `${geometrys[day].boxes[i].top}px`,
+                  width: `${geometrys[day].boxes[i].width}px`,
+                  height: `${geometrys[day].boxes[i].height}px`,
+                };
+                return (
+                  <div
+                    key={id}
+                    className="justified-image-holder"
+                    style={imageHolderStyle}
+                    onTouchTap={() => { this.setState({ [id]: true }); }}
+                  >
+                    <div className="justified-image-click-background" style={imageBgdStyle} />
+                    <img src={imgSrc} alt={img.name} />
+                  </div>
+                );
+              })
+            }
+          </div>
+        );
+      })
     );
+  }
 
-    if (images.length !== geometry.boxes.length) {
-      console.error('Images\' length not equal with geometry.boxes, Please check it.'); // eslint-disable-line
-    }
-
-    const imgs = [];
-
-    for (let i = 0; i < images.length; i++) {
-      imgs.push(_.extend(images[i], geometry.boxes[i]));
-    }
-
-    return imgs.map((img) => (
+  renderEditLayout(img) {
+    const id = img._id;
+    return (
       <div
-        key={img._id}
-        className={boxContainer}
+        key={id}
         style={{
           position: 'absolute',
           width: `${img.width}px`,
@@ -59,7 +153,16 @@ export default class Justified extends Component {
           backgroundColor: '#eee',
           overflow: 'hidden',
         }}
+        onTouchTap={() => { this.setState({ [id]: true }); }}
       >
+        <div
+          style={{
+            position: 'absolute',
+            width: '100%',
+            height: '100%',
+            background: 'linear-gradient(180deg, rgba(0, 0, 0, 0.3) 0, transparent 30%, transparent 70%, rgba(0, 0, 0, 0.3))', // eslint-disable-line max-len
+          }}
+        />
         <img
           src={`${img.url}?imageView2/0/w/${img.width * 2}`} // TODO wait for adjust
           alt={img.name}
@@ -70,13 +173,13 @@ export default class Justified extends Component {
           }}
         />
       </div>
-    ));
+    );
   }
 
   render() {
     const { justifiedContainer } = this.props;
     return (
-      <div className={justifiedContainer} style={{ position: 'relative' }}>
+      <div className={justifiedContainer}>
         {this.renderJustified()}
       </div>
     );
@@ -97,7 +200,16 @@ Justified.defaultProps = {
 };
 
 Justified.propTypes = {
+  editing: PropTypes.bool.isRequired,
   images: PropTypes.array.isRequired,
+  /**
+   * galleryShowingType:
+   *
+   * Define galleryShowingType,
+   * eg: 'day-group', 'nested'
+   * Default: 'day-group'
+   */
+  galleryShowingType: PropTypes.oneOf(['day-group', 'nested']),
   /**
    * containerWidth:
    *
@@ -158,12 +270,6 @@ Justified.propTypes = {
    * If provide it would be justifiedContainer's className
    */
   justifiedContainer: PropTypes.string,
-  /**
-   * boxContainer:
-   *
-   * If provide it would be boxContainer's className
-   */
-  boxContainer: PropTypes.string,
   /**
    * onResize:
    *

@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import moment from 'moment';
 import { Link } from 'react-router';
 import { connect } from 'react-redux';
 import { Meteor } from 'meteor/meteor';
@@ -16,7 +17,6 @@ import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import { Images } from '/imports/api/images/image.js';
 
 import NavHeader from '../components/NavHeader.jsx';
-import Recap from '../components/Recap.jsx';
 import Justified from '../components/Justified.jsx';
 
 import { uploaderStart } from '../actions/actionTypes.js';
@@ -39,9 +39,10 @@ class ColPics extends Component {
     super(props);
     this.state = {
       isLoading: false,
+      editing: false,
+      galleryShowingType: 'day-group',
     };
     this.handleOpenUploader = this.handleOpenUploader.bind(this);
-    this.handleShareCollection = this.handleShareCollection.bind(this);
   }
 
   componentWillMount() {
@@ -74,8 +75,6 @@ class ColPics extends Component {
     dispatch(uploaderStart(data));
   }
 
-  handleShareCollection() {}
-
   renderIconEleRight() {
     return (
       <div>
@@ -100,7 +99,18 @@ class ColPics extends Component {
         >
           <MenuItem primaryText="下载所有图片" />
           <MenuItem primaryText="设置相册封面" />
-          <MenuItem primaryText="编辑相册" />
+          <MenuItem
+            primaryText="编辑相册"
+            onTouchTap={() => { this.setState({ editing: true }); }}
+          />
+          <MenuItem
+            primaryText="默认看图模式"
+            onTouchTap={() => { this.setState({ galleryShowingType: 'day-group' }); }}
+          />
+          <MenuItem
+            primaryText="紧凑看图模式"
+            onTouchTap={() => { this.setState({ galleryShowingType: 'nested' }); }}
+          />
           <MenuItem primaryText="删除相册" />
         </IconMenu>
       </div>
@@ -115,8 +125,28 @@ class ColPics extends Component {
     );
   }
 
+  renderColPics() {
+    const { colName, images } = this.props;
+    const start = moment(images[0].createdAt).format('YYYY年MM月DD日');
+    const end = moment(images[images.length - 1].createdAt).format('YYYY年MM月DD日');
+    const duration = `${start}-${end}`;
+    return (
+      <div className="col-pics-holder">
+        <div className="col-pics-header">
+          <div className="col-pics-name">{colName}</div>
+          <div className="col-pics-duration">{duration}</div>
+        </div>
+        <Justified
+          editing={this.state.editing}
+          galleryShowingType={this.state.galleryShowingType}
+          images={images}
+        />
+      </div>
+    );
+  }
+
   render() {
-    const { User, colName, images, dataIsReady } = this.props;
+    const { User, dataIsReady } = this.props;
     return (
       <div className="container">
         <NavHeader
@@ -130,8 +160,9 @@ class ColPics extends Component {
           iconElementRight={this.renderIconEleRight()}
         />
         <div className="content">
-          <Recap title="Collection" detailFir={colName} />
-          { dataIsReady ? <Justified images={images} /> : this.renderLoader() }
+          { dataIsReady
+            ? this.renderColPics()
+            : this.renderLoader() }
         </div>
       </div>
     );

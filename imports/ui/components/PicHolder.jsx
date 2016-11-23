@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import { connect } from 'react-redux';
 import moment from 'moment';
 
@@ -164,12 +165,21 @@ class PicHolder extends Component {
             subtitle={moment(image.createdAt).format('YYYY-MM-DD')}
             avatar={image.avatar}
           />
-          <CardMedia
-            mediaStyle={styles.cardMedia}
-            onTouchTap={() => this.handleZoomImage(image)}
+          <ReactCSSTransitionGroup
+            key={image.id}
+            transitionName="fade"
+            transitionAppear
+            transitionAppearTimeout={500}
+            transitionEnter={false}
+            transitionLeave={false}
           >
-            <img src={image.url} alt={image.name} />
-          </CardMedia>
+            <CardMedia
+              mediaStyle={styles.cardMedia}
+              onTouchTap={() => this.handleZoomImage(image)}
+            >
+              <img src={image.url} alt={image.name} />
+            </CardMedia>
+          </ReactCSSTransitionGroup>
           <CardActions>
             { this.renderLikeIcon() }
             <IconButton>

@@ -1,8 +1,3 @@
-export const userLogout = (user) => ({
-  type: 'USER_LOGOUT',
-  user,
-});
-
 export const zoomerOpen = (image) => ({
   type: 'ZOOMER_OPEN',
   image,
