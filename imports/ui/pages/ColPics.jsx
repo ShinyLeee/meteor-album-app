@@ -17,8 +17,7 @@ import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import { Images } from '/imports/api/images/image.js';
 
 import NavHeader from '../components/NavHeader.jsx';
-import Justified from '../components/Justified.jsx';
-
+import Justified from '../components/Justified/Justified.jsx';
 import { uploaderStart } from '../actions/actionTypes.js';
 
 const styles = {
@@ -39,8 +38,8 @@ class ColPics extends Component {
     super(props);
     this.state = {
       isLoading: false,
-      editing: false,
-      galleryShowingType: 'day-group',
+      isEditing: false,
+      galleryShowingType: 'nested',
     };
     this.handleOpenUploader = this.handleOpenUploader.bind(this);
   }
@@ -101,15 +100,15 @@ class ColPics extends Component {
           <MenuItem primaryText="设置相册封面" />
           <MenuItem
             primaryText="编辑相册"
-            onTouchTap={() => { this.setState({ editing: true }); }}
+            onTouchTap={() => { this.setState({ isEditing: true }); }}
           />
           <MenuItem
             primaryText="默认看图模式"
-            onTouchTap={() => { this.setState({ galleryShowingType: 'day-group' }); }}
+            onTouchTap={() => { this.setState({ galleryShowingType: 'nested' }); }}
           />
           <MenuItem
             primaryText="紧凑看图模式"
-            onTouchTap={() => { this.setState({ galleryShowingType: 'nested' }); }}
+            onTouchTap={() => { this.setState({ galleryShowingType: 'day-group' }); }}
           />
           <MenuItem primaryText="删除相册" />
         </IconMenu>
@@ -137,7 +136,7 @@ class ColPics extends Component {
           <div className="col-pics-duration">{duration}</div>
         </div>
         <Justified
-          editing={this.state.editing}
+          isEditing={this.state.isEditing}
           galleryShowingType={this.state.galleryShowingType}
           images={images}
         />

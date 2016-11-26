@@ -1,3 +1,5 @@
+import { _ } from 'meteor/underscore';
+
 export const zoomer = (state = null, action) => {
   switch (action.type) {
     case 'ZOOMER_OPEN':
@@ -28,6 +30,81 @@ export const snackBar = (state = null, action) => {
       return Object.assign({}, { message, open: true }, config);
     case 'SNACKBAR_CLOSE':
       return null;
+    default:
+      return state;
+  }
+};
+
+export const selectCounter = (state = { counter: 0, group: null }, action) => {
+  switch (action.type) {
+    /**
+     * Return the new gloabl counter and group state, when select or cancel one photo
+     * @param {number} state.counter - how many photos selected
+     * @param {object} state.group - how many group photos selected
+     * @param {number} action.counter - incre or decre the specific number { +-1 }
+     * @param {string} action.group - group name
+     *
+     * If state.group is NOT EXIST, eg: null,
+     * We Create a new group, eg: { 20160101: 1 }, Means the group 20160101 select ONE photo
+     *
+     * else if state.group is CREATED, eg: { 20160101: 1 },
+     * We make new group extend the previous group,
+     *
+     *   If we store group before,
+     *      the group's counter need to PLUS state.group[action.group],
+     *   eg: { 20160101: 1 } extend { 20160101: 1 } => { 20160101: 1 + 1 }
+     *
+     *   else the new group's counter is equal action.counter
+     *   eg: { 20160202: 1 } extend { 20160101: 1 } => { 20160101: 1, 20160202: 1 }
+     *
+     * Finally we create and return a new Object which contains counter group props
+     */
+    case 'SELECT_COUNTER': {
+      let group;
+      if (!state.group) group = { [action.group]: action.counter };
+      else {
+        const newGroup = { [action.group]: (state.group[action.group] || 0) + action.counter };
+        group = _.extend(state.group, newGroup);
+      }
+      const counter = state.counter + action.counter;
+      const globalCounter = Object.assign({}, { counter }, { group });
+      return globalCounter;
+    }
+    /**
+     * Return the new gloabl counter and group state, when select or cancel a group's all photo
+     * @param {number} state.counter - how many photos selected
+     * @param {object} state.group - how many group photos selected
+     * @param {number} action.counter - incre or decre the specific number { +-groupTotal }
+     * @param {string} action.group - group name
+     *
+     * Similar with SELECT_COUNTER, except trueCounter
+     *
+     * If the action.counter > 0, which means the group's photo has been select some,
+     * so we can not incre the whole groupTotal,
+     * however the trueCounter = action.counter - state.group[action.group].
+     */
+    case 'SELECT_GROUP_COUNTER': {
+      let group;
+      let trueCounter = action.counter;
+      if (!state.group) group = { [action.group]: action.counter };
+      else {
+        if (action.counter > 0) {
+          trueCounter = action.counter - (state.group[action.group] || 0);
+        }
+        const newGroup = { [action.group]: (state.group[action.group] || 0) + trueCounter };
+        group = _.extend(state.group, newGroup);
+      }
+      const counter = state.counter + trueCounter;
+      const globalCounter = Object.assign({}, { counter }, { group });
+      return globalCounter;
+    }
+    // Simply return a new Global State,
+    // counter equal total photo num, group contain all group and its photo num
+    case 'ENABLE_SELECT_ALL':
+      return { counter: action.counter, group: action.group };
+    // Simply return default state, { counter: 0, group: null }
+    case 'DISABLE_SELECT_ALL':
+      return { counter: action.counter, group: action.group };
     default:
       return state;
   }

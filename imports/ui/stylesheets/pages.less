@@ -102,8 +102,32 @@
 
 .justified-container {
   position: relative;
+  left: 0;
+  top: 48px;
+  & > .justified-toolbox {
+    position: absolute;
+    left: 0;
+    top: -48px;
+    width: 100%;
+    height: 48px;
+    line-height: 48px;
+    & > .select-all > svg {
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+    & > .select-all > h4 {
+      display: inline;
+      margin-left: 8px;
+      vertical-align: middle;
+      color: #222;
+      font-size: 14px;
+      font-family: 'Microsoft Yahei';
+    }
+  }
   & > .justified-day-group {
     position: relative;
+    left: 0;
+    top: 48px;
     width: 100%;
     margin-top: 48px;
     & > .justified-day-group-title {
@@ -113,9 +137,18 @@
       width: 100%;
       height: 48px;
       line-height: 48px;
-      color: #212121;
-      font-size: 14px;
-      text-indent: 8px;
+      & > svg {
+        margin-left: 8px;
+        vertical-align: middle;
+      }
+      & > h4 {
+        display: inline;
+        margin-left: 8px;
+        vertical-align: middle;
+        color: #222;
+        font-size: 14px;
+        font-family: 'Microsoft Yahei';
+      }
     }
   }
   & .justified-image-holder {
@@ -123,12 +156,28 @@
     background-color: #eee;
     transform: translate3d(0px, 0px, 0px);
     overflow: hidden;
-    & .justified-image-click-background {
+    & .justified-image-select-background, & .justified-image-select-background-selected {
       position: absolute;
       width: 100%;
       height: 100%;
+      padding: 8px 24px 24px 8px;
       opacity: 0;
       background: linear-gradient(180deg, rgba(0, 0, 0, 0.3) 0, transparent 30%, transparent 70%, rgba(0, 0, 0, 0.3));
+      z-index: 1;
+      & > .justified-image-select{
+        position: absolute;
+        fill: #fff;
+        fill-opacity: .54;
+      }
+      & > .justified-image-selected{
+        position: absolute;
+        fill: #fff;
+        fill-opacity: .54;
+        opacity: 0;
+      }
+    }
+    .justified-image-select-background-selected {
+      background: none;
     }
     & img {
       width: 100%;
