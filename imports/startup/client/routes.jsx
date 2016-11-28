@@ -11,6 +11,7 @@ import ColPics from '/imports/ui/pages/ColPics.jsx';
 import Setting from '/imports/ui/pages/Setting.jsx';
 import Login from '/imports/ui/pages/Login.jsx';
 import Register from '/imports/ui/pages/Register.jsx';
+import Constructing from '/imports/ui/pages/Constructing.jsx';
 import NotFound from '/imports/ui/pages/NotFound.jsx';
 
 import UserNotes from '/imports/ui/components/UserNotes.jsx';
@@ -35,6 +36,8 @@ const Root = () => (
           </Route>
           <Route path="collection" component={Collection} onEnter={requireAuth} />
           <Route path="collection/:colName" component={ColPics} onEnter={requireAuth} />
+          <Route path="memory" component={Constructing} />
+          <Route path="recycle" component={Constructing} />
           <Route path="setting" component={Setting} onEnter={requireAuth} />
           <Route path="login" component={Login} onEnter={isLogin} />
           <Route path="register" component={Register} onEnter={isLogin} />

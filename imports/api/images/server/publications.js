@@ -4,12 +4,13 @@ import { check } from 'meteor/check';
 import { Images } from '../image.js';
 
 Meteor.publish('Images.all', function images() {
-  return Images.find();
+  return Images.find({ deletedAt: null });
 });
 
 Meteor.publish('Images.ownImages', function ownImages() {
   return Images.find({
     uid: this.userId,
+    deletedAt: null,
   });
 });
 
@@ -23,6 +24,7 @@ Meteor.publish('Images.inCollection', function inCollection(colName) {
   check(colName, String);
   return Images.find({
     uid: this.userId,
+    deletedAt: null,
     collection: colName,
   });
 });

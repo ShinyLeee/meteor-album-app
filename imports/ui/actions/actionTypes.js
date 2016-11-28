@@ -28,24 +28,28 @@ export const snackBarClose = () => ({
 
 export const selectCounter = (groupCounter) => ({
   type: 'SELECT_COUNTER',
+  selectImages: groupCounter.selectImages,
   group: groupCounter.group,
   counter: groupCounter.counter,
 });
 
 export const selectGroupCounter = (groupCounter) => ({
   type: 'SELECT_GROUP_COUNTER',
+  selectImages: groupCounter.selectImages,
   group: groupCounter.group,
   counter: groupCounter.counter,
 });
 
 export const enableSelectAll = (groupCounter) => ({
   type: 'ENABLE_SELECT_ALL',
+  selectImages: groupCounter.selectImages,
   group: groupCounter.group,
   counter: groupCounter.counter,
 });
 
 export const disableSelectAll = () => ({
   type: 'DISABLE_SELECT_ALL',
+  selectImages: [],
   group: null,
   counter: 0,
 });

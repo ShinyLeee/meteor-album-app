@@ -35,12 +35,14 @@ export const snackBar = (state = null, action) => {
   }
 };
 
-export const selectCounter = (state = { counter: 0, group: null }, action) => {
+export const selectCounter = (state = { selectImages: [], group: null, counter: 0 }, action) => {
   switch (action.type) {
     /**
      * Return the new gloabl counter and group state, when select or cancel one photo
+     * @param {array}  state.selectImages - select images' detail
      * @param {number} state.counter - how many photos selected
      * @param {object} state.group - how many group photos selected
+     * @param {array}  action.selectImages
      * @param {number} action.counter - incre or decre the specific number { +-1 }
      * @param {string} action.group - group name
      *
@@ -66,14 +68,31 @@ export const selectCounter = (state = { counter: 0, group: null }, action) => {
         const newGroup = { [action.group]: (state.group[action.group] || 0) + action.counter };
         group = _.extend(state.group, newGroup);
       }
+      let selectImages;
+      const nextImage = action.selectImages;
+      const prevImages = state.selectImages;
+      if (prevImages.length === 0) selectImages = [...nextImage];
+      else {
+        // If select a photo, just concat nextImage with prevImages
+        if (action.counter > 0) {
+          selectImages = [...prevImages, ...nextImage];
+        }
+        // If disselect a photo, we need to remove nextImage from prevImages
+        if (action.counter < 0) {
+          selectImages = _.filter(prevImages, (prevImage) => prevImage !== nextImage[0]);
+        }
+      }
+      // console.log(selectImages);
       const counter = state.counter + action.counter;
-      const globalCounter = Object.assign({}, { counter }, { group });
+      const globalCounter = Object.assign({}, { selectImages }, { group }, { counter });
       return globalCounter;
     }
     /**
      * Return the new gloabl counter and group state, when select or cancel a group's all photo
+     * @param {array}  state.selectImages - select images' detail
      * @param {number} state.counter - how many photos selected
      * @param {object} state.group - how many group photos selected
+     * @param {array}  action.selectImages
      * @param {number} action.counter - incre or decre the specific number { +-groupTotal }
      * @param {string} action.group - group name
      *
@@ -94,17 +113,37 @@ export const selectCounter = (state = { counter: 0, group: null }, action) => {
         const newGroup = { [action.group]: (state.group[action.group] || 0) + trueCounter };
         group = _.extend(state.group, newGroup);
       }
+      let selectImages;
+      const nextImages = action.selectImages;
+      const prevImages = state.selectImages;
+      if (prevImages.length === 0) selectImages = [...nextImages];
+      else {
+        // If select a group, just concat nextImages with prevImages
+        if (action.counter > 0) {
+          selectImages = _.uniq([...prevImages, ...nextImages]);
+        }
+        // If disselect a group, we need to remove nextImages from prevImages
+        if (action.counter < 0) {
+          selectImages = _.filter(prevImages, (prevImage) => _.indexOf(nextImages, prevImage) < 0);
+
+          // Deal with array of object
+          // selectImages = _.filter(prevImages, (prevImage) => {
+          //   const nextImagesId = _.map(nextImages, (nextImage) => nextImage.id);
+          //   return _.indexOf(nextImagesId, prevImage.id) < 0;
+          // });
+        }
+      }
+      // console.log(selectImages);
       const counter = state.counter + trueCounter;
-      const globalCounter = Object.assign({}, { counter }, { group });
+      const globalCounter = Object.assign({}, { selectImages }, { group }, { counter });
       return globalCounter;
     }
-    // Simply return a new Global State,
-    // counter equal total photo num, group contain all group and its photo num
+    // If select * , { selectImages: [...allImages], group: [...allGroups], counter: total
     case 'ENABLE_SELECT_ALL':
-      return { counter: action.counter, group: action.group };
-    // Simply return default state, { counter: 0, group: null }
+      return { selectImages: action.selectImages, group: action.group, counter: action.counter };
+    // If disselect * , return default state, { selectImages: [], group: null, counter: 0 }
     case 'DISABLE_SELECT_ALL':
-      return { counter: action.counter, group: action.group };
+      return { selectImages: action.selectImages, group: action.group, counter: action.counter };
     default:
       return state;
   }

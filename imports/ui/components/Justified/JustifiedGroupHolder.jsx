@@ -29,13 +29,14 @@ class JustifiedGroupHolder extends Component {
   }
 
   handleSelectGroup() {
-    const { day, isEditing, groupTotal, dispatch } = this.props;
+    const { day, isEditing, dayGroupImage, groupTotal, dispatch } = this.props;
     if (isEditing) {
+      const selectImages = _.map(dayGroupImage, (value) => value._id);
       if (this.state.isGroupSelect) {
-        dispatch(selectGroupCounter({ group: day, counter: -groupTotal }));
+        dispatch(selectGroupCounter({ selectImages, group: day, counter: -groupTotal }));
         this.setState({ isGroupSelect: false });
       } else {
-        dispatch(selectGroupCounter({ group: day, counter: groupTotal }));
+        dispatch(selectGroupCounter({ selectImages, group: day, counter: groupTotal }));
         this.setState({ isGroupSelect: true });
       }
     }
@@ -77,7 +78,7 @@ class JustifiedGroupHolder extends Component {
         </div>
         {
           _.map(dayGroupImage, (image, i) => {
-            const imageSource = `${image.url}?imageView2/1/w/${image.width}/h/${image.height}`;
+            const imageSource = `${image.url}?imageView2/1/w/${geometry.boxes[i].width}/h/${geometry.boxes[i].height}`;
             const imageHolderStyle = {
               left: `${geometry.boxes[i].left}px`,
               top: `${geometry.boxes[i].top}px`,

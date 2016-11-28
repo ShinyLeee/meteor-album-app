@@ -13,8 +13,8 @@ class ImagesCollection extends Mongo.Collection {
     incompleteCountDenormalizer.afterInsertImage(img);
     return result;
   }
-  update(selector, modifier) {
-    return super.update(selector, modifier);
+  update(selector, modifier, options, cb) {
+    return super.update(selector, modifier, options, cb);
   }
   remove(selector, cb) {
     const result = super.remove(selector, cb);
@@ -35,8 +35,10 @@ Images.schema = new SimpleSchema({
   liker: { type: [String], defaultValue: [], optional: true },
   download: { type: Number, defaultValue: 0, optional: true },
   private: { type: Boolean, defaultValue: false, optional: true },
+  shootAt: { type: Date },
   createdAt: { type: Date, defaultValue: new Date(), optional: true },
   updatedAt: { type: Date, defaultValue: new Date(), optional: true },
+  deletedAt: { type: Date, defaultValue: null, optional: true },
 });
 
 Images.attachSchema(Images.schema);

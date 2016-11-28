@@ -9,8 +9,8 @@ class CollectionCollection extends Mongo.Collection {
     incompleteCountDenormalizer.afterInsertCollection(collection);
     return result;
   }
-  update(selector, modifier) {
-    return super.update(selector, modifier);
+  update(selector, modifier, options, cb) {
+    return super.update(selector, modifier, options, cb);
   }
   remove(selector, cb) {
     const result = super.remove(selector, cb);

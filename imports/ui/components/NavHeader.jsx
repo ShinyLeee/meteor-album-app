@@ -17,7 +17,8 @@ import NotificationIcon from 'material-ui/svg-icons/social/notifications';
 import HomeIcon from 'material-ui/svg-icons/action/home';
 import UserIcon from 'material-ui/svg-icons/action/account-circle';
 import CameraIcon from 'material-ui/svg-icons/image/camera';
-import ExploreIcon from 'material-ui/svg-icons/action/explore';
+import MemeoryIcon from 'material-ui/svg-icons/action/theaters';
+import DeleteIcon from 'material-ui/svg-icons/action/delete';
 import SettingsIcon from 'material-ui/svg-icons/action/settings';
 import FeedbackIcon from 'material-ui/svg-icons/action/feedback';
 import HelpIcon from 'material-ui/svg-icons/action/help';
@@ -167,10 +168,19 @@ export default class NavHeader extends Component {
               style={{ color: location === 'collection' ? purple500 : '#000' }}
             />
             <MenuItem
-              leftIcon={<ExploreIcon color={location === 'explore' ? purple500 : ''} />}
-              primaryText="探索"
-              containerElement={<Link to="/explore" />}
-              style={{ color: location === 'explore' ? purple500 : '#000' }}
+              leftIcon={<MemeoryIcon color={location === 'memory' ? purple500 : ''} />}
+              primaryText="回忆"
+              containerElement={<Link to="/memory" />}
+              style={{ color: location === 'memory' ? purple500 : '#000' }}
+            />
+          </Menu>
+          <Divider />
+          <Menu width="100%" disableAutoFocus>
+            <MenuItem
+              leftIcon={<DeleteIcon color={location === 'recycle' ? purple500 : ''} />}
+              primaryText="回收站"
+              containerElement={<Link to="/recycle" />}
+              style={{ color: location === 'recycle' ? purple500 : '#000' }}
             />
           </Menu>
           <Divider />
@@ -200,6 +210,7 @@ export default class NavHeader extends Component {
       loading,
       primary,
       title,
+      style,
       showMenuIconButton,
       onTitleTouchTap,
       iconElementLeft,
@@ -221,7 +232,7 @@ export default class NavHeader extends Component {
     }
     return (
       <AppBar
-        style={styles.AppBar}
+        style={Object.assign({}, styles.AppBar, style)}
         titleStyle={styles.AppBarTitle}
         title={title}
         showMenuIconButton={showMenuIconButton}
@@ -269,6 +280,7 @@ NavHeader.propTypes = {
    * when primary is false.
    */
   title: PropTypes.string,
+  style: PropTypes.object,
   showMenuIconButton: PropTypes.bool,
   onTitleTouchTap: PropTypes.func,
   iconElementLeft: PropTypes.element,

@@ -32,13 +32,14 @@ class JustifiedImageHolder extends Component {
   }
 
   handleSelect() {
-    const { day, isEditing, dispatch } = this.props;
+    const { day, isEditing, image, dispatch } = this.props;
     if (isEditing) {
+      const selectImages = [image._id];
       if (this.state.isSelect) {
-        dispatch(selectCounter({ group: day, counter: -1 }));
+        dispatch(selectCounter({ selectImages, group: day, counter: -1 }));
         this.setState({ isSelect: false });
       } else {
-        dispatch(selectCounter({ group: day, counter: 1 }));
+        dispatch(selectCounter({ selectImages, group: day, counter: 1 }));
         this.setState({ isSelect: true });
       }
     }

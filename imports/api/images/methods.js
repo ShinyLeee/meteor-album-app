@@ -3,6 +3,7 @@ import { _ } from 'meteor/underscore';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
+import moment from 'moment';
 
 import { Images } from './image.js';
 
@@ -17,6 +18,28 @@ export const insertImage = new ValidatedMethod({
     }
     Images.insert(image);
     return true;
+  },
+});
+
+export const removeImagesToRecycle = new ValidatedMethod({
+  name: 'images.removeToRecycle',
+  validate: new SimpleSchema({
+    selectImages: { type: [String], regEx: SimpleSchema.RegEx.Id },
+    uid: { type: String, regEx: SimpleSchema.RegEx.Id },
+    colName: { type: String },
+  }).validator({ clean: true, filter: false }),
+  run({ selectImages, uid, colName }) {
+    if (!this.userId) {
+      throw new Meteor.Error('user.accessDenied');
+    }
+    const count = selectImages.length;
+    const deletedAt = moment().add(1, 'M').toDate();
+    Images.update(
+      { _id: { $in: selectImages } },
+      { $set: { deletedAt } },
+      { multi: true }
+    );
+    incompleteCountDenormalizer.afterRemoveImagesToRecycle(uid, colName, count);
   },
 });
 

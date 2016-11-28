@@ -70,6 +70,7 @@ class Uploader extends Component {
             let ratio = width / height;
             ratio = Math.round(ratio * 100) / 100;
             f.ratio = ratio;
+            f.shootAt = f.lastModified;
           };
           img.src = this.state.thumbnail;
         },
@@ -115,11 +116,13 @@ class Uploader extends Component {
     const uid = User._id;
     const url = `${domain}/${file.key}`;
     const ratio = file.ratio;
+    const shootAt = file.shootAt;
     const collection = destination.split('/')[1];
     const image = {
       uid,
       url,
       ratio,
+      shootAt,
       collection,
     };
     return insertImage.call(image, (err) => {

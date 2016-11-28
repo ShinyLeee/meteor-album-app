@@ -13,12 +13,17 @@ import ArrowBackIcon from 'material-ui/svg-icons/navigation/arrow-back';
 import AddPhotoIcon from 'material-ui/svg-icons/image/add-to-photos';
 import ShareIcon from 'material-ui/svg-icons/social/share';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
+import DoneIcon from 'material-ui/svg-icons/action/done';
+import ShiftIcon from 'material-ui/svg-icons/hardware/keyboard-return';
+import DeleteIcon from 'material-ui/svg-icons/action/delete';
+import { blue500 } from 'material-ui/styles/colors';
 
 import { Images } from '/imports/api/images/image.js';
+import { removeImagesToRecycle } from '/imports/api/images/methods.js';
 
 import NavHeader from '../components/NavHeader.jsx';
 import Justified from '../components/Justified/Justified.jsx';
-import { uploaderStart } from '../actions/actionTypes.js';
+import { uploaderStart, disableSelectAll, snackBarOpen } from '../actions/actionTypes.js';
 
 const styles = {
   AppBarIconSvg: {
@@ -39,9 +44,12 @@ class ColPics extends Component {
     this.state = {
       isLoading: false,
       isEditing: false,
-      galleryShowingType: 'nested',
     };
     this.handleOpenUploader = this.handleOpenUploader.bind(this);
+    this.handleSaveEditing = this.handleSaveEditing.bind(this);
+    this.handleShiftPhoto = this.handleShiftPhoto.bind(this);
+    this.handleSharePhoto = this.handleSharePhoto.bind(this);
+    this.handleDeletePhoto = this.handleDeletePhoto.bind(this);
   }
 
   componentWillMount() {
@@ -74,19 +82,42 @@ class ColPics extends Component {
     dispatch(uploaderStart(data));
   }
 
-  renderIconEleRight() {
+  handleSaveEditing(e) {
+    const { dispatch } = this.props;
+    e.preventDefault();
+    dispatch(disableSelectAll());
+    this.setState({ isEditing: false });
+  }
+
+  handleShiftPhoto() {}
+
+  handleSharePhoto() {}
+
+  handleDeletePhoto() {
+    const { User, selectImages, colName, dispatch } = this.props;
+    if (selectImages.length === 0) dispatch(snackBarOpen('您没有选择照片'));
+    removeImagesToRecycle.call({
+      selectImages,
+      uid: User._id,
+      colName,
+    }, (err) => {
+      if (err) {
+        dispatch(snackBarOpen(err.message));
+        console.log(err); // eslint-disable-line no-console
+        return;
+      }
+      dispatch(disableSelectAll());
+      dispatch(snackBarOpen('删除成功'));
+    });
+  }
+
+  renderIconRight() {
     return (
       <div>
-        <IconButton
-          iconStyle={styles.AppBarIconSvg}
-          onTouchTap={this.handleOpenUploader}
-        >
+        <IconButton iconStyle={styles.AppBarIconSvg} onTouchTap={this.handleOpenUploader}>
           <AddPhotoIcon />
         </IconButton>
-        <IconButton
-          iconStyle={styles.AppBarIconSvg}
-          onTouchTap={this.handleShareCollection}
-        >
+        <IconButton iconStyle={styles.AppBarIconSvg} onTouchTap={this.handleSharePhoto}>
           <ShareIcon />
         </IconButton>
         <IconMenu
@@ -102,17 +133,46 @@ class ColPics extends Component {
             primaryText="编辑相册"
             onTouchTap={() => { this.setState({ isEditing: true }); }}
           />
-          <MenuItem
-            primaryText="默认看图模式"
-            onTouchTap={() => { this.setState({ galleryShowingType: 'nested' }); }}
-          />
-          <MenuItem
-            primaryText="紧凑看图模式"
-            onTouchTap={() => { this.setState({ galleryShowingType: 'day-group' }); }}
-          />
           <MenuItem primaryText="删除相册" />
         </IconMenu>
       </div>
+    );
+  }
+
+  renderNavHeader() {
+    return (
+      <NavHeader
+        User={this.props.User}
+        title="收藏集"
+        iconElementLeft={
+          <IconButton containerElement={<Link to="/collection" />}>
+            <ArrowBackIcon />
+          </IconButton>
+        }
+        iconElementRight={this.renderIconRight()}
+      />
+    );
+  }
+
+  renderEditingNavHeader() {
+    const { User, counter } = this.props;
+    return (
+      <NavHeader
+        User={User}
+        title={counter ? `选择了${counter}张照片` : ''}
+        style={{ backgroundColor: blue500 }}
+        iconElementLeft={<IconButton onTouchTap={this.handleSaveEditing}><DoneIcon /></IconButton>}
+        iconElementRight={
+          <div>
+            <IconButton iconStyle={styles.AppBarIconSvg} onTouchTap={this.handleShiftPhoto}>
+              <ShiftIcon />
+            </IconButton>
+            <IconButton iconStyle={styles.AppBarIconSvg} onTouchTap={this.handleDeletePhoto}>
+              <DeleteIcon />
+            </IconButton>
+          </div>
+        }
+      />
     );
   }
 
@@ -126,38 +186,27 @@ class ColPics extends Component {
 
   renderColPics() {
     const { colName, images } = this.props;
-    const start = moment(images[0].createdAt).format('YYYY年MM月DD日');
-    const end = moment(images[images.length - 1].createdAt).format('YYYY年MM月DD日');
-    const duration = `${start}-${end}`;
+    const start = moment(images[images.length - 1].shootAt).format('YYYY年MM月DD日');
+    const end = moment(images[0].shootAt).format('YYYY年MM月DD日');
+    const duration = `${start} - ${end}`;
     return (
       <div className="col-pics-holder">
         <div className="col-pics-header">
           <div className="col-pics-name">{colName}</div>
           <div className="col-pics-duration">{duration}</div>
         </div>
-        <Justified
-          isEditing={this.state.isEditing}
-          galleryShowingType={this.state.galleryShowingType}
-          images={images}
-        />
+        <Justified isEditing={this.state.isEditing} images={images} />
       </div>
     );
   }
 
   render() {
-    const { User, dataIsReady } = this.props;
+    const { dataIsReady } = this.props;
     return (
       <div className="container">
-        <NavHeader
-          User={User}
-          title="收藏集"
-          iconElementLeft={
-            <IconButton containerElement={<Link to="/collection" />}>
-              <ArrowBackIcon />
-            </IconButton>
-          }
-          iconElementRight={this.renderIconEleRight()}
-        />
+        { this.state.isEditing
+          ? this.renderEditingNavHeader()
+          : this.renderNavHeader() }
         <div className="content">
           { dataIsReady
             ? this.renderColPics()
@@ -174,6 +223,9 @@ ColPics.propTypes = {
   dataIsReady: PropTypes.bool.isRequired,
   colName: PropTypes.string.isRequired,
   images: PropTypes.array.isRequired,
+  // Below Pass From Redux
+  selectImages: PropTypes.array,
+  counter: PropTypes.number,
   dispatch: PropTypes.func,
 };
 
@@ -182,7 +234,7 @@ const MeteorContainer = createContainer(({ params }) => {
   const imageHandle = Meteor.subscribe('Images.inCollection', colName);
   const dataIsReady = imageHandle.ready();
   const images = Images.find({}, {
-    sort: { createdAt: -1 },
+    sort: { shootAt: -1 },
   }).fetch();
   return {
     colName,
@@ -191,4 +243,9 @@ const MeteorContainer = createContainer(({ params }) => {
   };
 }, ColPics);
 
-export default connect()(MeteorContainer);
+const mapStateToProps = (state) => ({
+  selectImages: state.selectCounter.selectImages,
+  counter: state.selectCounter.counter,
+});
+
+export default connect(mapStateToProps)(MeteorContainer);
