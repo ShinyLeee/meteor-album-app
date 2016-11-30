@@ -11,3 +11,11 @@ Meteor.publish('Collections.own', function ownCollections() {
     uid: this.userId,
   });
 });
+
+Meteor.publish('Collections.colNames', function colNames() {
+  return Collections.find({
+    uid: this.userId,
+  }, {
+    fields: { name: 1 },
+  });
+});

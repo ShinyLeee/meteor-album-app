@@ -13,9 +13,6 @@ class ImagesCollection extends Mongo.Collection {
     incompleteCountDenormalizer.afterInsertImage(img);
     return result;
   }
-  update(selector, modifier, options, cb) {
-    return super.update(selector, modifier, options, cb);
-  }
   remove(selector, cb) {
     const result = super.remove(selector, cb);
     incompleteCountDenormalizer.afterRemoveImage(selector);

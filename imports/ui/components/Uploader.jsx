@@ -5,17 +5,19 @@ import uuid from 'node-uuid';
 import { insertImage } from '/imports/api/images/methods.js';
 import { uploaderStop, snackBarOpen } from '../actions/actionTypes.js';
 
+const initialState = {
+  pace: 0,               // Current File Uploading Progress
+  current: 0,           // Current Uploading file
+  total: 1,            // total Uploading files length
+  thumbnail: '',      // Current Uploading thumbnail
+  uploading: false,  // Is in Uploading Progress
+};
+
 class Uploader extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {
-      pace: 0,               // Current File Uploading Progress
-      current: 0,           // Current Uploading file
-      total: 1,            // total Uploading files length
-      thumbnail: '',      // Current Uploading thumbnail
-      uploading: false,  // Is in Uploading Progress
-    };
+    this.state = initialState;
     this.handleOnChange = this.handleOnChange.bind(this);
   }
 
@@ -26,6 +28,7 @@ class Uploader extends Component {
       total: files.length,
       uploading: true,
     }, () => {
+      this.props.beforeUpload(files);
       this.uploadToQiniu(files);
     });
   }
@@ -130,38 +133,26 @@ class Uploader extends Component {
         dispatch(uploaderStop());
         dispatch(snackBarOpen(err.message));
       }
-      // console.log(file, image);
+      console.log('success insert image to db', image); // eslint-disable-line no-console
     });
   }
 
   finishUpload(err) {
-    const { dispatch } = this.props;
+    const { dispatch, afterUpload } = this.props;
     const { current } = this.state;
     if (err) {
-      this.setState({
-        pace: 0,
-        current: 0,
-        total: 1,
-        thumbnail: '',
-        uploading: false,
-      });
+      this.setState(initialState);
       dispatch(uploaderStop());
       dispatch(snackBarOpen('上传失败'));
       console.log(err); // eslint-disable-line no-console
-      return;
+      return afterUpload(err);
     }
-    const successMsg = `成功上传${current}个文件`;
 
-    this.setState({
-      pace: 0,
-      current: 0,
-      total: 1,
-      thumbnail: '',
-      uploading: false,
-    });
+    this.setState(initialState);
     dispatch(uploaderStop());
-    dispatch(snackBarOpen(successMsg));
+    dispatch(snackBarOpen(`成功上传${current}个文件`));
     console.log('Upload Success'); // eslint-disable-line no-console
+    return afterUpload(null);
   }
 
   stopUploading(e, xhr) {
@@ -170,13 +161,7 @@ class Uploader extends Component {
     if (xhr && xhr.readyState !== 4) {
       xhr.abort();
       const stopMsg = `您取消了上传文件, 已成功上传${this.state.current}个文件`;
-      this.setState({
-        pace: 0,
-        current: 0,
-        total: 1,
-        thumbnail: '',
-        uploading: false,
-      });
+      this.setState(initialState);
       dispatch(uploaderStop());
       dispatch(snackBarOpen(stopMsg));
     }
@@ -235,20 +220,12 @@ Uploader.defaultProps = {
   multiple: false,
   uploadURL: window.location.protocol === 'https:' ? 'https://up.qbox.me/' : 'http://upload.qiniu.com',
   domain: 'http://o97tuh0p2.bkt.clouddn.com',
+  beforeUpload: () => {},
+  afterUpload: () => {},
 };
 
 Uploader.propTypes = {
-  /**
-   * User:
-   *
-   * Pass from Parent Component
-   */
   User: PropTypes.object,
-  /**
-   * open:
-   *
-   * Is Uploader Component open.
-   */
   open: PropTypes.bool.isRequired,
   /**
    * destination:
@@ -257,36 +234,20 @@ Uploader.propTypes = {
    * eg: ShinyLee/风景.
    */
   destination: PropTypes.string,
-  /**
-   * token:
-   *
-   * Qiniu token.
-   */
   token: PropTypes.string,
   /**
    * uploadURL:
-   *
-   * Qiniu upload url,
    * eg: https://up.qbox.me/, http://upload.qiniu.com.
    */
   uploadURL: PropTypes.string.isRequired,
   /**
    * domain:
-   *
    * eg: o97tuh0p2.bkt.clouddn.com
    */
   domain: PropTypes.string.isRequired,
-  /**
-   * multiple:
-   *
-   * Is support upload multiple files
-   */
   multiple: PropTypes.bool.isRequired,
-  /**
-   * dispatch:
-   *
-   * Function that inherit from react-redux
-   */
+  beforeUpload: PropTypes.func,
+  afterUpload: PropTypes.func,
   dispatch: PropTypes.func,
 };
 

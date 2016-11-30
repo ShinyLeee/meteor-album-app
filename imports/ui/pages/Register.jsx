@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import { purple500, grey500 } from 'material-ui/styles/colors';
-import utils from '/imports/utils/utils.js';
+import { validateEmail } from '/imports/utils/utils.js';
 
 import NavHeader from '../components/NavHeader.jsx';
 import { snackBarOpen } from '../actions/actionTypes.js';
@@ -38,7 +38,7 @@ class Register extends Component {
     const password = this.pwdField.input.value;
     const password2 = this.pwd2Field.input.value;
 
-    if (!utils.validateEmail(email)) {
+    if (!validateEmail(email)) {
       dispatch(snackBarOpen('邮箱格式不正确'));
       return false;
     }

@@ -6,7 +6,7 @@ import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import moment from 'moment';
 
 import { Images } from './image.js';
-
+import { Collections } from '../collections/collection.js';
 import incompleteCountDenormalizer from './incompleteCountDenormalizer.js';
 
 export const insertImage = new ValidatedMethod({
@@ -16,8 +16,7 @@ export const insertImage = new ValidatedMethod({
     if (!this.userId) {
       throw new Meteor.Error('user.accessDenied');
     }
-    Images.insert(image);
-    return true;
+    return Images.insert(image);
   },
 });
 
@@ -26,7 +25,7 @@ export const removeImagesToRecycle = new ValidatedMethod({
   validate: new SimpleSchema({
     selectImages: { type: [String], regEx: SimpleSchema.RegEx.Id },
     uid: { type: String, regEx: SimpleSchema.RegEx.Id },
-    colName: { type: String },
+    colName: { type: String, max: 10 },
   }).validator({ clean: true, filter: false }),
   run({ selectImages, uid, colName }) {
     if (!this.userId) {
@@ -40,6 +39,44 @@ export const removeImagesToRecycle = new ValidatedMethod({
       { multi: true }
     );
     incompleteCountDenormalizer.afterRemoveImagesToRecycle(uid, colName, count);
+  },
+});
+
+export const shiftImages = new ValidatedMethod({
+  name: 'images.shift',
+  validate: new SimpleSchema({
+    selectImages: { type: [String], regEx: SimpleSchema.RegEx.Id },
+    source: { type: String, max: 10 },
+    destination: { type: String, max: 10 },
+  }).validator({ clean: true, filter: false }),
+  run({ selectImages, source, destination }) {
+    if (!this.userId) {
+      throw new Meteor.Error('user.accessDenied');
+    }
+    const count = selectImages.length;
+    return Images.update(
+      { _id: { $in: selectImages } },
+      { $set: { collection: destination } },
+      { multi: true },
+      (err) => {
+        if (err) {
+          throw new Meteor.Error(err);
+        }
+        return Collections.update(
+          { uid: this.userId, name: source },
+          { $inc: { quantity: -count } },
+          (error) => {
+            if (error) {
+              throw new Meteor.Error(error);
+            }
+            return Collections.update(
+              { uid: this.userId, name: destination },
+              { $inc: { quantity: count } },
+            );
+          }
+        );
+      }
+    );
   },
 });
 
@@ -82,6 +119,8 @@ export const unlikeImage = new ValidatedMethod({
 // Get list of all method names on Images
 const IMAGES_METHODS = _.pluck([
   insertImage,
+  removeImagesToRecycle,
+  shiftImages,
   likeImage,
   unlikeImage,
 ], 'name');

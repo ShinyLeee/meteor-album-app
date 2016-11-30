@@ -9,9 +9,6 @@ class CollectionCollection extends Mongo.Collection {
     incompleteCountDenormalizer.afterInsertCollection(collection);
     return result;
   }
-  update(selector, modifier, options, cb) {
-    return super.update(selector, modifier, options, cb);
-  }
   remove(selector, cb) {
     const result = super.remove(selector, cb);
     incompleteCountDenormalizer.afterRemoveCollection(selector);
@@ -22,7 +19,7 @@ class CollectionCollection extends Mongo.Collection {
 export const Collections = new CollectionCollection('collections');
 
 Collections.schema = new SimpleSchema({
-  name: { type: String, label: '收藏集名', max: 10, optional: true },
+  name: { type: String, label: '相册名', max: 10 },
   uid: { type: String, regEx: SimpleSchema.RegEx.Id },
   cover: { type: String, label: '封面图片', regEx: SimpleSchema.RegEx.Url, optional: true },
   quantity: { type: Number, defaultValue: 0, optional: true },

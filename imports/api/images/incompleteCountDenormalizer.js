@@ -10,7 +10,7 @@ const incompleteCountDenormalizer = {
       { $inc: { 'profile.images': 1 } },
       (err) => {
         if (err) {
-          console.log(err); // eslint-disable-line no-console
+          throw new Meteor.Error('Error happen when updating image\'s profile', err);
         }
         Collections.update({
           uid,
@@ -32,8 +32,8 @@ const incompleteCountDenormalizer = {
         }
         Collections.update(
           { uid, name: colName },
-          { $inc: { quantity: -count },
-        });
+          { $inc: { quantity: -count } }
+        );
       }
     );
   },

@@ -157,13 +157,13 @@ export default class NavHeader extends Component {
             />
             <MenuItem
               leftIcon={<UserIcon color={location === 'user' ? purple500 : ''} />}
-              primaryText="个人资料"
+              primaryText="主页"
               containerElement={<Link to="/user" />}
               style={{ color: location === 'user' ? purple500 : '#000' }}
             />
             <MenuItem
               leftIcon={<CameraIcon color={location === 'collection' ? purple500 : ''} />}
-              primaryText="收藏集"
+              primaryText="相册"
               containerElement={<Link to="/collection" />}
               style={{ color: location === 'collection' ? purple500 : '#000' }}
             />

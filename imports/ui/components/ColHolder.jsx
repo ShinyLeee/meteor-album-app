@@ -1,5 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import moment from 'moment';
+import { browserHistory } from 'react-router';
+import { getRandomInt } from '/imports/utils/utils.js';
 
 export default class ColHolder extends Component {
 
@@ -8,19 +10,35 @@ export default class ColHolder extends Component {
     this.handleAccessCol = this.handleAccessCol.bind(this);
   }
 
+  componentWillMount() {
+    const { col } = this.props;
+    // If this collection have no photo, we give it a default backgroundImage
+    if (col.quantity === 0) {
+      // We have 28 default background images in remote
+      const randomInt = getRandomInt(1, 28);
+      this.setState({ randomInt });
+    }
+  }
+
   handleAccessCol(location) {
-    this.context.router.push(`/collection/${location}`);
+    browserHistory.push(`/collection/${location}`);
   }
 
   render() {
     const { User, col } = this.props;
     const styles = {
       colHolder: {
-        backgroundImage: `url(${col.cover})`,
         backgroundSize: 'cover',
-        backgroundPosition: '50%',
+        backgroundImage: `url(${col.cover})`,
       },
     };
+    if (!col.cover || !col.quantity) {
+      const { randomInt } = this.state;
+      styles.colHolder = {
+        backgroundSize: 'inherit',
+        backgroundImage: `url(http://odsiu8xnd.bkt.clouddn.com//vivian/background/VF_ac${randomInt}.jpg)`,
+      };
+    }
     return (
       <div
         className="col-holder"
@@ -48,11 +66,6 @@ export default class ColHolder extends Component {
     );
   }
 }
-
-// If contextTypes is not defined, then context will be an empty object.
-ColHolder.contextTypes = {
-  router: PropTypes.object.isRequired,
-};
 
 ColHolder.propTypes = {
   User: PropTypes.object.isRequired,
