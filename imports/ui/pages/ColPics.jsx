@@ -145,8 +145,8 @@ class ColPics extends Component {
     let alertContent;
     if (action === 'LockCollection') {
       alertTitle = '提示';
-      if (col.private) alertContent = '是否公开此相册，公开后所有人可以查看该相册中的相片';
-      else alertContent = '是否加密此相册，加密后该相册中的相片将对他人不可见';
+      if (col.private) alertContent = '公开后所有人可查看该相册中的相片, 是否确认公开此相册？';
+      else alertContent = '加密后该相册中的相片将对他人不可见，是否确认加密此相册？';
       this.setState({ isAlertOpen: true, alertTitle, alertContent, action });
       return;
     }
@@ -204,8 +204,8 @@ class ColPics extends Component {
     const { shiftTo } = this.state;
     shiftImages.call({
       selectImages,
-      source: colName,
-      destination: shiftTo,
+      src: colName,
+      dest: shiftTo,
     }, (err) => {
       if (err) {
         dispatch(snackBarOpen('转移照片失败'));

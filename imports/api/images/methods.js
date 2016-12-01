@@ -16,7 +16,9 @@ export const insertImage = new ValidatedMethod({
     if (!this.userId) {
       throw new Meteor.Error('user.accessDenied');
     }
-    return Images.insert(image);
+    const privateStatus = Collections.findOne({ name: image.collection }).private || false;
+    const newImage = Object.assign({}, image, { private: privateStatus });
+    return Images.insert(newImage);
   },
 });
 
@@ -46,31 +48,31 @@ export const shiftImages = new ValidatedMethod({
   name: 'images.shift',
   validate: new SimpleSchema({
     selectImages: { type: [String], regEx: SimpleSchema.RegEx.Id },
-    source: { type: String, max: 10 },
-    destination: { type: String, max: 10 },
+    src: { type: String, max: 10 },
+    dest: { type: String, max: 10 },
   }).validator({ clean: true, filter: false }),
-  run({ selectImages, source, destination }) {
+  run({ selectImages, src, dest }) {
     if (!this.userId) {
       throw new Meteor.Error('user.accessDenied');
     }
     const count = selectImages.length;
     return Images.update(
       { _id: { $in: selectImages } },
-      { $set: { collection: destination } },
+      { $set: { collection: dest } },
       { multi: true },
       (err) => {
         if (err) {
           throw new Meteor.Error(err);
         }
         return Collections.update(
-          { uid: this.userId, name: source },
+          { uid: this.userId, name: src },
           { $inc: { quantity: -count } },
           (error) => {
             if (error) {
               throw new Meteor.Error(error);
             }
             return Collections.update(
-              { uid: this.userId, name: destination },
+              { uid: this.userId, name: dest },
               { $inc: { quantity: count } },
             );
           }
@@ -118,7 +120,7 @@ export const unlikeImage = new ValidatedMethod({
 
 // Get list of all method names on Images
 const IMAGES_METHODS = _.pluck([
-  insertImage,
+  // insertImage, // allow call this method within 1 second
   removeImagesToRecycle,
   shiftImages,
   likeImage,

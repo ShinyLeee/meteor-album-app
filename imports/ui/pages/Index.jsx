@@ -148,10 +148,9 @@ export default createContainer(() => {
   Meteor.subscribe('Users.allUser');
   const imageHandle = Meteor.subscribe('Images.all');
   const dataIsReady = imageHandle.ready();
-  const images = Images.find({}, {
-    sort: { createdAt: -1 },
-    limit,
-  }).fetch();
+  const images = Images.find(
+    { private: { $ne: true } },
+    { sort: { createdAt: -1 }, limit }).fetch();
   return {
     images,
     dataIsReady,

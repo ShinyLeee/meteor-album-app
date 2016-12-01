@@ -6,11 +6,8 @@ import incompleteCountDenormalizer from './incompleteCountDenormalizer.js';
 // Hook Our Own Collection Method
 class ImagesCollection extends Mongo.Collection {
   insert(image, cb) {
-    const img = image;
-    img.createdAt = new Date();
-    img.updatedAt = img.createdAt;
-    const result = super.insert(img, cb);
-    incompleteCountDenormalizer.afterInsertImage(img);
+    const result = super.insert(image, cb);
+    incompleteCountDenormalizer.afterInsertImage(image);
     return result;
   }
   remove(selector, cb) {
@@ -25,14 +22,14 @@ export const Images = new ImagesCollection('images');
 Images.schema = new SimpleSchema({
   name: { type: String, label: '图片名', max: 10, optional: true },
   uid: { type: String, regEx: SimpleSchema.RegEx.Id },
-  collection: { type: String, label: '分类' },
+  collection: { type: String, label: '相册', max: 10 },
   ratio: { type: Number, label: '图片纵横比', decimal: true },
   url: { type: String, label: '图片地址' },
   likes: { type: Number, defaultValue: 0, optional: true },
   liker: { type: [String], defaultValue: [], optional: true },
   download: { type: Number, defaultValue: 0, optional: true },
   private: { type: Boolean, defaultValue: false, optional: true },
-  shootAt: { type: Date },
+  shootAt: { type: Date, label: '拍摄日期' },
   createdAt: { type: Date, defaultValue: new Date(), optional: true },
   updatedAt: { type: Date, defaultValue: new Date(), optional: true },
   deletedAt: { type: Date, defaultValue: null, optional: true },

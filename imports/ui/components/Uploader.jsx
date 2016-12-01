@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import uuid from 'node-uuid';
@@ -28,17 +29,17 @@ class Uploader extends Component {
       total: files.length,
       uploading: true,
     }, () => {
-      this.props.beforeUpload(files);
+      if (this.props.beforeUpload) {
+        this.props.beforeUpload(files);
+      }
       this.uploadToQiniu(files);
     });
   }
 
   uploadToQiniu(files, currentFile) {
     if (!files) {
-      console.log('File is empty, Please check out your file'); // eslint-disable-line no-console
-      return;
+      throw new Meteor.Error('File is empty, check if miss select upload files');
     }
-
     const { destination, token, uploadURL } = this.props;
 
     let f = null;
@@ -54,49 +55,54 @@ class Uploader extends Component {
       formData.append('file', f);
       formData.append('key', `${destination}${fileName}.${f.name.split('.')[1]}`);
       formData.append('token', token);
-      $.ajax({
-        xhr: () => {
-          const xhr = new window.XMLHttpRequest();
-          xhr.upload.addEventListener('progress', (evt) => {
-            this.fileUploading(evt, xhr);
-          }, false);
-          xhr.addEventListener('progress', (evt) => {
-            this.fileUploading(evt, xhr);
-          }, false);
-          return xhr;
-        },
-        beforeSend: () => {
-          const img = new Image();
-          img.onload = function onImageLoad() {
-            const width = this.naturalWidth || this.width;
-            const height = this.naturalHeight || this.height;
-            let ratio = width / height;
-            ratio = Math.round(ratio * 100) / 100;
-            f.ratio = ratio;
-            f.shootAt = f.lastModified;
-          };
-          img.src = this.state.thumbnail;
-        },
-        method: 'POST',
-        url: uploadURL,
-        data: formData,
-        dataType: 'json',
-        contentType: false,
-        processData: false,
-      })
-      .success((res) => {
-        f.key = res.key;
-        if (this.afterUploadFile(f)) {
-          if (this.state.current === this.state.total) {
-            this.finishUpload(null);
-          } else {
-            this.uploadToQiniu(files, files[this.state.current]);
+      const img = new Image();
+      img.onload = () => {
+        const width = img.naturalWidth || img.width;
+        const height = img.naturalHeight || img.height;
+        let ratio = width / height;
+        ratio = Math.round(ratio * 100) / 100;
+
+        // We need to store image's ratio and lastModified in local DB
+        f.ratio = ratio;
+        f.shootAt = f.lastModified;
+
+        // After load Image, we can start make Ajax request
+        $.ajax({
+          xhr: () => {
+            const xhr = new window.XMLHttpRequest();
+            xhr.upload.addEventListener('progress', (evt) => {
+              this.fileUploading(evt, xhr);
+            }, false);
+            xhr.addEventListener('progress', (evt) => {
+              this.fileUploading(evt, xhr);
+            }, false);
+            return xhr;
+          },
+          method: 'POST',
+          url: uploadURL,
+          data: formData,
+          dataType: 'json',
+          contentType: false,
+          processData: false,
+        })
+        .success((res) => {
+          f.key = res.key;
+          if (this.afterUploadFile(f)) {
+            // if have upload all files, just call finishUpload without error
+            if (this.state.current === this.state.total) {
+              this.finishUpload(null);
+            } else {
+              // if have not upload all files, we need to call it again
+              this.uploadToQiniu(files, files[this.state.current]);
+            }
           }
-        }
-      })
-      .error((err) => {
-        this.finishUpload(err);
-      });
+        })
+        .error((err) => {
+          this.finishUpload(err);
+        });
+      };
+
+      img.src = this.state.thumbnail;
     });
   }
 
@@ -133,7 +139,6 @@ class Uploader extends Component {
         dispatch(uploaderStop());
         dispatch(snackBarOpen(err.message));
       }
-      console.log('success insert image to db', image); // eslint-disable-line no-console
     });
   }
 
@@ -144,15 +149,15 @@ class Uploader extends Component {
       this.setState(initialState);
       dispatch(uploaderStop());
       dispatch(snackBarOpen('上传失败'));
-      console.log(err); // eslint-disable-line no-console
-      return afterUpload(err);
+      if (afterUpload) afterUpload(err);
+      throw new Meteor.Error(err);
     }
 
     this.setState(initialState);
     dispatch(uploaderStop());
     dispatch(snackBarOpen(`成功上传${current}个文件`));
-    console.log('Upload Success'); // eslint-disable-line no-console
-    return afterUpload(null);
+    if (afterUpload) afterUpload(null);
+    return;
   }
 
   stopUploading(e, xhr) {
@@ -220,8 +225,8 @@ Uploader.defaultProps = {
   multiple: false,
   uploadURL: window.location.protocol === 'https:' ? 'https://up.qbox.me/' : 'http://upload.qiniu.com',
   domain: 'http://o97tuh0p2.bkt.clouddn.com',
-  beforeUpload: () => {},
-  afterUpload: () => {},
+  // beforeUpload: () => {},
+  // afterUpload: () => {},
 };
 
 Uploader.propTypes = {
