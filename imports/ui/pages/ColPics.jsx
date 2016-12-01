@@ -15,7 +15,8 @@ import { RadioButton, RadioButtonGroup } from 'material-ui/RadioButton';
 import CircularProgress from 'material-ui/CircularProgress';
 import ArrowBackIcon from 'material-ui/svg-icons/navigation/arrow-back';
 import AddPhotoIcon from 'material-ui/svg-icons/image/add-to-photos';
-import ShareIcon from 'material-ui/svg-icons/social/share';
+import LockInIcon from 'material-ui/svg-icons/action/lock-outline';
+import LockOutIcon from 'material-ui/svg-icons/action/lock-open';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import DoneIcon from 'material-ui/svg-icons/action/done';
 import ShiftIcon from 'material-ui/svg-icons/hardware/keyboard-return';
@@ -26,7 +27,10 @@ import { blue500 } from 'material-ui/styles/colors';
 import { Images } from '/imports/api/images/image.js';
 import { Collections } from '/imports/api/collections/collection.js';
 import { removeImagesToRecycle, shiftImages } from '/imports/api/images/methods.js';
-import { removeCollection, mutateCollectionCover } from '/imports/api/collections/methods.js';
+import {
+  removeCollection,
+  lockCollection,
+  mutateCollectionCover } from '/imports/api/collections/methods.js';
 
 import NavHeader from '../components/NavHeader.jsx';
 import Justified from '../components/Justified/Justified.jsx';
@@ -62,11 +66,12 @@ class ColPics extends Component {
       action: '',
     };
     this.handleOpenUploader = this.handleOpenUploader.bind(this);
+    this.handleLockCollection = this.handleLockCollection.bind(this);
+    this.handleRemoveCollection = this.handleRemoveCollection.bind(this);
     this.handleSaveEditing = this.handleSaveEditing.bind(this);
     this.handleShiftPhoto = this.handleShiftPhoto.bind(this);
     this.handleRemovePhoto = this.handleRemovePhoto.bind(this);
     this.handleSetCover = this.handleSetCover.bind(this);
-    this.handleRemoveCollection = this.handleRemoveCollection.bind(this);
   }
 
   componentWillMount() {
@@ -95,6 +100,34 @@ class ColPics extends Component {
     dispatch(uploaderStart(data));
   }
 
+  handleLockCollection() {
+    const { col, colName, dispatch } = this.props;
+    const msg = col.private ? '公开' : '加密';
+    lockCollection.call({
+      colId: col._id,
+      colName: col.name || colName,
+      privateStatus: col.private,
+    }, (err) => {
+      if (err) {
+        dispatch(snackBarOpen(`${msg}相册失败`));
+        throw new Meteor.Error(err);
+      }
+      dispatch(snackBarOpen(`${msg}相册成功`));
+    });
+  }
+
+  handleRemoveCollection() {
+    const { colName, dispatch } = this.props;
+    removeCollection.call({ colName }, (err) => {
+      if (err) {
+        dispatch(snackBarOpen('删除相册失败'));
+        throw new Meteor.Error(err);
+      }
+      browserHistory.replace('/collection');
+      dispatch(snackBarOpen('删除相册成功'));
+    });
+  }
+
   handleSaveEditing(e) {
     const { dispatch } = this.props;
     e.preventDefault();
@@ -107,9 +140,16 @@ class ColPics extends Component {
    * @param {String} action - One of / ShiftPhoto / RemovePhoto / SetCover / RemoveCollection
    */
   openAlert(action) {
-    const { colNames, selectImages, dispatch } = this.props;
+    const { col, colNames, selectImages, dispatch } = this.props;
     let alertTitle;
     let alertContent;
+    if (action === 'LockCollection') {
+      alertTitle = '提示';
+      if (col.private) alertContent = '是否公开此相册，公开后所有人可以查看该相册中的相片';
+      else alertContent = '是否加密此相册，加密后该相册中的相片将对他人不可见';
+      this.setState({ isAlertOpen: true, alertTitle, alertContent, action });
+      return;
+    }
     if (action === 'RemoveCollection') {
       alertTitle = '警告！';
       alertContent = '相册删除后将不可恢复！是否确认删除该相册？';
@@ -128,12 +168,12 @@ class ColPics extends Component {
       const radios = [];
       for (let i = 0; i < colNames.length; i++) {
         const id = colNames[i]._id;
-        const colName = colNames[i].name;
+        const destination = colNames[i].name;
         radios.push(
           <RadioButton
             key={id}
-            value={colName}
-            label={colName}
+            value={destination}
+            label={destination}
             style={styles.radioButton}
           />
         );
@@ -193,11 +233,10 @@ class ColPics extends Component {
   }
 
   handleSetCover() {
-    const { User, images, selectImages, colName, dispatch } = this.props;
+    const { images, selectImages, colName, dispatch } = this.props;
     const cover = _.find(images, (image) => image._id === selectImages[0]).url;
     mutateCollectionCover.call({
       cover,
-      uid: User._id,
       colName,
     }, (err) => {
       if (err) {
@@ -209,29 +248,18 @@ class ColPics extends Component {
     });
   }
 
-  handleRemoveCollection() {
-    const { User, colName, dispatch } = this.props;
-    removeCollection.call({
-      uid: User._id,
-      colName,
-    }, (err) => {
-      if (err) {
-        dispatch(snackBarOpen('删除相册失败'));
-        throw new Meteor.Error(err);
-      }
-      browserHistory.replace('/collection');
-      dispatch(snackBarOpen('删除相册成功'));
-    });
-  }
-
   renderIconRight() {
+    const { col } = this.props;
     return (
       <div>
         <IconButton iconStyle={styles.AppBarIconSvg} onTouchTap={this.handleOpenUploader}>
           <AddPhotoIcon />
         </IconButton>
-        <IconButton iconStyle={styles.AppBarIconSvg} onTouchTap={this.handleSharePhoto}>
-          <ShareIcon />
+        <IconButton
+          iconStyle={styles.AppBarIconSvg}
+          onTouchTap={() => { this.openAlert('LockCollection'); }}
+        >
+          { col && col.private ? (<LockOutIcon />) : (<LockInIcon />) }
         </IconButton>
         <IconMenu
           iconButtonElement={
@@ -369,7 +397,9 @@ class ColPics extends Component {
             : this.renderLoader() }
           <Dialog
             title={this.state.alertTitle}
+            titleStyle={{ border: 'none' }}
             actions={actions}
+            actionsContainerStyle={{ border: 'none' }}
             open={this.state.isAlertOpen}
             onRequestClose={() => { this.setState(initialAlertState); }}
             autoScrollBodyContent
@@ -386,6 +416,7 @@ class ColPics extends Component {
 ColPics.propTypes = {
   User: PropTypes.object,
   dataIsReady: PropTypes.bool.isRequired,
+  col: PropTypes.object,
   colName: PropTypes.string.isRequired,
   colNames: PropTypes.array.isRequired,
   images: PropTypes.array.isRequired,
@@ -398,13 +429,17 @@ ColPics.propTypes = {
 const MeteorContainer = createContainer(({ params }) => {
   const { colName } = params;
   const imageHandle = Meteor.subscribe('Images.inCollection', colName);
-  const colHandle = Meteor.subscribe('Collections.colNames');
+  const colHandle = Meteor.subscribe('Collections.own');
   const dataIsReady = imageHandle.ready() && colHandle.ready();
-  const images = Images.find({}, {
-    sort: { shootAt: -1 },
-  }).fetch();
-  const colNames = Collections.find({ name: { $ne: colName } }).fetch();
+
+  const images = Images.find({}, { sort: { shootAt: -1 } }).fetch();
+
+  const col = Collections.findOne({ name: colName }, { fields: { name: 1, private: 1 } });
+
+  const colNames = Collections.find({ name: { $ne: colName } }, { fields: { name: 1 } }).fetch();
+
   return {
+    col,
     colName,
     colNames,
     images,

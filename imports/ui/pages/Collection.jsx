@@ -35,23 +35,47 @@ class Collection extends Component {
     this.state = {
       open: false,
       newColName: '',
+      errorText: '',
       location: 'collection',
     };
     this.handleClose = this.handleClose.bind(this);
     this.handleChange = this.handleChange.bind(this);
-    this.handleConfirmAdd = this.handleConfirmAdd.bind(this);
+    // this.handleConfirmAdd = this.handleConfirmAdd.bind(this);
     this.handleAddCollection = this.handleAddCollection.bind(this);
   }
 
+  componentWillMount() {
+    const { cols } = this.props;
+    if (cols) {
+      const existColNames = cols.map((col) => col.name);
+      this.setState({ existColNames });
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const { cols } = this.props.cols;
+    if (cols !== nextProps.cols) {
+      const existColNames = nextProps.cols.map((col) => col.name);
+      this.setState({ existColNames });
+    }
+  }
+
   handleClose() {
-    this.setState({ open: false });
+    this.setState({ open: false, newColName: '', errorText: '' });
   }
 
   handleChange(e) {
-    this.setState({ newColName: e.target.value });
+    const newColName = e.target.value;
+    if (newColName.length > 10) {
+      this.setState({ errorText: '相册名不能超过十个字符' });
+    } else if (this.state.existColNames.indexOf(newColName) >= 0) {
+      this.setState({ errorText: '该相册已存在' });
+    } else {
+      this.setState({ newColName, errorText: '' });
+    }
   }
 
-  handleConfirmAdd() {
+  // handleConfirmAdd() {
   //   TEMP NOT USE BC IT NEED USE REDUX-THUNK OR REDUX-SAGA FOR DISPATCH ASYNC FUNCTION
   //   const { User, dispatch } = this.props;
 
@@ -75,17 +99,22 @@ class Collection extends Component {
   //   .catch((ex) => {
   //     console.log('Access uptoken failed', ex); // eslint-disable-line no-console
   //   });
-  }
+  // }
 
   handleAddCollection() {
     const { User, dispatch } = this.props;
+    if (this.state.errorText) {
+      dispatch(snackBarOpen(this.state.errorText));
+      this.handleClose();
+      return;
+    }
     this.handleClose();
     insertCollection.call({
       name: this.state.newColName,
       uid: User._id,
     }, (err) => {
       if (err) {
-        dispatch(snackBarOpen('新建相册失败，请联系管理员'));
+        dispatch(snackBarOpen('新建相册失败'));
         throw new Meteor.Error(err);
       }
       dispatch(snackBarOpen('新建相册成功'));
@@ -145,7 +174,7 @@ class Collection extends Component {
               <TextField
                 hintText="相册名"
                 onChange={this.handleChange}
-                errorText={this.state.newColName.length > 10 ? '不能超过10个字符' : null}
+                errorText={this.state.errorText}
                 fullWidth
               />
             </Dialog>

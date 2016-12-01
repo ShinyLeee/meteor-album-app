@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import moment from 'moment';
 import { browserHistory } from 'react-router';
+import { mutateCollectionCover } from '/imports/api/collections/methods.js';
 import { getRandomInt } from '/imports/utils/utils.js';
 
 export default class ColHolder extends Component {
@@ -8,15 +9,19 @@ export default class ColHolder extends Component {
   constructor(props) {
     super(props);
     this.handleAccessCol = this.handleAccessCol.bind(this);
+    this.state = {
+      cover: undefined,
+    };
   }
 
   componentWillMount() {
     const { col } = this.props;
-    // If this collection have no photo, we give it a default backgroundImage
-    if (col.quantity === 0) {
-      // We have 28 default background images in remote
+    if (!col.cover && !col.quantity) {
+      // We have 28 default background images
       const randomInt = getRandomInt(1, 28);
-      this.setState({ randomInt });
+      const cover = `/img/pattern/VF_ac${randomInt}.jpg`;
+      this.setState({ cover });
+      mutateCollectionCover.call({ cover, colName: col.name });
     }
   }
 
@@ -32,11 +37,16 @@ export default class ColHolder extends Component {
         backgroundImage: `url(${col.cover})`,
       },
     };
-    if (!col.cover || !col.quantity) {
-      const { randomInt } = this.state;
+    if (this.state.cover) {
       styles.colHolder = {
         backgroundSize: 'inherit',
-        backgroundImage: `url(http://odsiu8xnd.bkt.clouddn.com//vivian/background/VF_ac${randomInt}.jpg)`,
+        backgroundImage: `url(${this.state.cover})`,
+      };
+    }
+    if (col.cover && col.cover.indexOf('VF_ac') > 0) {
+      styles.colHolder = {
+        backgroundSize: 'inherit',
+        backgroundImage: `url(${col.cover})`,
       };
     }
     return (

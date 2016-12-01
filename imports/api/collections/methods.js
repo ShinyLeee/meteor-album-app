@@ -4,6 +4,7 @@ import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 
+import { Images } from '../images/image.js';
 import { Collections } from './collection.js';
 
 export const insertCollection = new ValidatedMethod({
@@ -20,29 +21,55 @@ export const insertCollection = new ValidatedMethod({
 export const removeCollection = new ValidatedMethod({
   name: 'collections.remove',
   validate: new SimpleSchema({
-    uid: { type: String, regEx: SimpleSchema.RegEx.Id },
     colName: { type: String, label: '相册名' },
   }).validator({ clean: true, filter: false }),
-  run({ uid, colName }) {
+  run({ colName }) {
     if (!this.userId) {
       throw new Meteor.Error('user.accessDenied');
     }
-    return Collections.remove({ uid, name: colName });
+    return Collections.remove({ uid: this.userId, name: colName });
+  },
+});
+
+export const lockCollection = new ValidatedMethod({
+  name: 'collection.lock',
+  validate: new SimpleSchema({
+    colId: { type: String, regEx: SimpleSchema.RegEx.Id },
+    colName: { type: String, max: 10 },
+    privateStatus: { type: Boolean },
+  }).validator({ clean: true, filter: false }),
+  run({ colId, colName, privateStatus }) {
+    if (!this.userId) {
+      throw new Meteor.Error('user.accessDenied');
+    }
+    return Collections.update(
+      colId,
+      { $set: { private: !privateStatus } },
+      (err) => {
+        if (err) {
+          throw new Meteor.Error(err);
+        }
+        Images.update(
+          { collection: colName },
+          { $set: { private: !privateStatus } },
+          { multi: true }
+        );
+      }
+    );
   },
 });
 
 export const mutateCollectionCover = new ValidatedMethod({
   name: 'collection.mutateCover',
   validate: new SimpleSchema({
-    cover: { type: String, label: '封面图片', regEx: SimpleSchema.RegEx.Url },
-    uid: { type: String, regEx: SimpleSchema.RegEx.Id },
+    cover: { type: String, label: '封面图片' },
     colName: { type: String, label: '相册名' },
   }).validator({ clean: true, filter: false }),
-  run({ cover, uid, colName }) {
+  run({ cover, colName }) {
     if (!this.userId) {
       throw new Meteor.Error('user.accessDenied');
     }
-    return Collections.update({ uid, name: colName }, { $set: { cover } });
+    return Collections.update({ uid: this.userId, name: colName }, { $set: { cover } });
   },
 });
 
@@ -50,6 +77,7 @@ export const mutateCollectionCover = new ValidatedMethod({
 const COLLECTIONS_METHODS = _.pluck([
   insertCollection,
   removeCollection,
+  lockCollection,
   mutateCollectionCover,
 ], 'name');
 
