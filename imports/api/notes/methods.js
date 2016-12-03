@@ -18,7 +18,7 @@ export const insertNote = new ValidatedMethod({
     if (!this.userId) {
       throw new Meteor.Error('user.accessDenied');
     }
-    Notes.insert(note);
+    return Notes.insert(note);
   },
 });
 

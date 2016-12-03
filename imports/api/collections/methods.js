@@ -42,19 +42,11 @@ export const lockCollection = new ValidatedMethod({
     if (!this.userId) {
       throw new Meteor.Error('user.accessDenied');
     }
-    return Collections.update(
-      colId,
+    Collections.update(colId, { $set: { private: !privateStatus } });
+    Images.update(
+      { collection: colName },
       { $set: { private: !privateStatus } },
-      (err) => {
-        if (err) {
-          throw new Meteor.Error(err);
-        }
-        Images.update(
-          { collection: colName },
-          { $set: { private: !privateStatus } },
-          { multi: true }
-        );
-      }
+      { multi: true }
     );
   },
 });

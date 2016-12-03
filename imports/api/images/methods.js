@@ -7,7 +7,6 @@ import moment from 'moment';
 
 import { Images } from './image.js';
 import { Collections } from '../collections/collection.js';
-import incompleteCountDenormalizer from './incompleteCountDenormalizer.js';
 
 export const insertImage = new ValidatedMethod({
   name: 'images.insert',
@@ -35,12 +34,22 @@ export const removeImagesToRecycle = new ValidatedMethod({
     }
     const count = selectImages.length;
     const deletedAt = moment().add(1, 'M').toDate();
+
     Images.update(
       { _id: { $in: selectImages } },
       { $set: { deletedAt } },
       { multi: true }
     );
-    incompleteCountDenormalizer.afterRemoveImagesToRecycle(uid, colName, count);
+
+    Meteor.users.update(
+      { _id: uid },
+      { $inc: { 'profile.images': -count } }
+    );
+
+    Collections.update(
+      { uid, name: colName },
+      { $inc: { quantity: -count } }
+    );
   },
 });
 
@@ -56,28 +65,21 @@ export const shiftImages = new ValidatedMethod({
       throw new Meteor.Error('user.accessDenied');
     }
     const count = selectImages.length;
-    return Images.update(
+
+    Images.update(
       { _id: { $in: selectImages } },
       { $set: { collection: dest } },
-      { multi: true },
-      (err) => {
-        if (err) {
-          throw new Meteor.Error(err);
-        }
-        return Collections.update(
-          { uid: this.userId, name: src },
-          { $inc: { quantity: -count } },
-          (error) => {
-            if (error) {
-              throw new Meteor.Error(error);
-            }
-            return Collections.update(
-              { uid: this.userId, name: dest },
-              { $inc: { quantity: count } },
-            );
-          }
-        );
-      }
+      { multi: true }
+    );
+
+    Collections.update(
+      { uid: this.userId, name: src },
+      { $inc: { quantity: -count } }
+    );
+
+    Collections.update(
+      { uid: this.userId, name: dest },
+      { $inc: { quantity: count } },
     );
   },
 });
@@ -92,11 +94,8 @@ export const likeImage = new ValidatedMethod({
     if (!this.userId) {
       throw new Meteor.Error('user.accessDenied');
     }
-    Images.update(imageId, {
-      $inc: { likes: 1 },
-      $addToSet: { liker }, // Only push a value which is not exist in this array
-    });
-    incompleteCountDenormalizer.afterLikeImage(liker);
+    Images.update(imageId, { $inc: { likes: 1 }, $addToSet: { liker } });
+    Meteor.users.update(liker, { $inc: { 'profile.likes': 1 } });
   },
 });
 
@@ -110,11 +109,8 @@ export const unlikeImage = new ValidatedMethod({
     if (!this.userId) {
       throw new Meteor.Error('user.accessDenied');
     }
-    Images.update(imageId, {
-      $inc: { likes: -1 },
-      $pull: { liker: unliker },
-    });
-    incompleteCountDenormalizer.afterUnlikeImage(unliker);
+    Images.update(imageId, { $inc: { likes: -1 }, $pull: { liker: unliker } });
+    Meteor.users.update(unliker, { $inc: { 'profile.likes': -1 } });
   },
 });
 

@@ -32,9 +32,7 @@ export const updateUser = new ValidatedMethod({
       settings,
     };
     newProfile = _.extend(User.profile, newProfile);
-    Users.update({
-      _id: this.userId,
-    }, { $set: { profile: newProfile } });
+    return Users.update(this.userId, { $set: { profile: newProfile } });
   },
 });
 
