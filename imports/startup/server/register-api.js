@@ -1,5 +1,7 @@
 
-// This file import all Database Api run at server
+import '/imports/api/qiniu/methods.js';
+
+// This file import all Database API run at server
 
 import '/imports/api/users/methods.js';
 import '/imports/api/users/server/index.js';  // Include publications.js & hooks.js

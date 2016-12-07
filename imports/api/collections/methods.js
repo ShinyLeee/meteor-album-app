@@ -27,7 +27,8 @@ export const removeCollection = new ValidatedMethod({
     if (!this.userId) {
       throw new Meteor.Error('user.accessDenied');
     }
-    return Collections.remove({ uid: this.userId, name: colName });
+    Collections.remove({ uid: this.userId, name: colName });
+    Images.remove({ collection: colName });
   },
 });
 

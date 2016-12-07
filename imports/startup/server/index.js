@@ -2,7 +2,7 @@
 import './fixtures.js';
 
 // This defines routes only for RESTful API
-import './routes.js';
+// import './routes.js';
 
 // This defines all the collections, publications and methods
 // that the application provides as an API to the client.

@@ -1,4 +1,3 @@
-/* eslint max-len: 0 */
 import React, { Component, PropTypes } from 'react';
 import { _ } from 'meteor/underscore';
 import { connect } from 'react-redux';
@@ -34,12 +33,11 @@ class JustifiedImageHolder extends Component {
   handleSelect() {
     const { day, isEditing, image, dispatch } = this.props;
     if (isEditing) {
-      const selectImages = [image._id];
       if (this.state.isSelect) {
-        dispatch(selectCounter({ selectImages, group: day, counter: -1 }));
+        dispatch(selectCounter({ selectImages: [image], group: day, counter: -1 }));
         this.setState({ isSelect: false });
       } else {
-        dispatch(selectCounter({ selectImages, group: day, counter: 1 }));
+        dispatch(selectCounter({ selectImages: [image], group: day, counter: 1 }));
         this.setState({ isSelect: true });
       }
     }

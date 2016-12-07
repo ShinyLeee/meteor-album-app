@@ -40,13 +40,23 @@ class Uploader extends Component {
     if (!files) {
       throw new Meteor.Error('File is empty, check if miss select upload files');
     }
-    const { destination, token, uploadURL } = this.props;
+    const { destination, token, uploadURL, dispatch } = this.props;
 
-    let f = null;
+    const allowedFiles = ['image/jpeg', 'image/png', 'image/gif'];
+
+    const f = currentFile || files[0];
+
+    // If upload not allowedFiles, We need stop upload.
+    if (allowedFiles.indexOf(f.type) < 0) {
+      dispatch(uploaderStop());
+      dispatch(snackBarOpen('只允许上传.jpg .png或.gif文件'));
+      return;
+    } else if (allowedFiles.indexOf(f.type) === 0) f.surfix = 'jpg';
+    else if (allowedFiles.indexOf(f.type) === 1) f.surfix = 'png';
+    else if (allowedFiles.indexOf(f.type) === 2) f.surfix = 'gif';
+
     const formData = new FormData();
     const fileName = uuid.v4();
-
-    f = currentFile || files[0];
 
     this.setState({
       current: this.state.current + 1,
@@ -63,6 +73,7 @@ class Uploader extends Component {
         ratio = Math.round(ratio * 100) / 100;
 
         // We need to store image's ratio and lastModified in local DB
+        f.fileName = fileName;
         f.ratio = ratio;
         f.shootAt = f.lastModified;
 
@@ -121,18 +132,15 @@ class Uploader extends Component {
   }
 
   afterUploadFile(file) {
-    const { User, domain, destination, dispatch } = this.props;
-    const uid = User._id;
-    const url = `${domain}/${file.key}`;
-    const ratio = file.ratio;
-    const shootAt = file.shootAt;
-    const collection = destination.split('/')[1];
+    const { User, destination, dispatch } = this.props;
     const image = {
-      uid,
-      url,
-      ratio,
-      shootAt,
-      collection,
+      uid: User._id,
+      user: User.username,
+      collection: destination.split('/')[1],
+      name: file.fileName,
+      ratio: file.ratio,
+      type: file.surfix,
+      shootAt: file.shootAt,
     };
     return insertImage.call(image, (err) => {
       if (err) {
@@ -214,6 +222,7 @@ class Uploader extends Component {
           onChange={this.handleOnChange}
           ref={(ref) => { this.filesInput = ref; }}
           multiple={multiple}
+          accept="image/*"
         />
       </div>
     );
@@ -224,7 +233,6 @@ Uploader.defaultProps = {
   open: false,
   multiple: false,
   uploadURL: window.location.protocol === 'https:' ? 'https://up.qbox.me/' : 'http://upload.qiniu.com',
-  domain: 'http://o97tuh0p2.bkt.clouddn.com',
   // beforeUpload: () => {},
   // afterUpload: () => {},
 };
@@ -245,11 +253,6 @@ Uploader.propTypes = {
    * eg: https://up.qbox.me/, http://upload.qiniu.com.
    */
   uploadURL: PropTypes.string.isRequired,
-  /**
-   * domain:
-   * eg: o97tuh0p2.bkt.clouddn.com
-   */
-  domain: PropTypes.string.isRequired,
   multiple: PropTypes.bool.isRequired,
   beforeUpload: PropTypes.func,
   afterUpload: PropTypes.func,

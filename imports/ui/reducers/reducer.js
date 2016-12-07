@@ -79,7 +79,8 @@ export const selectCounter = (state = { selectImages: [], group: null, counter: 
         }
         // If disselect a photo, we need to remove nextImage from prevImages
         if (action.counter < 0) {
-          selectImages = _.filter(prevImages, (prevImage) => prevImage !== nextImage[0]);
+          // selectImages = _.filter(prevImages, (prevImage) => prevImage !== nextImage[0]);
+          selectImages = _.filter(prevImages, (prevImage) => prevImage._id !== nextImage[0]._id);
         }
       }
       // console.log(selectImages);
@@ -124,13 +125,13 @@ export const selectCounter = (state = { selectImages: [], group: null, counter: 
         }
         // If disselect a group, we need to remove nextImages from prevImages
         if (action.counter < 0) {
-          selectImages = _.filter(prevImages, (prevImage) => _.indexOf(nextImages, prevImage) < 0);
+          // selectImages = _.filter(prevImages, (prevImage) => _.indexOf(nextImages, prevImage) < 0);
 
           // Deal with array of object
-          // selectImages = _.filter(prevImages, (prevImage) => {
-          //   const nextImagesId = _.map(nextImages, (nextImage) => nextImage.id);
-          //   return _.indexOf(nextImagesId, prevImage.id) < 0;
-          // });
+          selectImages = _.filter(prevImages, (prevImage) => {
+            const nextImagesId = _.map(nextImages, (nextImage) => nextImage._id);
+            return _.indexOf(nextImagesId, prevImage._id) < 0;
+          });
         }
       }
       // console.log(selectImages);
@@ -140,10 +141,10 @@ export const selectCounter = (state = { selectImages: [], group: null, counter: 
     }
     // If select * , { selectImages: [...allImages], group: [...allGroups], counter: total
     case 'ENABLE_SELECT_ALL':
+      // console.log(action.selectImages);
       return { selectImages: action.selectImages, group: action.group, counter: action.counter };
-    // If disselect * , return default state, { selectImages: [], group: null, counter: 0 }
     case 'DISABLE_SELECT_ALL':
-      return { selectImages: action.selectImages, group: action.group, counter: action.counter };
+      return { selectImages: [], group: null, counter: 0 };
     default:
       return state;
   }

@@ -49,7 +49,4 @@ export const enableSelectAll = (groupCounter) => ({
 
 export const disableSelectAll = () => ({
   type: 'DISABLE_SELECT_ALL',
-  selectImages: [],
-  group: null,
-  counter: 0,
 });

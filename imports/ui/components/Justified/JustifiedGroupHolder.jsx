@@ -1,10 +1,12 @@
-/* eslint max-len: 0 */
+import { Meteor } from 'meteor/meteor';
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { _ } from 'meteor/underscore';
 
 import JustifiedImageHolder from './JustifiedImageHolder.jsx';
 import { selectGroupCounter } from '../../actions/actionTypes.js';
+
+const domain = Meteor.settings.public.domain;
 
 class JustifiedGroupHolder extends Component {
 
@@ -31,12 +33,11 @@ class JustifiedGroupHolder extends Component {
   handleSelectGroup() {
     const { day, isEditing, dayGroupImage, groupTotal, dispatch } = this.props;
     if (isEditing) {
-      const selectImages = _.map(dayGroupImage, (value) => value._id);
       if (this.state.isGroupSelect) {
-        dispatch(selectGroupCounter({ selectImages, group: day, counter: -groupTotal }));
+        dispatch(selectGroupCounter({ selectImages: dayGroupImage, group: day, counter: -groupTotal }));
         this.setState({ isGroupSelect: false });
       } else {
-        dispatch(selectGroupCounter({ selectImages, group: day, counter: groupTotal }));
+        dispatch(selectGroupCounter({ selectImages: dayGroupImage, group: day, counter: groupTotal }));
         this.setState({ isGroupSelect: true });
       }
     }
@@ -70,15 +71,16 @@ class JustifiedGroupHolder extends Component {
         >
           { isEditing
             ? (
-            <svg width="24px" height="24px" style={selectSvg} viewBox="0 0 24 24">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
-            </svg>)
+              <svg width="24px" height="24px" style={selectSvg} viewBox="0 0 24 24">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+              </svg>)
             : null }
           <h4>{showDay}</h4>
         </div>
         {
           _.map(dayGroupImage, (image, i) => {
-            const imageSource = `${image.url}?imageView2/1/w/${geometry.boxes[i].width}/h/${geometry.boxes[i].height}`;
+            const url = `${domain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
+            const imageSource = `${url}?imageView2/1/w/${geometry.boxes[i].width * 2}/h/${geometry.boxes[i].height * 2}`;
             const imageHolderStyle = {
               left: `${geometry.boxes[i].left}px`,
               top: `${geometry.boxes[i].top}px`,

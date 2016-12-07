@@ -1,4 +1,4 @@
-/* eslint max-len: 0 */
+import { Meteor } from 'meteor/meteor';
 import React, { PureComponent, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { _ } from 'meteor/underscore';
@@ -11,6 +11,8 @@ import CompactIcon from 'material-ui/svg-icons/image/view-compact';
 import JustifiedGroupHolder from './JustifiedGroupHolder.jsx';
 import JustifiedImageHolder from './JustifiedImageHolder.jsx';
 import { enableSelectAll, disableSelectAll } from '../../actions/actionTypes.js';
+
+const domain = Meteor.settings.public.domain;
 
 class Justified extends PureComponent {
 
@@ -38,8 +40,7 @@ class Justified extends PureComponent {
       const group = {};
       const dayGroupImages = _.groupBy(images, (image) => moment(image.shootAt).format('YYYYMMDD'));
       _.map(dayGroupImages, (value, key) => (group[key] = value.length));
-      const selectImages = _.map(images, (value) => value._id);
-      dispatch(enableSelectAll({ selectImages, group, counter: images.length }));
+      dispatch(enableSelectAll({ selectImages: images, group, counter: images.length }));
     }
   }
 
@@ -158,7 +159,8 @@ class Justified extends PureComponent {
 
     const imageBgdStyle = isEditing ? { opacity: 1 } : {};
     return renderImages.map((image) => {
-      const imageSource = `${image.url}?imageView2/1/w/${image.width}/h/${image.height}`;
+      const url = `${domain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
+      const imageSource = `${url}?imageView2/1/w/${image.width * 2}/h/${image.height * 2}`;
       const imageHolderStyle = {
         width: `${image.width}px`,
         height: `${image.height}px`,
@@ -194,7 +196,6 @@ class Justified extends PureComponent {
     );
   }
 }
-
 
 Justified.defaultProps = {
   containerWidth: document.body.clientWidth,

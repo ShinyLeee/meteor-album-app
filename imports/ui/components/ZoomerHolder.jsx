@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import moment from 'moment';
@@ -11,6 +12,8 @@ import InfoIcon from 'material-ui/svg-icons/action/info';
 import TimelineIcon from 'material-ui/svg-icons/action/timeline';
 
 import { zoomerClose } from '../actions/actionTypes.js';
+
+const domain = Meteor.settings.public.domain;
 
 class ZoomerHolder extends Component {
 
@@ -26,10 +29,12 @@ class ZoomerHolder extends Component {
   }
 
   render() {
-    const { open, image } = this.props;
+    const { open, image, clientWidth } = this.props;
     if (!open) {
       return <div />;
     }
+    const url = `${domain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
+    const src = `${url}?imageView2/0/w/${clientWidth * 2}`;
     const styles = {
       zoomer: {
         width: open ? '100%' : 0,
@@ -38,7 +43,7 @@ class ZoomerHolder extends Component {
       },
       imageHolder: {
         backgroundColor: '#68655B',
-        backgroundImage: `url(${image.url})`,
+        backgroundImage: `url(${src})`,
         backgroundSize: 'cover',
         backgroundPosition: '50%',
       },
@@ -75,10 +80,10 @@ class ZoomerHolder extends Component {
         </div>
         <div className="zoomer-info">
           <div className="info-profile">
-            <img src={image.avatar} alt={image.name} />
+            <img src={image.avatar} alt={image.user} />
             <div className="info-profile-detail">
               <span className="detail-title">
-                {image.name}
+                {image.user}
               </span>
               <span className="detail-subtitle">
                 {moment(image.createdAt).format('YYYY-MM-DD')}
@@ -101,6 +106,7 @@ class ZoomerHolder extends Component {
 
 ZoomerHolder.propTypes = {
   dispatch: PropTypes.func.isRequired,
+  clientWidth: PropTypes.number.isRequired,
   open: PropTypes.bool.isRequired,
   image: PropTypes.object,
 };

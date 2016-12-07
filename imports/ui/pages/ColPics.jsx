@@ -36,6 +36,7 @@ import NavHeader from '../components/NavHeader.jsx';
 import Justified from '../components/Justified/Justified.jsx';
 import { uploaderStart, disableSelectAll, snackBarOpen } from '../actions/actionTypes.js';
 
+const domain = Meteor.settings.public.domain;
 const initialAlertState = { isAlertOpen: false, alertTitle: '', alertContent: '', action: '' };
 
 const styles = {
@@ -65,32 +66,35 @@ class ColPics extends Component {
       alertContent: '',
       action: '',
     };
+    this.handleSaveEditing = this.handleSaveEditing.bind(this);
     this.handleOpenUploader = this.handleOpenUploader.bind(this);
     this.handleLockCollection = this.handleLockCollection.bind(this);
     this.handleRemoveCollection = this.handleRemoveCollection.bind(this);
-    this.handleSaveEditing = this.handleSaveEditing.bind(this);
     this.handleShiftPhoto = this.handleShiftPhoto.bind(this);
-    this.handleRemovePhoto = this.handleRemovePhoto.bind(this);
     this.handleSetCover = this.handleSetCover.bind(this);
+    this.handleRemovePhoto = this.handleRemovePhoto.bind(this);
   }
 
-  componentWillMount() {
+  componentDidMount() {
     const { User, colName } = this.props;
-    fetch('/api/uptoken', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+    if (User) {
+      Meteor.call('qiniu.getUptoken', {
         user: User.username,
         collection: colName,
-      }),
-    })
-    .then((res) => res.json())
-    .then((data) => this.setState({ data }))
-    .catch((ex) => {
-      throw new Meteor.Error(ex);
-    });
+      }, (err, res) => {
+        if (err) {
+          throw new Meteor.Error(err);
+        }
+        this.setState({ data: res });
+      });
+    }
+  }
+
+  handleSaveEditing(e) {
+    const { dispatch } = this.props;
+    e.preventDefault();
+    dispatch(disableSelectAll());
+    this.setState({ isEditing: false });
   }
 
   handleOpenUploader() {
@@ -117,22 +121,114 @@ class ColPics extends Component {
   }
 
   handleRemoveCollection() {
-    const { colName, dispatch } = this.props;
-    removeCollection.call({ colName }, (err) => {
-      if (err) {
-        dispatch(snackBarOpen('删除相册失败'));
-        throw new Meteor.Error(err);
+    const { images, colName, dispatch } = this.props;
+
+    const keys = _.map(images, (image) => {
+      let key = false;
+      if (image.collection === colName) {
+        key = `${image.user}/${colName}/${image.name}.${image.type}`;
       }
-      browserHistory.replace('/collection');
-      dispatch(snackBarOpen('删除相册成功'));
+      return key;
+    });
+
+    Meteor.call('qiniu.remove', { keys }, (error) => {
+      if (error) {
+        dispatch(snackBarOpen('删除相册失败'));
+        throw new Meteor.Error(error);
+      }
+      removeCollection.call({ colName }, (err) => {
+        if (err) {
+          dispatch(snackBarOpen('删除相册失败'));
+          throw new Meteor.Error(err);
+        }
+        browserHistory.replace('/collection');
+        dispatch(snackBarOpen('删除相册成功'));
+      });
     });
   }
 
-  handleSaveEditing(e) {
-    const { dispatch } = this.props;
-    e.preventDefault();
-    dispatch(disableSelectAll());
-    this.setState({ isEditing: false });
+  handleShiftPhoto() {
+    const { selectImages, colName, dispatch } = this.props;
+    const { shiftTo } = this.state;
+
+    const keys = _.map(selectImages, (image) => {
+      const srcKey = `${image.user}/${colName}/${image.name}.${image.type}`;
+      const destKey = `${image.user}/${shiftTo}/${image.name}.${image.type}`;
+      return {
+        src: srcKey,
+        dest: destKey,
+      };
+    });
+
+    Meteor.call('qiniu.move', { keys }, (error, res) => {
+      if (error) {
+        dispatch(snackBarOpen('转移照片失败'));
+        throw new Meteor.Error(error);
+      }
+      const rets = res.results;
+
+      // Only shift images which are moved success in Qiniu
+      let moveStatus = [];
+      let sucMsg = '转移照片成功';
+      let sucMovedImgIds = _.map(selectImages, (image) => image._id);
+
+      for (let i = 0; i < rets.length; i++) {
+        const status = rets[i].code;
+        const data = rets[i].data;
+        if (status !== 200) {
+          moveStatus = [...moveStatus, i];
+          console.warn(status, data); // eslint-disable-line no-console
+        }
+      }
+
+      if (moveStatus.length > 0) {
+        sucMsg = '部分照片转移失败';
+        sucMovedImgIds = _.filter(sucMovedImgIds, (v, i) => _.indexOf(moveStatus, i) < 0);
+      }
+
+      shiftImages.call({
+        selectImages: sucMovedImgIds,
+        src: colName,
+        dest: shiftTo,
+      }, (err) => {
+        if (err) {
+          dispatch(snackBarOpen('转移照片失败'));
+          throw new Meteor.Error(err);
+        }
+        dispatch(disableSelectAll());
+        dispatch(snackBarOpen(sucMsg));
+      });
+    });
+  }
+
+  handleSetCover() {
+    const { selectImages, colName, dispatch } = this.props;
+    const curImg = selectImages[0];
+    const cover = `${domain}/${curImg.user}/${curImg.collection}/${curImg.name}.${curImg.type}`;
+    mutateCollectionCover.call({
+      cover,
+      colName,
+    }, (err) => {
+      if (err) {
+        dispatch(snackBarOpen('更换封面失败'));
+        throw new Meteor.Error(err);
+      }
+      dispatch(disableSelectAll());
+      dispatch(snackBarOpen('更换封面成功'));
+    });
+  }
+
+  handleRemovePhoto() {
+    const { selectImages, dispatch } = this.props;
+    const selectImagesIds = _.map(selectImages, (image) => image._id);
+    removeImagesToRecycle.call({ selectImages: selectImagesIds }, (err) => {
+      if (err) {
+        dispatch(snackBarOpen('删除失败'));
+        throw new Meteor.Error(err);
+      }
+      dispatch(disableSelectAll());
+      dispatch(snackBarOpen('删除成功'));
+    });
   }
 
   /**
@@ -152,7 +248,7 @@ class ColPics extends Component {
     }
     if (action === 'RemoveCollection') {
       alertTitle = '警告！';
-      alertContent = '相册删除后将不可恢复！是否确认删除该相册？';
+      alertContent = '删除相册后将不可恢复！是否确认删除该相册？';
       this.setState({ isAlertOpen: true, alertTitle, alertContent, action });
       return;
     }
@@ -197,55 +293,6 @@ class ColPics extends Component {
   triggerDialogAction(action) {
     this.setState(initialAlertState);
     this[`handle${action}`]();
-  }
-
-  handleShiftPhoto() {
-    const { selectImages, colName, dispatch } = this.props;
-    const { shiftTo } = this.state;
-    shiftImages.call({
-      selectImages,
-      src: colName,
-      dest: shiftTo,
-    }, (err) => {
-      if (err) {
-        dispatch(snackBarOpen('转移照片失败'));
-        throw new Meteor.Error(err);
-      }
-      dispatch(disableSelectAll());
-      dispatch(snackBarOpen('转移照片成功'));
-    });
-  }
-
-  handleRemovePhoto() {
-    const { User, selectImages, colName, dispatch } = this.props;
-    removeImagesToRecycle.call({
-      selectImages,
-      uid: User._id,
-      colName,
-    }, (err) => {
-      if (err) {
-        dispatch(snackBarOpen('删除失败'));
-        throw new Meteor.Error(err);
-      }
-      dispatch(disableSelectAll());
-      dispatch(snackBarOpen('删除成功'));
-    });
-  }
-
-  handleSetCover() {
-    const { images, selectImages, colName, dispatch } = this.props;
-    const cover = _.find(images, (image) => image._id === selectImages[0]).url;
-    mutateCollectionCover.call({
-      cover,
-      colName,
-    }, (err) => {
-      if (err) {
-        dispatch(snackBarOpen('更换封面失败'));
-        throw new Meteor.Error(err);
-      }
-      dispatch(disableSelectAll());
-      dispatch(snackBarOpen('更换封面成功'));
-    });
   }
 
   renderIconRight() {

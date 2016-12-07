@@ -25,30 +25,18 @@ export const removeImagesToRecycle = new ValidatedMethod({
   name: 'images.removeToRecycle',
   validate: new SimpleSchema({
     selectImages: { type: [String], regEx: SimpleSchema.RegEx.Id },
-    uid: { type: String, regEx: SimpleSchema.RegEx.Id },
-    colName: { type: String, max: 10 },
   }).validator({ clean: true, filter: false }),
-  run({ selectImages, uid, colName }) {
-    if (!this.userId) {
+  run({ selectImages }) {
+    const uid = this.userId;
+    if (!uid) {
       throw new Meteor.Error('user.accessDenied');
     }
-    const count = selectImages.length;
     const deletedAt = moment().add(1, 'M').toDate();
 
     Images.update(
       { _id: { $in: selectImages } },
       { $set: { deletedAt } },
       { multi: true }
-    );
-
-    Meteor.users.update(
-      { _id: uid },
-      { $inc: { 'profile.images': -count } }
-    );
-
-    Collections.update(
-      { uid, name: colName },
-      { $inc: { quantity: -count } }
     );
   },
 });
@@ -65,6 +53,8 @@ export const shiftImages = new ValidatedMethod({
       throw new Meteor.Error('user.accessDenied');
     }
     const count = selectImages.length;
+
+    if (!count) return;
 
     Images.update(
       { _id: { $in: selectImages } },

@@ -1,6 +1,8 @@
+import { Meteor } from 'meteor/meteor';
 import React, { Component, PropTypes } from 'react';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import { connect } from 'react-redux';
+import LazyLoad from 'react-lazyload';
 import moment from 'moment';
 
 import { Card, CardHeader, CardActions, CardMedia } from 'material-ui/Card';
@@ -15,12 +17,19 @@ import { likeImage, unlikeImage } from '/imports/api/images/methods.js';
 
 import { zoomerOpen, snackBarOpen } from '../actions/actionTypes.js';
 
+const domain = Meteor.settings.public.domain;
+
 const styles = {
   cardContainer: {
     marginBottom: '50px',
   },
   cardMedia: {
     cursor: 'zoom-in',
+  },
+  mediaImage: {
+    maxWidth: '100%',
+    minWidth: '100%',
+    width: '100%',
   },
   flipReplyStyle: {
     MozTransform: 'scaleX(-1)',
@@ -156,12 +165,14 @@ class PicHolder extends Component {
   }
 
   render() {
-    const { image } = this.props;
+    const { clientWidth, image } = this.props;
+    const url = `${domain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
+    const src = `${url}?imageView2/0/w/${clientWidth * 2}`;
     return (
       <div className="pic-holder">
         <Card containerStyle={styles.cardContainer}>
           <CardHeader
-            title={image.username}
+            title={image.user}
             subtitle={moment(image.createdAt).format('YYYY-MM-DD')}
             avatar={image.avatar}
           />
@@ -177,7 +188,9 @@ class PicHolder extends Component {
               mediaStyle={styles.cardMedia}
               onTouchTap={() => this.handleZoomImage(image)}
             >
-              <img src={image.url} alt={image.name} />
+              <LazyLoad height={200} offset={200} once>
+                <img style={styles.mediaImage} src={src} alt={image.name} />
+              </LazyLoad>
             </CardMedia>
           </ReactCSSTransitionGroup>
           <CardActions>
@@ -197,6 +210,7 @@ class PicHolder extends Component {
 
 PicHolder.propTypes = {
   User: PropTypes.object,
+  clientWidth: PropTypes.number.isRequired,
   image: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired,
 };
