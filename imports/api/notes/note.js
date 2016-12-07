@@ -1,12 +1,9 @@
 import { Mongo } from 'meteor/mongo';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 
-import incompleteCountDenormalizer from './incompleteCountDenormalizer.js';
-
 class NotesCollection extends Mongo.Collection {
   insert(note, cb) {
     const result = super.insert(note, cb);
-    incompleteCountDenormalizer.afterInsertNote(note);
     return result;
   }
   remove(selector, cb) {

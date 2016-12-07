@@ -188,7 +188,6 @@ class ColPics extends Component {
 
       shiftImages.call({
         selectImages: sucMovedImgIds,
-        src: colName,
         dest: shiftTo,
       }, (err) => {
         if (err) {

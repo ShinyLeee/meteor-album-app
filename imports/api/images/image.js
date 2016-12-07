@@ -1,18 +1,13 @@
 import { Mongo } from 'meteor/mongo';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 
-import incompleteCountDenormalizer from './incompleteCountDenormalizer.js';
-
-// Hook Our Own Collection Method
 class ImagesCollection extends Mongo.Collection {
   insert(image, cb) {
     const result = super.insert(image, cb);
-    incompleteCountDenormalizer.afterInsertImage(image);
     return result;
   }
   remove(selector, cb) {
     const result = super.remove(selector, cb);
-    incompleteCountDenormalizer.afterRemoveImage(selector);
     return result;
   }
 }

@@ -45,10 +45,9 @@ export const shiftImages = new ValidatedMethod({
   name: 'images.shift',
   validate: new SimpleSchema({
     selectImages: { type: [String], regEx: SimpleSchema.RegEx.Id },
-    src: { type: String, max: 10 },
     dest: { type: String, max: 10 },
   }).validator({ clean: true, filter: false }),
-  run({ selectImages, src, dest }) {
+  run({ selectImages, dest }) {
     if (!this.userId) {
       throw new Meteor.Error('user.accessDenied');
     }
@@ -60,16 +59,6 @@ export const shiftImages = new ValidatedMethod({
       { _id: { $in: selectImages } },
       { $set: { collection: dest } },
       { multi: true }
-    );
-
-    Collections.update(
-      { uid: this.userId, name: src },
-      { $inc: { quantity: -count } }
-    );
-
-    Collections.update(
-      { uid: this.userId, name: dest },
-      { $inc: { quantity: count } },
     );
   },
 });
@@ -85,7 +74,6 @@ export const likeImage = new ValidatedMethod({
       throw new Meteor.Error('user.accessDenied');
     }
     Images.update(imageId, { $inc: { likes: 1 }, $addToSet: { liker } });
-    Meteor.users.update(liker, { $inc: { 'profile.likes': 1 } });
   },
 });
 
@@ -100,7 +88,6 @@ export const unlikeImage = new ValidatedMethod({
       throw new Meteor.Error('user.accessDenied');
     }
     Images.update(imageId, { $inc: { likes: -1 }, $pull: { liker: unliker } });
-    Meteor.users.update(unliker, { $inc: { 'profile.likes': -1 } });
   },
 });
 

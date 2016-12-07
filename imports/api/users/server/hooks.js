@@ -6,10 +6,6 @@ Accounts.onCreateUser((options, user) => {
     nickname: '',
     cover: 'http://odsiu8xnd.bkt.clouddn.com/vivian/default-cover.jpg',
     avatar: 'http://odsiu8xnd.bkt.clouddn.com/vivian/extra-large.jpg',
-    likes: 0,
-    images: 0,
-    notes: 0,
-    collections: 0,
     relater: null,
     settings: {
       notification: true,
