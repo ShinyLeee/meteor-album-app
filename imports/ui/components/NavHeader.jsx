@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import React, { Component, PropTypes } from 'react';
-import { Link } from 'react-router';
+import { Link, browserHistory } from 'react-router';
+import { connect } from 'react-redux';
 
 import AppBar from 'material-ui/AppBar';
 import Avatar from 'material-ui/Avatar';
@@ -8,10 +9,9 @@ import Drawer from 'material-ui/Drawer';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 import Divider from 'material-ui/Divider';
-import Subheader from 'material-ui/Subheader';
 import IconButton from 'material-ui/IconButton';
 import FlatButton from 'material-ui/FlatButton';
-
+import Popover from 'material-ui/Popover';
 import SearchIcon from 'material-ui/svg-icons/action/search';
 import NotificationIcon from 'material-ui/svg-icons/social/notifications';
 import HomeIcon from 'material-ui/svg-icons/action/home';
@@ -20,9 +20,10 @@ import CameraIcon from 'material-ui/svg-icons/image/camera';
 import MemeoryIcon from 'material-ui/svg-icons/action/theaters';
 import DeleteIcon from 'material-ui/svg-icons/action/delete';
 import SettingsIcon from 'material-ui/svg-icons/action/settings';
-import FeedbackIcon from 'material-ui/svg-icons/action/feedback';
-import HelpIcon from 'material-ui/svg-icons/action/help';
+import ArrowDropdownIcon from 'material-ui/svg-icons/navigation/arrow-drop-down';
 import { purple500 } from 'material-ui/styles/colors';
+
+import { snackBarOpen } from '../actions/actionTypes.js';
 
 const styles = {
   AppBar: {
@@ -32,6 +33,7 @@ const styles = {
   },
   AppBarTitle: {
     fontSize: '20px',
+    fontFamily: 'Microsoft Yahei',
     cursor: 'pointer',
   },
   AppBarIconElementRight: {
@@ -64,16 +66,24 @@ const styles = {
     margin: '12px 0 0 0',
     color: '#fff',
   },
+  indeterminateProgress: {
+    position: 'fixed',
+    top: '64px',
+    backgroundColor: 'none',
+  },
 };
 
-export default class NavHeader extends Component {
+class NavHeader extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
       drawer: false,
+      userAction: false,
     };
     this.handlePrimaryTitleTouchTap = this.handlePrimaryTitleTouchTap.bind(this);
+    this.handleOpenUserAction = this.handleOpenUserAction.bind(this);
+    this.handleLogout = this.handleLogout.bind(this);
   }
 
 
@@ -81,10 +91,28 @@ export default class NavHeader extends Component {
     this.context.router.replace('/');
   }
 
+  handleOpenUserAction(e) {
+    e.preventDefault();
+    const anchorEl = e.target;
+    this.setState({ userAction: true, anchorEl });
+  }
+
+  handleLogout() {
+    const { dispatch } = this.props;
+    Meteor.logout((err) => {
+      if (err) {
+        dispatch(snackBarOpen('发生未知错误'));
+        throw new Meteor.Error(err);
+      }
+      browserHistory.replace('/login');
+      dispatch(snackBarOpen('登出成功'));
+    });
+  }
+
   renderPrimaryIconRight(User) {
     if (Meteor.loggingIn() || User) {
-      const defaultSrc = '//odsiu8xnd.bkt.clouddn.com/vivian/default-avatar.jpg?imageView2/0/w/40/h/40'; // eslint-disable-line
-      const avatarSrc = User ? User.profile.avatar : defaultSrc;
+      const guestAvatar = '//odsiu8xnd.bkt.clouddn.com/vivian/default-avatar.jpg?imageView2/0/w/40/h/40'; // eslint-disable-line
+      const avatarSrc = User ? User.profile.avatar : guestAvatar;
       return (
         <div>
           <IconButton
@@ -146,7 +174,37 @@ export default class NavHeader extends Component {
           open={this.state.drawer}
           onRequestChange={(open) => this.setState({ drawer: open })}
         >
-          <Subheader style={styles.DrawerHeader}>Vivian Gallery + </Subheader>
+          <div className="drawer-profile" style={{ backgroundImage: User && `url(${User.profile.cover})` }}>
+            <div className="drawer-profile-background" />
+            { User ? (
+              <div className>
+                <div className="drawer-profile-avatar">
+                  <Avatar
+                    size={54}
+                    src={User.profile.avatar}
+                    onTouchTap={() => { browserHistory.push('/user'); }}
+                  />
+                </div>
+                <div className="drawer-profile-email">
+                  <div>
+                    <span>{User.emails[0].address}</span>
+                    <div><ArrowDropdownIcon color="#fff" onTouchTap={this.handleOpenUserAction} /></div>
+                    <Popover
+                      open={this.state.userAction}
+                      anchorEl={this.state.anchorEl}
+                      anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
+                      targetOrigin={{ horizontal: 'middle', vertical: 'top' }}
+                      onRequestClose={() => { this.setState({ userAction: false }); }}
+                    >
+                      <Menu>
+                        <MenuItem primaryText="登出" onTouchTap={this.handleLogout} />
+                      </Menu>
+                    </Popover>
+                  </div>
+                </div>
+              </div>
+            ) : null }
+          </div>
           <Divider />
           <Menu width="100%" disableAutoFocus>
             <MenuItem
@@ -191,14 +249,6 @@ export default class NavHeader extends Component {
               containerElement={<Link to="/setting" />}
               style={{ color: location === 'setting' ? purple500 : '#000' }}
             />
-            <MenuItem
-              leftIcon={<FeedbackIcon />}
-              primaryText="反馈"
-            />
-            <MenuItem
-              leftIcon={<HelpIcon />}
-              primaryText="帮助"
-            />
           </Menu>
         </Drawer>
       </div>
@@ -220,33 +270,38 @@ export default class NavHeader extends Component {
 
     if (loading) {
       return (
-        <AppBar
-          style={styles.AppBar}
-          titleStyle={styles.AppBarTitle}
-          title="登录中..."
-        />
+        <div className="NavHeader-container">
+          <AppBar
+            style={styles.AppBar}
+            titleStyle={styles.AppBarTitle}
+            title="登录中..."
+          />
+        </div>
       );
     }
     if (primary) {
       return this.renderPrimaryNavHeader();
     }
     return (
-      <AppBar
-        style={Object.assign({}, styles.AppBar, style)}
-        titleStyle={styles.AppBarTitle}
-        title={title}
-        showMenuIconButton={showMenuIconButton}
-        onTitleTouchTap={onTitleTouchTap}
-        iconElementLeft={iconElementLeft}
-        iconElementRight={iconElementRight}
-        onLeftIconButtonTouchTap={onLeftIconButtonTouchTap}
-      />
+      <div className="NavHeader-container">
+        <AppBar
+          style={Object.assign({}, styles.AppBar, style)}
+          titleStyle={styles.AppBarTitle}
+          title={title}
+          showMenuIconButton={showMenuIconButton}
+          onTitleTouchTap={onTitleTouchTap}
+          iconElementLeft={iconElementLeft}
+          iconElementRight={iconElementRight}
+          onLeftIconButtonTouchTap={onLeftIconButtonTouchTap}
+        />
+      </div>
     );
   }
 
 }
 
 NavHeader.propTypes = {
+  User: PropTypes.object,
   loading: PropTypes.bool,
   /**
    * primary:
@@ -268,16 +323,11 @@ NavHeader.propTypes = {
    */
   location: PropTypes.string,
   /**
-   * User:
-   *
-   * Current User, display avatar
-   */
-  User: PropTypes.object,
-  /**
    * Below:
    *
    * The below props are all pass to AppBar Component,
    * when primary is false.
+   * see: http://www.material-ui.com/#/components/app-bar
    */
   title: PropTypes.string,
   style: PropTypes.object,
@@ -286,9 +336,12 @@ NavHeader.propTypes = {
   iconElementLeft: PropTypes.element,
   iconElementRight: PropTypes.element,
   onLeftIconButtonTouchTap: PropTypes.func,
+  dispatch: PropTypes.func,
 };
 
 // If contextTypes is not defined, then context will be an empty object.
 NavHeader.contextTypes = {
   router: PropTypes.object.isRequired,
 };
+
+export default connect()(NavHeader);

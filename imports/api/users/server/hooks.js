@@ -4,8 +4,8 @@ Accounts.onCreateUser((options, user) => {
   let curUser = user;
   curUser.profile = {
     nickname: '',
-    cover: 'http://odsiu8xnd.bkt.clouddn.com/vivian/default-cover.jpg',
-    avatar: 'http://odsiu8xnd.bkt.clouddn.com/vivian/extra-large.jpg',
+    cover: 'http://odsiu8xnd.bkt.clouddn.com/default-cover.jpg',
+    avatar: 'http://odsiu8xnd.bkt.clouddn.com/default-large.jpg',
     relater: null,
     settings: {
       notification: true,

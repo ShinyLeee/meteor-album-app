@@ -13,6 +13,7 @@ import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import { RadioButton, RadioButtonGroup } from 'material-ui/RadioButton';
 import CircularProgress from 'material-ui/CircularProgress';
+import LinearProgress from 'material-ui/LinearProgress';
 import ArrowBackIcon from 'material-ui/svg-icons/navigation/arrow-back';
 import AddPhotoIcon from 'material-ui/svg-icons/image/add-to-photos';
 import LockInIcon from 'material-ui/svg-icons/action/lock-outline';
@@ -53,6 +54,12 @@ const styles = {
   radioButton: {
     marginTop: '16px',
   },
+  indeterminateProgress: {
+    position: 'fixed',
+    top: '64px',
+    backgroundColor: 'none',
+    zIndex: 99,
+  },
 };
 
 class ColPics extends Component {
@@ -61,6 +68,7 @@ class ColPics extends Component {
     this.state = {
       isLoading: false,
       isEditing: false,
+      isProcessing: false,
       isAlertOpen: false,
       alertTitle: '',
       alertContent: '',
@@ -104,8 +112,8 @@ class ColPics extends Component {
     dispatch(uploaderStart(data));
   }
 
-  handleLockCollection() {
-    const { col, colName, dispatch } = this.props;
+  handleLockCollection(cb) {
+    const { col, colName } = this.props;
     const msg = col.private ? '公开' : '加密';
     lockCollection.call({
       colId: col._id,
@@ -113,14 +121,13 @@ class ColPics extends Component {
       privateStatus: col.private,
     }, (err) => {
       if (err) {
-        dispatch(snackBarOpen(`${msg}相册失败`));
-        throw new Meteor.Error(err);
+        cb(err, `${msg}相册失败`);
       }
-      dispatch(snackBarOpen(`${msg}相册成功`));
+      cb(null, `${msg}相册成功`);
     });
   }
 
-  handleRemoveCollection() {
+  handleRemoveCollection(cb) {
     const { images, colName, dispatch } = this.props;
 
     const keys = _.map(images, (image) => {
@@ -133,13 +140,11 @@ class ColPics extends Component {
 
     Meteor.call('qiniu.remove', { keys }, (error) => {
       if (error) {
-        dispatch(snackBarOpen('删除相册失败'));
-        throw new Meteor.Error(error);
+        cb(error, '删除相册失败');
       }
       removeCollection.call({ colName }, (err) => {
         if (err) {
-          dispatch(snackBarOpen('删除相册失败'));
-          throw new Meteor.Error(err);
+          cb(err, '删除相册失败');
         }
         browserHistory.replace('/collection');
         dispatch(snackBarOpen('删除相册成功'));
@@ -147,8 +152,8 @@ class ColPics extends Component {
     });
   }
 
-  handleShiftPhoto() {
-    const { selectImages, colName, dispatch } = this.props;
+  handleShiftPhoto(cb) {
+    const { selectImages, colName } = this.props;
     const { shiftTo } = this.state;
 
     const keys = _.map(selectImages, (image) => {
@@ -162,8 +167,7 @@ class ColPics extends Component {
 
     Meteor.call('qiniu.move', { keys }, (error, res) => {
       if (error) {
-        dispatch(snackBarOpen('转移照片失败'));
-        throw new Meteor.Error(error);
+        cb(error, '转移照片失败');
       }
       const rets = res.results;
 
@@ -191,17 +195,15 @@ class ColPics extends Component {
         dest: shiftTo,
       }, (err) => {
         if (err) {
-          dispatch(snackBarOpen('转移照片失败'));
-          throw new Meteor.Error(err);
+          cb(err, '转移照片失败');
         }
-        dispatch(disableSelectAll());
-        dispatch(snackBarOpen(sucMsg));
+        cb(null, sucMsg, true);
       });
     });
   }
 
-  handleSetCover() {
-    const { selectImages, colName, dispatch } = this.props;
+  handleSetCover(cb) {
+    const { selectImages, colName } = this.props;
     const curImg = selectImages[0];
     const cover = `${domain}/${curImg.user}/${curImg.collection}/${curImg.name}.${curImg.type}`;
     mutateCollectionCover.call({
@@ -209,24 +211,20 @@ class ColPics extends Component {
       colName,
     }, (err) => {
       if (err) {
-        dispatch(snackBarOpen('更换封面失败'));
-        throw new Meteor.Error(err);
+        cb(err, '更换封面失败');
       }
-      dispatch(disableSelectAll());
-      dispatch(snackBarOpen('更换封面成功'));
+      cb(null, '更换封面成功', true);
     });
   }
 
-  handleRemovePhoto() {
-    const { selectImages, dispatch } = this.props;
+  handleRemovePhoto(cb) {
+    const { selectImages } = this.props;
     const selectImagesIds = _.map(selectImages, (image) => image._id);
     removeImagesToRecycle.call({ selectImages: selectImagesIds }, (err) => {
       if (err) {
-        dispatch(snackBarOpen('删除失败'));
-        throw new Meteor.Error(err);
+        cb(err, '删除失败');
       }
-      dispatch(disableSelectAll());
-      dispatch(snackBarOpen('删除成功'));
+      cb(err, '删除成功', true);
     });
   }
 
@@ -290,8 +288,21 @@ class ColPics extends Component {
   }
 
   triggerDialogAction(action) {
-    this.setState(initialAlertState);
-    this[`handle${action}`]();
+    const { dispatch } = this.props;
+    const curState = Object.assign({}, initialAlertState, { isProcessing: true });
+
+    this.setState(curState);
+
+    const actionCallback = (err, msg, isEditing) => {
+      dispatch(snackBarOpen(msg));
+      if (err) {
+        throw new Meteor.Error(err);
+      }
+      if (isEditing) dispatch(disableSelectAll());
+      this.setState({ isProcessing: false });
+    };
+
+    this[`handle${action}`](actionCallback);
   }
 
   renderIconRight() {
@@ -437,6 +448,11 @@ class ColPics extends Component {
         { this.state.isEditing
           ? this.renderEditingNavHeader()
           : this.renderNavHeader() }
+        <div className="progress">
+          { this.state.isProcessing
+            ? <LinearProgress style={styles.indeterminateProgress} mode="indeterminate" />
+            : null }
+        </div>
         <div className="content">
           { dataIsReady
             ? this.renderColPics()

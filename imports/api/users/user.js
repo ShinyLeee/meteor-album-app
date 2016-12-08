@@ -5,7 +5,7 @@ export const Users = Meteor.users;
 
 Users.schema = new SimpleSchema({
   _id: { type: String, regEx: SimpleSchema.RegEx.Id },
-  createdAt: { type: Date },
+  createdAt: { type: Date, defaultValue: new Date() },
   services: { type: Object, optional: true, blackbox: true },
   username: { type: String, regEx: /^([a-z]|[A-Z])[\w_]{5,19}$/, optional: true },
   emails: { type: [Object] },
