@@ -174,10 +174,13 @@ class NavHeader extends Component {
           open={this.state.drawer}
           onRequestChange={(open) => this.setState({ drawer: open })}
         >
-          <div className="drawer-profile" style={{ backgroundImage: User && `url(${User.profile.cover})` }}>
+          <div
+            className="drawer-profile"
+            style={{ backgroundImage: User ? `url(${User.profile.cover})` : 'url(http://odsiu8xnd.bkt.clouddn.com/default-cover.jpg)' }}
+          >
             <div className="drawer-profile-background" />
             { User ? (
-              <div className>
+              <div>
                 <div className="drawer-profile-avatar">
                   <Avatar
                     size={54}

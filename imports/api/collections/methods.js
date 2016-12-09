@@ -14,7 +14,10 @@ export const insertCollection = new ValidatedMethod({
     if (!this.userId) {
       throw new Meteor.Error('user.accessDenied');
     }
-    return Collections.insert(collection);
+    // 根据用户设置来确认新建相册是否公开, 默认公开相册
+    const settings = Meteor.user().profile.settings;
+    const mergedCollection = Object.assign({}, collection, { private: !settings.allowVisitColl });
+    return Collections.insert(mergedCollection);
   },
 });
 
@@ -33,7 +36,7 @@ export const removeCollection = new ValidatedMethod({
 });
 
 export const lockCollection = new ValidatedMethod({
-  name: 'collection.lock',
+  name: 'collections.lock',
   validate: new SimpleSchema({
     colId: { type: String, regEx: SimpleSchema.RegEx.Id },
     colName: { type: String, max: 10 },
@@ -53,7 +56,7 @@ export const lockCollection = new ValidatedMethod({
 });
 
 export const mutateCollectionCover = new ValidatedMethod({
-  name: 'collection.mutateCover',
+  name: 'collections.mutateCover',
   validate: new SimpleSchema({
     cover: { type: String, label: '封面图片' },
     colName: { type: String, label: '相册名' },

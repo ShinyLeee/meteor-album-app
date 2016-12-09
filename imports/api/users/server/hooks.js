@@ -4,12 +4,14 @@ Accounts.onCreateUser((options, user) => {
   let curUser = user;
   curUser.profile = {
     nickname: '',
+    avatar: 'http://odsiu8xnd.bkt.clouddn.com/default-avatar.jpg',
     cover: 'http://odsiu8xnd.bkt.clouddn.com/default-cover.jpg',
-    avatar: 'http://odsiu8xnd.bkt.clouddn.com/default-large.jpg',
     relater: null,
     settings: {
-      notification: true,
-      message: true,
+      allowNoti: true,
+      allowMsg: true,
+      allowVisitHome: true,
+      allowVisitColl: true,
     },
   };
   curUser = Object.assign({}, curUser, options.profile);

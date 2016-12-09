@@ -50,7 +50,18 @@
 .setting-holder {
   .setting-cover {
     position: relative;
+    height: 200px;
+    background-size: cover;
+    overflow: hidden;
     img { width: 100% }
+    .setting-cover-background {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      background: -webkit-linear-gradient(top, rgba(0, 0, 0, 0.3), transparent 30%, transparent 70%, rgba(0, 0, 0, 0.3));
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0.3) 0, transparent 30%, transparent 70%, rgba(0, 0, 0, 0.3));
+    }
     .setting-cover-upload {
       position: absolute;
       right: 24px;
@@ -73,12 +84,6 @@
       cursor: pointer;
     }
   }
-}
-
-.setting-save {
-  width: 100%;
-  padding: 32px;
-  text-align: center;
 }
 
 /* route /collection/:colName */

@@ -83,21 +83,6 @@ class ColPics extends Component {
     this.handleRemovePhoto = this.handleRemovePhoto.bind(this);
   }
 
-  componentDidMount() {
-    const { User, colName } = this.props;
-    if (User) {
-      Meteor.call('qiniu.getUptoken', {
-        user: User.username,
-        collection: colName,
-      }, (err, res) => {
-        if (err) {
-          throw new Meteor.Error(err);
-        }
-        this.setState({ data: res });
-      });
-    }
-  }
-
   handleSaveEditing(e) {
     const { dispatch } = this.props;
     e.preventDefault();
@@ -106,8 +91,11 @@ class ColPics extends Component {
   }
 
   handleOpenUploader() {
-    const { dispatch } = this.props;
-    const { data } = this.state;
+    const { uptoken, User, colName, dispatch } = this.props;
+    const data = {
+      uptoken,
+      key: `${User.username}/${colName}/`,
+    };
     document.getElementById('uploader').click();
     dispatch(uploaderStart(data));
   }
@@ -238,8 +226,8 @@ class ColPics extends Component {
     let alertContent;
     if (action === 'LockCollection') {
       alertTitle = '提示';
-      if (col.private) alertContent = '公开后所有人可查看该相册中的相片, 是否确认公开此相册？';
-      else alertContent = '加密后该相册中的相片将对他人不可见，是否确认加密此相册？';
+      if (col.private) alertContent = '公开后所有人可查看该相册中的照片, 是否确认公开此相册？';
+      else alertContent = '加密后该相册中的照片将对他人不可见，是否确认加密此相册？';
       this.setState({ isAlertOpen: true, alertTitle, alertContent, action });
       return;
     }
@@ -483,6 +471,7 @@ ColPics.propTypes = {
   colNames: PropTypes.array.isRequired,
   images: PropTypes.array.isRequired,
   // Below Pass From Redux
+  uptoken: PropTypes.string.isRequired,
   selectImages: PropTypes.array,
   counter: PropTypes.number,
   dispatch: PropTypes.func,
@@ -510,6 +499,7 @@ const MeteorContainer = createContainer(({ params }) => {
 }, ColPics);
 
 const mapStateToProps = (state) => ({
+  uptoken: state.uptoken,
   selectImages: state.selectCounter.selectImages,
   counter: state.selectCounter.counter,
 });

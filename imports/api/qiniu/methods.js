@@ -9,24 +9,14 @@ if (Meteor.isServer) {
   const bucket = Meteor.settings.private.qiniu.bucket;
 
   Meteor.methods({
-    'qiniu.getUptoken': function getUptoken({ user, collection }) {
+    'qiniu.getUptoken': function getUptoken() {
       if (!this.userId) {
         throw new Meteor.Error('user.accessDenied');
       }
-      new SimpleSchema({
-        user: { type: String, label: '用户名' },
-        collection: { type: String, label: '相册名', max: 10 },
-      }).validator({ clean: true, filter: false });
-
-      const key = `${user}/${collection}/`;
-
       const putPolicy = new qiniu.rs.PutPolicy(bucket);
-      const token = putPolicy.token();
+      const uptoken = putPolicy.token();
 
-      const response = {
-        uptoken: token,
-        key,
-      };
+      const response = { uptoken };
       return response;
     },
 

@@ -1,11 +1,13 @@
 import React, { Component, PropTypes } from 'react';
+import { connect } from 'react-redux';
 import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
-
 import CircularProgress from 'material-ui/CircularProgress';
 import SnackBar from './components/SnackBar.jsx';
 import NavHeader from './components/NavHeader.jsx';
 import Uploader from './components/Uploader.jsx';
+
+import { storeUptoken } from './actions/actionTypes.js';
 
 class App extends Component {
   constructor(props) {
@@ -13,6 +15,18 @@ class App extends Component {
     this.state = ({
       location: 'index',
     });
+  }
+
+  componentDidMount() {
+    const { User, dispatch } = this.props;
+    if (User) {
+      Meteor.call('qiniu.getUptoken', (err, res) => {
+        if (err) {
+          throw new Meteor.Error(err);
+        }
+        dispatch(storeUptoken(res.uptoken));
+      });
+    }
   }
 
   render() {
@@ -49,9 +63,10 @@ App.propTypes = {
   User: PropTypes.object,
   userIsReady: PropTypes.bool.isRequired,
   children: PropTypes.element.isRequired,
+  dispatch: PropTypes.func,
 };
 
-export default createContainer(() => {
+const MeteorContainer = createContainer(() => {
   let userIsReady;
   const User = Meteor.user();
   if (typeof User === 'undefined' || User) userIsReady = !!User;
@@ -61,3 +76,5 @@ export default createContainer(() => {
     userIsReady,
   };
 }, App);
+
+export default connect()(MeteorContainer);

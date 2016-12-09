@@ -1,5 +1,12 @@
 import { _ } from 'meteor/underscore';
 
+export const uptoken = (state = '', action) => {
+  if (action.type === 'STORE_UPTOKEN') {
+    return action.uptoken;
+  }
+  return state;
+};
+
 export const zoomer = (state = null, action) => {
   switch (action.type) {
     case 'ZOOMER_OPEN':

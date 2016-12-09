@@ -1,3 +1,8 @@
+export const storeUptoken = (uptoken) => ({
+  type: 'STORE_UPTOKEN',
+  uptoken,
+});
+
 export const zoomerOpen = (image) => ({
   type: 'ZOOMER_OPEN',
   image,
