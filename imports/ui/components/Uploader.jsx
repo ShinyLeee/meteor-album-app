@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
+import EXIF from 'exif-js';
 import uuid from 'node-uuid';
 
 import { insertImage } from '/imports/api/images/methods.js';
@@ -63,7 +64,7 @@ class Uploader extends Component {
       thumbnail: URL.createObjectURL(f),
     }, () => {
       formData.append('file', f);
-      formData.append('key', `${destination}${fileName}.${f.name.split('.')[1]}`);
+      formData.append('key', `${destination}${fileName}.${f.surfix}`);
       formData.append('token', token);
       const img = new Image();
       img.onload = () => {
@@ -75,41 +76,65 @@ class Uploader extends Component {
         // We need to store image's ratio and lastModified in local DB
         f.fileName = fileName;
         f.ratio = ratio;
-        f.shootAt = f.lastModified;
-
-        // After load Image, we can start make Ajax request
-        $.ajax({
-          xhr: () => {
-            const xhr = new window.XMLHttpRequest();
-            xhr.upload.addEventListener('progress', (evt) => {
-              this.fileUploading(evt, xhr);
-            }, false);
-            xhr.addEventListener('progress', (evt) => {
-              this.fileUploading(evt, xhr);
-            }, false);
-            return xhr;
-          },
-          method: 'POST',
-          url: uploadURL,
-          data: formData,
-          dataType: 'json',
-          contentType: false,
-          processData: false,
-        })
-        .success((res) => {
-          f.key = res.key;
-          if (this.afterUploadFile(f)) {
-            // if have upload all files, just call finishUpload without error
-            if (this.state.current === this.state.total) {
-              this.finishUpload(null);
-            } else {
-              // if have not upload all files, we need to call it again
-              this.uploadToQiniu(files, files[this.state.current]);
+        const startAjax = () => {
+          $.ajax({
+            xhr: () => {
+              const xhr = new window.XMLHttpRequest();
+              xhr.upload.addEventListener('progress', (evt) => {
+                this.fileUploading(evt, xhr);
+              }, false);
+              xhr.addEventListener('progress', (evt) => {
+                this.fileUploading(evt, xhr);
+              }, false);
+              return xhr;
+            },
+            method: 'POST',
+            url: uploadURL,
+            data: formData,
+            dataType: 'json',
+            contentType: false,
+            processData: false,
+          })
+          .success((res) => {
+            f.key = res.key;
+            if (this.afterUploadFile(f)) {
+              // if have upload all files, just call finishUpload without error
+              if (this.state.current === this.state.total) {
+                this.finishUpload(null);
+              } else {
+                // if have not upload all files, we need to call it again
+                this.uploadToQiniu(files, files[this.state.current]);
+              }
             }
+          })
+          .error((err) => {
+            this.finishUpload(err);
+          });
+        };
+
+        // 如果MIME-TYPE不是image/jpeg，则无法提取exif信息
+        if (f.surfix !== 'jpg') {
+          f.shootAt = f.lastModified;
+          startAjax();
+          return;
+        }
+        // Fix lastModified property not support by safari
+        EXIF.getData(img, function () {  // eslint-disable-line
+          const dateTime = EXIF.getTag(this, 'DateTime');
+          const dateTimeOriginal = EXIF.getTag(this, 'DateTimeOriginal');
+          const dateTimeDigitized = EXIF.getTag(this, 'DateTimeDigitized');
+          const exifTime = dateTime || dateTimeOriginal || dateTimeDigitized;
+
+          // 若该图片存在时间信息，则保存为拍摄时间
+          if (exifTime) {
+            const temp = exifTime.split(' ');
+            temp[0] = temp[0].split(':').join('-');
+            f.shootAt = new Date(`${temp[0]}T${temp[1]}`);
+            startAjax();
+            return;
           }
-        })
-        .error((err) => {
-          this.finishUpload(err);
+          f.shootAt = f.lastModified;
+          startAjax();
         });
       };
 

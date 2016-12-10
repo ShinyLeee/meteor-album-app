@@ -17,9 +17,9 @@ class App extends Component {
     });
   }
 
-  componentDidMount() {
+  componentWillReceiveProps(nextProps) {
     const { User, dispatch } = this.props;
-    if (User) {
+    if (!User && nextProps.User) {
       Meteor.call('qiniu.getUptoken', (err, res) => {
         if (err) {
           throw new Meteor.Error(err);
