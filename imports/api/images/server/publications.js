@@ -7,14 +7,14 @@ Meteor.publish('Images.all', function images() {
   return Images.find({ deletedAt: null });
 });
 
-Meteor.publish('Images.ownImages', function ownImages() {
+Meteor.publish('Images.own', function ownImages() {
   return Images.find({
     uid: this.userId,
     deletedAt: null,
   });
 });
 
-Meteor.publish('Images.likedImages', function likedImages() {
+Meteor.publish('Images.liked', function likedImages() {
   return Images.find({
     liker: { $in: [this.userId] },
   });

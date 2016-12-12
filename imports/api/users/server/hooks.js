@@ -4,9 +4,10 @@ Accounts.onCreateUser((options, user) => {
   let curUser = user;
   curUser.profile = {
     nickname: '',
+    intro: '',
     avatar: 'http://odsiu8xnd.bkt.clouddn.com/default-avatar.jpg',
     cover: 'http://odsiu8xnd.bkt.clouddn.com/default-cover.jpg',
-    relater: null,
+    follwers: [],
     settings: {
       allowNoti: true,
       allowMsg: true,

@@ -14,12 +14,12 @@ class NotesCollection extends Mongo.Collection {
 export const Notes = new NotesCollection('notes');
 
 Notes.schema = new SimpleSchema({
-  title: { type: String, max: 20 },
-  content: { type: String, label: '内容' }, // TODO max content length limit
+  title: { type: String, max: 20, optional: true },
+  content: { type: String, label: '内容', max: 256 },
   sender: { type: String, label: '发送者', regEx: SimpleSchema.RegEx.Id },
   receiver: { type: String, label: '接收者', regEx: SimpleSchema.RegEx.Id },
   isRead: { type: Boolean, defaultValue: false, optional: true },
-  sendAt: { type: Date, label: '发送时间' },
+  sendAt: { type: Date, label: '发送时间', defaultValue: new Date() },
   createdAt: { type: Date, defaultValue: new Date(), optional: true },
 });
 

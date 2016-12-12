@@ -15,18 +15,20 @@ export const updateUser = new ValidatedMethod({
   name: 'users.update',
   validate: new SimpleSchema({
     nickname: { type: String, label: '昵称', max: 10, optional: true },
+    intro: { type: String, label: '个人简介', max: 20, optional: true },
     cover: { type: String, optional: true },
     avatar: { type: String, optional: true },
     relater: { type: [String], optional: true },
     settings: { type: Object, optional: true, blackbox: true },
   }).validator({ clean: true, filter: false }),
-  run({ nickname, cover, avatar, settings }) {
+  run({ nickname, intro, cover, avatar, settings }) {
     if (!this.userId) {
       throw new Meteor.Error('user.accessDenied');
     }
     const User = Meteor.users.findOne(this.userId);
     let newProfile = {
       nickname,
+      intro,
       cover,
       avatar,
       settings,

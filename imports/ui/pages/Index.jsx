@@ -20,6 +20,7 @@ class Index extends Component {
     this.state = {
       location: 'home',
       isLoading: false,
+      images: props.images,
     };
     this.onInfinityLoad = this.onInfinityLoad.bind(this);
     this.handleAddImage = this.handleAddImage.bind(this);
@@ -161,8 +162,8 @@ export default createContainer(() => {
     { private: { $ne: true } },
     { sort: { createdAt: -1 }, limit }).fetch();
   return {
-    images,
     dataIsReady,
+    images,
     limit,
   };
 }, Index);

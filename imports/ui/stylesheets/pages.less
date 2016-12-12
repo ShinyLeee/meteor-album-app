@@ -46,8 +46,78 @@
   }
 }
 
+/* route /user */
+.user-main {
+  & > .main-cover {
+    position: relative;
+    height: 200px;
+    background-size: cover;
+    overflow: hidden;
+    & > .main-cover-background {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      background: -webkit-linear-gradient(top, rgba(0, 0, 0, 0.3), transparent 30%, transparent 70%, rgba(0, 0, 0, 0.3));
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0.3) 0, transparent 30%, transparent 70%, rgba(0, 0, 0, 0.3));
+    }
+  }
+  .main-profile {
+    position: relative;
+    margin-bottom: 140px;
+    & > .main-profile-content {
+      position: absolute;
+      left: 127px; // We will set this more specific in jsx
+      top: -60px;
+      & > .main-profile-avatar {
+        width: 120px;
+        height: 120px;
+        overflow: hidden;
+        & > img {
+          width: 100%;
+          height: 100%;
+          border-radius: 50%;
+        }
+      }
+      & > .main-profile-detail {
+        text-align: center;
+        & > h4 { margin: 10px 0 10px 0; }
+        & > span { font-size: 14px; color: #999; }
+      }
+    }
+  }
+  .main-action {
+    text-align: center;
+  }
+}
+
+.user-counter {
+  margin: 20px 0 10px 0;
+  border: 1px solid #eee;
+  & > .counter {
+    display: inline-block;
+    width: 100/3%;
+    padding: 10px 0 10px;
+    border: 1px solid #eee;
+    text-align: center;
+    & > span { display: block; }
+    & > span:first-child {
+      font-weight: bold;
+      color: #212121;
+      margin-bottom: 6px;
+    }
+  }
+}
+
+.user-rank {
+  padding: 0 20px;
+  & > .rank-content {
+    width: 100%;
+  }
+}
+
 /* route /setting */
-.setting-holder {
+.setting-content {
   .setting-cover {
     position: relative;
     height: 200px;

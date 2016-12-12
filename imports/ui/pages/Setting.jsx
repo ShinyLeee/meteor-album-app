@@ -17,6 +17,8 @@ import ArrowBackIcon from 'material-ui/svg-icons/navigation/arrow-back';
 import DoneIcon from 'material-ui/svg-icons/action/done';
 import CameraIcon from 'material-ui/svg-icons/image/photo-camera';
 import PersonIcon from 'material-ui/svg-icons/social/person';
+import UserIcon from 'material-ui/svg-icons/action/account-box';
+import InboxIcon from 'material-ui/svg-icons/content/inbox';
 import EmailIcon from 'material-ui/svg-icons/communication/email';
 import { blue500 } from 'material-ui/styles/colors';
 import { updateUser } from '/imports/api/users/methods.js';
@@ -59,6 +61,7 @@ class Setting extends Component {
       cover: User.profile.cover,
       avatar: User.profile.avatar,
       nickname: User.profile.nickname,
+      intro: User.profile.intro,
       allowVisitColl: User.profile.settings.allowVisitColl,
       allowVisitHome: User.profile.settings.allowVisitHome,
       allowNoti: User.profile.settings.allowNoti,
@@ -79,6 +82,7 @@ class Setting extends Component {
     const { dispatch } = this.props;
     updateUser.call({
       nickname: this.state.nickname,
+      intro: this.state.intro,
       cover: this.state.cover,
       avatar: this.state.avatar,
       settings: {
@@ -156,7 +160,7 @@ class Setting extends Component {
         processData: false,
       })
       .success((res) => {
-        const avatarSrc = `${domain}/${res.key}?imageview2/1/w/120/h/120`;
+        const avatarSrc = `${domain}/${res.key}?imageView2/1/w/240/h/240`;
         this.setState({ isEditing: true, isProcessing: false, avatar: avatarSrc });
       })
       .error((err) => {
@@ -191,7 +195,7 @@ class Setting extends Component {
   renderSettingContent() {
     const { User } = this.props;
     return (
-      <div className="setting-holder">
+      <div className="setting-content">
         <div className="setting-upload">
           <div
             className="setting-cover"
@@ -252,7 +256,7 @@ class Setting extends Component {
           </ListItem>
           <ListItem
             style={styles.liForTextFieldStyle}
-            leftIcon={<PersonIcon />}
+            leftIcon={<UserIcon />}
             disabled
           >
             <TextField
@@ -260,6 +264,18 @@ class Setting extends Component {
               floatingLabelText="昵称"
               value={this.state.nickname || ''}
               onChange={(e) => this.setState({ isEditing: true, nickname: e.target.value })}
+            />
+          </ListItem>
+          <ListItem
+            style={styles.liForTextFieldStyle}
+            leftIcon={<InboxIcon />}
+            disabled
+          >
+            <TextField
+              style={styles.textFieldStyle}
+              floatingLabelText="个人简介"
+              value={this.state.intro}
+              onChange={(e) => this.setState({ isEditing: true, intro: e.target.value })}
             />
           </ListItem>
           <ListItem

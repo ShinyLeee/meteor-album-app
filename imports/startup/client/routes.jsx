@@ -9,6 +9,7 @@ import User from '/imports/ui/pages/User.jsx';
 import Collection from '/imports/ui/pages/Collection.jsx';
 import ColPics from '/imports/ui/pages/ColPics.jsx';
 import Setting from '/imports/ui/pages/Setting.jsx';
+import SendNote from '/imports/ui/pages/SendNote.jsx';
 import Login from '/imports/ui/pages/Login.jsx';
 import Register from '/imports/ui/pages/Register.jsx';
 import Constructing from '/imports/ui/pages/Constructing.jsx';
@@ -39,6 +40,7 @@ const Root = () => (
           <Route path="memory" component={Constructing} />
           <Route path="recycle" component={Constructing} />
           <Route path="setting" component={Setting} onEnter={requireAuth} />
+          <Route path="sendNote" component={SendNote} onEnter={requireAuth} />
           <Route path="login" component={Login} onEnter={isLogin} />
           <Route path="register" component={Register} onEnter={isLogin} />
           <Route path="404" component={NotFound} />

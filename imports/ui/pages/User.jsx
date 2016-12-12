@@ -1,51 +1,22 @@
 import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
 import React, { Component, PropTypes } from 'react';
-import { Link } from 'react-router';
+import { browserHistory } from 'react-router';
 import { connect } from 'react-redux';
-import classnames from 'classnames';
-
-// For Dropdown Menus
-import IconMenu from 'material-ui/IconMenu';
+import Slider from 'react-slick';
+import Popover from 'material-ui/Popover';
+import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
-import IconButton from 'material-ui/IconButton/IconButton';
-
-// For Modal Dialog
-import Dialog from 'material-ui/Dialog';
 import CircularProgress from 'material-ui/CircularProgress';
-import FlatButton from 'material-ui/FlatButton';
-import FloatingActionButton from 'material-ui/FloatingActionButton';
-import AutoComplete from 'material-ui/AutoComplete';
-import Divider from 'material-ui/Divider';
-import TextField from 'material-ui/TextField';
-import DatePicker from 'material-ui/DatePicker';
-
-import MoreHorizIcon from 'material-ui/svg-icons/navigation/more-horiz';
+import RaisedButton from 'material-ui/RaisedButton';
 import SettingsIcon from 'material-ui/svg-icons/action/settings';
-import HelpIcon from 'material-ui/svg-icons/action/help-outline';
 import ExitToAppIcon from 'material-ui/svg-icons/action/exit-to-app';
-import PersonAddIcon from 'material-ui/svg-icons/social/person-add';
-import MessageIcon from 'material-ui/svg-icons/communication/message';
-import EditIcon from 'material-ui/svg-icons/image/edit';
-
-import { insertNote } from '/imports/api/notes/methods.js';
+import { Images } from '/imports/api/images/image.js';
+import { Collections } from '/imports/api/collections/collection.js';
 import NavHeader from '../components/NavHeader.jsx';
 import { snackBarOpen } from '../actions/actionTypes.js';
 
-const styles = {
-  customTextField: {
-    marginLeft: 20,
-  },
-  customModalContent: {
-    width: '100%',
-    maxWidth: 'none',
-  },
-  floatBtn: {
-    position: 'fixed',
-    right: '16px',
-    bottom: '16px',
-  },
-};
+const domain = Meteor.settings.public.domain;
 
 class UserPage extends Component {
 
@@ -53,34 +24,15 @@ class UserPage extends Component {
     super(props);
     this.state = {
       location: 'user',
-      notePage: true,
-      likedPage: false,
-      relateModal: false,
-      noteModal: false,
-      relater: undefined,
-      title: undefined,
-      content: undefined,
-      sender: Meteor.userId(),
-      receiver: undefined,
-      sendAt: undefined,
+      open: false,
     };
-    this.getUsernames = this.getUsernames.bind(this);
+    this.handleOpen = this.handleOpen.bind(this);
     this.handleLogout = this.handleLogout.bind(this);
-    this.handleAddFriend = this.handleAddFriend.bind(this);
-    this.handleSendNotes = this.handleSendNotes.bind(this);
-    this.handleClose = this.handleClose.bind(this);
-    this.noteSubmit = this.noteSubmit.bind(this);
-    this.handleTextFieldChange = this.handleTextFieldChange.bind(this);
-    this.handleRelaterChange = this.handleRelaterChange.bind(this);
-    this.handleReceiverChange = this.handleReceiverChange.bind(this);
-    this.handleSendDateChange = this.handleSendDateChange.bind(this);
-    this.handleChildCompChange = this.handleChildCompChange.bind(this);
   }
 
-  getUsernames() {
-    const { filterUser } = this.props;
-    const usernames = filterUser.map((user) => user.username);
-    return usernames;
+  handleOpen(e) {
+    e.preventDefault();
+    this.setState({ open: true });
   }
 
   handleLogout() {
@@ -88,262 +40,129 @@ class UserPage extends Component {
     Meteor.logout((err) => {
       if (err) {
         dispatch(snackBarOpen('发生未知错误'));
-        // TODO LOG
-        console.error(err); // eslint-disable-line no-console
-        return false;
+        throw new Meteor.Error(err);
       }
-      this.context.router.replace('/login');
-      dispatch(snackBarOpen('成功登出'));
-      return true;
+      browserHistory.replace('/login');
+      dispatch(snackBarOpen('登出成功'));
     });
-  }
-
-  handleAddFriend() {
-    this.setState({ relateModal: true });
-  }
-
-  handleSendNotes() {
-    this.setState({ noteModal: true });
-  }
-
-  handleClose() {
-    this.setState({
-      relateModal: false,
-      noteModal: false,
-    });
-  }
-
-  noteSubmit() {
-    const { dispatch } = this.props;
-    if (!this.state.receiver) {
-      dispatch(snackBarOpen('接收者不存在'));
-      return;
-    }
-    insertNote.call({
-      title: this.state.title,
-      content: this.state.content,
-      sender: this.state.sender,
-      receiver: this.state.receiver,
-      sendAt: this.state.sendAt || new Date(),
-    }, (err) => {
-      if (err) {
-        dispatch(snackBarOpen(err.message));
-        return false;
-      }
-      this.handleClose();
-      dispatch(snackBarOpen('发送成功'));
-      return true;
-    });
-  }
-
-  handleTextFieldChange(e) {
-    this.setState({
-      [e.target.name]: e.target.value,
-    });
-  }
-
-  handleRelaterChange(value) {
-    const { filterUser } = this.props;
-    let relater;
-    filterUser.forEach((user) => {
-      if (user.username === value) {
-        relater = user.uid;
-      }
-      return true;
-    });
-    this.setState({
-      relater,
-    });
-  }
-
-  handleReceiverChange(value) {
-    const { filterUser } = this.props;
-    let receiver;
-    filterUser.forEach((user) => {
-      if (user.username === value) {
-        receiver = user.uid;
-      }
-      return true;
-    });
-    this.setState({
-      receiver,
-    });
-  }
-
-  handleSendDateChange(e, date) {
-    this.setState({
-      sendAt: date,
-    });
-  }
-
-  handleChildCompChange() {
-    this.setState({
-      notePage: !this.state.notePage,
-      likedPage: !this.state.likedPage,
-    });
-  }
-
-  renderContent() {
-    const { User } = this.props;
-    const isNotePage = classnames('user-note', {
-      highlight: this.state.notePage,
-    });
-    const isLikedPage = classnames('user-liked', {
-      highlight: this.state.likedPage,
-    });
-    const relateModalActions = [
-      <FlatButton label="取消" onTouchTap={this.handleClose} primary />,
-      <FlatButton label="申请关联" onTouchTap={this.relateSubmit} primary />,
-    ];
-    const noteModalActions = [
-      <FlatButton label="取消" onTouchTap={this.handleClose} primary />,
-      <FlatButton label="确定发送" onTouchTap={this.noteSubmit} primary />,
-    ];
-    return (
-      <div className="user-holder">
-        <div className="user-panel">
-          <div className="user-header">
-            <div className="user-avatar">
-              <img src={User.profile.avatar} alt="user-avatar" />
-              <div className="user-action">
-                <IconMenu
-                  iconButtonElement={<IconButton><MoreHorizIcon color="#999" /></IconButton>}
-                  anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
-                  targetOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-                >
-                  <MenuItem
-                    primaryText="账号设置"
-                    containerElement={<Link to={'/setting'} />}
-                    leftIcon={<SettingsIcon />}
-                  />
-                  <MenuItem
-                    primaryText="关联用户"
-                    leftIcon={<PersonAddIcon />}
-                    onTouchTap={this.handleAddFriend}
-                  />
-                  <MenuItem
-                    primaryText="发送信息"
-                    leftIcon={<MessageIcon />}
-                    onTouchTap={this.handleSendNotes}
-                  />
-                  <MenuItem
-                    primaryText="帮助"
-                    containerElement={<Link to={'/help'} />}
-                    leftIcon={<HelpIcon />}
-                  />
-                  <MenuItem
-                    primaryText="登出"
-                    leftIcon={<ExitToAppIcon />}
-                    onTouchTap={this.handleLogout}
-                  />
-                </IconMenu>
-              </div>
-            </div>
-            <div className="user-name">
-              <h1>{User.username}</h1>
-            </div>
-          </div>
-        </div>
-        <div className="user-info">
-          <Link
-            className={isNotePage}
-            to="/user/notes"
-            onClick={this.handleChildCompChange}
-          >
-            <span>{User.profile.notes}</span>
-            <span>Notes</span>
-          </Link>
-          <Link
-            className={isLikedPage}
-            to="/user/liked"
-            onClick={this.handleChildCompChange}
-          >
-            <span>{User.profile.likes}</span>
-            <span>Liked</span>
-          </Link>
-        </div>
-        <div className="user-modal">
-          <Dialog
-            title="关联"
-            actions={relateModalActions}
-            modal={false}
-            open={this.state.relateModal}
-            contentStyle={styles.customModalContent}
-            onRequestClose={this.handleClose}
-          >
-            <AutoComplete
-              onNewRequest={this.handleRelaterChange}
-              onUpdateInput={this.handleRelaterChange}
-              floatingLabelText="用户名"
-              filter={AutoComplete.caseInsensitiveFilter}
-              dataSource={this.getUsernames()}
-            />
-            <br />
-            注: 请关联你的男朋友或者女朋友
-          </Dialog>
-          <Dialog
-            title="发送信息"
-            actions={noteModalActions}
-            modal={false}
-            open={this.state.noteModal}
-            contentStyle={styles.customModalContent}
-            onRequestClose={this.handleClose}
-          >
-            <TextField
-              onChange={this.handleTextFieldChange}
-              name="title"
-              type="text"
-              floatingLabelText="标题"
-              style={styles.customTextField}
-              underlineShow={false}
-              fullWidth
-            />
-            <Divider />
-            <TextField
-              onChange={this.handleTextFieldChange}
-              name="content"
-              type="text"
-              floatingLabelText="内容"
-              style={styles.customTextField}
-              underlineShow={false}
-              rows={1}
-              rowsMax={2}
-              fullWidth
-              multiLine
-            />
-            <Divider />
-            <AutoComplete
-              onNewRequest={this.handleReceiverChange}
-              onUpdateInput={this.handleReceiverChange}
-              floatingLabelText="接收者"
-              style={styles.customTextField}
-              underlineShow={false}
-              filter={AutoComplete.caseInsensitiveFilter}
-              dataSource={this.getUsernames()}
-              openOnFocus
-              fullWidth
-            />
-            <Divider />
-            <DatePicker
-              onChange={this.handleSendDateChange}
-              floatingLabelText="发送时间"
-              style={styles.customTextField}
-              underlineShow={false}
-              defaultDate={this.state.sendAt}
-              value={this.state.sendAt}
-            />
-            <Divider />
-            <br />
-          </Dialog>
-        </div>
-      </div>
-    );
   }
 
   renderLoader() {
     return (
-      <div className="content text-center">
-        <CircularProgress style={{ top: '150px' }} />
+      <div className="text-center"><CircularProgress /></div>
+    );
+  }
+
+  renderSlider() {
+    const { User, topImages } = this.props;
+    return (
+      <Slider
+        slidesToScroll={3}
+        slidesToShow={3}
+        speed={500}
+        infinite={false}
+      >
+        {
+          topImages.map((image, i) => {
+            const src = `${domain}/${User.username}/${image.collection}/${image.name}.${image.type}`;
+            return (
+              <div style={{ padding: '10px' }} key={i}>
+                <img style={{ width: '100%' }} src={`${src}?imageView2/1/w/240/h/300`} alt={image.name} />
+              </div>
+            );
+          })
+        }
+      </Slider>);
+  }
+
+  renderUserContent() {
+    const profileContentLeft = (document.body.clientWidth - 120) / 2;
+    const { User, likedCount, collectionCount, dataIsReady } = this.props;
+    return (
+      <div className="user-content">
+        { /* MAIN SECTION */ }
+        <div className="user-main">
+          <div
+            className="main-cover"
+            style={{ backgroundImage: `url(${User.profile.cover})` }}
+          >
+            <div className="main-cover-background" />
+          </div>
+          <div className="main-profile">
+            <div
+              className="main-profile-content"
+              style={{ left: `${profileContentLeft}px` }}
+            >
+              <div className="main-profile-avatar">
+                <img src={User.profile.avatar} alt={User.username} />
+              </div>
+              <div className="main-profile-detail">
+                <h4>{User.username}</h4>
+                <span>{User.profile.intro || '暂无简介'}</span>
+              </div>
+            </div>
+          </div>
+          <div className="main-action">
+            <RaisedButton
+              label="发送信息"
+              onTouchTap={() => browserHistory.push('/sendNote')}
+              style={{ marginRight: '20px' }}
+              primary
+            />
+            <RaisedButton
+              label="更多操作"
+              onTouchTap={this.handleOpen}
+            />
+            <Popover
+              open={this.state.open}
+              anchorEl={this.state.anchorEl}
+              anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
+              targetOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+              onRequestClose={() => this.setState({ open: false })}
+            >
+              <Menu>
+                <MenuItem
+                  primaryText="账号设置"
+                  onTouchTap={() => browserHistory.push('/setting')}
+                  leftIcon={<SettingsIcon />}
+                />
+                <MenuItem
+                  primaryText="登出"
+                  leftIcon={<ExitToAppIcon />}
+                  onTouchTap={this.handleLogout}
+                />
+              </Menu>
+            </Popover>
+          </div>
+        </div>
+        { /* COUNTER SECTION */ }
+        <div className="user-counter">
+          <div
+            className="counter counter-likes"
+            onTouchTap={() => browserHistory.push('/likes')}
+          >
+            <span>{likedCount}</span>
+            <span>喜欢</span>
+          </div>
+          <div
+            className="counter counter-collections"
+            onTouchTap={() => browserHistory.push('/collection')}
+          >
+            <span>{collectionCount}</span>
+            <span>相册</span>
+          </div>
+          <div className="counter counter-follwer">
+            <span>{User.profile.follwers.length}</span>
+            <span>粉丝</span>
+          </div>
+        </div>
+        { /* RANK SECTION */ }
+        <div className="user-rank">
+          <div className="rank-header">最受欢迎的</div>
+          <div className="rank-content">
+            { dataIsReady ? this.renderSlider() : this.renderLoader() }
+          </div>
+        </div>
       </div>
     );
   }
@@ -354,21 +173,8 @@ class UserPage extends Component {
       <div className="container">
         <NavHeader User={User} location={this.state.location} primary />
         <div className="content">
-          { User ? this.renderContent() : this.renderLoader() }
-          {
-            React.cloneElement(this.props.children, {
-              User: this.props.User,
-              otherUsers: this.props.otherUsers,
-            })
-          }
+          { this.renderUserContent() }
         </div>
-        <FloatingActionButton
-          onTouchTap={this.handleSendNotes}
-          style={styles.floatBtn}
-          secondary
-        >
-          <EditIcon />
-        </FloatingActionButton>
       </div>
     );
   }
@@ -376,34 +182,27 @@ class UserPage extends Component {
 }
 
 UserPage.propTypes = {
+  dataIsReady: PropTypes.bool.isRequired,
+  likedCount: PropTypes.number.isRequired,
+  collectionCount: PropTypes.number.isRequired,
+  topImages: PropTypes.array.isRequired,
   User: PropTypes.object,
-  filterUser: PropTypes.array,
-  otherUsers: PropTypes.array,
-  children: PropTypes.element.isRequired,
   dispatch: PropTypes.func,
 };
 
-// If contextTypes is not defined, then context will be an empty object.
-UserPage.contextTypes = {
-  router: PropTypes.object.isRequired,
-};
-
 const MeteorContainer = createContainer(() => {
-  Meteor.subscribe('Users.otherUsers');
   const uid = Meteor.userId();
-  const otherUsers = Meteor.users.find({}).fetch();
-  const filterUser = [];
-  otherUsers.forEach(user => {
-    if (user._id === uid) return false;
-    filterUser.push({
-      uid: user._id,
-      username: user.username,
-    });
-    return true;
-  });
+  const imageHandler = Meteor.subscribe('Images.all');
+  const collectionHandler = Meteor.subscribe('Collections.own');
+  const dataIsReady = imageHandler.ready() && collectionHandler.ready();
+  const likedCount = Images.find({ liker: { $in: [uid] } }).count();
+  const collectionCount = Collections.find({}).count();
+  const topImages = Images.find({}, { sort: { likes: -1 }, limit: 10 }).fetch();
   return {
-    otherUsers,
-    filterUser,
+    dataIsReady,
+    likedCount,
+    collectionCount,
+    topImages,
   };
 }, UserPage);
 
