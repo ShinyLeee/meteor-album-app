@@ -3,6 +3,10 @@ export const storeUptoken = (uptoken) => ({
   uptoken,
 });
 
+export const clearUptoken = () => ({
+  type: 'CLEAR_UPTOKEN',
+});
+
 export const zoomerOpen = (image) => ({
   type: 'ZOOMER_OPEN',
   image,

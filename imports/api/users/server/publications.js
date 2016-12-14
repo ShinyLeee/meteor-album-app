@@ -1,8 +1,8 @@
 /* eslint prefer-arrow-callback: 0 */
 import { Meteor } from 'meteor/meteor';
 
-Meteor.publish('Users.allUser', function allUser() {
-  return Meteor.users.find({});
+Meteor.publish('Users.all', function allUser() {
+  return Meteor.users.find();
 });
 
 Meteor.publish('Users.otherUsers', function otherUsers() {

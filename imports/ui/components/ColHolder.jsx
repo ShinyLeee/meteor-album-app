@@ -26,7 +26,8 @@ export default class ColHolder extends Component {
   }
 
   handleAccessCol(location) {
-    browserHistory.push(`/collection/${location}`);
+    const { User } = this.props;
+    browserHistory.push(`/user/${User.username}/collection/${location}`);
   }
 
   render() {

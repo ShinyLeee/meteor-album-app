@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import React, { Component, PropTypes } from 'react';
-import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
+import { browserHistory } from 'react-router';
 import { connect } from 'react-redux';
 import LazyLoad from 'react-lazyload';
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import moment from 'moment';
 
 import { Card, CardHeader, CardActions, CardMedia } from 'material-ui/Card';
@@ -175,6 +176,7 @@ class PicHolder extends Component {
             title={image.user}
             subtitle={moment(image.createdAt).format('YYYY-MM-DD')}
             avatar={image.avatar}
+            onTouchTap={() => browserHistory.push(`/user/${image.user}`)}
           />
           <ReactCSSTransitionGroup
             key={image.id}

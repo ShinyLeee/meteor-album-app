@@ -60,8 +60,8 @@ class Setting extends Component {
       isAlertOpen: false,
       cover: User.profile.cover,
       avatar: User.profile.avatar,
-      nickname: User.profile.nickname,
-      intro: User.profile.intro,
+      nickname: User.profile.nickname || '',
+      intro: User.profile.intro || '',
       allowVisitColl: User.profile.settings.allowVisitColl,
       allowVisitHome: User.profile.settings.allowVisitHome,
       allowNoti: User.profile.settings.allowNoti,
@@ -262,7 +262,7 @@ class Setting extends Component {
             <TextField
               style={styles.textFieldStyle}
               floatingLabelText="昵称"
-              value={this.state.nickname || ''}
+              value={this.state.nickname}
               onChange={(e) => this.setState({ isEditing: true, nickname: e.target.value })}
             />
           </ListItem>

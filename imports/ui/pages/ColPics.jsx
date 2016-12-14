@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import moment from 'moment';
-import { Link, browserHistory } from 'react-router';
+import { browserHistory } from 'react-router';
 import { connect } from 'react-redux';
 import { Meteor } from 'meteor/meteor';
 import { _ } from 'meteor/underscore';
@@ -116,7 +116,17 @@ class ColPics extends Component {
   }
 
   handleRemoveCollection(cb) {
-    const { images, colName, dispatch } = this.props;
+    const { User, images, colName, dispatch } = this.props;
+
+    if (images.length === 0) {
+      return removeCollection.call({ colName }, (err) => {
+        if (err) {
+          cb(err, '删除相册失败');
+        }
+        browserHistory.replace(`/user/${User.username}/collection`);
+        dispatch(snackBarOpen('删除相册成功'));
+      });
+    }
 
     const keys = _.map(images, (image) => {
       let key = false;
@@ -126,15 +136,15 @@ class ColPics extends Component {
       return key;
     });
 
-    Meteor.call('qiniu.remove', { keys }, (error) => {
+    return Meteor.call('qiniu.remove', { keys }, (error) => {
       if (error) {
         cb(error, '删除相册失败');
       }
-      removeCollection.call({ colName }, (err) => {
+      return removeCollection.call({ colName }, (err) => {
         if (err) {
           cb(err, '删除相册失败');
         }
-        browserHistory.replace('/collection');
+        browserHistory.replace(`/user/${User.username}/collection`);
         dispatch(snackBarOpen('删除相册成功'));
       });
     });
@@ -328,16 +338,30 @@ class ColPics extends Component {
   }
 
   renderNavHeader() {
+    const { User, isMine } = this.props;
+    if (isMine) {
+      return (
+        <NavHeader
+          User={User}
+          title="相册"
+          iconElementLeft={
+            <IconButton onTouchTap={() => browserHistory.goBack()}>
+              <ArrowBackIcon />
+            </IconButton>
+          }
+          iconElementRight={this.renderIconRight()}
+        />
+      );
+    }
     return (
       <NavHeader
-        User={this.props.User}
+        User={User}
         title="相册"
         iconElementLeft={
-          <IconButton containerElement={<Link to="/collection" />}>
+          <IconButton onTouchTap={() => browserHistory.goBack()}>
             <ArrowBackIcon />
           </IconButton>
         }
-        iconElementRight={this.renderIconRight()}
       />
     );
   }
@@ -465,6 +489,7 @@ class ColPics extends Component {
 
 ColPics.propTypes = {
   User: PropTypes.object,
+  isMine: PropTypes.bool.isRequired,
   dataIsReady: PropTypes.bool.isRequired,
   col: PropTypes.object,
   colName: PropTypes.string.isRequired,
@@ -478,22 +503,23 @@ ColPics.propTypes = {
 };
 
 const MeteorContainer = createContainer(({ params }) => {
-  const { colName } = params;
-  const imageHandle = Meteor.subscribe('Images.inCollection', colName);
+  const { username, colName } = params;
+  const imageHandle = Meteor.subscribe('Images.inCollection', { username, colName });
   const colHandle = Meteor.subscribe('Collections.own');
   const dataIsReady = imageHandle.ready() && colHandle.ready();
+  const isMine = Meteor.user().username === username;
 
   const images = Images.find({}, { sort: { shootAt: -1 } }).fetch();
-
+  // col is currentCollection use for lock collection etc..
   const col = Collections.findOne({ name: colName }, { fields: { name: 1, private: 1 } });
-
+  // colNames use for shift photos
   const colNames = Collections.find({ name: { $ne: colName } }, { fields: { name: 1 } }).fetch();
-
   return {
     col,
     colName,
     colNames,
     images,
+    isMine,
     dataIsReady,
   };
 }, ColPics);

@@ -4,6 +4,9 @@ export const uptoken = (state = '', action) => {
   if (action.type === 'STORE_UPTOKEN') {
     return action.uptoken;
   }
+  if (action.type === 'CLEAR_UPTOKEN') {
+    return null;
+  }
   return state;
 };
 

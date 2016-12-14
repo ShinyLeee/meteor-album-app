@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import React, { Component, PropTypes } from 'react';
-import { Link } from 'react-router';
+import { browserHistory } from 'react-router';
 import { connect } from 'react-redux';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -42,12 +42,10 @@ class Login extends Component {
     Meteor.loginWithPassword(usr, pwd, (err) => {
       if (err) {
         dispatch(snackBarOpen(err.message));
-        console.error(err); // eslint-disable-line no-console
-        return false;
+        throw new Meteor.Error(err);
       }
-      this.context.router.replace('/');
+      browserHistory.push('/');
       dispatch(snackBarOpen('登录成功'));
-      return true;
     });
   }
 
@@ -83,7 +81,7 @@ class Login extends Component {
               label="创建账号"
               labelStyle={styles.label}
               buttonStyle={styles.regBtn}
-              containerElement={<Link to={'/register'} />}
+              onTouchTap={() => browserHistory.push('/register')}
               fullWidth
             />
           </div>
@@ -96,11 +94,6 @@ class Login extends Component {
 
 Login.propTypes = {
   dispatch: PropTypes.func,
-};
-
-// If contextTypes is not defined, then context will be an empty object.
-Login.contextTypes = {
-  router: PropTypes.object.isRequired,
 };
 
 export default connect()(Login);

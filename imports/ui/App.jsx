@@ -7,7 +7,7 @@ import SnackBar from './components/SnackBar.jsx';
 import NavHeader from './components/NavHeader.jsx';
 import Uploader from './components/Uploader.jsx';
 
-import { storeUptoken } from './actions/actionTypes.js';
+import { storeUptoken, clearUptoken } from './actions/actionTypes.js';
 
 class App extends Component {
   constructor(props) {
@@ -17,6 +17,19 @@ class App extends Component {
     });
   }
 
+  componentDidMount() {
+    const { User, dispatch } = this.props;
+    if (User) {
+      Meteor.call('qiniu.getUptoken', (err, res) => {
+        if (err) {
+          throw new Meteor.Error(err);
+        }
+        console.log('%c Meteor finish getUptoken', 'color: blue');
+        dispatch(storeUptoken(res.uptoken));
+      });
+    }
+  }
+
   componentWillReceiveProps(nextProps) {
     const { User, dispatch } = this.props;
     if (!User && nextProps.User) {
@@ -24,8 +37,12 @@ class App extends Component {
         if (err) {
           throw new Meteor.Error(err);
         }
+        console.log('%c Meteor finish getUptoken', 'color: blue');
         dispatch(storeUptoken(res.uptoken));
       });
+    }
+    if (User && !nextProps.User) {
+      dispatch(clearUptoken());
     }
   }
 

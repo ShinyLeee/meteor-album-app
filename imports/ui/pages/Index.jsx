@@ -18,7 +18,7 @@ class Index extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      location: 'home',
+      location: 'explore',
       isLoading: false,
       images: props.images,
     };
@@ -82,10 +82,10 @@ class Index extends Component {
   }
 
   renderPicHolder() {
+    const { users } = this.props;
     const images = this.state.images;
     images.map((image) => {
       const img = image;
-      const users = Meteor.users.find({}).fetch();
       users.map((user) => {
         if (user._id === img.uid) {
           img.avatar = user.profile.avatar;
@@ -147,6 +147,7 @@ class Index extends Component {
 Index.propTypes = {
   User: PropTypes.object,
   dataIsReady: PropTypes.bool.isRequired,
+  users: PropTypes.array.isRequired,
   images: PropTypes.array.isRequired,
   limit: PropTypes.number.isRequired,
 };
@@ -155,14 +156,16 @@ export default createContainer(() => {
   // Define How many pictures render in the first time
   const limit = 5;
 
-  Meteor.subscribe('Users.allUser');
-  const imageHandle = Meteor.subscribe('Images.all');
-  const dataIsReady = imageHandle.ready();
+  const userHandler = Meteor.subscribe('Users.all');
+  const imageHandler = Meteor.subscribe('Images.all');
+  const dataIsReady = userHandler.ready() && imageHandler.ready();
+  const users = Meteor.users.find().fetch();
   const images = Images.find(
     { private: { $ne: true } },
     { sort: { createdAt: -1 }, limit }).fetch();
   return {
     dataIsReady,
+    users,
     images,
     limit,
   };

@@ -14,8 +14,8 @@ import FlatButton from 'material-ui/FlatButton';
 import Popover from 'material-ui/Popover';
 import SearchIcon from 'material-ui/svg-icons/action/search';
 import NotificationIcon from 'material-ui/svg-icons/social/notifications';
-import HomeIcon from 'material-ui/svg-icons/action/home';
 import UserIcon from 'material-ui/svg-icons/action/account-circle';
+import ExploreIcon from 'material-ui/svg-icons/action/explore';
 import CameraIcon from 'material-ui/svg-icons/image/camera';
 import MemeoryIcon from 'material-ui/svg-icons/action/theaters';
 import DeleteIcon from 'material-ui/svg-icons/action/delete';
@@ -88,7 +88,7 @@ class NavHeader extends Component {
 
 
   handlePrimaryTitleTouchTap() {
-    this.context.router.replace('/');
+    browserHistory.push('/');
   }
 
   handleOpenUserAction(e) {
@@ -129,7 +129,7 @@ class NavHeader extends Component {
           </IconButton>
           <IconButton
             style={styles.AppBarIconBtnForAvatar}
-            containerElement={<Link to="/user" />}
+            containerElement={<Link to={`/user/${User.username}`} />}
           >
             <Avatar src={avatarSrc} />
           </IconButton>
@@ -157,6 +157,7 @@ class NavHeader extends Component {
 
   renderPrimaryNavHeader() {
     const { User, location } = this.props;
+    const link = User ? `/user/${User.username}` : '/login';
     return (
       <div className="NavHeader-container">
         <AppBar
@@ -185,7 +186,7 @@ class NavHeader extends Component {
                   <Avatar
                     size={54}
                     src={User.profile.avatar}
-                    onTouchTap={() => { browserHistory.push('/user'); }}
+                    onTouchTap={() => browserHistory.push(`/user${User.username}`)}
                   />
                 </div>
                 <div className="drawer-profile-email">
@@ -211,21 +212,21 @@ class NavHeader extends Component {
           <Divider />
           <Menu width="100%" disableAutoFocus>
             <MenuItem
-              leftIcon={<HomeIcon color={location === 'home' ? purple500 : ''} />}
-              primaryText="首页"
+              leftIcon={<ExploreIcon color={location === 'explore' ? purple500 : ''} />}
+              primaryText="探索"
               containerElement={<Link to="/" />}
-              style={{ color: location === 'home' ? purple500 : '#000' }}
+              style={{ color: location === 'explore' ? purple500 : '#000' }}
             />
             <MenuItem
               leftIcon={<UserIcon color={location === 'user' ? purple500 : ''} />}
-              primaryText="主页"
-              containerElement={<Link to="/user" />}
+              primaryText="我的主页"
+              containerElement={<Link to={link} />}
               style={{ color: location === 'user' ? purple500 : '#000' }}
             />
             <MenuItem
               leftIcon={<CameraIcon color={location === 'collection' ? purple500 : ''} />}
               primaryText="相册"
-              containerElement={<Link to="/collection" />}
+              containerElement={<Link to={`${link}/collection`} />}
               style={{ color: location === 'collection' ? purple500 : '#000' }}
             />
             <MenuItem
@@ -340,11 +341,6 @@ NavHeader.propTypes = {
   iconElementRight: PropTypes.element,
   onLeftIconButtonTouchTap: PropTypes.func,
   dispatch: PropTypes.func,
-};
-
-// If contextTypes is not defined, then context will be an empty object.
-NavHeader.contextTypes = {
-  router: PropTypes.object.isRequired,
 };
 
 export default connect()(NavHeader);

@@ -122,9 +122,9 @@ class Collection extends Component {
   }
 
   renderColHolder() {
-    const { User, cols } = this.props;
+    const { curUser, cols } = this.props;
     return cols.map((col) => (
-      <ColHolder key={col._id} User={User} col={col} />
+      <ColHolder key={col._id} User={curUser} col={col} />
     ));
   }
 
@@ -137,7 +137,7 @@ class Collection extends Component {
   }
 
   render() {
-    const { User, dataIsReady } = this.props;
+    const { User, isMine, dataIsReady } = this.props;
     const actions = [
       <FlatButton
         label="取消"
@@ -180,13 +180,15 @@ class Collection extends Component {
             </Dialog>
           </div>
         </div>
-        <FloatingActionButton
-          style={styles.floatBtn}
-          onTouchTap={() => { this.setState({ open: true }); }}
-          secondary
-        >
-          <AddIcon />
-        </FloatingActionButton>
+        { isMine ? (
+          <FloatingActionButton
+            style={styles.floatBtn}
+            onTouchTap={() => { this.setState({ open: true }); }}
+            secondary
+          >
+            <AddIcon />
+          </FloatingActionButton>
+        ) : null }
       </div>
     );
   }
@@ -195,17 +197,28 @@ class Collection extends Component {
 
 Collection.propTypes = {
   User: PropTypes.object,
+  curUser: PropTypes.object.isRequired,
   dataIsReady: PropTypes.bool.isRequired,
+  isMine: PropTypes.bool.isRequired,
   cols: PropTypes.array.isRequired,
   dispatch: PropTypes.func,
 };
 
-const MeteorContainer = createContainer(() => {
-  const colHandle = Meteor.subscribe('Collections.own');
-  const dataIsReady = colHandle.ready();
-  const cols = Collections.find({}, { sort: { createdAt: -1 } }).fetch();
+const MeteorContainer = createContainer(({ params }) => {
+  const { username } = params;
+  // 若访问的是自己的所有相册页面，返回所有相册（包括加锁相册）, 否则只返回公开相册
+  const isMine = Meteor.user().username === username;
+  const userHandler = Meteor.subscribe('Users.all');
+  const colHandler = isMine
+                          ? Meteor.subscribe('Collections.own')
+                          : Meteor.subscribe('Collections.targetUser', username);
+  const dataIsReady = userHandler.ready() && colHandler.ready();
+  const curUser = Meteor.users.findOne({ username }) || {};
+  const cols = Collections.find({ user: username }, { sort: { createdAt: -1 } }).fetch();
   return {
     cols,
+    isMine,
+    curUser,
     dataIsReady,
   };
 }, Collection);

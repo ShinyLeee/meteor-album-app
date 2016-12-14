@@ -20,10 +20,11 @@ Meteor.publish('Images.liked', function likedImages() {
   });
 });
 
-Meteor.publish('Images.inCollection', function inCollection(colName) {
+Meteor.publish('Images.inCollection', function inCollection({ username, colName }) {
+  check(username, String);
   check(colName, String);
   return Images.find({
-    uid: this.userId,
+    user: username,
     deletedAt: null,
     collection: colName,
   });
