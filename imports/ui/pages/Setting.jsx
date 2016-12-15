@@ -40,7 +40,6 @@ const styles = {
   },
   indeterminateProgress: {
     position: 'fixed',
-    top: '64px',
     backgroundColor: 'none',
     zIndex: 99,
   },
@@ -384,12 +383,8 @@ class Setting extends Component {
         { this.state.isEditing
           ? this.renderEditingNavHeader()
           : (<NavHeader User={User} location={this.state.location} primary />) }
-        <div className="progress">
-          { this.state.isProcessing
-            ? <LinearProgress style={styles.indeterminateProgress} mode="indeterminate" />
-            : null }
-        </div>
         <div className="content">
+          { this.state.isProcessing && <LinearProgress style={styles.indeterminateProgress} mode="indeterminate" /> }
           { this.renderSettingContent() }
           <Dialog
             title="提示"

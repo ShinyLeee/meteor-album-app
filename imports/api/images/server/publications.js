@@ -1,6 +1,6 @@
 /* eslint prefer-arrow-callback: 0 */
 import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
+import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import { Images } from '../image.js';
 
 Meteor.publish('Images.all', function images() {
@@ -20,9 +20,11 @@ Meteor.publish('Images.liked', function likedImages() {
   });
 });
 
-Meteor.publish('Images.inCollection', function inCollection({ username, colName }) {
-  check(username, String);
-  check(colName, String);
+Meteor.publish('Images.spec', function spec({ username, colName }) {
+  new SimpleSchema({
+    username: { type: String, label: '用户名', max: 10 },
+    colName: { type: String, label: '相册名', max: 10 },
+  }).validator({ clean: true, filter: false });
   return Images.find({
     user: username,
     deletedAt: null,

@@ -91,21 +91,21 @@ class ColPics extends Component {
   }
 
   handleOpenUploader() {
-    const { uptoken, User, colName, dispatch } = this.props;
+    const { uptoken, User, col, dispatch } = this.props;
     const data = {
       uptoken,
-      key: `${User.username}/${colName}/`,
+      key: `${User.username}/${col.name}/`,
     };
     document.getElementById('uploader').click();
     dispatch(uploaderStart(data));
   }
 
   handleLockCollection(cb) {
-    const { col, colName } = this.props;
+    const { col } = this.props;
     const msg = col.private ? '公开' : '加密';
     lockCollection.call({
       colId: col._id,
-      colName: col.name || colName,
+      colName: col.name,
       privateStatus: col.private,
     }, (err) => {
       if (err) {
@@ -116,10 +116,10 @@ class ColPics extends Component {
   }
 
   handleRemoveCollection(cb) {
-    const { User, images, colName, dispatch } = this.props;
+    const { User, images, col, dispatch } = this.props;
 
     if (images.length === 0) {
-      return removeCollection.call({ colName }, (err) => {
+      return removeCollection.call({ colName: col.name }, (err) => {
         if (err) {
           cb(err, '删除相册失败');
         }
@@ -130,8 +130,8 @@ class ColPics extends Component {
 
     const keys = _.map(images, (image) => {
       let key = false;
-      if (image.collection === colName) {
-        key = `${image.user}/${colName}/${image.name}.${image.type}`;
+      if (image.collection === col.name) {
+        key = `${image.user}/${col.name}/${image.name}.${image.type}`;
       }
       return key;
     });
@@ -140,7 +140,7 @@ class ColPics extends Component {
       if (error) {
         cb(error, '删除相册失败');
       }
-      return removeCollection.call({ colName }, (err) => {
+      return removeCollection.call({ colName: col.name }, (err) => {
         if (err) {
           cb(err, '删除相册失败');
         }
@@ -151,11 +151,11 @@ class ColPics extends Component {
   }
 
   handleShiftPhoto(cb) {
-    const { selectImages, colName } = this.props;
+    const { selectImages, col } = this.props;
     const { shiftTo } = this.state;
 
     const keys = _.map(selectImages, (image) => {
-      const srcKey = `${image.user}/${colName}/${image.name}.${image.type}`;
+      const srcKey = `${image.user}/${col.name}/${image.name}.${image.type}`;
       const destKey = `${image.user}/${shiftTo}/${image.name}.${image.type}`;
       return {
         src: srcKey,
@@ -201,12 +201,12 @@ class ColPics extends Component {
   }
 
   handleSetCover(cb) {
-    const { selectImages, colName } = this.props;
+    const { selectImages, col } = this.props;
     const curImg = selectImages[0];
     const cover = `${domain}/${curImg.user}/${curImg.collection}/${curImg.name}.${curImg.type}`;
     mutateCollectionCover.call({
       cover,
-      colName,
+      colName: col.name,
     }, (err) => {
       if (err) {
         cb(err, '更换封面失败');
@@ -338,8 +338,8 @@ class ColPics extends Component {
   }
 
   renderNavHeader() {
-    const { User, isMine } = this.props;
-    if (isMine) {
+    const { User, isGuest } = this.props;
+    if (!isGuest) {
       return (
         <NavHeader
           User={User}
@@ -409,14 +409,14 @@ class ColPics extends Component {
   }
 
   renderColPics() {
-    const { colName, images } = this.props;
+    const { col, images } = this.props;
     let duration;
     if (images.length === 0) {
       duration = '暂无相片';
       return (
         <div className="col-pics-holder">
           <div className="col-pics-header">
-            <div className="col-pics-name">{colName}</div>
+            <div className="col-pics-name">{col.name}</div>
             <div className="col-pics-duration">{duration}</div>
           </div>
         </div>
@@ -433,7 +433,7 @@ class ColPics extends Component {
     return (
       <div className="col-pics-holder">
         <div className="col-pics-header">
-          <div className="col-pics-name">{colName}</div>
+          <div className="col-pics-name">{col.name}</div>
           <div className="col-pics-duration">{duration}</div>
         </div>
         <Justified isEditing={this.state.isEditing} images={images} />
@@ -489,14 +489,14 @@ class ColPics extends Component {
 
 ColPics.propTypes = {
   User: PropTypes.object,
-  isMine: PropTypes.bool.isRequired,
+  // Below is Pass from database
   dataIsReady: PropTypes.bool.isRequired,
-  col: PropTypes.object,
-  colName: PropTypes.string.isRequired,
+  isGuest: PropTypes.bool.isRequired,
+  col: PropTypes.object.isRequired,
   colNames: PropTypes.array.isRequired,
   images: PropTypes.array.isRequired,
   // Below Pass From Redux
-  uptoken: PropTypes.string.isRequired,
+  uptoken: PropTypes.string,
   selectImages: PropTypes.array,
   counter: PropTypes.number,
   dispatch: PropTypes.func,
@@ -504,23 +504,32 @@ ColPics.propTypes = {
 
 const MeteorContainer = createContainer(({ params }) => {
   const { username, colName } = params;
-  const imageHandle = Meteor.subscribe('Images.inCollection', { username, colName });
-  const colHandle = Meteor.subscribe('Collections.own');
+  const User = Meteor.user();
+  let isGuest = !User;  // if User is null, isGuest is true
+  // if User exist and its name equal with params.username, isGuest is false
+  if (User && User.username === username) isGuest = false;
+  else isGuest = true;
+
+  const imageHandle = Meteor.subscribe('Images.spec', { username, colName });
+  const colHandle = Meteor.subscribe('Collections.all');
   const dataIsReady = imageHandle.ready() && colHandle.ready();
-  const isMine = Meteor.user().username === username;
 
   const images = Images.find({}, { sort: { shootAt: -1 } }).fetch();
-  // col is currentCollection use for lock collection etc..
-  const col = Collections.findOne({ name: colName }, { fields: { name: 1, private: 1 } });
+  // col is currentCollection use for lock/remove etc.
+  const col = Collections.findOne({
+    user: username,
+    name: colName,
+  }, {
+    fields: { name: 1, private: 1 },
+  }) || {};
   // colNames use for shift photos
   const colNames = Collections.find({ name: { $ne: colName } }, { fields: { name: 1 } }).fetch();
   return {
+    dataIsReady,
+    isGuest,
     col,
-    colName,
     colNames,
     images,
-    isMine,
-    dataIsReady,
   };
 }, ColPics);
 

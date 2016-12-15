@@ -1,6 +1,7 @@
 /* eslint prefer-arrow-callback: 0 */
+/* eslint meteor/audit-argument-checks: 0 */
 import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
+import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import { Collections } from '../collection.js';
 
 Meteor.publish('Collections.all', function all() {
@@ -14,7 +15,9 @@ Meteor.publish('Collections.own', function ownCollections() {
 });
 
 Meteor.publish('Collections.targetUser', function targetUserCollections(user) {
-  check(user, String);
+  new SimpleSchema({
+    user: { type: String, label: '用户名', max: 10 },
+  }).validator({ clean: true, filter: false });
   return Collections.find({
     user,
     private: false,

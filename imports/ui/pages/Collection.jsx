@@ -1,11 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
 import React, { Component, PropTypes } from 'react';
+import { browserHistory } from 'react-router';
 import { connect } from 'react-redux';
 
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
+import IconButton from 'material-ui/IconButton';
 import TextField from 'material-ui/TextField';
+import ArrowBackIcon from 'material-ui/svg-icons/navigation/arrow-back';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import CircularProgress from 'material-ui/CircularProgress';
 import AddIcon from 'material-ui/svg-icons/content/add';
@@ -40,7 +43,6 @@ class Collection extends Component {
     };
     this.handleClose = this.handleClose.bind(this);
     this.handleChange = this.handleChange.bind(this);
-    // this.handleConfirmAdd = this.handleConfirmAdd.bind(this);
     this.handleAddCollection = this.handleAddCollection.bind(this);
   }
 
@@ -75,32 +77,6 @@ class Collection extends Component {
     }
   }
 
-  // handleConfirmAdd() {
-  //   TEMP NOT USE BC IT NEED USE REDUX-THUNK OR REDUX-SAGA FOR DISPATCH ASYNC FUNCTION
-  //   const { User, dispatch } = this.props;
-
-  //   fetch('/api/uptoken', {
-  //     method: 'POST',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //     },
-  //     body: JSON.stringify({
-  //       user: User.username,
-  //       collection: this.state.newColName,
-  //     }),
-  //   })
-  //   .then((res) => res.json())
-  //   .then((data) => this.setState({ data }))
-  //   .then(() => {
-  //     console.log(this.state.data);
-  //     document.getElementById('uploader').click();
-  //     dispatch(uploaderStart(this.state.data));
-  //   })
-  //   .catch((ex) => {
-  //     console.log('Access uptoken failed', ex); // eslint-disable-line no-console
-  //   });
-  // }
-
   handleAddCollection() {
     const { User, dispatch } = this.props;
     if (this.state.errorText) {
@@ -112,6 +88,7 @@ class Collection extends Component {
     insertCollection.call({
       name: this.state.newColName,
       uid: User._id,
+      user: User.username,
     }, (err) => {
       if (err) {
         dispatch(snackBarOpen('新建相册失败'));
@@ -137,7 +114,7 @@ class Collection extends Component {
   }
 
   render() {
-    const { User, isMine, dataIsReady } = this.props;
+    const { User, curUser, dataIsReady, isGuest } = this.props;
     const actions = [
       <FlatButton
         label="取消"
@@ -153,13 +130,33 @@ class Collection extends Component {
     ];
     return (
       <div className="container">
-        <NavHeader User={User} location={this.state.location} primary />
+        { isGuest
+          ? (
+            <NavHeader
+              User={User}
+              title="相册"
+              iconElementLeft={
+                <IconButton onTouchTap={() => browserHistory.goBack()}>
+                  <ArrowBackIcon />
+                </IconButton>
+              }
+            />)
+          : (<NavHeader User={User} location={this.state.location} primary />)
+        }
         <div className="content">
-          <Recap
-            title="Collection"
-            detailFir="所有经过分类的图片都在这里"
-            detailSec="没有分类的图片都在默认分类集里"
-          />
+          { isGuest
+            ? (
+              <Recap
+                title={curUser.username}
+                detailFir={curUser.profile.intro || '暂无简介'}
+              />)
+            : (
+              <Recap
+                title="Collections"
+                detailFir="所有创建相册都在这里"
+                detailSec="可以点击右下角的按钮添加相册"
+              />)
+            }
           <div className="col-holder-container" style={styles.colHolder}>
             { dataIsReady ? this.renderColHolder() : this.renderLoader() }
           </div>
@@ -180,15 +177,17 @@ class Collection extends Component {
             </Dialog>
           </div>
         </div>
-        { isMine ? (
-          <FloatingActionButton
-            style={styles.floatBtn}
-            onTouchTap={() => { this.setState({ open: true }); }}
-            secondary
-          >
-            <AddIcon />
-          </FloatingActionButton>
-        ) : null }
+        { isGuest
+          ? null
+          : (
+            <FloatingActionButton
+              style={styles.floatBtn}
+              onTouchTap={() => { this.setState({ open: true }); }}
+              secondary
+            >
+              <AddIcon />
+            </FloatingActionButton>)
+        }
       </div>
     );
   }
@@ -197,29 +196,34 @@ class Collection extends Component {
 
 Collection.propTypes = {
   User: PropTypes.object,
-  curUser: PropTypes.object.isRequired,
-  dataIsReady: PropTypes.bool.isRequired,
-  isMine: PropTypes.bool.isRequired,
-  cols: PropTypes.array.isRequired,
   dispatch: PropTypes.func,
+  // Below is pass from database
+  dataIsReady: PropTypes.bool.isRequired,
+  isGuest: PropTypes.bool.isRequired,
+  curUser: PropTypes.object.isRequired,
+  cols: PropTypes.array.isRequired,
 };
+
+const preCurUser = Meteor.settings.public.preCurUser;
 
 const MeteorContainer = createContainer(({ params }) => {
   const { username } = params;
-  // 若访问的是自己的所有相册页面，返回所有相册（包括加锁相册）, 否则只返回公开相册
-  const isMine = Meteor.user().username === username;
+  const User = Meteor.user();
+  let isGuest = !User;  // if User is null, isGuest is true
+  // if User exist and its name equal with params.username, isGuest is false
+  if (User && User.username === username) isGuest = false;
+  else isGuest = true;
+
   const userHandler = Meteor.subscribe('Users.all');
-  const colHandler = isMine
-                          ? Meteor.subscribe('Collections.own')
-                          : Meteor.subscribe('Collections.targetUser', username);
+  const colHandler = Meteor.subscribe('Collections.targetUser', username);
   const dataIsReady = userHandler.ready() && colHandler.ready();
-  const curUser = Meteor.users.findOne({ username }) || {};
-  const cols = Collections.find({ user: username }, { sort: { createdAt: -1 } }).fetch();
+  const curUser = Meteor.users.findOne({ username }) || preCurUser;
+  const cols = Collections.find({}, { sort: { createdAt: -1 } }).fetch();
   return {
-    cols,
-    isMine,
-    curUser,
     dataIsReady,
+    isGuest,
+    curUser,
+    cols,
   };
 }, Collection);
 

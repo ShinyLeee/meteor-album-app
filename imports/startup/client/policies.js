@@ -41,15 +41,10 @@ export const isAllowVisitHome = (nextState, replace, cb) => {
 // Check is this user permit other visit this specific collection
 export const isAllowVisitColl = (nextState, replace, cb) => {
   const { params } = nextState;
-  Meteor.callPromise('Auth.isLogin')
-  .then((login) => {
-    if (!login) replace({ pathname: '/login' });
-    return;
-  })
-  .then(() => Meteor.callPromise('Auth.isAllowVisitColl', {
+  Meteor.callPromise('Auth.isAllowVisitColl', {
     username: params.username,
     dest: params.colName,
-  }))
+  })
   .then((allowVisitColl) => {
     if (!allowVisitColl) replace({ pathname: '/403' });
     cb();

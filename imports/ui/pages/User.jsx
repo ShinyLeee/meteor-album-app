@@ -9,10 +9,13 @@ import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 import CircularProgress from 'material-ui/CircularProgress';
 import RaisedButton from 'material-ui/RaisedButton';
+import IconButton from 'material-ui/IconButton';
+import ArrowBackIcon from 'material-ui/svg-icons/navigation/arrow-back';
 import SettingsIcon from 'material-ui/svg-icons/action/settings';
 import ExitToAppIcon from 'material-ui/svg-icons/action/exit-to-app';
 import { Images } from '/imports/api/images/image.js';
 import { Collections } from '/imports/api/collections/collection.js';
+import { followUser, unFollowUser } from '/imports/api/users/methods.js';
 import NavHeader from '../components/NavHeader.jsx';
 import { snackBarOpen } from '../actions/actionTypes.js';
 
@@ -28,7 +31,18 @@ class UserPage extends Component {
     };
     this.handleOpen = this.handleOpen.bind(this);
     this.handleLogout = this.handleLogout.bind(this);
-    this.handleFollwing = this.handleFollwing.bind(this);
+    this.handleFollow = this.handleFollow.bind(this);
+    this.handleUnFollow = this.handleUnFollow.bind(this);
+  }
+
+  get isFollowed() {
+    const { User, curUser } = this.props;
+    return !!User && curUser.profile.followers.indexOf(User._id) >= 0;
+  }
+
+  get sendNoteLink() {
+    const link = this.props.isGuest ? `/sendNote?receiver=${this.props.curUser.username}` : '/sendNote';
+    return link;
   }
 
   handleOpen(e) {
@@ -48,9 +62,24 @@ class UserPage extends Component {
     });
   }
 
-  handleFollwing() {
-    const { dispatch } = this.props;
-    dispatch(snackBarOpen('建设中'));
+  handleFollow() {
+    const { User, curUser, dispatch } = this.props;
+    if (!User) return dispatch(snackBarOpen('您还尚未登录'));
+    return followUser.call({ follower: User._id, target: curUser._id }, (err, res) => {
+      if (err) throw new Meteor.Error(err.message);
+      dispatch(snackBarOpen('关注成功'));
+      return res;
+    });
+  }
+
+  handleUnFollow() {
+    const { User, curUser, dispatch } = this.props;
+    if (!User) return dispatch(snackBarOpen('您还尚未登录'));
+    return unFollowUser.call({ unFollower: User._id, target: curUser._id }, (err, res) => {
+      if (err) throw new Meteor.Error(err.message);
+      dispatch(snackBarOpen('取消关注成功'));
+      return res;
+    });
   }
 
   renderLoader() {
@@ -84,8 +113,7 @@ class UserPage extends Component {
 
   renderUserContent() {
     const profileContentLeft = (document.body.clientWidth - 120) / 2;
-    const { User, curUser, likedCount, collectionCount } = this.props;
-    const isMine = User._id === curUser._id;
+    const { isGuest, curUser, likedCount, collectionCount } = this.props;
     return (
       <div className="user-content">
         { /* MAIN SECTION */ }
@@ -112,14 +140,21 @@ class UserPage extends Component {
           </div>
           <div className="main-action">
             <RaisedButton
-              label={isMine ? '发送信息' : '发送私信'}
-              onTouchTap={() => browserHistory.push('/sendNote')}
+              label={isGuest ? '发送私信' : '发送信息'}
+              onTouchTap={() => browserHistory.push(this.sendNoteLink)}
               style={{ marginRight: '20px' }}
               primary
             />
             {
-              isMine
+              isGuest
               ? (
+                <RaisedButton
+                  label={this.isFollowed ? '关注中' : '关注'}
+                  onTouchTap={this.isFollowed ? this.handleUnFollow : this.handleFollow}
+                  secondary
+                />
+                )
+              : (
                 <div style={{ display: 'inline-block' }}>
                   <RaisedButton
                     label="更多操作"
@@ -147,7 +182,6 @@ class UserPage extends Component {
                   </Popover>
                 </div>
               )
-              : (<RaisedButton label="关注" onTouchTap={this.handleFollwing} secondary />)
             }
           </div>
         </div>
@@ -168,7 +202,7 @@ class UserPage extends Component {
             <span>相册</span>
           </div>
           <div className="counter counter-follwer">
-            <span>{curUser.profile.follwers.length}</span>
+            <span>{curUser.profile.followers.length}</span>
             <span>粉丝</span>
           </div>
         </div>
@@ -184,10 +218,22 @@ class UserPage extends Component {
   }
 
   render() {
-    const { User, dataIsReady } = this.props;
+    const { User, dataIsReady, isGuest } = this.props;
     return (
       <div className="container">
-        <NavHeader User={User} location={this.state.location} primary />
+        { isGuest
+          ? (
+            <NavHeader
+              User={User}
+              title="相册"
+              iconElementLeft={
+                <IconButton onTouchTap={() => browserHistory.goBack()}>
+                  <ArrowBackIcon />
+                </IconButton>
+              }
+            />)
+          : (<NavHeader User={User} location={this.state.location} primary />)
+        }
         <div className="content">
           { dataIsReady ? this.renderUserContent() : this.renderLoader() }
         </div>
@@ -198,39 +244,48 @@ class UserPage extends Component {
 }
 
 UserPage.propTypes = {
-  dataIsReady: PropTypes.bool.isRequired,
-  likedCount: PropTypes.number.isRequired,
-  collectionCount: PropTypes.number.isRequired,
-  topImages: PropTypes.array.isRequired,
-  curUser: PropTypes.object.isRequired,
   User: PropTypes.object,
   dispatch: PropTypes.func,
+  // Below pass from database
+  dataIsReady: PropTypes.bool.isRequired,
+  isGuest: PropTypes.bool.isRequired,
+  curUser: PropTypes.object.isRequired,
+  topImages: PropTypes.array.isRequired,
+  likedCount: PropTypes.number.isRequired,
+  collectionCount: PropTypes.number.isRequired,
 };
 
 const MeteorContainer = createContainer(({ params }) => {
   const { username } = params;
+  const User = Meteor.user();
+  let isGuest = !User;  // if User is null, isGuest is true
+  // if User exist and its name equal with params.username, isGuest is false
+  if (User && User.username === username) isGuest = false;
+  else isGuest = true;
+
   const userHandler = Meteor.subscribe('Users.all');
   const imageHandler = Meteor.subscribe('Images.all');
-  const collectionHandler = Meteor.subscribe('Collections.all');
+  const collectionHandler = Meteor.subscribe('Collections.targetUser', username);
+
   let dataIsReady = false;
-  let curUser = Meteor.users.findOne({ username }) || {};
-  let likedCount = 0;
   let topImages = [];
+  let likedCount = 0;
   let collectionCount = 0;
   const userIsReady = userHandler.ready();
+  const curUser = Meteor.users.findOne({ username }) || {};
   if (userIsReady) {
-    curUser = Meteor.users.findOne({ username });
     const uid = curUser._id;
     dataIsReady = imageHandler.ready() && collectionHandler.ready();
     likedCount = Images.find({ liker: { $in: [uid] } }).count();
     topImages = Images.find({ uid }, { sort: { likes: -1 }, limit: 10 }).fetch();
-    collectionCount = Collections.find({ uid, private: false }).count();
+    collectionCount = Collections.find().count();
   }
   return {
     dataIsReady,
+    isGuest,
     curUser,
-    likedCount,
     topImages,
+    likedCount,
     collectionCount,
   };
 }, UserPage);

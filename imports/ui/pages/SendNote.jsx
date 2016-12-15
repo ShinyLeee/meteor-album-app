@@ -6,6 +6,7 @@ import { createContainer } from 'meteor/react-meteor-data';
 import Avatar from 'material-ui/Avatar';
 import Chip from 'material-ui/Chip';
 import AutoComplete from 'material-ui/AutoComplete';
+import LinearProgress from 'material-ui/LinearProgress';
 import Dialog from 'material-ui/Dialog';
 import Divider from 'material-ui/Divider';
 import FlatButton from 'material-ui/FlatButton';
@@ -38,6 +39,11 @@ const styles = {
     height: 'auto',
     backgroundColor: '#e7e7e7',
   },
+  indeterminateProgress: {
+    position: 'fixed',
+    backgroundColor: 'none',
+    zIndex: 99,
+  },
 };
 
 class SendNote extends Component {
@@ -46,7 +52,7 @@ class SendNote extends Component {
     super(props);
     this.state = {
       isAlertOpen: false,
-      receiver: undefined,
+      receiver: props.initialReceiver,
       sendAt: new Date(),
       title: '',
       content: '',
@@ -54,6 +60,12 @@ class SendNote extends Component {
     this.handleBack = this.handleBack.bind(this);
     this.handleSent = this.handleSent.bind(this);
     this.handleChosenReceiver = this.handleChosenReceiver.bind(this);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (!this.props.initialReceiver && nextProps.initialReceiver) {
+      this.setState({ receiver: nextProps.initialReceiver });
+    }
   }
 
   handleBack() {
@@ -98,6 +110,7 @@ class SendNote extends Component {
       <div className="note-content">
         <AutoComplete
           hintText="发送给"
+          maxSearchResults={5}
           dataSource={otherUsers || []}
           dataSourceConfig={{ text: 'username', value: 'username' }}
           filter={AutoComplete.caseInsensitiveFilter}
@@ -106,18 +119,19 @@ class SendNote extends Component {
           onNewRequest={this.handleChosenReceiver}
           fullWidth
         >
-          { this.state.receiver ? (
+          { this.state.receiver && (
             <div>
               <span style={styles.noteHint}>发送给</span>
               <Chip
-                onRequestDelete={() => this.setState({ receiver: undefined })}
+                onRequestDelete={() => this.setState({ receiver: null })}
                 style={styles.noteChip}
               >
-                <Avatar src={this.state.receiver.avatar} />
+                <Avatar src={this.state.receiver.profile.avatar} />
                 {this.state.receiver.username}
               </Chip>
             </div>
-          ) : null }
+          )
+        }
         </AutoComplete>
         <Divider />
         <DatePickerCN
@@ -173,7 +187,9 @@ class SendNote extends Component {
           iconElementRight={<IconButton onTouchTap={this.handleSent}><SendIcon /></IconButton>}
         />
         <div className="content">
-          {this.renderNoteContent()}
+          { this.props.userIsReady
+              ? this.renderNoteContent()
+              : (<LinearProgress style={styles.indeterminateProgress} mode="indeterminate" />) }
         </div>
         <Dialog
           title="提示"
@@ -191,19 +207,22 @@ class SendNote extends Component {
 
 SendNote.propTypes = {
   User: PropTypes.object,
+  userIsReady: PropTypes.bool.isRequired,
+  initialReceiver: PropTypes.object,
   otherUsers: PropTypes.array.isRequired,
   dispatch: PropTypes.func,
 };
 
-const MeteorContainer = createContainer(() => {
-  Meteor.subscribe('Users.allUser');
+const MeteorContainer = createContainer(({ location }) => {
+  const { receiver } = location.query;
+  const userHandler = Meteor.subscribe('Users.all');
+  const userIsReady = userHandler.ready();
   const uid = Meteor.userId();
-  const otherUsers = Meteor.users.find({ _id: { $ne: uid } }).map((user) => ({
-    id: user._id,
-    avatar: user.profile.avatar,
-    username: user.username,
-  }));
+  const initialReceiver = receiver && Meteor.users.findOne({ username: receiver });
+  const otherUsers = Meteor.users.find({ _id: { $ne: uid } }).fetch();
   return {
+    userIsReady,
+    initialReceiver,
     otherUsers,
   };
 }, SendNote);

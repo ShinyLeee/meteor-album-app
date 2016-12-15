@@ -38,9 +38,39 @@ export const updateUser = new ValidatedMethod({
   },
 });
 
+export const followUser = new ValidatedMethod({
+  name: 'users.follow',
+  validate: new SimpleSchema({
+    follower: { type: String, label: '关注者', regEx: SimpleSchema.RegEx.Id },
+    target: { type: String, label: '被关注者', regEx: SimpleSchema.RegEx.Id },
+  }).validator({ clean: true, filter: false }),
+  run({ follower, target }) {
+    if (!this.userId) {
+      throw new Meteor.Error('user.accessDenied');
+    }
+    return Users.update(target, { $addToSet: { 'profile.followers': follower } });
+  },
+});
+
+export const unFollowUser = new ValidatedMethod({
+  name: 'users.unFollow',
+  validate: new SimpleSchema({
+    unFollower: { type: String, label: '取消关注者', regEx: SimpleSchema.RegEx.Id },
+    target: { type: String, label: '被取消关注者', regEx: SimpleSchema.RegEx.Id },
+  }).validator({ clean: true, filter: false }),
+  run({ unFollower, target }) {
+    if (!this.userId) {
+      throw new Meteor.Error('user.accessDenied');
+    }
+    return Users.update(target, { $pull: { 'profile.followers': unFollower } });
+  },
+});
+
 // Get list of all method names on Users
 const USERS_METHODS = _.pluck([
   updateUser,
+  followUser,
+  unFollowUser,
 ], 'name');
 
 if (Meteor.isServer) {

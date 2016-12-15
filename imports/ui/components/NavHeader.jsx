@@ -1,8 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import React, { Component, PropTypes } from 'react';
-import { Link, browserHistory } from 'react-router';
+import { browserHistory } from 'react-router';
 import { connect } from 'react-redux';
-
 import AppBar from 'material-ui/AppBar';
 import Avatar from 'material-ui/Avatar';
 import Drawer from 'material-ui/Drawer';
@@ -22,7 +21,6 @@ import DeleteIcon from 'material-ui/svg-icons/action/delete';
 import SettingsIcon from 'material-ui/svg-icons/action/settings';
 import ArrowDropdownIcon from 'material-ui/svg-icons/navigation/arrow-drop-down';
 import { purple500 } from 'material-ui/styles/colors';
-
 import { snackBarOpen } from '../actions/actionTypes.js';
 
 const styles = {
@@ -86,6 +84,23 @@ class NavHeader extends Component {
     this.handleLogout = this.handleLogout.bind(this);
   }
 
+  get avatarSrc() {
+    const defaultAvatar = '//odsiu8xnd.bkt.clouddn.com/vivian/default-avatar.jpg?imageView2/0/w/40/h/40'; // eslint-disable-line
+    return this.props.User ? this.props.User.profile.avatar : defaultAvatar;
+  }
+
+  get coverSrc() {
+    const defaultCover = 'url(http://odsiu8xnd.bkt.clouddn.com/default-cover.jpg)';
+    return this.props.User ? `url(${this.props.User.profile.cover})` : defaultCover;
+  }
+
+  get homeLink() {
+    return this.props.User ? `/user/${this.props.User.username}` : '/login';
+  }
+
+  get collLink() {
+    return this.props.User ? `/user/${this.props.User.username}/collection` : '/login';
+  }
 
   handlePrimaryTitleTouchTap() {
     browserHistory.push('/');
@@ -111,8 +126,6 @@ class NavHeader extends Component {
 
   renderPrimaryIconRight(User) {
     if (Meteor.loggingIn() || User) {
-      const guestAvatar = '//odsiu8xnd.bkt.clouddn.com/vivian/default-avatar.jpg?imageView2/0/w/40/h/40'; // eslint-disable-line
-      const avatarSrc = User ? User.profile.avatar : guestAvatar;
       return (
         <div>
           <IconButton
@@ -129,9 +142,9 @@ class NavHeader extends Component {
           </IconButton>
           <IconButton
             style={styles.AppBarIconBtnForAvatar}
-            containerElement={<Link to={`/user/${User.username}`} />}
+            onTouchTap={() => browserHistory.push(`/user/${User.username}`)}
           >
-            <Avatar src={avatarSrc} />
+            <Avatar src={this.avatarSrc} />
           </IconButton>
         </div>
       );
@@ -149,7 +162,7 @@ class NavHeader extends Component {
           style={styles.AppBarLoginBtn}
           backgroundColor="rgba(153, 153, 153, 0.2)"
           hoverColor="rgba(153, 153, 153, 0.4)"
-          containerElement={<Link to="/login" />}
+          onTouchTap={() => browserHistory.push('/login')}
         />
       </div>
     );
@@ -157,7 +170,6 @@ class NavHeader extends Component {
 
   renderPrimaryNavHeader() {
     const { User, location } = this.props;
-    const link = User ? `/user/${User.username}` : '/login';
     return (
       <div className="NavHeader-container">
         <AppBar
@@ -177,10 +189,10 @@ class NavHeader extends Component {
         >
           <div
             className="drawer-profile"
-            style={{ backgroundImage: User ? `url(${User.profile.cover})` : 'url(http://odsiu8xnd.bkt.clouddn.com/default-cover.jpg)' }}
+            style={{ backgroundImage: this.coverSrc }}
           >
             <div className="drawer-profile-background" />
-            { User ? (
+            { User && (
               <div>
                 <div className="drawer-profile-avatar">
                   <Avatar
@@ -207,32 +219,32 @@ class NavHeader extends Component {
                   </div>
                 </div>
               </div>
-            ) : null }
+            ) }
           </div>
           <Divider />
           <Menu width="100%" disableAutoFocus>
             <MenuItem
               leftIcon={<ExploreIcon color={location === 'explore' ? purple500 : ''} />}
               primaryText="探索"
-              containerElement={<Link to="/" />}
+              onTouchTap={() => browserHistory.push('/')}
               style={{ color: location === 'explore' ? purple500 : '#000' }}
             />
             <MenuItem
               leftIcon={<UserIcon color={location === 'user' ? purple500 : ''} />}
               primaryText="我的主页"
-              containerElement={<Link to={link} />}
+              onTouchTap={() => browserHistory.push(this.homeLink)}
               style={{ color: location === 'user' ? purple500 : '#000' }}
             />
             <MenuItem
               leftIcon={<CameraIcon color={location === 'collection' ? purple500 : ''} />}
               primaryText="相册"
-              containerElement={<Link to={`${link}/collection`} />}
+              onTouchTap={() => browserHistory.push(this.collLink)}
               style={{ color: location === 'collection' ? purple500 : '#000' }}
             />
             <MenuItem
               leftIcon={<MemeoryIcon color={location === 'memory' ? purple500 : ''} />}
               primaryText="回忆"
-              containerElement={<Link to="/memory" />}
+              onTouchTap={() => browserHistory.push('/memory')}
               style={{ color: location === 'memory' ? purple500 : '#000' }}
             />
           </Menu>
@@ -241,7 +253,7 @@ class NavHeader extends Component {
             <MenuItem
               leftIcon={<DeleteIcon color={location === 'recycle' ? purple500 : ''} />}
               primaryText="回收站"
-              containerElement={<Link to="/recycle" />}
+              onTouchTap={() => browserHistory.push('/recycle')}
               style={{ color: location === 'recycle' ? purple500 : '#000' }}
             />
           </Menu>
@@ -250,7 +262,7 @@ class NavHeader extends Component {
             <MenuItem
               leftIcon={<SettingsIcon color={location === 'setting' ? purple500 : ''} />}
               primaryText="设置"
-              containerElement={<Link to="/setting" />}
+              onTouchTap={() => browserHistory.push('/setting')}
               style={{ color: location === 'setting' ? purple500 : '#000' }}
             />
           </Menu>

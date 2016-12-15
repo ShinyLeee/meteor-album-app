@@ -17,6 +17,7 @@ export const Collections = new CollectionCollection('collections');
 Collections.schema = new SimpleSchema({
   name: { type: String, label: '相册名', max: 10 },
   uid: { type: String, regEx: SimpleSchema.RegEx.Id },
+  user: { type: String, label: '用户名', max: 10 },
   cover: { type: String, label: '封面图片', optional: true },
   private: { type: Boolean, defaultValue: false, optional: true },
   createdAt: { type: Date, defaultValue: new Date(), optional: true },
