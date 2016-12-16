@@ -3,7 +3,7 @@
   "name": "vivian",
   "private": true,
   "scripts": {
-    "start": "meteor --settings settings.json",
+    "start": "meteor --settings settings-development.json",
     "lint": "eslint .",
     "pretest": "npm run lint --silent"
   },

@@ -20,6 +20,9 @@ if (Meteor.isServer) {
         username: { type: String, label: '用户名', regEx: /^([a-z]|[A-Z])[\w_]{5,19}$/ },
       }).validator({ clean: true, filter: false });
       const targetUser = Meteor.users.findOne({ username });
+      if (!targetUser) {
+        throw new Meteor.Error(404, 'User home page not found');
+      }
       if (targetUser._id === this.userId) {
         return true;
       }
@@ -32,6 +35,9 @@ if (Meteor.isServer) {
         username: { type: String, label: '用户名', regEx: /^([a-z]|[A-Z])[\w_]{5,19}$/ },
       }).validator({ clean: true, filter: false });
       const targetUser = Meteor.users.findOne({ username });
+      if (!targetUser) {
+        throw new Meteor.Error(404, 'User home page not found');
+      }
       if (targetUser._id === this.userId) {
         return true;
       }

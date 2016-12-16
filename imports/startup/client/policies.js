@@ -9,6 +9,8 @@ export const isLogin = (nextState, replace, cb) => {
     cb();
   })
   .catch((err) => {
+    replace({ pathname: `/${err.error}` });
+    cb();
     throw new Meteor.Error(err);
   });
 };
@@ -21,11 +23,13 @@ export const isLogout = (nextState, replace, cb) => {
     cb();
   })
   .catch((err) => {
+    replace({ pathname: `/${err.error}` });
+    cb();
     throw new Meteor.Error(err);
   });
 };
 
-// Check is this user permit other visit home page
+// Check is this user permit other visit home page TODO FIX USER NOT FOUND ERROR
 export const isAllowVisitHome = (nextState, replace, cb) => {
   const { params } = nextState;
   Meteor.callPromise('Auth.isAllowVisitHome', { username: params.username })
@@ -34,7 +38,9 @@ export const isAllowVisitHome = (nextState, replace, cb) => {
     cb();
   })
   .catch((err) => {
-    throw new Meteor.Error(err);
+    replace({ pathname: `/${err.error}` });
+    cb();
+    throw new Error(err);
   });
 };
 
@@ -50,6 +56,8 @@ export const isAllowVisitColl = (nextState, replace, cb) => {
     cb();
   })
   .catch((err) => {
+    replace({ pathname: `/${err.error}` });
+    cb();
     throw new Meteor.Error(err);
   });
 };

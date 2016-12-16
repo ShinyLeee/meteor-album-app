@@ -85,12 +85,12 @@ class NavHeader extends Component {
   }
 
   get avatarSrc() {
-    const defaultAvatar = '//odsiu8xnd.bkt.clouddn.com/vivian/default-avatar.jpg?imageView2/0/w/40/h/40'; // eslint-disable-line
+    const defaultAvatar = '/img/default-avatar.jpg';
     return this.props.User ? this.props.User.profile.avatar : defaultAvatar;
   }
 
   get coverSrc() {
-    const defaultCover = 'url(http://odsiu8xnd.bkt.clouddn.com/default-cover.jpg)';
+    const defaultCover = 'url(/img/default-cover.jpg)';
     return this.props.User ? `url(${this.props.User.profile.cover})` : defaultCover;
   }
 

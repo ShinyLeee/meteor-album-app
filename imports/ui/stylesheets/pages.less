@@ -1,51 +1,3 @@
-/* USER GOES HERE */
-.user-holder {
-  padding-top: 36px;
-  padding-bottom: 36px;
-  color: @color-font-prominent;
-  text-align: center;
-}
-
-.user-panel, {
-  margin-bottom: 20px;
-  .user-header {
-    margin-bottom: 20px;
-    .user-avatar {
-      position: relative;
-      display: inline-block;
-      width: 100%;
-      img {
-        width: 96px;
-        height: 96px;
-        border-radius: 50%;
-        border: 1px solid rgba(0, 0, 0, .1);
-        vertical-align: middle;
-      }
-      .user-action {
-        position: absolute;
-        right: 10px;
-        top: 30px;
-        border: 1px solid @color-border;
-        border-radius: 6px;
-        box-shadow: 1px 1px 5px rgba(0,0,0,.3);
-      }
-    }
-  }
-}
-
-.user-info {
-  margin-bottom: 30px;
-  .user-liked, .user-note {
-    display: inline-block;
-    min-width: 94px;
-    span { 
-      display: block;
-      font-size: 24px;
-      font-weight: 700;
-    }
-  }
-}
-
 /* route /user */
 .user-main {
   & > .main-cover {
@@ -274,5 +226,29 @@
       -webkit-transition: transform .135s cubic-bezier(0.0,0.0,0.2,1);
       transition: transform .135s cubic-bezier(0.0,0.0,0.2,1);
     }
+  }
+}
+
+/* route /500 /404 /403 */
+.Error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.Error__container {
+  padding: 5px;
+  text-align: center;
+  & > .Error__status {
+    font-size: 26px;
+    color: #222;
+  }
+  & > .Error__logo {
+    width: 280px;
+    margin: 30px 0;
+  }
+  & > .Error__info {
+    font-size: 12px;
+    color: #666;
+    & a { color: blue; }
   }
 }

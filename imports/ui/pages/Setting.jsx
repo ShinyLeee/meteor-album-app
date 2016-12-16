@@ -51,20 +51,20 @@ class Setting extends Component {
 
   constructor(props) {
     super(props);
-    const { User } = this.props;
+    const initialUser = props.User;
     this.state = {
       location: 'setting',
       isEditing: false,
       isProcessing: false,
       isAlertOpen: false,
-      cover: User.profile.cover,
-      avatar: User.profile.avatar,
-      nickname: User.profile.nickname || '',
-      intro: User.profile.intro || '',
-      allowVisitColl: User.profile.settings.allowVisitColl,
-      allowVisitHome: User.profile.settings.allowVisitHome,
-      allowNoti: User.profile.settings.allowNoti,
-      allowMsg: User.profile.settings.allowMsg,
+      cover: initialUser.profile.cover,
+      avatar: initialUser.profile.avatar,
+      nickname: initialUser.profile.nickname || '',
+      intro: initialUser.profile.intro || '',
+      allowVisitColl: initialUser.profile.settings.allowVisitColl,
+      allowVisitHome: initialUser.profile.settings.allowVisitHome,
+      allowNoti: initialUser.profile.settings.allowNoti,
+      allowMsg: initialUser.profile.settings.allowMsg,
     };
     initialSettings = this.state;
     this.handleDiscard = this.handleDiscard.bind(this);
@@ -385,7 +385,7 @@ class Setting extends Component {
           : (<NavHeader User={User} location={this.state.location} primary />) }
         <div className="content">
           { this.state.isProcessing && <LinearProgress style={styles.indeterminateProgress} mode="indeterminate" /> }
-          { this.renderSettingContent() }
+          { User && this.renderSettingContent() }
           <Dialog
             title="提示"
             titleStyle={{ border: 'none' }}
@@ -408,7 +408,7 @@ Setting.defaultProps = {
 };
 
 Setting.propTypes = {
-  uptoken: PropTypes.string.isRequired,
+  uptoken: PropTypes.string,
   uploadURL: PropTypes.string.isRequired,
   User: PropTypes.object,
   dispatch: PropTypes.func,

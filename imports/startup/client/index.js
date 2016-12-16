@@ -2,7 +2,6 @@ import 'whatwg-fetch';
 import { Meteor } from 'meteor/meteor';
 import { render } from 'react-dom';
 import injectTapEventPlugin from 'react-tap-event-plugin';
-
 import renderRoutes from './routes.jsx';
 
 // This is Use of Disabling User zooming the Page in IOS10
