@@ -19,7 +19,7 @@ import AddPhotoIcon from 'material-ui/svg-icons/image/add-to-photos';
 import LockInIcon from 'material-ui/svg-icons/action/lock-outline';
 import LockOutIcon from 'material-ui/svg-icons/action/lock-open';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
-import DoneIcon from 'material-ui/svg-icons/action/done';
+import CloseIcon from 'material-ui/svg-icons/navigation/close';
 import ShiftIcon from 'material-ui/svg-icons/hardware/keyboard-return';
 import RemoveIcon from 'material-ui/svg-icons/action/delete';
 import SetCoverIcon from 'material-ui/svg-icons/device/wallpaper';
@@ -74,7 +74,7 @@ class ColPics extends Component {
       alertContent: '',
       action: '',
     };
-    this.handleSaveEditing = this.handleSaveEditing.bind(this);
+    this.handleQuitEditing = this.handleQuitEditing.bind(this);
     this.handleOpenUploader = this.handleOpenUploader.bind(this);
     this.handleLockCollection = this.handleLockCollection.bind(this);
     this.handleRemoveCollection = this.handleRemoveCollection.bind(this);
@@ -83,7 +83,7 @@ class ColPics extends Component {
     this.handleRemovePhoto = this.handleRemovePhoto.bind(this);
   }
 
-  handleSaveEditing(e) {
+  handleQuitEditing(e) {
     const { dispatch } = this.props;
     e.preventDefault();
     dispatch(disableSelectAll());
@@ -274,7 +274,7 @@ class ColPics extends Component {
         <RadioButtonGroup
           name="collection"
           defaultSelected={this.state.shiftTo}
-          onChange={(e) => { this.setState({ shiftTo: e.target.value }); }}
+          onChange={(e) => this.setState({ shiftTo: e.target.value })}
         >
           {radios}
         </RadioButtonGroup>
@@ -312,7 +312,7 @@ class ColPics extends Component {
         </IconButton>
         <IconButton
           iconStyle={styles.AppBarIconSvg}
-          onTouchTap={() => { this.openAlert('LockCollection'); }}
+          onTouchTap={() => this.openAlert('LockCollection')}
         >
           { col && col.private ? (<LockOutIcon />) : (<LockInIcon />) }
         </IconButton>
@@ -323,14 +323,13 @@ class ColPics extends Component {
           anchorOrigin={{ horizontal: 'left', vertical: 'top' }}
           targetOrigin={{ horizontal: 'left', vertical: 'top' }}
         >
-          <MenuItem primaryText="下载所有图片" />
           <MenuItem
             primaryText="编辑相册"
-            onTouchTap={() => { this.setState({ isEditing: true }); }}
+            onTouchTap={() => this.setState({ isEditing: true })}
           />
           <MenuItem
             primaryText="删除相册"
-            onTouchTap={() => { this.openAlert('RemoveCollection'); }}
+            onTouchTap={() => this.openAlert('RemoveCollection')}
           />
         </IconMenu>
       </div>
@@ -373,7 +372,7 @@ class ColPics extends Component {
         User={User}
         title={counter ? `选择了${counter}张照片` : ''}
         style={{ backgroundColor: blue500 }}
-        iconElementLeft={<IconButton onTouchTap={this.handleSaveEditing}><DoneIcon /></IconButton>}
+        iconElementLeft={<IconButton onTouchTap={this.handleQuitEditing}><CloseIcon /></IconButton>}
         iconElementRight={
           <div>
             <IconButton
@@ -446,12 +445,12 @@ class ColPics extends Component {
     const actions = [
       <FlatButton
         label="取消"
-        onTouchTap={() => { this.setState(initialAlertState); }}
+        onTouchTap={() => this.setState(initialAlertState)}
         primary
       />,
       <FlatButton
         label="确认"
-        onTouchTap={() => { this.triggerDialogAction(this.state.action); }}
+        onTouchTap={() => this.triggerDialogAction(this.state.action)}
         primary
       />,
     ];
@@ -475,7 +474,7 @@ class ColPics extends Component {
             actions={actions}
             actionsContainerStyle={{ border: 'none' }}
             open={this.state.isAlertOpen}
-            onRequestClose={() => { this.setState(initialAlertState); }}
+            onRequestClose={() => this.setState(initialAlertState)}
             autoScrollBodyContent
           >
             {this.state.alertContent}

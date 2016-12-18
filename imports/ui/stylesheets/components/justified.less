@@ -1,0 +1,130 @@
+.Justified {
+  position: relative;
+  left: 0;
+  top: 48px;
+  & > .Justified__toolbox {
+    position: absolute;
+    left: 0;
+    top: -48px;
+    width: 100%;
+    height: 48px;
+    line-height: 48px;
+    & > .Justified__toolbox_left {
+      position: absolute;
+      left: 0;
+      width: 50%;
+      height: 48px;
+      & > svg {
+        margin-left: 8px;
+        vertical-align: middle;
+      }
+      & > h4 {
+        display: inline;
+        margin-left: 8px;
+        vertical-align: middle;
+        color: #222;
+        font-size: 14px;
+        font-family: 'Microsoft Yahei';
+      }
+    }
+    & > .Justified__toolbox_right {
+      position: absolute;
+      right: 0;
+      width: 50%;
+      height: 48px;
+      text-align: right;
+    }
+  }
+  & > .Justified__dayGroup {
+    position: relative;
+    left: 0;
+    top: 48px;
+    width: 100%;
+    margin-top: 48px;
+    & > .Justified__title {
+      position: absolute;
+      left: 0;
+      top: -48px;
+      width: 100%;
+      height: 48px;
+      line-height: 48px;
+      & > svg {
+        margin-left: 8px;
+        vertical-align: middle;
+      }
+      & > h4 {
+        display: inline;
+        margin-left: 8px;
+        vertical-align: middle;
+        color: #222;
+        font-size: 14px;
+        font-family: 'Microsoft Yahei';
+      }
+    }
+  }
+  & .GridList__Tile { position: relative; }
+  & .Justified__imageHolder { position: absolute; }
+  & .Justified__imageHolder, .GridList__Tile {
+    background-color: #eee;
+    transform: translate3d(0px, 0px, 0px);
+    overflow: hidden;
+    & .Justified__background, & .Justified__background_select {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      padding: 8px 24px 24px 8px;
+      opacity: 0;
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0.3) 0, transparent 30%, transparent 70%, rgba(0, 0, 0, 0.3));
+      z-index: 1;
+      & > .Justified__svgCircle {
+        position: absolute;
+        fill: #fff;
+        fill-opacity: .54;
+      }
+      & > .Justified__svgCircle_select {
+        position: absolute;
+        fill: #fff;
+        fill-opacity: 0;
+      }
+      & > .Justified__svgBgd {
+        position: absolute;
+        display: none;
+      }
+      & > .Justified__svgBgd_select {
+        position: absolute;
+        display: block;
+      }
+      & > .Justified__svgDone {
+        position: absolute;
+        fill: #fff;
+        fill-opacity: 0;
+        opacity: 0;
+      }
+      & > .Justified__svgDone_select {
+        position: absolute;
+        fill: rgb(66, 133, 244);
+        fill-opacity: 1;
+        opacity: 1;
+      }
+    }
+    .Justified__background_select { background: none; }
+
+    & img {
+      width: 100%;
+      height: 100%;
+      -webkit-transition: -webkit-transform .135s cubic-bezier(0.0,0.0,0.2,1);
+      -webkit-transition: transform .135s cubic-bezier(0.0,0.0,0.2,1);
+      transition: transform .135s cubic-bezier(0.0,0.0,0.2,1);
+    }
+  }
+}
+
+.SelectIcon {
+  fill: rgba(0,0,0,0.54);
+  fill-opacity: 1;
+}
+
+.SelectIcon_activate {
+  fill: #4285f4;
+  fill-opacity: 1;
+}

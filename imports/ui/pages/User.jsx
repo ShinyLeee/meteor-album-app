@@ -149,7 +149,7 @@ class UserPage extends Component {
               isGuest
               ? (
                 <RaisedButton
-                  label={this.isFollowed ? '关注中' : '关注'}
+                  label={this.isFollowed ? '取消关注' : '关注'}
                   onTouchTap={this.isFollowed ? this.handleUnFollow : this.handleFollow}
                   secondary
                 />

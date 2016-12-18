@@ -25,7 +25,7 @@ export const getRandomInt = (min, max) => Math.floor(Math.random() * ((max - min
 
 export const randomId = () => Math.random().toString(36).split('.')[1];
 
-export const browser = () => {
+export const platform = () => {
   const u = navigator.userAgent;
   return {
     trident: u.indexOf('Trident') > -1, // IE内核

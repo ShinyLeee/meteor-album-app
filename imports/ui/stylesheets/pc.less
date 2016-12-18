@@ -1,0 +1,27 @@
+.pc {
+  width: 500px;
+  margin: auto;
+  text-align: center;
+  & > .pc__header {
+    text-align: center;
+    & > h1 {
+      color: #222;
+    }
+    & > p {
+      font-size: 14px;
+    }
+  }
+  & > .pc__content {
+    padding: 20px 0;
+    & > .pc__line {
+      display: block;
+      & > .pc__img {
+        display: inline-block;
+        width: 100 / 3%;
+        height: 180px;
+        padding: 2px;
+        & > img { width: 100%; height: 100%; object-fit: cover; }
+      }
+    }
+  }
+}

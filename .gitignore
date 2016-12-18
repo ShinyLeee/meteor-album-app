@@ -3,3 +3,4 @@ node_modules/
 settings-development.json
 settings-production.json
 *.log
+.vscode
