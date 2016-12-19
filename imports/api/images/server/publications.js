@@ -20,6 +20,12 @@ Meteor.publish('Images.liked', function likedImages() {
   });
 });
 
+Meteor.publish('Images.recycle', function inRecycleImages() {
+  return Images.find({
+    deletedAt: { $ne: null },
+  });
+});
+
 Meteor.publish('Images.spec', function spec({ username, colName }) {
   new SimpleSchema({
     username: { type: String, label: '用户名', max: 10 },

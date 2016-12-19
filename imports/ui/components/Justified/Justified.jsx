@@ -25,7 +25,10 @@ class Justified extends PureComponent {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (this.props.images.length === nextProps.counter) this.setState({ isAllSelect: true });
+    const { images } = this.props;
+    const { counter } = nextProps;
+    // Fix potential issue that images is empty when first render
+    if (counter > 0 && images.length === counter) this.setState({ isAllSelect: true });
     else this.setState({ isAllSelect: false });
   }
 

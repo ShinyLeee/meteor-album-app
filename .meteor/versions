@@ -28,6 +28,7 @@ ddp-rate-limiter@1.0.6
 ddp-server@1.2.10
 deanius:promise@3.1.3
 deps@1.0.12
+didericis:callpromise-mixin@0.0.1
 diff-sequence@1.0.7
 ecmascript@0.6.1
 ecmascript-runtime@0.3.15

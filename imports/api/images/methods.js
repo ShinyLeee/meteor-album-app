@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { _ } from 'meteor/underscore';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
+import { CallPromiseMixin } from 'meteor/didericis:callpromise-mixin';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import moment from 'moment';
@@ -21,14 +22,27 @@ export const insertImage = new ValidatedMethod({
   },
 });
 
+export const removeImages = new ValidatedMethod({
+  name: 'images.remove',
+  mixins: [CallPromiseMixin],
+  validate: new SimpleSchema({
+    selectImages: { type: [String], regEx: SimpleSchema.RegEx.Id },
+  }).validator({ clean: true, filter: false }),
+  run({ selectImages }) {
+    if (!this.userId) {
+      throw new Meteor.Error('user.accessDenied');
+    }
+    Images.remove({ _id: { $in: selectImages } });
+  },
+});
+
 export const removeImagesToRecycle = new ValidatedMethod({
   name: 'images.removeToRecycle',
   validate: new SimpleSchema({
     selectImages: { type: [String], regEx: SimpleSchema.RegEx.Id },
   }).validator({ clean: true, filter: false }),
   run({ selectImages }) {
-    const uid = this.userId;
-    if (!uid) {
+    if (!this.userId) {
       throw new Meteor.Error('user.accessDenied');
     }
     const deletedAt = moment().add(1, 'M').toDate();
@@ -36,6 +50,23 @@ export const removeImagesToRecycle = new ValidatedMethod({
     Images.update(
       { _id: { $in: selectImages } },
       { $set: { deletedAt } },
+      { multi: true }
+    );
+  },
+});
+
+export const recoveryImages = new ValidatedMethod({
+  name: 'images.recovery',
+  validate: new SimpleSchema({
+    selectImages: { type: [String], regEx: SimpleSchema.RegEx.Id },
+  }).validator({ clean: true, filter: false }),
+  run({ selectImages }) {
+    if (!this.userId) {
+      throw new Meteor.Error('user.accessDenied');
+    }
+    Images.update(
+      { _id: { $in: selectImages } },
+      { $set: { deletedAt: null } },
       { multi: true }
     );
   },
@@ -94,7 +125,9 @@ export const unlikeImage = new ValidatedMethod({
 // Get list of all method names on Images
 const IMAGES_METHODS = _.pluck([
   // insertImage, // allow call this method within 1 second
+  removeImages,
   removeImagesToRecycle,
+  recoveryImages,
   shiftImages,
   likeImage,
   unlikeImage,

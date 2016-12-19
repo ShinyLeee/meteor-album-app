@@ -1,4 +1,3 @@
-/* eslint consistent-return: 0 */
 import { Meteor } from 'meteor/meteor';
 
 // If not login redirect location to /login

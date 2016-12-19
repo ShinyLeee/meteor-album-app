@@ -56,7 +56,6 @@ const styles = {
   },
   indeterminateProgress: {
     position: 'fixed',
-    top: '64px',
     backgroundColor: 'none',
     zIndex: 99,
   },
@@ -136,7 +135,7 @@ class ColPics extends Component {
       return key;
     });
 
-    return Meteor.call('qiniu.remove', { keys }, (error) => {
+    return Meteor.call('Qiniu.remove', { keys }, (error) => {
       if (error) {
         cb(error, '删除相册失败');
       }
@@ -163,7 +162,7 @@ class ColPics extends Component {
       };
     });
 
-    Meteor.call('qiniu.move', { keys }, (error, res) => {
+    Meteor.call('Qiniu.move', { keys }, (error, res) => {
       if (error) {
         cb(error, '转移照片失败');
       }
@@ -459,12 +458,8 @@ class ColPics extends Component {
         { this.state.isEditing
           ? this.renderEditingNavHeader()
           : this.renderNavHeader() }
-        <div className="progress">
-          { this.state.isProcessing
-            ? <LinearProgress style={styles.indeterminateProgress} mode="indeterminate" />
-            : null }
-        </div>
         <div className="content">
+          { this.state.isProcessing && <LinearProgress style={styles.indeterminateProgress} mode="indeterminate" /> }
           { dataIsReady
             ? this.renderColPics()
             : this.renderLoader() }
@@ -510,17 +505,12 @@ const MeteorContainer = createContainer(({ params }) => {
   else isGuest = true;
 
   const imageHandle = Meteor.subscribe('Images.spec', { username, colName });
-  const colHandle = Meteor.subscribe('Collections.all');
+  const colHandle = Meteor.subscribe('Collections.targetUser', username);
   const dataIsReady = imageHandle.ready() && colHandle.ready();
 
   const images = Images.find({}, { sort: { shootAt: -1 } }).fetch();
   // col is currentCollection use for lock/remove etc.
-  const col = Collections.findOne({
-    user: username,
-    name: colName,
-  }, {
-    fields: { name: 1, private: 1 },
-  }) || {};
+  const col = Collections.findOne({ name: colName }, { fields: { name: 1, private: 1 } }) || {};
   // colNames use for shift photos
   const colNames = Collections.find({ name: { $ne: colName } }, { fields: { name: 1 } }).fetch();
   return {

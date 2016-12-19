@@ -13,6 +13,7 @@ export default class GridList extends Component {
               height: 0,
               padding: `${gap / 2}px`,
               paddingBottom: `${(100 / columns)}%`,
+              verticalAlign: 'top',
             });
 
             return (

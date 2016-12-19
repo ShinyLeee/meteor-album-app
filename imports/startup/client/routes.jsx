@@ -9,6 +9,7 @@ import Index from '/imports/ui/pages/Index.jsx';
 import User from '/imports/ui/pages/User.jsx';
 import Collection from '/imports/ui/pages/Collection.jsx';
 import ColPics from '/imports/ui/pages/ColPics.jsx';
+import Recycle from '/imports/ui/pages/Recycle.jsx';
 import Setting from '/imports/ui/pages/Setting.jsx';
 import SendNote from '/imports/ui/pages/SendNote.jsx';
 import Login from '/imports/ui/pages/Login.jsx';
@@ -38,7 +39,7 @@ const Root = () => {
             <Route path="user/:username/collection" component={Collection} onEnter={isAllowVisitColl} />
             <Route path="user/:username/collection/:colName" component={ColPics} onEnter={isAllowVisitColl} />
             <Route path="memory" component={Construction} onEnter={isLogin} />
-            <Route path="recycle" component={Construction} onEnter={isLogin} />
+            <Route path="recycle" component={Recycle} onEnter={isLogin} />
             <Route path="setting" component={Setting} onEnter={isLogin} />
             <Route path="sendNote" component={SendNote} onEnter={isLogin} />
             <Route path="login" component={Login} onEnter={isLogout} />

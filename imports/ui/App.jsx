@@ -20,7 +20,7 @@ class App extends Component {
   componentDidMount() {
     const { User, dispatch } = this.props;
     if (User) {
-      Meteor.call('qiniu.getUptoken', (err, res) => {
+      Meteor.call('Qiniu.getUptoken', (err, res) => {
         if (err) {
           throw new Meteor.Error(err);
         }
@@ -33,7 +33,7 @@ class App extends Component {
   componentWillReceiveProps(nextProps) {
     const { User, dispatch } = this.props;
     if (!User && nextProps.User) {
-      Meteor.call('qiniu.getUptoken', (err, res) => {
+      Meteor.call('Qiniu.getUptoken', (err, res) => {
         if (err) {
           throw new Meteor.Error(err);
         }

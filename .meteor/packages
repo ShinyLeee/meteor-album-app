@@ -26,3 +26,4 @@ aldeed:collection2
 mdg:validated-method
 percolate:migrations
 deanius:promise
+didericis:callpromise-mixin

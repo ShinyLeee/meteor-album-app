@@ -9,7 +9,7 @@ if (Meteor.isServer) {
   const bucket = Meteor.settings.private.qiniu.bucket;
 
   Meteor.methods({
-    'qiniu.getUptoken': function getUptoken() {
+    'Qiniu.getUptoken': function getUptoken() {
       if (!this.userId) {
         throw new Meteor.Error('user.accessDenied');
       }
@@ -20,7 +20,7 @@ if (Meteor.isServer) {
       return response;
     },
 
-    'qiniu.move': function move({ keys }) {
+    'Qiniu.move': function move({ keys }) {
       new SimpleSchema({
         keys: { type: [Object] },
         'keys.$.src': { type: String },
@@ -51,7 +51,7 @@ if (Meteor.isServer) {
       return response;
     },
 
-    'qiniu.remove': function remove({ keys }) {
+    'Qiniu.remove': function remove({ keys }) {
       new SimpleSchema({
         keys: { type: [String] },
       }).validator({ clean: true, filter: false });
