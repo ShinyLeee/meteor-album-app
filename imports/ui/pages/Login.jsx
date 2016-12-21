@@ -23,7 +23,7 @@ const styles = {
   },
 };
 
-class Login extends Component {
+class LoginPage extends Component {
 
   constructor(props) {
     super(props);
@@ -92,8 +92,8 @@ class Login extends Component {
 
 }
 
-Login.propTypes = {
+LoginPage.propTypes = {
   dispatch: PropTypes.func,
 };
 
-export default connect()(Login);
+export default connect()(LoginPage);

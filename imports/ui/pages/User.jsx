@@ -11,10 +11,12 @@ import CircularProgress from 'material-ui/CircularProgress';
 import RaisedButton from 'material-ui/RaisedButton';
 import IconButton from 'material-ui/IconButton';
 import ArrowBackIcon from 'material-ui/svg-icons/navigation/arrow-back';
+import MessageIcon from 'material-ui/svg-icons/communication/message';
 import SettingsIcon from 'material-ui/svg-icons/action/settings';
 import ExitToAppIcon from 'material-ui/svg-icons/action/exit-to-app';
 import { Images } from '/imports/api/images/image.js';
 import { Collections } from '/imports/api/collections/collection.js';
+import { Notes } from '/imports/api/notes/note.js';
 import { followUser, unFollowUser } from '/imports/api/users/methods.js';
 import NavHeader from '../components/NavHeader.jsx';
 import { snackBarOpen } from '../actions/actionTypes.js';
@@ -84,7 +86,9 @@ class UserPage extends Component {
 
   renderLoader() {
     return (
-      <div className="content text-center"><CircularProgress /></div>
+      <div className="content text-center">
+        <CircularProgress style={{ top: '150px' }} />
+      </div>
     );
   }
 
@@ -169,6 +173,11 @@ class UserPage extends Component {
                   >
                     <Menu>
                       <MenuItem
+                        primaryText="我的信息"
+                        onTouchTap={() => browserHistory.push('/note')}
+                        leftIcon={<MessageIcon />}
+                      />
+                      <MenuItem
                         primaryText="账号设置"
                         onTouchTap={() => browserHistory.push('/setting')}
                         leftIcon={<SettingsIcon />}
@@ -218,7 +227,7 @@ class UserPage extends Component {
   }
 
   render() {
-    const { User, dataIsReady, isGuest } = this.props;
+    const { User, noteNum, dataIsReady, isGuest } = this.props;
     return (
       <div className="container">
         { isGuest
@@ -232,7 +241,7 @@ class UserPage extends Component {
                 </IconButton>
               }
             />)
-          : (<NavHeader User={User} location={this.state.location} primary />)
+          : (<NavHeader User={User} location={this.state.location} noteNum={noteNum} primary />)
         }
         <div className="content">
           { dataIsReady ? this.renderUserContent() : this.renderLoader() }
@@ -253,6 +262,7 @@ UserPage.propTypes = {
   topImages: PropTypes.array.isRequired,
   likedCount: PropTypes.number.isRequired,
   collectionCount: PropTypes.number.isRequired,
+  noteNum: PropTypes.number.isRequired,
 };
 
 const MeteorContainer = createContainer(({ params }) => {
@@ -266,19 +276,22 @@ const MeteorContainer = createContainer(({ params }) => {
   const userHandler = Meteor.subscribe('Users.all');
   const imageHandler = Meteor.subscribe('Images.all');
   const collectionHandler = Meteor.subscribe('Collections.targetUser', username);
+  const noteHandler = Meteor.subscribe('Notes.own');
 
   let dataIsReady = false;
   let topImages = [];
   let likedCount = 0;
   let collectionCount = 0;
+  let noteNum = 0;
   const userIsReady = userHandler.ready();
   const curUser = Meteor.users.findOne({ username }) || {};
   if (userIsReady) {
     const uid = curUser._id;
-    dataIsReady = imageHandler.ready() && collectionHandler.ready();
+    dataIsReady = imageHandler.ready() && collectionHandler.ready() && noteHandler.ready();
     likedCount = Images.find({ liker: { $in: [uid] } }).count();
     topImages = Images.find({ uid }, { sort: { likes: -1 }, limit: 10 }).fetch();
     collectionCount = Collections.find().count();
+    noteNum = Notes.find({ isRead: { $ne: true } }).count();
   }
   return {
     dataIsReady,
@@ -287,6 +300,7 @@ const MeteorContainer = createContainer(({ params }) => {
     topImages,
     likedCount,
     collectionCount,
+    noteNum,
   };
 }, UserPage);
 

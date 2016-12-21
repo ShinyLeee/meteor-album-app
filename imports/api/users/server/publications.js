@@ -5,7 +5,7 @@ Meteor.publish('Users.all', function allUser() {
   return Meteor.users.find();
 });
 
-Meteor.publish('Users.otherUsers', function otherUsers() {
+Meteor.publish('Users.others', function otherUsers() {
   return Meteor.users.find({
     _id: { $ne: this.userId },
   }, {

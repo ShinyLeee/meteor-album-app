@@ -3,7 +3,6 @@ import { createContainer } from 'meteor/react-meteor-data';
 import React, { Component, PropTypes } from 'react';
 import { browserHistory } from 'react-router';
 import { connect } from 'react-redux';
-
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
@@ -12,10 +11,9 @@ import ArrowBackIcon from 'material-ui/svg-icons/navigation/arrow-back';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import CircularProgress from 'material-ui/CircularProgress';
 import AddIcon from 'material-ui/svg-icons/content/add';
-
 import { Collections } from '/imports/api/collections/collection.js';
+import { Notes } from '/imports/api/notes/note.js';
 import { insertCollection } from '/imports/api/collections/methods.js';
-
 import NavHeader from '../components/NavHeader.jsx';
 import Recap from '../components/Recap.jsx';
 import ColHolder from '../components/ColHolder.jsx';
@@ -32,7 +30,7 @@ const styles = {
   },
 };
 
-class Collection extends Component {
+class CollectionPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -100,6 +98,18 @@ class Collection extends Component {
 
   renderColHolder() {
     const { curUser, cols } = this.props;
+    if (cols.length === 0) {
+      return (
+        <div className="Empty">
+          <div className="Empty__container">
+            <img className="Empty__logo" src="/img/empty.png" role="presentation" />
+            <h2 className="Empty__header">Oops</h2>
+            <p className="Empty__info">你还尚未创建相册</p>
+            <p className="Empty__info">点击右下角按钮创建属于自己的相册吧</p>
+          </div>
+        </div>
+      );
+    }
     return cols.map((col) => (
       <ColHolder key={col._id} User={curUser} col={col} />
     ));
@@ -114,7 +124,7 @@ class Collection extends Component {
   }
 
   render() {
-    const { User, curUser, dataIsReady, isGuest } = this.props;
+    const { User, curUser, cols, noteNum, dataIsReady, isGuest } = this.props;
     const actions = [
       <FlatButton
         label="取消"
@@ -141,7 +151,7 @@ class Collection extends Component {
                 </IconButton>
               }
             />)
-          : (<NavHeader User={User} location={this.state.location} primary />)
+          : (<NavHeader User={User} location={this.state.location} noteNum={noteNum} primary />)
         }
         <div className="content">
           { isGuest
@@ -150,7 +160,7 @@ class Collection extends Component {
                 title={curUser.username}
                 detailFir={curUser.profile.intro || '暂无简介'}
               />)
-            : (
+            : cols.length > 0 && (
               <Recap
                 title="Collections"
                 detailFir="所有创建相册都在这里"
@@ -194,7 +204,7 @@ class Collection extends Component {
 
 }
 
-Collection.propTypes = {
+CollectionPage.propTypes = {
   User: PropTypes.object,
   dispatch: PropTypes.func,
   // Below is pass from database
@@ -202,6 +212,7 @@ Collection.propTypes = {
   isGuest: PropTypes.bool.isRequired,
   curUser: PropTypes.object.isRequired,
   cols: PropTypes.array.isRequired,
+  noteNum: PropTypes.number.isRequired,
 };
 
 const preCurUser = Meteor.settings.public.preCurUser;
@@ -216,15 +227,18 @@ const MeteorContainer = createContainer(({ params }) => {
 
   const userHandler = Meteor.subscribe('Users.all');
   const colHandler = Meteor.subscribe('Collections.targetUser', username);
-  const dataIsReady = userHandler.ready() && colHandler.ready();
+  const noteHandler = Meteor.subscribe('Notes.own');
+  const dataIsReady = userHandler.ready() && colHandler.ready() && noteHandler.ready();
   const curUser = Meteor.users.findOne({ username }) || preCurUser;
   const cols = Collections.find({}, { sort: { createdAt: -1 } }).fetch();
+  const noteNum = Notes.find({ isRead: { $ne: true } }).count();
   return {
     dataIsReady,
     isGuest,
     curUser,
     cols,
+    noteNum,
   };
-}, Collection);
+}, CollectionPage);
 
 export default connect()(MeteorContainer);

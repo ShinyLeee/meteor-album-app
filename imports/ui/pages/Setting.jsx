@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
+import { createContainer } from 'meteor/react-meteor-data';
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-
 import { List, ListItem } from 'material-ui/List';
 import TextField from 'material-ui/TextField';
 import Subheader from 'material-ui/Subheader';
@@ -21,8 +21,8 @@ import UserIcon from 'material-ui/svg-icons/action/account-box';
 import InboxIcon from 'material-ui/svg-icons/content/inbox';
 import EmailIcon from 'material-ui/svg-icons/communication/email';
 import { blue500 } from 'material-ui/styles/colors';
+import { Notes } from '/imports/api/notes/note.js';
 import { updateUser } from '/imports/api/users/methods.js';
-
 import NavHeader from '../components/NavHeader.jsx';
 import { snackBarOpen } from '../actions/actionTypes.js';
 
@@ -47,7 +47,7 @@ const styles = {
 
 let initialSettings;
 
-class Setting extends Component {
+class SettingPage extends Component {
 
   constructor(props) {
     super(props);
@@ -364,7 +364,7 @@ class Setting extends Component {
   }
 
   render() {
-    const { User } = this.props;
+    const { User, noteNum } = this.props;
     const actions = [
       <FlatButton
         label="取消"
@@ -382,7 +382,7 @@ class Setting extends Component {
       <div className="container">
         { this.state.isEditing
           ? this.renderEditingNavHeader()
-          : (<NavHeader User={User} location={this.state.location} primary />) }
+          : (<NavHeader User={User} location={this.state.location} noteNum={noteNum} primary />) }
         <div className="content">
           { this.state.isProcessing && <LinearProgress style={styles.indeterminateProgress} mode="indeterminate" /> }
           { User && this.renderSettingContent() }
@@ -403,14 +403,15 @@ class Setting extends Component {
 
 }
 
-Setting.defaultProps = {
+SettingPage.defaultProps = {
   uploadURL: window.location.protocol === 'https:' ? 'https://up.qbox.me/' : 'http://upload.qiniu.com',
 };
 
-Setting.propTypes = {
+SettingPage.propTypes = {
   uptoken: PropTypes.string,
   uploadURL: PropTypes.string.isRequired,
   User: PropTypes.object,
+  noteNum: PropTypes.number.isRequired,
   dispatch: PropTypes.func,
 };
 
@@ -418,4 +419,12 @@ const mapStateToProps = (state) => ({
   uptoken: state.uptoken,
 });
 
-export default connect(mapStateToProps)(Setting);
+const MeteorContainer = createContainer(() => {
+  Meteor.subscribe('Notes.own');
+  const noteNum = Notes.find({ isRead: { $ne: true } }).count();
+  return {
+    noteNum,
+  };
+}, SettingPage);
+
+export default connect(mapStateToProps)(MeteorContainer);

@@ -11,7 +11,9 @@ import Collection from '/imports/ui/pages/Collection.jsx';
 import ColPics from '/imports/ui/pages/ColPics.jsx';
 import Recycle from '/imports/ui/pages/Recycle.jsx';
 import Setting from '/imports/ui/pages/Setting.jsx';
-import SendNote from '/imports/ui/pages/SendNote.jsx';
+import Note from '/imports/ui/pages/Note/Note.jsx';
+import AllNotes from '/imports/ui/pages/Note/AllNotes.jsx';
+import SendNote from '/imports/ui/pages/Note/SendNote.jsx';
 import Login from '/imports/ui/pages/Login.jsx';
 import Register from '/imports/ui/pages/Register.jsx';
 import Construction from '/imports/ui/pages/Error/Construction.jsx';
@@ -41,6 +43,8 @@ const Root = () => {
             <Route path="memory" component={Construction} onEnter={isLogin} />
             <Route path="recycle" component={Recycle} onEnter={isLogin} />
             <Route path="setting" component={Setting} onEnter={isLogin} />
+            <Route path="note" component={Note} onEnter={isLogin} />
+            <Route path="allNotes" component={AllNotes} onEnter={isLogin} />
             <Route path="sendNote" component={SendNote} onEnter={isLogin} />
             <Route path="login" component={Login} onEnter={isLogout} />
             <Route path="register" component={Register} onEnter={isLogout} />

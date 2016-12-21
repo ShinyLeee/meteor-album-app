@@ -2,10 +2,9 @@ import React, { Component, PropTypes } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
 import CircularProgress from 'material-ui/CircularProgress';
-
 import { makeCancelable } from '/imports/utils/utils.js';
 import { Images } from '/imports/api/images/image.js';
-
+import { Notes } from '/imports/api/notes/note.js';
 import Infinity from '../components/Infinity.jsx';
 import NavHeader from '../components/NavHeader.jsx';
 import Recap from '../components/Recap.jsx';
@@ -14,23 +13,22 @@ import ZoomerHolder from '../components/ZoomerHolder.jsx';
 
 const clientWidth = document.body.clientWidth;
 
-class Index extends Component {
+class IndexPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
       location: 'explore',
       isLoading: false,
-      images: props.images,
+      images: props.initialImages,
     };
-    this.onInfinityLoad = this.onInfinityLoad.bind(this);
-    this.handleAddImage = this.handleAddImage.bind(this);
+    this.handleLoadImages = this.handleLoadImages.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
     // When dataIsReady return true start setState
-    if (nextProps.dataIsReady) {
+    if (!this.props.dataIsReady && nextProps.dataIsReady) {
       this.setState({
-        images: nextProps.images,
+        images: nextProps.initialImages,
       });
     }
   }
@@ -43,22 +41,22 @@ class Index extends Component {
     }
   }
 
-  onInfinityLoad() {
+  handleLoadImages() {
     const { limit } = this.props;
     const { images } = this.state;
     const skip = images.length;
-    const loadImage = new Promise((resolve) => {
+    const loadPromise = new Promise((resolve) => {
       this.setState({ isLoading: true });
       Meteor.defer(() => {
-        const loadImages = Images.find(
+        const newImages = Images.find(
           { private: { $ne: true } },
           { sort: { createdAt: -1 }, limit, skip }).fetch();
-        const newImages = [...images, ...loadImages];
-        this.setState({ images: newImages }, () => resolve());
+        const curImages = [...images, ...newImages];
+        this.setState({ images: curImages }, () => resolve());
       });
     });
 
-    this.loadPromise = makeCancelable(loadImage);
+    this.loadPromise = makeCancelable(loadPromise);
     this.loadPromise
       .promise
       .then(() => {
@@ -69,30 +67,16 @@ class Index extends Component {
       });
   }
 
-  handleAddImage() {
-    const images = this.state.images;
-    const limit = this.props.limit;
-    const skip = images.length;
-    const loadImages = Images.find(
-      { private: { $ne: true } },
-      { sort: { createdAt: -1 }, limit, skip }).fetch();
-    const newImages = [...images, ...loadImages];
-    this.setState({ images: newImages });
-    return;
-  }
-
   renderPicHolder() {
     const { users } = this.props;
     const images = this.state.images;
-    images.map((image) => {
+    images.forEach((image) => {
       const img = image;
-      users.map((user) => {
+      users.forEach((user) => {
         if (user._id === img.uid) {
           img.avatar = user.profile.avatar;
         }
-        return img;
       });
-      return img;
     });
     return images.map((image, i) => (
       <PicHolder
@@ -105,14 +89,17 @@ class Index extends Component {
   }
 
   renderInfinite() {
-    return (<Infinity
-      onInfinityLoad={this.onInfinityLoad}
-      isLoading={this.state.isLoading}
-      offsetToBottom={100}
-    >
-      { this.renderPicHolder() }
-      <ZoomerHolder clientWidth={clientWidth} />
-    </Infinity>
+    return (
+      <div className="index">
+        <Infinity
+          onInfinityLoad={this.handleLoadImages}
+          isLoading={this.state.isLoading}
+          offsetToBottom={100}
+        >
+          { this.renderPicHolder() }
+          <ZoomerHolder clientWidth={clientWidth} />
+        </Infinity>
+      </div>
     );
   }
 
@@ -125,10 +112,10 @@ class Index extends Component {
   }
 
   render() {
-    const { User, dataIsReady } = this.props;
+    const { User, noteNum, dataIsReady } = this.props;
     return (
       <div className="container">
-        <NavHeader User={User} location={this.state.location} primary />
+        <NavHeader User={User} location={this.state.location} noteNum={noteNum} primary />
         <div className="content">
           <Recap
             title="Gallery"
@@ -144,11 +131,12 @@ class Index extends Component {
 
 }
 
-Index.propTypes = {
+IndexPage.propTypes = {
   User: PropTypes.object,
   dataIsReady: PropTypes.bool.isRequired,
   users: PropTypes.array.isRequired,
-  images: PropTypes.array.isRequired,
+  initialImages: PropTypes.array.isRequired,
+  noteNum: PropTypes.number.isRequired,
   limit: PropTypes.number.isRequired,
 };
 
@@ -158,15 +146,18 @@ export default createContainer(() => {
 
   const userHandler = Meteor.subscribe('Users.all');
   const imageHandler = Meteor.subscribe('Images.all');
-  const dataIsReady = userHandler.ready() && imageHandler.ready();
+  const noteHandler = Meteor.subscribe('Notes.own');
+  const dataIsReady = userHandler.ready() && imageHandler.ready() && noteHandler.ready();
   const users = Meteor.users.find().fetch();
-  const images = Images.find(
+  const initialImages = Images.find(
     { private: { $ne: true } },
     { sort: { createdAt: -1 }, limit }).fetch();
+  const noteNum = Notes.find({ isRead: { $ne: true } }).count();
   return {
     dataIsReady,
     users,
-    images,
+    initialImages,
+    noteNum,
     limit,
   };
-}, Index);
+}, IndexPage);

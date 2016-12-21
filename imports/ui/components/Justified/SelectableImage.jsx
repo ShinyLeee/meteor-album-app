@@ -50,7 +50,11 @@ class SelectableImage extends Component {
       transform: this.state.isSelect && 'scale(.8)',
     };
     return (
-      <div className="GridList__Tile" onTouchTap={this.handleSelect}>
+      <div
+        className="GridList__Tile"
+        style={{ backgroundColor: isEditing ? '#eee' : '#fff' }}
+        onTouchTap={this.handleSelect}
+      >
         <SelectBackground isEditing={isEditing} isSelect={this.state.isSelect} />
         <img
           src={imageSource}

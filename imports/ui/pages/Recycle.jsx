@@ -34,7 +34,7 @@ const styles = {
   },
 };
 
-class Recycle extends Component {
+class RecyclePage extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -126,6 +126,49 @@ class Recycle extends Component {
     });
   }
 
+  renderRecycle() {
+    const { images } = this.props;
+    if (images.length === 0) {
+      return (
+        <div className="Empty">
+          <div className="Empty__container">
+            <img className="Empty__logo" src="/img/empty.png" role="presentation" />
+            <h2 className="Empty__header">Oops!</h2>
+            <p className="Empty__info">您的回收站暂时是空闲的</p>
+          </div>
+        </div>
+      );
+    }
+    return (
+      <div className="recycle">
+        <div className="recycle__header">
+          <div className="recycle__title">回收站</div>
+          <div className="recycle__desc">回收站中的内容会在 30 天后永久删除</div>
+        </div>
+        <div className="recycle__content">
+          <div className="recycle__toolbox">
+            <div className="recycle__toolbox_left" onTouchTap={this.handleToggleSelectAll}>
+              <SelectIcon activate={this.state.isAllSelect} />
+              <h4>选择全部</h4>
+            </div>
+          </div>
+          <GridList>
+            {
+              images.map((image, i) => (
+                <SelectableImage
+                  key={i}
+                  image={image}
+                  total={images.length}
+                  isEditing
+                />
+              ))
+            }
+          </GridList>
+        </div>
+      </div>
+    );
+  }
+
   renderLoader() {
     return (
       <div className="content text-center">
@@ -135,7 +178,7 @@ class Recycle extends Component {
   }
 
   render() {
-    const { dataIsReady, User, images, counter } = this.props;
+    const { dataIsReady, User, counter } = this.props;
     const recoveryActions = [
       <FlatButton
         label="取消"
@@ -191,38 +234,7 @@ class Recycle extends Component {
         <div className="content">
           { this.state.isProcessing && <LinearProgress style={styles.indeterminateProgress} mode="indeterminate" /> }
           { dataIsReady
-            ? (
-              <div className="recycle">
-                <div className="recycle__header">
-                  <div className="recycle__title">回收站</div>
-                  <div className="recycle__desc">回收站中的内容会在 30 天后永久删除</div>
-                </div>
-                <div className="recycle__content">
-                  {
-                    images.length > 0 && (
-                      <div className="recycle__toolbox">
-                        <div className="recycle__toolbox_left" onTouchTap={this.handleToggleSelectAll}>
-                          <SelectIcon activate={this.state.isAllSelect} />
-                          <h4>选择全部</h4>
-                        </div>
-                      </div>
-                      )
-                  }
-                  <GridList>
-                    {
-                      images.map((image, i) => (
-                        <SelectableImage
-                          key={i}
-                          image={image}
-                          total={images.length}
-                          isEditing
-                        />
-                      ))
-                    }
-                  </GridList>
-                </div>
-              </div>
-            )
+            ? this.renderRecycle()
             : this.renderLoader() }
           <Dialog
             title="提示"
@@ -249,7 +261,7 @@ class Recycle extends Component {
 
 }
 
-Recycle.propTypes = {
+RecyclePage.propTypes = {
   User: PropTypes.object,
   // Below is Pass from database
   dataIsReady: PropTypes.bool.isRequired,
@@ -269,7 +281,7 @@ const MeteorContainer = createContainer(() => {
     dataIsReady,
     images,
   };
-}, Recycle);
+}, RecyclePage);
 
 const mapStateToProps = (state) => ({
   uptoken: state.uptoken,

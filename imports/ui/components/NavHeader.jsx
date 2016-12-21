@@ -4,6 +4,7 @@ import { browserHistory } from 'react-router';
 import { connect } from 'react-redux';
 import AppBar from 'material-ui/AppBar';
 import Avatar from 'material-ui/Avatar';
+import Badge from 'material-ui/Badge';
 import Drawer from 'material-ui/Drawer';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
@@ -45,7 +46,7 @@ const styles = {
     fontSize: '22px',
   },
   AppBarIcon: {
-    top: '8px',
+    top: '4px',
   },
   AppBarIconSvg: {
     width: '28px',
@@ -54,7 +55,7 @@ const styles = {
   },
   AppBarIconBtnForAvatar: {
     left: '10px',
-    top: '12px',
+    top: '8px',
     padding: 0,
   },
   AppBarIconBtnForLogin: {
@@ -83,6 +84,7 @@ class NavHeader extends Component {
     this.handlePrimaryTitleTouchTap = this.handlePrimaryTitleTouchTap.bind(this);
     this.handleOpenUserAction = this.handleOpenUserAction.bind(this);
     this.handleLogout = this.handleLogout.bind(this);
+    this.handlePrompt = this.handlePrompt.bind(this);
   }
 
   get avatarSrc() {
@@ -126,22 +128,39 @@ class NavHeader extends Component {
     });
   }
 
+  handlePrompt() {
+    const { dispatch } = this.props;
+    dispatch(snackBarOpen('功能开发中'));
+  }
+
   renderPrimaryIconRight(User) {
+    const { noteNum } = this.props;
+    const bellStyle = noteNum > 0 ? 'bell-shake' : '';
     if (Meteor.loggingIn() || User) {
       return (
         <div>
           <IconButton
             style={styles.AppBarIcon}
             iconStyle={styles.AppBarIconSvg}
+            onTouchTap={this.handlePrompt}
           >
             <SearchIcon />
           </IconButton>
-          <IconButton
-            style={styles.AppBarIcon}
-            iconStyle={styles.AppBarIconSvg}
+          <Badge
+            badgeContent={noteNum || 0}
+            style={{ padding: 0 }}
+            badgeStyle={{ width: '20px', height: '20px', top: '4px' }}
+            primary
           >
-            <NotificationIcon />
-          </IconButton>
+            <IconButton
+              className={bellStyle}
+              style={styles.AppBarIcon}
+              iconStyle={styles.AppBarIconSvg}
+              onTouchTap={() => browserHistory.push('/note')}
+            >
+              <NotificationIcon />
+            </IconButton>
+          </Badge>
           <IconButton
             style={styles.AppBarIconBtnForAvatar}
             onTouchTap={() => browserHistory.push(`/user/${User.username}`)}
@@ -340,6 +359,12 @@ NavHeader.propTypes = {
    * Accroding to location's specfic value.
    */
   location: PropTypes.string,
+  /**
+   * noteNum:
+   *
+   * for notification badge
+   */
+  noteNum: PropTypes.number,
   /**
    * Below:
    *

@@ -1,6 +1,6 @@
 import { Accounts } from 'meteor/accounts-base';
 import React, { Component, PropTypes } from 'react';
-import { Link } from 'react-router';
+import { browserHistory } from 'react-router';
 import { connect } from 'react-redux';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -24,7 +24,7 @@ const styles = {
   },
 };
 
-class Register extends Component {
+class RegisterPage extends Component {
 
   constructor(props) {
     super(props);
@@ -63,7 +63,7 @@ class Register extends Component {
         console.error(err); // eslint-disable-line no-console
         return false;
       }
-      this.context.router.replace('/');
+      browserHistory.replace('/');
       dispatch(snackBarOpen('您已成功注册, 邮箱验证后可正式享受服务'));
       return true;
     });
@@ -109,7 +109,7 @@ class Register extends Component {
               label="已有账号?"
               labelStyle={styles.label}
               buttonStyle={styles.regBtn}
-              containerElement={<Link to={'/login'} />}
+              onTouchTap={() => browserHistory.push('/login')}
               fullWidth
             />
           </div>
@@ -120,13 +120,9 @@ class Register extends Component {
 
 }
 
-Register.propTypes = {
+RegisterPage.propTypes = {
   history: PropTypes.object.isRequired,
   dispatch: PropTypes.func,
 };
 
-Register.contextTypes = {
-  router: PropTypes.object.isRequired,
-};
-
-export default connect()(Register);
+export default connect()(RegisterPage);

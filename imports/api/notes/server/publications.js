@@ -2,7 +2,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Notes } from '../note.js';
 
-Meteor.publish('Notes.ownNotes', function ownNotes() {
+Meteor.publish('Notes.own', function ownNotes() {
   return Notes.find({
     receiver: this.userId,
   });

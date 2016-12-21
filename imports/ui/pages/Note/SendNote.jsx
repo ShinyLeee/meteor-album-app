@@ -16,9 +16,9 @@ import ArrowBackIcon from 'material-ui/svg-icons/navigation/arrow-back';
 import SendIcon from 'material-ui/svg-icons/content/send';
 import { blue500 } from 'material-ui/styles/colors';
 import { insertNote } from '/imports/api/notes/methods.js';
-import NavHeader from '../components/NavHeader.jsx';
-import DatePickerCN from '../components/DatePickerCN.jsx';
-import { snackBarOpen } from '../actions/actionTypes.js';
+import NavHeader from '../../components/NavHeader.jsx';
+import DatePickerCN from '../../components/DatePickerCN.jsx';
+import { snackBarOpen } from '../../actions/actionTypes.js';
 
 const styles = {
   noteTextField: {
@@ -46,7 +46,7 @@ const styles = {
   },
 };
 
-class SendNote extends Component {
+class SendNotePage extends Component {
 
   constructor(props) {
     super(props);
@@ -205,7 +205,7 @@ class SendNote extends Component {
   }
 }
 
-SendNote.propTypes = {
+SendNotePage.propTypes = {
   User: PropTypes.object,
   userIsReady: PropTypes.bool.isRequired,
   initialReceiver: PropTypes.object,
@@ -225,6 +225,6 @@ const MeteorContainer = createContainer(({ location }) => {
     initialReceiver,
     otherUsers,
   };
-}, SendNote);
+}, SendNotePage);
 
 export default connect()(MeteorContainer);

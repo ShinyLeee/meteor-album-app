@@ -5,7 +5,6 @@ import { connect } from 'react-redux';
 import { Meteor } from 'meteor/meteor';
 import { _ } from 'meteor/underscore';
 import { createContainer } from 'meteor/react-meteor-data';
-
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import IconButton from 'material-ui/IconButton';
@@ -24,7 +23,6 @@ import ShiftIcon from 'material-ui/svg-icons/hardware/keyboard-return';
 import RemoveIcon from 'material-ui/svg-icons/action/delete';
 import SetCoverIcon from 'material-ui/svg-icons/device/wallpaper';
 import { blue500 } from 'material-ui/styles/colors';
-
 import { Images } from '/imports/api/images/image.js';
 import { Collections } from '/imports/api/collections/collection.js';
 import { removeImagesToRecycle, shiftImages } from '/imports/api/images/methods.js';
@@ -32,7 +30,6 @@ import {
   removeCollection,
   lockCollection,
   mutateCollectionCover } from '/imports/api/collections/methods.js';
-
 import NavHeader from '../components/NavHeader.jsx';
 import Justified from '../components/Justified/Justified.jsx';
 import { uploaderStart, disableSelectAll, snackBarOpen } from '../actions/actionTypes.js';
@@ -61,7 +58,7 @@ const styles = {
   },
 };
 
-class ColPics extends Component {
+class ColPicsPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -481,7 +478,7 @@ class ColPics extends Component {
 
 }
 
-ColPics.propTypes = {
+ColPicsPage.propTypes = {
   User: PropTypes.object,
   // Below is Pass from database
   dataIsReady: PropTypes.bool.isRequired,
@@ -520,7 +517,7 @@ const MeteorContainer = createContainer(({ params }) => {
     colNames,
     images,
   };
-}, ColPics);
+}, ColPicsPage);
 
 const mapStateToProps = (state) => ({
   uptoken: state.uptoken,

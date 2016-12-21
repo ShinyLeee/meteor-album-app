@@ -21,9 +21,6 @@ import { zoomerOpen, snackBarOpen } from '../actions/actionTypes.js';
 const domain = Meteor.settings.public.domain;
 
 const styles = {
-  cardContainer: {
-    marginBottom: '50px',
-  },
   cardMedia: {
     cursor: 'zoom-in',
   },
@@ -47,6 +44,7 @@ class PicHolder extends Component {
     this.state = {
       zoomer: false,
     };
+    this.handlePrompt = this.handlePrompt.bind(this);
     this.handleAddLike = this.handleAddLike.bind(this);
     this.handleRemoveLike = this.handleRemoveLike.bind(this);
     this.handleForbidden = this.handleForbidden.bind(this);
@@ -57,6 +55,11 @@ class PicHolder extends Component {
     if (this.zoomPromise) {
       this.zoomPromise.cancel();
     }
+  }
+
+  handlePrompt() {
+    const { dispatch } = this.props;
+    dispatch(snackBarOpen('功能开发中'));
   }
 
   handleAddLike() {
@@ -71,9 +74,7 @@ class PicHolder extends Component {
     }, (err) => {
       if (err) {
         dispatch(snackBarOpen(err.message));
-        return false;
       }
-      return true;
     });
   }
 
@@ -89,15 +90,12 @@ class PicHolder extends Component {
     }, (err) => {
       if (err) {
         dispatch(snackBarOpen(err.message));
-        return false;
       }
-      return true;
     });
   }
 
   handleForbidden() {
-    const { dispatch } = this.props;
-    dispatch(snackBarOpen('您不拥有此权限'));
+    this.props.dispatch(snackBarOpen('您还未登录'));
   }
 
   handleZoomImage(image) {
@@ -129,40 +127,24 @@ class PicHolder extends Component {
      *
      * If User is login and liked the pic, click will remove like
     */
-    let LikeOrUnlikeBtn = (
-      <IconButton key={'addLikeIcon'} onTouchTap={this.handleAddLike}>
-        <EmptyHeartIcon />
-      </IconButton>
-    );
-
-    if (!User) {
-      LikeOrUnlikeBtn = (
-        <IconButton key={'addLikeIcon'} onTouchTap={this.handleForbidden}>
-          <EmptyHeartIcon />
-        </IconButton>
-      );
-      return LikeOrUnlikeBtn;
-    }
-
     const likers = image.liker;
-    const curUser = User._id;
-
-    likers.map((liker) => {
-      if (liker === curUser) {
-        LikeOrUnlikeBtn = (
-          <IconButton
-            key={'removeLikeIcon'}
-            onTouchTap={this.handleRemoveLike}
-            iconStyle={{ color: '#f15151' }}
-          >
-            <HeartIcon />
-          </IconButton>
-        );
-      }
-      return false;
-    });
-
-    return LikeOrUnlikeBtn;
+    const curUser = User && User._id;
+    return likers.indexOf(curUser) > -1
+            ? (
+              <IconButton
+                key={'removeLikeIcon'}
+                onTouchTap={this.handleRemoveLike}
+                iconStyle={{ color: '#f15151' }}
+              >
+                <HeartIcon />
+              </IconButton>)
+            : (
+              <IconButton
+                key={'addLikeIcon'}
+                onTouchTap={User ? this.handleAddLike : this.handleForbidden}
+              >
+                <EmptyHeartIcon />
+              </IconButton>);
   }
 
   render() {
@@ -171,7 +153,7 @@ class PicHolder extends Component {
     const src = `${url}?imageView2/0/w/${clientWidth * 2}`;
     return (
       <div className="pic-holder">
-        <Card containerStyle={styles.cardContainer}>
+        <Card>
           <CardHeader
             title={image.user}
             subtitle={moment(image.createdAt).format('YYYY-MM-DD')}
@@ -197,10 +179,10 @@ class PicHolder extends Component {
           </ReactCSSTransitionGroup>
           <CardActions>
             { this.renderLikeIcon() }
-            <IconButton>
+            <IconButton onTouchTap={this.handlePrompt}>
               <CommentIcon />
             </IconButton>
-            <IconButton iconStyle={styles.flipReplyStyle}>
+            <IconButton onTouchTap={this.handlePrompt} iconStyle={styles.flipReplyStyle}>
               <ReplyIcon />
             </IconButton>
           </CardActions>

@@ -1,7 +1,9 @@
 {
   "version": "0.3.0",
-  "name": "vivian",
+  "name": "galleryplus",
   "private": true,
+  "repository": "git@github.com:ShinyLeee/meteor-album-app.git",
+  "author": "shinylee <lshinylee007@gmail.com>",
   "scripts": {
     "start": "meteor --settings settings-development.json",
     "lint": "eslint .",

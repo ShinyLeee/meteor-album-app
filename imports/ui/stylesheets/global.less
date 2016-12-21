@@ -66,3 +66,48 @@
   opacity: 0.01;
   transition: opacity 300ms ease-in;
 }
+
+@-webkit-keyframes bell-shake {
+  0% { transform: rotateZ(0deg); transform-origin: 50% 0%; }
+  5% { transform: rotateZ(25deg); transform-origin: 50% 0%;}
+  15% { transform: rotateZ(-18deg); transform-origin: 50% 0%; }
+  25% { transform: rotateZ(15deg); transform-origin: 50% 0%;}
+  35% { transform: rotateZ(-10deg); transform-origin: 50% 0%; }
+  45% { transform: rotateZ(8deg); transform-origin: 50% 0%;}
+  55% { transform: rotateZ(-5deg); transform-origin: 50% 0%;   }
+  60% { transform: rotateZ(0); transform-origin: 50% 0%;   }
+  100% { transform: rotateZ(0); transform-origin: 50% 0%;   }
+}
+
+@-moz-keyframes bell-shake {
+  0% { transform: rotateZ(0deg); transform-origin: 50% 0%; }
+  5% { transform: rotateZ(25deg); transform-origin: 50% 0%;}
+  18% { transform: rotateZ(-15deg); transform-origin: 50% 0%; }
+  25% { transform: rotateZ(15deg); transform-origin: 50% 0%;}
+  35% { transform: rotateZ(-10deg); transform-origin: 50% 0%; }
+  45% { transform: rotateZ(8deg); transform-origin: 50% 0%;}
+  55% { transform: rotateZ(-5deg); transform-origin: 50% 0%;   }
+  60% { transform: rotateZ(0); transform-origin: 50% 0%;   }
+  100% { transform: rotateZ(0); transform-origin: 50% 0%;   }
+}
+
+@keyframes bell-shake {
+  0% { transform: rotateZ(0deg); transform-origin: 50% 0%; }
+  5% { transform: rotateZ(18deg); transform-origin: 50% 0%;}
+  15% { transform: rotateZ(-15deg); transform-origin: 50% 0%; }
+  25% { transform: rotateZ(12deg); transform-origin: 50% 0%;}
+  35% { transform: rotateZ(-9deg); transform-origin: 50% 0%; }
+  45% { transform: rotateZ(6deg); transform-origin: 50% 0%;}
+  55% { transform: rotateZ(-3deg); transform-origin: 50% 0%;   }
+  60% { transform: rotateZ(0); transform-origin: 50% 0%;   }
+  100% { transform: rotateZ(0); transform-origin: 50% 0%;   }
+}
+
+/* Bell shake */
+.bell-shake--hover:hover,
+.bell-shake--hover:focus,
+.bell-shake {
+  -webkit-animation: bell-shake 2s linear 0s infinite;
+  -moz-animation: bell-shake 2s linear 0s infinite;
+  animation: bell-shake 2s linear 0s infinite;
+}
