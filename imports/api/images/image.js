@@ -21,7 +21,6 @@ Images.schema = new SimpleSchema({
   name: { type: String, label: '图片名' },
   type: { type: String, label: '图片类型', defaultValue: 'jpg' },
   ratio: { type: Number, label: '图片纵横比', decimal: true },
-  likes: { type: Number, defaultValue: 0, optional: true },
   liker: { type: [String], defaultValue: [], optional: true },
   download: { type: Number, defaultValue: 0, optional: true },
   private: { type: Boolean, defaultValue: false, optional: true },

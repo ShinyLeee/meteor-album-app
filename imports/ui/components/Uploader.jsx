@@ -95,7 +95,7 @@ class Uploader extends Component {
             contentType: false,
             processData: false,
           })
-          .success((res) => {
+          .done((res) => {
             f.key = res.key;
             if (this.afterUploadFile(f)) {
               // if have upload all files, just call finishUpload without error
@@ -107,7 +107,7 @@ class Uploader extends Component {
               }
             }
           })
-          .error((err) => {
+          .fail((err) => {
             this.finishUpload(err);
           });
         };

@@ -7,7 +7,8 @@ class NotesCollection extends Mongo.Collection {
     return result;
   }
   remove(selector, cb) {
-    return super.remove(selector, cb);
+    const result = super.remove(selector, cb);
+    return result;
   }
 }
 

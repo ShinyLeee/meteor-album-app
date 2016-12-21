@@ -93,8 +93,9 @@ class UserPage extends Component {
   }
 
   renderSlider() {
-    const { curUser, topImages } = this.props;
-    if (topImages.length === 0) return null;
+    const { curUser, unOrderedImages } = this.props;
+    if (unOrderedImages.length === 0) return null;
+    const topImages = unOrderedImages.sort((p, n) => n.liker.length - p.liker.length);
     return (
       <Slider
         slidesToScroll={3}
@@ -259,7 +260,7 @@ UserPage.propTypes = {
   dataIsReady: PropTypes.bool.isRequired,
   isGuest: PropTypes.bool.isRequired,
   curUser: PropTypes.object.isRequired,
-  topImages: PropTypes.array.isRequired,
+  unOrderedImages: PropTypes.array.isRequired,
   likedCount: PropTypes.number.isRequired,
   collectionCount: PropTypes.number.isRequired,
   noteNum: PropTypes.number.isRequired,
@@ -279,7 +280,7 @@ const MeteorContainer = createContainer(({ params }) => {
   const noteHandler = Meteor.subscribe('Notes.own');
 
   let dataIsReady = false;
-  let topImages = [];
+  let unOrderedImages = [];
   let likedCount = 0;
   let collectionCount = 0;
   let noteNum = 0;
@@ -289,7 +290,7 @@ const MeteorContainer = createContainer(({ params }) => {
     const uid = curUser._id;
     dataIsReady = imageHandler.ready() && collectionHandler.ready() && noteHandler.ready();
     likedCount = Images.find({ liker: { $in: [uid] } }).count();
-    topImages = Images.find({ uid }, { sort: { likes: -1 }, limit: 10 }).fetch();
+    unOrderedImages = Images.find({ uid }, { limit: 10 }).fetch();
     collectionCount = Collections.find().count();
     noteNum = Notes.find({ isRead: { $ne: true } }).count();
   }
@@ -297,7 +298,7 @@ const MeteorContainer = createContainer(({ params }) => {
     dataIsReady,
     isGuest,
     curUser,
-    topImages,
+    unOrderedImages,
     likedCount,
     collectionCount,
     noteNum,

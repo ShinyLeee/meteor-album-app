@@ -22,6 +22,7 @@ Meteor.publish('Images.liked', function likedImages() {
 
 Meteor.publish('Images.recycle', function inRecycleImages() {
   return Images.find({
+    uid: this.userId,
     deletedAt: { $ne: null },
   });
 });

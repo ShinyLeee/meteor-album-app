@@ -45,8 +45,8 @@ class PicHolder extends Component {
       zoomer: false,
     };
     this.handlePrompt = this.handlePrompt.bind(this);
-    this.handleAddLike = this.handleAddLike.bind(this);
-    this.handleRemoveLike = this.handleRemoveLike.bind(this);
+    this.handleAddLiker = this.handleAddLiker.bind(this);
+    this.handleRemoveLiker = this.handleRemoveLiker.bind(this);
     this.handleForbidden = this.handleForbidden.bind(this);
     this.handleZoomImage = this.handleZoomImage.bind(this);
   }
@@ -62,7 +62,7 @@ class PicHolder extends Component {
     dispatch(snackBarOpen('功能开发中'));
   }
 
-  handleAddLike() {
+  handleAddLiker() {
     const { User, image, dispatch } = this.props;
 
     const imageId = image._id;
@@ -78,7 +78,7 @@ class PicHolder extends Component {
     });
   }
 
-  handleRemoveLike() {
+  handleRemoveLiker() {
     const { User, image, dispatch } = this.props;
 
     const imageId = image._id;
@@ -133,7 +133,7 @@ class PicHolder extends Component {
             ? (
               <IconButton
                 key={'removeLikeIcon'}
-                onTouchTap={this.handleRemoveLike}
+                onTouchTap={this.handleRemoveLiker}
                 iconStyle={{ color: '#f15151' }}
               >
                 <HeartIcon />
@@ -141,7 +141,7 @@ class PicHolder extends Component {
             : (
               <IconButton
                 key={'addLikeIcon'}
-                onTouchTap={User ? this.handleAddLike : this.handleForbidden}
+                onTouchTap={User ? this.handleAddLiker : this.handleForbidden}
               >
                 <EmptyHeartIcon />
               </IconButton>);

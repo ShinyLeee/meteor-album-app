@@ -104,7 +104,7 @@ export const likeImage = new ValidatedMethod({
     if (!this.userId) {
       throw new Meteor.Error('user.accessDenied');
     }
-    Images.update(imageId, { $inc: { likes: 1 }, $addToSet: { liker } });
+    Images.update(imageId, { $addToSet: { liker } });
   },
 });
 
@@ -118,7 +118,7 @@ export const unlikeImage = new ValidatedMethod({
     if (!this.userId) {
       throw new Meteor.Error('user.accessDenied');
     }
-    Images.update(imageId, { $inc: { likes: -1 }, $pull: { liker: unliker } });
+    Images.update(imageId, { $pull: { liker: unliker } });
   },
 });
 

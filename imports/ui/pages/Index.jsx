@@ -26,7 +26,7 @@ class IndexPage extends Component {
 
   componentWillReceiveProps(nextProps) {
     // When dataIsReady return true start setState
-    if (!this.props.dataIsReady && nextProps.dataIsReady) {
+    if (nextProps.dataIsReady) {
       this.setState({
         images: nextProps.initialImages,
       });
