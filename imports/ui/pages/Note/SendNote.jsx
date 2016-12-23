@@ -88,11 +88,11 @@ class SendNotePage extends Component {
       title,
       content,
       sender,
-      receiver: receiver.id,
+      receiver: receiver._id,
       sendAt,
     }, (err) => {
       if (err) {
-        dispatch(snackBarOpen(err.message));
+        dispatch(snackBarOpen(err.reason));
         throw new Meteor.Error(err);
       }
       browserHistory.goBack();

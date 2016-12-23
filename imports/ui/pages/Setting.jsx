@@ -120,10 +120,10 @@ class SettingPage extends Component {
       contentType: false,
       processData: false,
     })
-    .success((res) => {
+    .done((res) => {
       this.setState({ isEditing: true, isProcessing: false, cover: `${domain}/${res.key}` });
     })
-    .error((err) => {
+    .fail((err) => {
       this.setState({ isEditing: false, isProcessing: false });
       dispatch(snackBarOpen('上传封面失败'));
       throw new Meteor.Error(err);
@@ -249,7 +249,7 @@ class SettingPage extends Component {
             <TextField
               style={styles.textFieldStyle}
               floatingLabelText="邮箱"
-              value={User.emails[0].address}
+              value={(User.emails && User.emails[0].address) || '暂无邮箱'}
               disabled
             />
           </ListItem>

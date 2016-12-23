@@ -5,9 +5,9 @@ Accounts.onCreateUser((options, user) => {
   curUser.profile = {
     nickname: '',
     intro: '',
-    avatar: 'http://odsiu8xnd.bkt.clouddn.com/default-avatar.jpg',
-    cover: 'http://odsiu8xnd.bkt.clouddn.com/default-cover.jpg',
-    follwers: [],
+    avatar: '/img/default-avatar.jpg',
+    cover: '/img/default-cover.jpg',
+    followers: [],
     settings: {
       allowNoti: true,
       allowMsg: true,
@@ -15,7 +15,7 @@ Accounts.onCreateUser((options, user) => {
       allowVisitColl: true,
     },
   };
-  curUser = Object.assign({}, curUser, options.profile);
+  curUser = Object.assign({}, curUser);
   return curUser;
 });
 

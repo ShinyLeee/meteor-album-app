@@ -1,11 +1,27 @@
 import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
 import { _ } from 'meteor/underscore';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
+import { CallPromiseMixin } from 'meteor/didericis:callpromise-mixin';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 
 import { Users } from './user.js';
 
+export const createUser = new ValidatedMethod({
+  name: 'users.createUser',
+  mixins: [CallPromiseMixin],
+  validate: new SimpleSchema({
+    username: { type: String, regEx: /^([a-z]|[A-Z])[\w_]{3,19}$/ },
+    password: { type: String },
+  }).validator({ clean: true, filter: false }),
+  run({ username, password }) {
+    if (this.userId) {
+      throw new Meteor.Error(403, 'Access Denied');
+    }
+    Accounts.createUser({ username, password });
+  },
+});
 /**
  * Validator Options
  * Clean: Intended to be called prior to validation to avoid any avoidable validation errors.

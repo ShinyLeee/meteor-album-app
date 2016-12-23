@@ -229,9 +229,14 @@ const MeteorContainer = createContainer(({ params }) => {
   const colHandler = Meteor.subscribe('Collections.targetUser', username);
   const noteHandler = Meteor.subscribe('Notes.own');
   const dataIsReady = userHandler.ready() && colHandler.ready() && noteHandler.ready();
+  let cols;
   const curUser = Meteor.users.findOne({ username }) || preCurUser;
-  const cols = Collections.find({}, { sort: { createdAt: -1 } }).fetch();
   const noteNum = Notes.find({ isRead: { $ne: true } }).count();
+  if (!isGuest) {
+    cols = Collections.find({}, { sort: { createdAt: -1 } }).fetch();
+  } else {
+    cols = Collections.find({ private: false }, { sort: { createdAt: -1 } }).fetch();
+  }
   return {
     dataIsReady,
     isGuest,

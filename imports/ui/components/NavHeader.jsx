@@ -219,12 +219,12 @@ class NavHeader extends Component {
                   <Avatar
                     size={54}
                     src={User.profile.avatar}
-                    onTouchTap={() => browserHistory.push(`/user${User.username}`)}
+                    onTouchTap={() => browserHistory.push(`/user/${User.username}`)}
                   />
                 </div>
                 <div className="drawer-profile-email">
                   <div>
-                    <span>{User.emails[0].address}</span>
+                    <span>{(User.emails && User.emails[0].address) || User.username}</span>
                     <div><ArrowDropdownIcon color="#fff" onTouchTap={this.handleOpenUserAction} /></div>
                     <Popover
                       open={this.state.userAction}

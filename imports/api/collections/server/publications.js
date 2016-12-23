@@ -20,7 +20,6 @@ Meteor.publish('Collections.targetUser', function targetUserCollections(user) {
   }).validator({ clean: true, filter: false });
   return Collections.find({
     user,
-    private: false,
   });
 });
 

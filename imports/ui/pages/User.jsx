@@ -68,7 +68,7 @@ class UserPage extends Component {
     const { User, curUser, dispatch } = this.props;
     if (!User) return dispatch(snackBarOpen('您还尚未登录'));
     return followUser.call({ follower: User._id, target: curUser._id }, (err, res) => {
-      if (err) throw new Meteor.Error(err.message);
+      if (err) throw new Meteor.Error(err.reason);
       dispatch(snackBarOpen('关注成功'));
       return res;
     });
@@ -78,7 +78,7 @@ class UserPage extends Component {
     const { User, curUser, dispatch } = this.props;
     if (!User) return dispatch(snackBarOpen('您还尚未登录'));
     return unFollowUser.call({ unFollower: User._id, target: curUser._id }, (err, res) => {
-      if (err) throw new Meteor.Error(err.message);
+      if (err) throw new Meteor.Error(err.reason);
       dispatch(snackBarOpen('取消关注成功'));
       return res;
     });
@@ -94,7 +94,6 @@ class UserPage extends Component {
 
   renderSlider() {
     const { curUser, unOrderedImages } = this.props;
-    if (unOrderedImages.length === 0) return null;
     const topImages = unOrderedImages.sort((p, n) => n.liker.length - p.liker.length);
     return (
       <Slider
@@ -118,7 +117,7 @@ class UserPage extends Component {
 
   renderUserContent() {
     const profileContentLeft = (document.body.clientWidth - 120) / 2;
-    const { isGuest, curUser, likedCount, collectionCount } = this.props;
+    const { isGuest, curUser, likedCount, collectionCount, unOrderedImages } = this.props;
     return (
       <div className="user-content">
         { /* MAIN SECTION */ }
@@ -197,10 +196,7 @@ class UserPage extends Component {
         </div>
         { /* COUNTER SECTION */ }
         <div className="user-counter">
-          <div
-            className="counter counter-likes"
-            onTouchTap={() => browserHistory.push(`/user/${curUser.username}/likes`)}
-          >
+          <div className="counter counter-likes">
             <span>{likedCount}</span>
             <span>喜欢</span>
           </div>
@@ -217,12 +213,17 @@ class UserPage extends Component {
           </div>
         </div>
         { /* RANK SECTION */ }
-        <div className="user-rank">
-          <div className="rank-header">最受欢迎的</div>
-          <div className="rank-content">
-            { this.renderSlider() }
-          </div>
-        </div>
+        {
+          unOrderedImages.length > 0 && (
+            <div className="user-rank">
+              <div className="rank-header">最受欢迎的</div>
+              <div className="rank-content">
+                { this.renderSlider() }
+              </div>
+            </div>
+          )
+        }
+
       </div>
     );
   }

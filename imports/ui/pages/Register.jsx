@@ -1,12 +1,12 @@
-import { Accounts } from 'meteor/accounts-base';
+import { Meteor } from 'meteor/meteor';
 import React, { Component, PropTypes } from 'react';
 import { browserHistory } from 'react-router';
 import { connect } from 'react-redux';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import { purple500, grey500 } from 'material-ui/styles/colors';
-import { validateEmail } from '/imports/utils/utils.js';
-
+import { createUser } from '/imports/api/users/methods.js';
+import { checkCode, useCode } from '/imports/api/codes/methods.js';
 import NavHeader from '../components/NavHeader.jsx';
 import { snackBarOpen } from '../actions/actionTypes.js';
 
@@ -31,43 +31,44 @@ class RegisterPage extends Component {
     this.handleRegister = this.handleRegister.bind(this);
   }
 
-  handleRegister() {
+  handleRegister(e) {
+    e.preventDefault();
     const { dispatch } = this.props;
 
-    const email = this.emailField.input.value;
+    const username = this.usrField.input.value;
     const password = this.pwdField.input.value;
     const password2 = this.pwd2Field.input.value;
+    const code = this.codeField.input.value;
 
-    if (!validateEmail(email)) {
-      dispatch(snackBarOpen('邮箱格式不正确'));
-      return false;
-    }
     if (!password || !password2) {
       dispatch(snackBarOpen('请输入密码'));
-      return false;
+      return;
     }
     if (password !== password2) {
       dispatch(snackBarOpen('请确认两次密码输入是否正确'));
-      return false;
+      return;
     }
     if (password.length < 6) {
       dispatch(snackBarOpen('密码长度必须大于6位'));
-      return false;
+      return;
     }
-    Accounts.createUser({
-      password,
-      email,
-    }, (err) => {
-      if (err) {
-        dispatch(snackBarOpen(err.message));
-        console.error(err); // eslint-disable-line no-console
-        return false;
+    checkCode.callPromise({ codeNo: code })
+    .then((isExist) => {
+      if (!isExist) {
+        throw new Meteor.Error(403, '此邀请码不存在或已被使用');
       }
+      return createUser.callPromise({ username, password });
+    })
+    .then(() => useCode.callPromise({ codeNo: code }))
+    .then(() => {
+      Meteor.loginWithPassword(username, password);
       browserHistory.replace('/');
-      dispatch(snackBarOpen('您已成功注册, 邮箱验证后可正式享受服务'));
-      return true;
+      dispatch(snackBarOpen('注册成功'));
+    })
+    .catch((err) => {
+      dispatch(snackBarOpen(err.reason));
+      throw new Meteor.Error(err);
     });
-    return true;
   }
 
   render() {
@@ -78,8 +79,8 @@ class RegisterPage extends Component {
           <div className="logo-zone">Gallery +</div>
           <div className="input-zone">
             <TextField
-              hintText="邮箱"
-              ref={(ref) => { this.emailField = ref; }}
+              hintText="用户名"
+              ref={(ref) => { this.usrField = ref; }}
               fullWidth
             /><br />
             <TextField
@@ -94,15 +95,19 @@ class RegisterPage extends Component {
               type="password"
               fullWidth
             /><br />
+            <TextField
+              hintText="邀请码"
+              ref={(ref) => { this.codeField = ref; }}
+              fullWidth
+            /><br />
           </div>
           <div className="button-zone">
             <RaisedButton
-              label="暂不开放注册"
+              label="注册"
               labelStyle={styles.label}
               buttonStyle={styles.logBtn}
               onTouchTap={this.handleRegister}
               fullWidth
-              disabled
             />
             <div className="separator">或</div>
             <RaisedButton
