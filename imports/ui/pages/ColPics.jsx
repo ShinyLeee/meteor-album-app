@@ -30,6 +30,7 @@ import {
   removeCollection,
   lockCollection,
   mutateCollectionCover } from '/imports/api/collections/methods.js';
+import scrollTo from '/imports/utils/scrollTo.js';
 import NavHeader from '../components/NavHeader.jsx';
 import Justified from '../components/Justified/Justified.jsx';
 import { uploaderStart, disableSelectAll, snackBarOpen } from '../actions/actionTypes.js';
@@ -339,6 +340,7 @@ class ColPicsPage extends Component {
         <NavHeader
           User={User}
           title="相册"
+          onTitleTouchTap={() => scrollTo(0, 1500)}
           iconElementLeft={
             <IconButton onTouchTap={() => browserHistory.goBack()}>
               <ArrowBackIcon />

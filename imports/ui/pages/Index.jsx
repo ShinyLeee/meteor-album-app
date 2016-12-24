@@ -22,6 +22,7 @@ class IndexPage extends Component {
       images: props.initialImages,
     };
     this.handleLoadImages = this.handleLoadImages.bind(this);
+    this.handleRefreshImages = this.handleRefreshImages.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -67,6 +68,14 @@ class IndexPage extends Component {
       });
   }
 
+  handleRefreshImages() {
+    // after like or unlike a image, we need to refresh the data
+    const trueImages = Images.find(
+      { private: { $ne: true } },
+      { sort: { createdAt: -1 }, limit: this.state.images.length - 1 }).fetch();
+    this.setState({ images: trueImages });
+  }
+
   renderPicHolder() {
     const { users } = this.props;
     const images = this.state.images;
@@ -84,6 +93,7 @@ class IndexPage extends Component {
         User={this.props.User}
         image={image}
         clientWidth={clientWidth}
+        onLikeOrUnlikeAction={this.handleRefreshImages}
       />
     ));
   }

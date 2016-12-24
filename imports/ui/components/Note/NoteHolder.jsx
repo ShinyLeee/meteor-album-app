@@ -113,7 +113,7 @@ NoteHolder.propTypes = {
   sender: PropTypes.object.isRequired,
   note: PropTypes.object.isRequired,
   isRead: PropTypes.bool.isRequired,
-  onReadNote: PropTypes.func,
+  onReadNote: PropTypes.func.isRequired,
   dispatch: PropTypes.func.isRequired,
 };
 

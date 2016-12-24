@@ -158,11 +158,11 @@ class SettingPage extends Component {
         contentType: false,
         processData: false,
       })
-      .success((res) => {
+      .done((res) => {
         const avatarSrc = `${domain}/${res.key}?imageView2/1/w/240/h/240`;
         this.setState({ isEditing: true, isProcessing: false, avatar: avatarSrc });
       })
-      .error((err) => {
+      .fail((err) => {
         this.setState({ isEditing: false, isProcessing: false });
         dispatch(snackBarOpen('上传头像失败'));
         throw new Meteor.Error(err);

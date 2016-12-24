@@ -15,6 +15,7 @@ import RemoveIcon from 'material-ui/svg-icons/action/delete';
 import { blue500 } from 'material-ui/styles/colors';
 import { Images } from '/imports/api/images/image.js';
 import { removeImages, recoveryImages } from '/imports/api/images/methods.js';
+import scrollTo from '/imports/utils/scrollTo.js';
 import { SelectIcon } from '../components/Justified/SelectStatus.jsx';
 import NavHeader from '../components/NavHeader.jsx';
 import SelectableImage from '../components/Justified/SelectableImage.jsx';
@@ -212,6 +213,7 @@ class RecyclePage extends Component {
         <NavHeader
           User={User}
           title={counter ? `选择了${counter}张照片` : '回收站'}
+          onTitleTouchTap={() => scrollTo(0, 1500)}
           style={navHeaderStyle}
           iconElementLeft={navHeaderIconLeft}
           iconElementRight={

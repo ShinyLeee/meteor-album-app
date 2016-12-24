@@ -63,7 +63,7 @@ class PicHolder extends Component {
   }
 
   handleAddLiker() {
-    const { User, image, dispatch } = this.props;
+    const { User, image, onLikeOrUnlikeAction, dispatch } = this.props;
 
     const imageId = image._id;
     const liker = User._id;
@@ -75,11 +75,12 @@ class PicHolder extends Component {
       if (err) {
         dispatch(snackBarOpen(err.message));
       }
+      onLikeOrUnlikeAction();
     });
   }
 
   handleRemoveLiker() {
-    const { User, image, dispatch } = this.props;
+    const { User, image, onLikeOrUnlikeAction, dispatch } = this.props;
 
     const imageId = image._id;
     const unliker = User._id;
@@ -91,6 +92,7 @@ class PicHolder extends Component {
       if (err) {
         dispatch(snackBarOpen(err.message));
       }
+      onLikeOrUnlikeAction();
     });
   }
 
@@ -196,6 +198,7 @@ PicHolder.propTypes = {
   User: PropTypes.object,
   clientWidth: PropTypes.number.isRequired,
   image: PropTypes.object.isRequired,
+  onLikeOrUnlikeAction: PropTypes.func.isRequired,
   dispatch: PropTypes.func.isRequired,
 };
 

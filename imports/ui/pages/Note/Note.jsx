@@ -37,7 +37,7 @@ class NotePage extends Component {
     };
     this.handleReadAll = this.handleReadAll.bind(this);
     this.handleLoadNotes = this.handleLoadNotes.bind(this);
-    this.handleRefreshNote = this.handleRefreshNote.bind(this);
+    this.handleRefreshNotes = this.handleRefreshNotes.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -99,7 +99,7 @@ class NotePage extends Component {
       });
   }
 
-  handleRefreshNote() {
+  handleRefreshNotes() {
     // after read a note, we need to refresh the data
     const trueNotes = Notes.find(
       { isRead: { $ne: true } },
@@ -134,7 +134,7 @@ class NotePage extends Component {
                 User={User}
                 sender={user}
                 note={note}
-                onReadNote={this.handleRefreshNote}
+                onReadNote={this.handleRefreshNotes}
               />
             )))
           }

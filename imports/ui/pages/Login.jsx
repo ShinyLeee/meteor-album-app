@@ -5,7 +5,6 @@ import { connect } from 'react-redux';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import { purple500, grey500 } from 'material-ui/styles/colors';
-
 import NavHeader from '../components/NavHeader.jsx';
 import { snackBarOpen } from '../actions/actionTypes.js';
 
@@ -53,11 +52,11 @@ class LoginPage extends Component {
     return (
       <div className="container">
         <NavHeader primary />
-        <div className="default-page">
-          <div className="logo-zone">Gallery +</div>
-          <div className="input-zone">
+        <div className="login">
+          <div className="login__logo">Gallery +</div>
+          <div className="login__form">
             <TextField
-              hintText="邮箱"
+              hintText="用户名或邮箱"
               ref={(ref) => { this.usrInput = ref; }}
               fullWidth
             /><br />
@@ -68,7 +67,7 @@ class LoginPage extends Component {
               fullWidth
             /><br />
           </div>
-          <div className="button-zone">
+          <div className="login__button">
             <RaisedButton
               label="立即登录"
               labelStyle={styles.label}

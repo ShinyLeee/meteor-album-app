@@ -75,9 +75,9 @@ class RegisterPage extends Component {
     return (
       <div className="container">
         <NavHeader primary />
-        <div className="default-page">
-          <div className="logo-zone">Gallery +</div>
-          <div className="input-zone">
+        <div className="register">
+          <div className="register__logo">Gallery +</div>
+          <div className="register__form">
             <TextField
               hintText="用户名"
               ref={(ref) => { this.usrField = ref; }}
@@ -101,7 +101,7 @@ class RegisterPage extends Component {
               fullWidth
             /><br />
           </div>
-          <div className="button-zone">
+          <div className="register__button">
             <RaisedButton
               label="注册"
               labelStyle={styles.label}
