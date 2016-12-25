@@ -166,6 +166,8 @@ class Uploader extends Component {
       ratio: file.ratio,
       type: file.surfix,
       shootAt: file.shootAt,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     };
     return insertImage.call(image, (err) => {
       if (err) {

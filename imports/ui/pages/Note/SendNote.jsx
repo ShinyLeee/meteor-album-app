@@ -90,6 +90,7 @@ class SendNotePage extends Component {
       sender,
       receiver: receiver._id,
       sendAt,
+      createdAt: new Date(),
     }, (err) => {
       if (err) {
         dispatch(snackBarOpen(err.reason));

@@ -17,7 +17,6 @@ export const Codes = new CodesCollection('codes');
 Codes.schema = new SimpleSchema({
   no: { type: String, label: '激活码' },
   isUsed: { type: Boolean, label: '是否已使用' },
-  username: { type: String, label: '用户名' },
 });
 
 Codes.attachSchema(Codes.schema);

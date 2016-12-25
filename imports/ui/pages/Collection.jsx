@@ -89,6 +89,8 @@ class CollectionPage extends Component {
       name: this.state.newColName,
       uid: User._id,
       user: User.username,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     }, (err) => {
       if (err) {
         dispatch(snackBarOpen('新建相册失败'));

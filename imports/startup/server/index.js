@@ -8,5 +8,7 @@ import './fixtures.js';
 // that the application provides as an API to the client.
 import './register-api.js';
 
+import './initCode.js';
+
 // This defines all DataBase Migrations history
 import './migrations.js';

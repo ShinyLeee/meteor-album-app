@@ -15,6 +15,7 @@ Accounts.onCreateUser((options, user) => {
       allowVisitColl: true,
     },
   };
+  curUser.createdAt = new Date();
   curUser = Object.assign({}, curUser);
   return curUser;
 });
