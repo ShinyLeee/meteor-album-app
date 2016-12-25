@@ -23,12 +23,10 @@ class Construction extends Component {
           <div className="Error__container">
             <h2 className="Error__status">This Page is Under Construction</h2>
             <img className="Error__logo" src="/img/Construction.png" alt="Under Construction" />
-            <p className="Error__info">Sorry, the page you're looing for cannot be accessed temporarily.</p>
+            <p className="Error__info">该页面正在紧张的开发中</p>
             <p className="Error__info">
-              Either check the URL,&nbsp;
-              <Link to="/">go home</Link>
-              , or feel free to&nbsp;
-              <Link to="/">report this issue</Link>.
+              请检查地址是否输入正确&nbsp;
+              <Link to="/">返回首页</Link>，或向管理员汇报这个问题
             </p>
           </div>
         </div>

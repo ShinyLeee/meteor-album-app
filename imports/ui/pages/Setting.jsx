@@ -344,6 +344,7 @@ class SettingPage extends Component {
                 defaultToggled={this.state.allowNoti}
                 toggled={this.state.allowNoti}
                 onToggle={() => this.setState({ isEditing: true, allowNoti: !this.state.allowNoti })}
+                disabled
               />
             }
           />
@@ -354,6 +355,7 @@ class SettingPage extends Component {
                 defaultToggled={this.state.allowMsg}
                 toggled={this.state.allowMsg}
                 onToggle={() => this.setState({ isEditing: true, allowMsg: !this.state.allowMsg })}
+                disabled
               />
             }
           />

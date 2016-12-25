@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import React, { Component, PropTypes } from 'react';
+import { browserHistory } from 'react-router';
 import { connect } from 'react-redux';
 import moment from 'moment';
-
 import IconButton from 'material-ui/IconButton';
 import CameraIcon from 'material-ui/svg-icons/image/camera-alt';
 import HeartIcon from 'material-ui/svg-icons/action/favorite';
@@ -11,7 +11,7 @@ import DownloadIcon from 'material-ui/svg-icons/file/file-download';
 import InfoIcon from 'material-ui/svg-icons/action/info';
 import TimelineIcon from 'material-ui/svg-icons/action/timeline';
 
-import { zoomerClose } from '../actions/actionTypes.js';
+import { zoomerClose, snackBarOpen } from '../actions/actionTypes.js';
 
 const domain = Meteor.settings.public.domain;
 
@@ -20,12 +20,18 @@ class ZoomerHolder extends Component {
   constructor(props) {
     super(props);
     this.handleClose = this.handleClose.bind(this);
+    this.handlePrompt = this.handlePrompt.bind(this);
   }
 
   handleClose() {
     const { dispatch } = this.props;
     document.body.style.overflow = '';
     dispatch(zoomerClose());
+  }
+
+  handlePrompt() {
+    const { dispatch } = this.props;
+    dispatch(snackBarOpen('功能开发中'));
   }
 
   render() {
@@ -67,34 +73,38 @@ class ZoomerHolder extends Component {
             </IconButton>
           </div>
           <div className="toolbox-action">
-            <IconButton iconStyle={styles.iconButton}>
+            <IconButton iconStyle={styles.iconButton} onTouchTap={this.handlePrompt}>
               <HeartIcon />
             </IconButton>
-            <IconButton iconStyle={styles.iconButton}>
+            <IconButton iconStyle={styles.iconButton} onTouchTap={this.handlePrompt}>
               <AddIcon />
             </IconButton>
-            <IconButton iconStyle={styles.iconButton}>
+            <IconButton iconStyle={styles.iconButton} onTouchTap={this.handlePrompt}>
               <DownloadIcon />
             </IconButton>
           </div>
         </div>
         <div className="zoomer-info">
           <div className="info-profile">
-            <img src={image.avatar} alt={image.user} />
+            <img
+              src={image.avatar}
+              role="presentation"
+              onTouchTap={() => browserHistory.push(`/user/${image.user}`)}
+            />
             <div className="info-profile-detail">
               <span className="detail-title">
                 {image.user}
               </span>
               <span className="detail-subtitle">
-                {moment(image.createdAt).format('YYYY-MM-DD')}
+                {moment(image.createdAt).format('YYYY-MM-DD HH:mm')}
               </span>
             </div>
           </div>
           <div className="info-action">
-            <IconButton iconStyle={styles.iconButton}>
+            <IconButton iconStyle={styles.iconButton} onTouchTap={this.handlePrompt}>
               <TimelineIcon />
             </IconButton>
-            <IconButton iconStyle={styles.iconButton}>
+            <IconButton iconStyle={styles.iconButton} onTouchTap={this.handlePrompt}>
               <InfoIcon />
             </IconButton>
           </div>

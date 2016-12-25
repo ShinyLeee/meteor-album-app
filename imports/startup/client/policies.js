@@ -33,7 +33,7 @@ export const isAllowVisitHome = (nextState, replace, cb) => {
   const { params } = nextState;
   Meteor.callPromise('Auth.isAllowVisitHome', { username: params.username })
   .then((allowVisitHome) => {
-    if (!allowVisitHome) replace({ pathname: '/403' });
+    if (!allowVisitHome) replace({ pathname: '/403', state: { message: '该用户不允许他人访问其主页' } });
     cb();
   })
   .catch((err) => {
@@ -51,7 +51,7 @@ export const isAllowVisitColl = (nextState, replace, cb) => {
     dest: params.colName,
   })
   .then((allowVisitColl) => {
-    if (!allowVisitColl) replace({ pathname: '/403' });
+    if (!allowVisitColl) replace({ pathname: '/403', state: { message: '该用户不允许他人访问其相册' } });
     cb();
   })
   .catch((err) => {

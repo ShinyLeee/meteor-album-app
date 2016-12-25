@@ -15,7 +15,7 @@ class Forbidden extends Component {
   }
 
   render() {
-    const { User, noteNum } = this.props;
+    const { User, noteNum, location } = this.props;
     return (
       <div className="container">
         <NavHeader User={User} location={this.state.location} noteNum={noteNum} primary />
@@ -23,12 +23,17 @@ class Forbidden extends Component {
           <div className="Error__container">
             <h2 className="Error__status">Error: 403 Access Denied</h2>
             <img className="Error__logo" src="/img/403.png" alt="403 Access Denied" />
-            <p className="Error__info">Sorry, access to this page on the server is denied.</p>
-            <p className="Error__info">
-              Either check the URL,&nbsp;
-              <Link to="/">go home</Link>,or feel free to&nbsp;
-              <Link to="/">report this issue</Link>.
-            </p>
+            <p className="Error__info">您没有权限访问该页面</p>
+            {
+              (location.state && location.state.message)
+                ? (<p className="Error__info">{location.state.message}</p>)
+                : (
+                  <p className="Error__info">
+                    请检查地址是否输入正确&nbsp;
+                    <Link to="/">返回首页</Link>，或向管理员汇报这个问题
+                  </p>
+                )
+            }
           </div>
         </div>
       </div>
@@ -40,6 +45,7 @@ class Forbidden extends Component {
 Forbidden.propTypes = {
   User: PropTypes.object,
   noteNum: PropTypes.number.isRequired,
+  location: PropTypes.object,
 };
 
 export default createContainer(() => {

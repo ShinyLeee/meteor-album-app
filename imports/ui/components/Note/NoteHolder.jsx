@@ -2,15 +2,17 @@ import { Meteor } from 'meteor/meteor';
 import React, { Component, PropTypes } from 'react';
 import { browserHistory } from 'react-router';
 import { connect } from 'react-redux';
-import moment from 'moment';
-
+import TimeAgo from 'react-timeago';
+import CNStrings from 'react-timeago/lib/language-strings/zh-CN';
+import buildFormatter from 'react-timeago/lib/formatters/buildFormatter';
 import { Card, CardHeader, CardActions, CardText } from 'material-ui/Card';
 import IconButton from 'material-ui/IconButton';
 import ReplyIcon from 'material-ui/svg-icons/content/reply';
 import CheckBoxIcon from 'material-ui/svg-icons/toggle/check-box';
 import { readNote } from '/imports/api/notes/methods.js';
-
 import { snackBarOpen } from '../../actions/actionTypes.js';
+
+const formatter = buildFormatter(CNStrings);
 
 const styles = {
   flipReplyStyle: {
@@ -63,7 +65,7 @@ class NoteHolder extends Component {
         >
           <CardHeader
             title={note.title}
-            subtitle={moment(note.sendAt).format('YYYY-MM-DD')}
+            subtitle={<TimeAgo date={note.sendAt} formatter={formatter} />}
             avatar={sender.profile.avatar}
             actAsExpander
             showExpandableButton
@@ -113,7 +115,7 @@ NoteHolder.propTypes = {
   sender: PropTypes.object.isRequired,
   note: PropTypes.object.isRequired,
   isRead: PropTypes.bool.isRequired,
-  onReadNote: PropTypes.func.isRequired,
+  onReadNote: PropTypes.func,
   dispatch: PropTypes.func.isRequired,
 };
 

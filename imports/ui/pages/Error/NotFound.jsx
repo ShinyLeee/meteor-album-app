@@ -23,12 +23,10 @@ class NotFound extends Component {
           <div className="Error__container">
             <h2 className="Error__status">Error: 404 Page Not Found</h2>
             <img className="Error__logo" src="/img/404.png" alt="404 Not Found" />
-            <p className="Error__info">Sorry, the page you're looing for cannot be accessed.</p>
+            <p className="Error__info">您访问的这个页面不存在</p>
             <p className="Error__info">
-              Either check the URL,&nbsp;
-              <Link to="/">go home</Link>
-              , or feel free to&nbsp;
-              <Link to="/">report this issue</Link>.
+              请检查地址是否输入正确&nbsp;
+              <Link to="/">返回首页</Link>，或向管理员汇报这个问题
             </p>
           </div>
         </div>

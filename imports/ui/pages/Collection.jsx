@@ -19,6 +19,8 @@ import Recap from '../components/Recap.jsx';
 import ColHolder from '../components/ColHolder.jsx';
 import { snackBarOpen } from '../actions/actionTypes.js';
 
+const clientWidth = document.body.clientWidth;
+
 const styles = {
   floatBtn: {
     position: 'fixed',
@@ -111,7 +113,7 @@ class CollectionPage extends Component {
       );
     }
     return cols.map((col) => (
-      <ColHolder key={col._id} User={curUser} col={col} />
+      <ColHolder key={col._id} User={curUser} col={col} clientWidth={clientWidth} />
     ));
   }
 

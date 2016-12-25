@@ -1,4 +1,4 @@
-.col-holder {
+.colHolder {
   position: relative;
   height: 240px;
   margin-bottom: 12px;
@@ -9,7 +9,7 @@
   cursor: pointer;
 }
 
-.col-cover {
+.colHolder__cover {
   position: relative;
   width: 100%;
   height: 100%;
@@ -19,7 +19,7 @@
   &:hover {
     background-color: rgba(0,0,0,.3);
   }
-  .col-background {
+  .colHolder__background {
     position: absolute;
     width: 100%;
     height: 100%;
@@ -27,7 +27,7 @@
     background: -webkit-linear-gradient(top,rgba(0,0,0,.3),transparent 30%,transparent 70%,rgba(0,0,0,.3));
     background: linear-gradient(180deg,rgba(0,0,0,.3) 0,transparent 30%,transparent 70%,rgba(0,0,0,.3));
   }
-  .col-header {
+  .colHolder__header {
     position: absolute;
     left: 0;
     right: 0;
@@ -51,7 +51,7 @@
       opacity: .8;
     }
   }
-  .col-footer {
+  .colHolder__footer {
     position: absolute;
     left: 18px;
     bottom: 20px;

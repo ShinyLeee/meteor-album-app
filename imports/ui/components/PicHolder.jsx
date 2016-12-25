@@ -3,22 +3,23 @@ import React, { Component, PropTypes } from 'react';
 import { browserHistory } from 'react-router';
 import { connect } from 'react-redux';
 import LazyLoad from 'react-lazyload';
+import TimeAgo from 'react-timeago';
+import CNStrings from 'react-timeago/lib/language-strings/zh-CN';
+import buildFormatter from 'react-timeago/lib/formatters/buildFormatter';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
-import moment from 'moment';
-
 import { Card, CardHeader, CardActions, CardMedia } from 'material-ui/Card';
 import IconButton from 'material-ui/IconButton';
 import HeartIcon from 'material-ui/svg-icons/action/favorite';
 import EmptyHeartIcon from 'material-ui/svg-icons/action/favorite-border';
 import ReplyIcon from 'material-ui/svg-icons/content/reply';
 import CommentIcon from 'material-ui/svg-icons/communication/chat-bubble-outline';
-
 import { makeCancelable } from '/imports/utils/utils.js';
 import { likeImage, unlikeImage } from '/imports/api/images/methods.js';
-
 import { zoomerOpen, snackBarOpen } from '../actions/actionTypes.js';
 
 const domain = Meteor.settings.public.domain;
+
+const formatter = buildFormatter(CNStrings);
 
 const styles = {
   cardMedia: {
@@ -158,7 +159,7 @@ class PicHolder extends Component {
         <Card>
           <CardHeader
             title={image.user}
-            subtitle={moment(image.createdAt).format('YYYY-MM-DD')}
+            subtitle={<TimeAgo date={image.createdAt} formatter={formatter} />}
             avatar={image.avatar}
             onTouchTap={() => browserHistory.push(`/user/${image.user}`)}
           />

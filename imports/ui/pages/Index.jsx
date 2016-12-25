@@ -46,8 +46,8 @@ class IndexPage extends Component {
     const { limit } = this.props;
     const { images } = this.state;
     const skip = images.length;
+    this.setState({ isLoading: true });
     const loadPromise = new Promise((resolve) => {
-      this.setState({ isLoading: true });
       Meteor.defer(() => {
         const newImages = Images.find(
           { private: { $ne: true } },
@@ -72,7 +72,7 @@ class IndexPage extends Component {
     // after like or unlike a image, we need to refresh the data
     const trueImages = Images.find(
       { private: { $ne: true } },
-      { sort: { createdAt: -1 }, limit: this.state.images.length - 1 }).fetch();
+      { sort: { createdAt: -1 }, limit: this.state.images.length }).fetch();
     this.setState({ images: trueImages });
   }
 

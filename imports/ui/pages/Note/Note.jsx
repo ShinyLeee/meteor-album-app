@@ -77,8 +77,8 @@ class NotePage extends Component {
     const { limit } = this.props;
     const { notes } = this.state;
     const skip = notes.length;
+    this.setState({ isLoading: true });
     const loadPromise = new Promise((resolve) => {
-      this.setState({ isLoading: true });
       Meteor.defer(() => {
         const newNotes = Notes.find(
           { isRead: { $ne: true } },

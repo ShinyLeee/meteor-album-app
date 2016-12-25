@@ -8,7 +8,6 @@ export default class ColHolder extends Component {
 
   constructor(props) {
     super(props);
-    this.handleAccessCol = this.handleAccessCol.bind(this);
     this.state = {
       cover: undefined,
     };
@@ -16,7 +15,7 @@ export default class ColHolder extends Component {
 
   componentWillMount() {
     const { col } = this.props;
-    if (!col.cover && !col.quantity) {
+    if (!col.cover) {
       // We have 28 default background images
       const randomInt = getRandomInt(1, 28);
       const cover = `/img/pattern/VF_ac${randomInt}.jpg`;
@@ -25,25 +24,24 @@ export default class ColHolder extends Component {
     }
   }
 
-  handleAccessCol(location) {
-    const { User } = this.props;
-    browserHistory.push(`/user/${User.username}/collection/${location}`);
-  }
-
   render() {
-    const { User, col } = this.props;
+    const { User, col, clientWidth } = this.props;
+    const src = `${col.cover}?imageView2/0/w/${clientWidth * 2}`;
+    // If the cover was set by user himself
     const styles = {
       colHolder: {
         backgroundSize: 'cover',
-        backgroundImage: `url(${col.cover})`,
+        backgroundImage: `url(${src})`,
       },
     };
+    // When init collection
     if (this.state.cover) {
       styles.colHolder = {
         backgroundSize: 'inherit',
         backgroundImage: `url(${this.state.cover})`,
       };
     }
+    // after mutateCollectionCover
     if (col.cover && col.cover.indexOf('VF_ac') > 0) {
       styles.colHolder = {
         backgroundSize: 'inherit',
@@ -52,25 +50,19 @@ export default class ColHolder extends Component {
     }
     return (
       <div
-        className="col-holder"
+        className="colHolder"
         style={styles.colHolder}
-        onTouchTap={() => this.handleAccessCol(col.name)}
+        onTouchTap={() => browserHistory.push(`/user/${User.username}/collection/${col.name}`)}
       >
-        <div className="col-cover">
-          <div className="col-background" />
-          <div className="col-header">
-            <h4 className="col-header-time">
-              {moment(col.createdAt).format('YYYY-MM-DD')}
-            </h4>
-            <h2 className="col-header-name">
-              {col.name}
-            </h2>
+        <div className="colHolder__cover">
+          <div className="colHolder__background" />
+          <div className="colHolder__header">
+            <h4 className="colHolder__time">{moment(col.createdAt).format('YYYY-MM-DD')}</h4>
+            <h2 className="colHolder__name">{col.name}</h2>
           </div>
-          <div className="col-footer">
-            <img src={User.profile.avatar} alt={User.username} className="col-footer-avatar" />
-            <span className="col-footer-username">
-              {User.username}
-            </span>
+          <div className="colHolder__footer">
+            <img className="colHolder__avatar" src={User.profile.avatar} alt={User.username} />
+            <span className="colHolder__username">{User.username}</span>
           </div>
         </div>
       </div>
@@ -81,4 +73,5 @@ export default class ColHolder extends Component {
 ColHolder.propTypes = {
   User: PropTypes.object.isRequired,
   col: PropTypes.object.isRequired,
+  clientWidth: PropTypes.number.isRequired,
 };
