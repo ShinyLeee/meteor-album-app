@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const SelectIcon = (props) => {
+export const SelectableIcon = (props) => {
   const { activate } = props; // eslint-disable-line
   const selectIconClassName = activate ? 'SelectIcon_activate' : 'SelectIcon';
   return (
@@ -10,7 +10,7 @@ export const SelectIcon = (props) => {
   );
 };
 
-export const SelectBackground = (props) => {
+export const SelectableImageBackground = (props) => {
   const { isEditing, isSelect } = props; // eslint-disable-line
   const backgroundStyle = isEditing ? { opacity: 1 } : {};
   const backgroundClassName = isSelect ? 'Justified__background_select' : 'Justified__background';

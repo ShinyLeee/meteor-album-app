@@ -3,12 +3,12 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { _ } from 'meteor/underscore';
 import { selectGroupCounter } from '/imports/ui/redux/actions/actionTypes.js';
-import { SelectIcon } from './SelectStatus.jsx';
-import JustifiedImageHolder from './JustifiedImageHolder.jsx';
+import { SelectableIcon } from './SelectableStatus.jsx';
+import ConnectedJustifiedImageHolder from './JustifiedImageHolder.jsx';
 
 const domain = Meteor.settings.public.domain;
 
-class JustifiedGroupHolder extends Component {
+export class JustifiedGroupHolder extends Component {
 
   constructor(props) {
     super(props);
@@ -65,7 +65,7 @@ class JustifiedGroupHolder extends Component {
           onTouchTap={this.handleSelectGroup}
         >
           {
-            isEditing && <SelectIcon activate={this.state.isGroupSelect} />
+            isEditing && <SelectableIcon activate={this.state.isGroupSelect} />
           }
           <h4>{showDay}</h4>
         </div>
@@ -80,7 +80,7 @@ class JustifiedGroupHolder extends Component {
               height: `${geometry.boxes[i].height}px`,
             };
             return (
-              <JustifiedImageHolder
+              <ConnectedJustifiedImageHolder
                 key={image._id}
                 image={image}
                 style={imageHolderStyle}

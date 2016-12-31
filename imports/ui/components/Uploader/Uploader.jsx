@@ -14,7 +14,7 @@ const initialState = {
   uploading: false,  // Is in Uploading Progress
 };
 
-class Uploader extends Component {
+export class Uploader extends Component {
 
   constructor(props) {
     super(props);
@@ -267,14 +267,6 @@ Uploader.propTypes = {
   User: PropTypes.object,
   open: PropTypes.bool.isRequired,
   /**
-   * destination:
-   *
-   * Compose by Username and Collection name,
-   * eg: ShinyLee/风景.
-   */
-  destination: PropTypes.string,
-  token: PropTypes.string,
-  /**
    * uploadURL:
    * eg: https://up.qbox.me/, http://upload.qiniu.com.
    */
@@ -282,6 +274,15 @@ Uploader.propTypes = {
   multiple: PropTypes.bool.isRequired,
   beforeUpload: PropTypes.func,
   afterUpload: PropTypes.func,
+  // Below Pass from Redux
+  /**
+   * destination:
+   *
+   * Compose by Username and Collection name,
+   * eg: ShinyLee/风景.
+   */
+  destination: PropTypes.string,
+  token: PropTypes.string,
   dispatch: PropTypes.func,
 };
 

@@ -14,7 +14,7 @@ import AddIcon from 'material-ui/svg-icons/content/add';
 import { Collections } from '/imports/api/collections/collection.js';
 import { Notes } from '/imports/api/notes/note.js';
 import { insertCollection } from '/imports/api/collections/methods.js';
-import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
+import ConnectedNavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
 import Recap from '/imports/ui/components/Recap/Recap.jsx';
 import ColHolder from '/imports/ui/components/ColHolder/ColHolder.jsx';
 import { snackBarOpen } from '/imports/ui/redux/actions/actionTypes.js';
@@ -146,7 +146,7 @@ class CollectionPage extends Component {
       <div className="container">
         { isGuest
           ? (
-            <NavHeader
+            <ConnectedNavHeader
               User={User}
               title="相册"
               iconElementLeft={
@@ -155,7 +155,7 @@ class CollectionPage extends Component {
                 </IconButton>
               }
             />)
-          : (<NavHeader User={User} location={this.state.location} noteNum={noteNum} primary />)
+          : (<ConnectedNavHeader User={User} location={this.state.location} noteNum={noteNum} primary />)
         }
         <div className="content">
           { isGuest

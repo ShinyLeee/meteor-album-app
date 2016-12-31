@@ -31,8 +31,8 @@ import {
   lockCollection,
   mutateCollectionCover } from '/imports/api/collections/methods.js';
 import scrollTo from '/imports/utils/scrollTo.js';
-import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
-import Justified from '/imports/ui/components/Justified/Justified.jsx';
+import ConnectedNavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
+import ConnectedJustified from '/imports/ui/components/Justified/Justified.jsx';
 import { uploaderStart, disableSelectAll, snackBarOpen } from '/imports/ui/redux/actions/actionTypes.js';
 
 const domain = Meteor.settings.public.domain;
@@ -337,7 +337,7 @@ class ColPicsPage extends Component {
     const { User, isGuest } = this.props;
     if (!isGuest) {
       return (
-        <NavHeader
+        <ConnectedNavHeader
           User={User}
           title="相册"
           onTitleTouchTap={() => scrollTo(0, 1500)}
@@ -351,7 +351,7 @@ class ColPicsPage extends Component {
       );
     }
     return (
-      <NavHeader
+      <ConnectedNavHeader
         User={User}
         title="相册"
         iconElementLeft={
@@ -366,7 +366,7 @@ class ColPicsPage extends Component {
   renderEditingNavHeader() {
     const { User, counter } = this.props;
     return (
-      <NavHeader
+      <ConnectedNavHeader
         User={User}
         title={counter ? `选择了${counter}张照片` : ''}
         style={{ backgroundColor: blue500 }}
@@ -433,7 +433,7 @@ class ColPicsPage extends Component {
           <div className="col-pics-name">{col.name}</div>
           <div className="col-pics-duration">{duration}</div>
         </div>
-        <Justified isEditing={this.state.isEditing} images={images} />
+        <ConnectedJustified isEditing={this.state.isEditing} images={images} />
       </div>
     );
   }

@@ -7,12 +7,12 @@ import IconButton from 'material-ui/IconButton';
 import ComfyIcon from 'material-ui/svg-icons/image/view-comfy';
 import CompactIcon from 'material-ui/svg-icons/image/view-compact';
 import { enableSelectAll, disableSelectAll } from '/imports/ui/redux/actions/actionTypes.js';
-import { SelectIcon } from './SelectStatus.jsx';
-import SelectableImage from './SelectableImage.jsx';
+import { SelectableIcon } from './SelectableStatus.jsx';
+import ConnectedSelectableImageHolder from './SelectableImageHolder.jsx';
 import GridLayout from '../GridLayout/GridLayout.jsx';
-import JustifiedGroupHolder from './JustifiedGroupHolder.jsx';
+import ConnectedJustifiedGroupHolder from './JustifiedGroupHolder.jsx';
 
-class Justified extends PureComponent {
+export class Justified extends PureComponent {
 
   constructor(props) {
     super(props);
@@ -26,9 +26,9 @@ class Justified extends PureComponent {
 
   componentWillReceiveProps(nextProps) {
     const { images } = this.props;
-    const { counter } = nextProps;
+    const { isEditing, counter } = nextProps;
     // Fix potential issue that images is empty when first render
-    if (counter > 0 && images.length === counter) this.setState({ isAllSelect: true });
+    if (isEditing && counter > 0 && images.length === counter) this.setState({ isAllSelect: true });
     else this.setState({ isAllSelect: false });
   }
 
@@ -63,7 +63,7 @@ class Justified extends PureComponent {
       <div className="Justified__toolbox">
         { isEditing && (
           <div className="Justified__toolbox_left" onTouchTap={this.handleToggleSelectAll}>
-            <SelectIcon activate={this.state.isAllSelect} />
+            <SelectableIcon activate={this.state.isAllSelect} />
             <h4>选择全部</h4>
           </div>
         ) }
@@ -112,7 +112,7 @@ class Justified extends PureComponent {
 
     return (
       _.map(dayGroupImages, (dayGroupImage, day) => (
-        <JustifiedGroupHolder
+        <ConnectedJustifiedGroupHolder
           key={day}
           day={day}
           geometry={geometrys[day]}
@@ -131,7 +131,7 @@ class Justified extends PureComponent {
       <GridLayout>
         {
           images.map((image, i) => (
-            <SelectableImage
+            <ConnectedSelectableImageHolder
               key={i}
               isEditing={isEditing}
               image={image}

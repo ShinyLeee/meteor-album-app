@@ -2,12 +2,12 @@ import React, { Component, PropTypes } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { connect } from 'react-redux';
 import { selectCounter } from '/imports/ui/redux/actions/actionTypes.js';
-import { SelectBackground } from './SelectStatus.jsx';
+import { SelectableImageBackground } from './SelectableStatus.jsx';
 
 const domain = Meteor.settings.public.domain;
-const square = Math.floor(document.body.clientWidth / 3);
+const square = Math.ceil(document.body.clientWidth / 3);
 
-class SelectableImage extends Component {
+export class SelectableImageHolder extends Component {
 
   constructor(props) {
     super(props);
@@ -55,7 +55,7 @@ class SelectableImage extends Component {
         style={{ backgroundColor: isEditing ? '#eee' : '#fff' }}
         onTouchTap={this.handleSelect}
       >
-        <SelectBackground isEditing={isEditing} isSelect={this.state.isSelect} />
+        <SelectableImageBackground isEditing={isEditing} isSelect={this.state.isSelect} />
         <img
           src={imageSource}
           alt={image.name}
@@ -66,14 +66,16 @@ class SelectableImage extends Component {
   }
 }
 
-SelectableImage.defaultProps = {
+SelectableImageHolder.defaultProps = {
   isEditing: false,
 };
 
-SelectableImage.propTypes = {
+SelectableImageHolder.propTypes = {
   isEditing: PropTypes.bool.isRequired,
   image: PropTypes.object.isRequired,
   total: PropTypes.number.isRequired,
+  // Below Pass from Redux
+  counter: PropTypes.number,
   dispatch: PropTypes.func,
 };
 
@@ -81,4 +83,4 @@ const mapStateToProps = (state) => ({
   counter: state.selectCounter.counter,
 });
 
-export default connect(mapStateToProps)(SelectableImage);
+export default connect(mapStateToProps)(SelectableImageHolder);

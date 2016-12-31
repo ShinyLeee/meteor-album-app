@@ -5,8 +5,8 @@ import { createContainer } from 'meteor/react-meteor-data';
 import CircularProgress from 'material-ui/CircularProgress';
 import { storeUptoken, clearUptoken } from '/imports/ui/redux/actions/actionTypes.js';
 import SnackBar from './components/SnackBar/SnackBar.jsx';
-import NavHeader from './components/NavHeader/NavHeader.jsx';
-import Uploader from './components/Uploader/Uploader.jsx';
+import ConnectedNavHeader from './components/NavHeader/NavHeader.jsx';
+import ConnectedUploader from './components/Uploader/Uploader.jsx';
 
 class App extends Component {
   constructor(props) {
@@ -50,7 +50,7 @@ class App extends Component {
     if (!userIsReady) {
       return (
         <div className="container">
-          <NavHeader loading />
+          <ConnectedNavHeader loading />
           <div className="content text-center">
             <CircularProgress style={{ top: '150px' }} />
           </div>
@@ -68,7 +68,7 @@ class App extends Component {
           // you should not specify isRequired for those props.
           React.cloneElement(this.props.children, { User })
         }
-        <Uploader User={User} multiple />
+        <ConnectedUploader User={User} multiple />
       </div>
     );
   }
