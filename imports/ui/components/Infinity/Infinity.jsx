@@ -1,6 +1,5 @@
 import React, { Component, PropTypes } from 'react';
 import CircularProgress from 'material-ui/CircularProgress';
-
 import { on, off } from '/imports/utils/events.js';
 
 export default class Infinity extends Component {

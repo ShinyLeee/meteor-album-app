@@ -31,9 +31,9 @@ import {
   lockCollection,
   mutateCollectionCover } from '/imports/api/collections/methods.js';
 import scrollTo from '/imports/utils/scrollTo.js';
-import NavHeader from '../components/NavHeader.jsx';
-import Justified from '../components/Justified/Justified.jsx';
-import { uploaderStart, disableSelectAll, snackBarOpen } from '../actions/actionTypes.js';
+import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
+import Justified from '/imports/ui/components/Justified/Justified.jsx';
+import { uploaderStart, disableSelectAll, snackBarOpen } from '/imports/ui/redux/actions/actionTypes.js';
 
 const domain = Meteor.settings.public.domain;
 const initialAlertState = { isAlertOpen: false, alertTitle: '', alertContent: '', action: '' };

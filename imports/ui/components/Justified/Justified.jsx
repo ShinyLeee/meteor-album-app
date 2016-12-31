@@ -6,11 +6,11 @@ import moment from 'moment';
 import IconButton from 'material-ui/IconButton';
 import ComfyIcon from 'material-ui/svg-icons/image/view-comfy';
 import CompactIcon from 'material-ui/svg-icons/image/view-compact';
+import { enableSelectAll, disableSelectAll } from '/imports/ui/redux/actions/actionTypes.js';
 import { SelectIcon } from './SelectStatus.jsx';
 import SelectableImage from './SelectableImage.jsx';
-import GridList from '../GridList.jsx';
+import GridLayout from '../GridLayout/GridLayout.jsx';
 import JustifiedGroupHolder from './JustifiedGroupHolder.jsx';
-import { enableSelectAll, disableSelectAll } from '../../actions/actionTypes.js';
 
 class Justified extends PureComponent {
 
@@ -128,7 +128,7 @@ class Justified extends PureComponent {
   renderNestedLayout() {
     const { isEditing, images } = this.props;
     return (
-      <GridList>
+      <GridLayout>
         {
           images.map((image, i) => (
             <SelectableImage
@@ -139,7 +139,7 @@ class Justified extends PureComponent {
             />
           ))
         }
-      </GridList>
+      </GridLayout>
     );
   }
 

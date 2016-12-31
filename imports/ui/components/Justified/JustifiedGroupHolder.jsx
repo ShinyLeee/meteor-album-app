@@ -2,9 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { _ } from 'meteor/underscore';
+import { selectGroupCounter } from '/imports/ui/redux/actions/actionTypes.js';
 import { SelectIcon } from './SelectStatus.jsx';
 import JustifiedImageHolder from './JustifiedImageHolder.jsx';
-import { selectGroupCounter } from '../../actions/actionTypes.js';
 
 const domain = Meteor.settings.public.domain;
 

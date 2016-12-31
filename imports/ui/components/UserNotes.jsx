@@ -4,14 +4,12 @@ import React, { Component, PropTypes } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
 import moment from 'moment';
 import ReactMarkdown from 'react-markdown';
-
 import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
 import CircularProgress from 'material-ui/CircularProgress';
 import IconButton from 'material-ui/IconButton';
 import Dialog from 'material-ui/Dialog';
 import ReplyIcon from 'material-ui/svg-icons/content/reply';
 import CheckBoxIcon from 'material-ui/svg-icons/toggle/check-box';
-
 import { Notes } from '/imports/api/notes/note.js';
 
 class UserNotes extends Component {

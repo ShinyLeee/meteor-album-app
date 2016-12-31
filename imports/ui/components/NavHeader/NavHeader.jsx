@@ -23,7 +23,7 @@ import SettingsIcon from 'material-ui/svg-icons/action/settings';
 import ArrowDropdownIcon from 'material-ui/svg-icons/navigation/arrow-drop-down';
 import { purple500 } from 'material-ui/styles/colors';
 import scrollTo from '/imports/utils/scrollTo.js';
-import { snackBarOpen } from '../actions/actionTypes.js';
+import { snackBarOpen } from '/imports/ui/redux/actions/actionTypes.js';
 
 const styles = {
   AppBar: {
@@ -73,7 +73,7 @@ const styles = {
   },
 };
 
-class NavHeader extends Component {
+export class NavHeader extends Component {
 
   constructor(props) {
     super(props);

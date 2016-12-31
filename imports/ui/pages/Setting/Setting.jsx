@@ -23,8 +23,8 @@ import EmailIcon from 'material-ui/svg-icons/communication/email';
 import { blue500 } from 'material-ui/styles/colors';
 import { Notes } from '/imports/api/notes/note.js';
 import { updateUser } from '/imports/api/users/methods.js';
-import NavHeader from '../components/NavHeader.jsx';
-import { snackBarOpen } from '../actions/actionTypes.js';
+import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
+import { snackBarOpen } from '/imports/ui/redux/actions/actionTypes.js';
 
 const domain = Meteor.settings.public.domain;
 const styles = {

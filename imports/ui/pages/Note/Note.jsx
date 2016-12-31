@@ -14,10 +14,10 @@ import scrollTo from '/imports/utils/scrollTo.js';
 import { makeCancelable } from '/imports/utils/utils.js';
 import { Notes } from '/imports/api/notes/note.js';
 import { readAllNotes } from '/imports/api/notes/methods.js';
-import Infinity from '../../components/Infinity.jsx';
-import NavHeader from '../../components/NavHeader.jsx';
-import NoteHolder from '../../components/Note/NoteHolder.jsx';
-import { snackBarOpen } from '../../actions/actionTypes.js';
+import Infinity from '/imports/ui/components/Infinity/Infinity.jsx';
+import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
+import NoteHolder from '/imports/ui/components/Note/NoteHolder.jsx';
+import { snackBarOpen } from '/imports/ui/redux/actions/actionTypes.js';
 
 const styles = {
   indeterminateProgress: {

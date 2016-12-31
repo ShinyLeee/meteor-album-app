@@ -16,11 +16,11 @@ import { blue500 } from 'material-ui/styles/colors';
 import { Images } from '/imports/api/images/image.js';
 import { removeImages, recoveryImages } from '/imports/api/images/methods.js';
 import scrollTo from '/imports/utils/scrollTo.js';
-import { SelectIcon } from '../components/Justified/SelectStatus.jsx';
-import NavHeader from '../components/NavHeader.jsx';
-import SelectableImage from '../components/Justified/SelectableImage.jsx';
-import GridList from '../components/GridList.jsx';
-import { enableSelectAll, disableSelectAll, snackBarOpen } from '../actions/actionTypes.js';
+import { SelectIcon } from '/imports/ui/components/Justified/SelectStatus.jsx';
+import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
+import SelectableImage from '/imports/ui/components/Justified/SelectableImage.jsx';
+import GridLayout from '/imports/ui/components/GridLayout/GridLayout.jsx';
+import { enableSelectAll, disableSelectAll, snackBarOpen } from '/imports/ui/redux/actions/actionTypes.js';
 
 const styles = {
   AppBarIconSvg: {
@@ -153,7 +153,7 @@ class RecyclePage extends Component {
               <h4>选择全部</h4>
             </div>
           </div>
-          <GridList>
+          <GridLayout>
             {
               images.map((image, i) => (
                 <SelectableImage
@@ -164,7 +164,7 @@ class RecyclePage extends Component {
                 />
               ))
             }
-          </GridList>
+          </GridLayout>
         </div>
       </div>
     );

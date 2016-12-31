@@ -10,8 +10,7 @@ import AddIcon from 'material-ui/svg-icons/content/add';
 import DownloadIcon from 'material-ui/svg-icons/file/file-download';
 import InfoIcon from 'material-ui/svg-icons/action/info';
 import TimelineIcon from 'material-ui/svg-icons/action/timeline';
-
-import { zoomerClose, snackBarOpen } from '../actions/actionTypes.js';
+import { zoomerClose, snackBarOpen } from '/imports/ui/redux/actions/actionTypes.js';
 
 const domain = Meteor.settings.public.domain;
 

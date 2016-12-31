@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import { uptoken, zoomer, uploader, snackBar, selectCounter } from './reducer';
+import { uptoken, zoomer, uploader, snackBar, selectCounter } from './reducers';
 
 const reducers = combineReducers({
   uptoken,

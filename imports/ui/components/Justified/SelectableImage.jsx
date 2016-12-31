@@ -1,8 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { connect } from 'react-redux';
+import { selectCounter } from '/imports/ui/redux/actions/actionTypes.js';
 import { SelectBackground } from './SelectStatus.jsx';
-import { selectCounter } from '../../actions/actionTypes.js';
 
 const domain = Meteor.settings.public.domain;
 const square = Math.floor(document.body.clientWidth / 3);

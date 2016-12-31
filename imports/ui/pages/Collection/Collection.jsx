@@ -14,10 +14,10 @@ import AddIcon from 'material-ui/svg-icons/content/add';
 import { Collections } from '/imports/api/collections/collection.js';
 import { Notes } from '/imports/api/notes/note.js';
 import { insertCollection } from '/imports/api/collections/methods.js';
-import NavHeader from '../components/NavHeader.jsx';
-import Recap from '../components/Recap.jsx';
-import ColHolder from '../components/ColHolder.jsx';
-import { snackBarOpen } from '../actions/actionTypes.js';
+import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
+import Recap from '/imports/ui/components/Recap/Recap.jsx';
+import ColHolder from '/imports/ui/components/ColHolder/ColHolder.jsx';
+import { snackBarOpen } from '/imports/ui/redux/actions/actionTypes.js';
 
 const clientWidth = document.body.clientWidth;
 

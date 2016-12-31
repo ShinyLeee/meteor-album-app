@@ -3,11 +3,10 @@ import { connect } from 'react-redux';
 import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
 import CircularProgress from 'material-ui/CircularProgress';
-import SnackBar from './components/SnackBar.jsx';
-import NavHeader from './components/NavHeader.jsx';
-import Uploader from './components/Uploader.jsx';
-
-import { storeUptoken, clearUptoken } from './actions/actionTypes.js';
+import { storeUptoken, clearUptoken } from '/imports/ui/redux/actions/actionTypes.js';
+import SnackBar from './components/SnackBar/SnackBar.jsx';
+import NavHeader from './components/NavHeader/NavHeader.jsx';
+import Uploader from './components/Uploader/Uploader.jsx';
 
 class App extends Component {
   constructor(props) {
@@ -24,7 +23,7 @@ class App extends Component {
         if (err) {
           throw new Meteor.Error(err);
         }
-        console.log('%c Meteor finish getUptoken', 'color: blue');
+        console.log('%c Meteor finish getUptoken', 'color: blue'); // eslint-disable-line no-console
         dispatch(storeUptoken(res.uptoken));
       });
     }
@@ -37,7 +36,7 @@ class App extends Component {
         if (err) {
           throw new Meteor.Error(err);
         }
-        console.log('%c Meteor finish getUptoken', 'color: blue');
+        console.log('%c Meteor finish getUptoken', 'color: blue'); // eslint-disable-line no-console
         dispatch(storeUptoken(res.uptoken));
       });
     }

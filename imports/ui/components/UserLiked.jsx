@@ -1,12 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import React, { Component, PropTypes } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
-
 import CircularProgress from 'material-ui/CircularProgress';
-
 import { Images } from '/imports/api/images/image.js';
-
-import PicHolder from '../components/PicHolder.jsx';
+import PicHolder from '/imports/ui/components/PicHolder/PicHolder.jsx';
 
 class UserLiked extends Component {
 

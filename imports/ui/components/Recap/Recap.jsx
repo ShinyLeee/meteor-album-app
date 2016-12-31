@@ -1,7 +1,6 @@
 import React, { Component, PropTypes } from 'react';
-
 import IconButton from 'material-ui/IconButton';
-import { Github, Wechat, Twitter, Instagram, Website } from './SvgIcons.jsx';
+import { Github, Wechat, Twitter, Instagram, Website } from '../SubMaterialUI/SvgIcons.jsx';
 
 export default class Recap extends Component {
 

@@ -5,11 +5,11 @@ import CircularProgress from 'material-ui/CircularProgress';
 import { makeCancelable } from '/imports/utils/utils.js';
 import { Images } from '/imports/api/images/image.js';
 import { Notes } from '/imports/api/notes/note.js';
-import Infinity from '../components/Infinity.jsx';
-import NavHeader from '../components/NavHeader.jsx';
-import Recap from '../components/Recap.jsx';
-import PicHolder from '../components/PicHolder.jsx';
-import ZoomerHolder from '../components/ZoomerHolder.jsx';
+import Infinity from '/imports/ui/components/Infinity/Infinity.jsx';
+import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
+import Recap from '/imports/ui/components/Recap/Recap.jsx';
+import PicHolder from '/imports/ui/components/PicHolder/PicHolder.jsx';
+import ZoomerHolder from '/imports/ui/components/ZoomerHolder/ZoomerHolder.jsx';
 
 const clientWidth = document.body.clientWidth;
 

@@ -3,7 +3,7 @@ import { createContainer } from 'meteor/react-meteor-data';
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import { Notes } from '/imports/api/notes/note.js';
-import NavHeader from '../../components/NavHeader.jsx';
+import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
 
 class Construction extends Component {
 

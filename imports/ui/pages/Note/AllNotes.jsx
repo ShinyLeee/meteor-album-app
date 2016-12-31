@@ -9,8 +9,8 @@ import ArrowBackIcon from 'material-ui/svg-icons/navigation/arrow-back';
 import { blue500 } from 'material-ui/styles/colors';
 import scrollTo from '/imports/utils/scrollTo.js';
 import { Notes } from '/imports/api/notes/note.js';
-import NavHeader from '../../components/NavHeader.jsx';
-import NoteHolder from '../../components/Note/NoteHolder.jsx';
+import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
+import NoteHolder from '/imports/ui/components/Note/NoteHolder.jsx';
 
 const styles = {
   indeterminateProgress: {

@@ -16,9 +16,9 @@ import ArrowBackIcon from 'material-ui/svg-icons/navigation/arrow-back';
 import SendIcon from 'material-ui/svg-icons/content/send';
 import { blue500 } from 'material-ui/styles/colors';
 import { insertNote } from '/imports/api/notes/methods.js';
-import NavHeader from '../../components/NavHeader.jsx';
-import DatePickerCN from '../../components/DatePickerCN.jsx';
-import { snackBarOpen } from '../../actions/actionTypes.js';
+import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
+import DatePickerCN from '/imports/ui/components/SubMaterialUI/DatePickerCN.jsx';
+import { snackBarOpen } from '/imports/ui/redux/actions/actionTypes.js';
 
 const styles = {
   noteTextField: {

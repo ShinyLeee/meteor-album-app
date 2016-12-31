@@ -15,7 +15,7 @@ import ReplyIcon from 'material-ui/svg-icons/content/reply';
 import CommentIcon from 'material-ui/svg-icons/communication/chat-bubble-outline';
 import { makeCancelable } from '/imports/utils/utils.js';
 import { likeImage, unlikeImage } from '/imports/api/images/methods.js';
-import { zoomerOpen, snackBarOpen } from '../actions/actionTypes.js';
+import { zoomerOpen, snackBarOpen } from '/imports/ui/redux/actions/actionTypes.js';
 
 const domain = Meteor.settings.public.domain;
 

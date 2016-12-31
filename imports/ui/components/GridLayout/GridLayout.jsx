@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 
-export default class GridList extends Component {
+export default class GridLayout extends Component {
   render() {
     const { columns, gap, children } = this.props;
     return (
@@ -26,12 +26,12 @@ export default class GridList extends Component {
   }
 }
 
-GridList.defaultProps = {
+GridLayout.defaultProps = {
   columns: 3,
   gap: 4,
 };
 
-GridList.propTypes = {
+GridLayout.propTypes = {
   columns: PropTypes.number,
   gap: PropTypes.number,
   onTileClick: PropTypes.func,

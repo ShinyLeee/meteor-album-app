@@ -27,3 +27,7 @@ percolate:migrations
 deanius:promise
 didericis:callpromise-mixin
 nitrolabs:cdn
+practicalmeteor:mocha
+dburles:factory
+practicalmeteor:chai
+practicalmeteor:sinon
