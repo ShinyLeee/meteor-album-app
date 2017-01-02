@@ -32,3 +32,5 @@ dburles:factory
 practicalmeteor:chai
 practicalmeteor:sinon
 johanbrook:publication-collector
+dispatch:mocha-phantomjs
+dispatch:phantomjs-tests@=0.0.5
