@@ -6,7 +6,7 @@ import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import { purple500, grey500 } from 'material-ui/styles/colors';
 import ConnectedNavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
-import { snackBarOpen } from '/imports/ui/redux/actions/actionTypes.js';
+import { snackBarOpen } from '/imports/ui/redux/actions/creators.js';
 
 const styles = {
   logBtn: {

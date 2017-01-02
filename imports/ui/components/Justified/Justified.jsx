@@ -6,7 +6,7 @@ import moment from 'moment';
 import IconButton from 'material-ui/IconButton';
 import ComfyIcon from 'material-ui/svg-icons/image/view-comfy';
 import CompactIcon from 'material-ui/svg-icons/image/view-compact';
-import { enableSelectAll, disableSelectAll } from '/imports/ui/redux/actions/actionTypes.js';
+import { enableSelectAll, disableSelectAll } from '/imports/ui/redux/actions/creators.js';
 import { SelectableIcon } from './SelectableStatus.jsx';
 import ConnectedSelectableImageHolder from './SelectableImageHolder.jsx';
 import GridLayout from '../GridLayout/GridLayout.jsx';

@@ -24,7 +24,7 @@ import { blue500 } from 'material-ui/styles/colors';
 import { Notes } from '/imports/api/notes/note.js';
 import { updateUser } from '/imports/api/users/methods.js';
 import ConnectedNavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
-import { snackBarOpen } from '/imports/ui/redux/actions/actionTypes.js';
+import { snackBarOpen } from '/imports/ui/redux/actions/creators.js';
 
 const domain = Meteor.settings.public.domain;
 const styles = {

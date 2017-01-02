@@ -1,47 +1,40 @@
 import React, { Component, PropTypes } from 'react';
+import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
 import CircularProgress from 'material-ui/CircularProgress';
-import { storeUptoken, clearUptoken } from '/imports/ui/redux/actions/actionTypes.js';
+import { storeUptoken, clearUptoken } from '/imports/ui/redux/actions/creators.js';
 import SnackBar from './components/SnackBar/SnackBar.jsx';
 import ConnectedNavHeader from './components/NavHeader/NavHeader.jsx';
 import ConnectedUploader from './components/Uploader/Uploader.jsx';
 
 class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = ({
-      location: 'index',
-    });
-  }
 
   componentDidMount() {
-    const { User, dispatch } = this.props;
-    if (User) {
+    if (this.props.User) {
       Meteor.call('Qiniu.getUptoken', (err, res) => {
         if (err) {
           throw new Meteor.Error(err);
         }
         console.log('%c Meteor finish getUptoken', 'color: blue'); // eslint-disable-line no-console
-        dispatch(storeUptoken(res.uptoken));
+        this.props.storeUptoken(res.uptoken);
       });
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    const { User, dispatch } = this.props;
-    if (!User && nextProps.User) {
+    if (!this.props.User && nextProps.User) {
       Meteor.call('Qiniu.getUptoken', (err, res) => {
         if (err) {
           throw new Meteor.Error(err);
         }
         console.log('%c Meteor finish getUptoken', 'color: blue'); // eslint-disable-line no-console
-        dispatch(storeUptoken(res.uptoken));
+        this.props.storeUptoken(res.uptoken);
       });
     }
-    if (User && !nextProps.User) {
-      dispatch(clearUptoken());
+    if (this.props.User && !nextProps.User) {
+      this.props.clearUptoken();
     }
   }
 
@@ -79,6 +72,9 @@ App.propTypes = {
   User: PropTypes.object,
   userIsReady: PropTypes.bool.isRequired,
   children: PropTypes.element.isRequired,
+  // Below is Pass From redux
+  storeUptoken: PropTypes.func,
+  clearUptoken: PropTypes.func,
   dispatch: PropTypes.func,
 };
 
@@ -93,4 +89,11 @@ const MeteorContainer = createContainer(() => {
   };
 }, App);
 
-export default connect()(MeteorContainer);
+const mapStateToProps = (state) => state;
+
+const mapDispatchToProps = (dispatch) => bindActionCreators({
+  storeUptoken,
+  clearUptoken,
+}, dispatch);
+
+export default connect(mapStateToProps, mapDispatchToProps)(MeteorContainer);

@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { _ } from 'meteor/underscore';
-import { selectGroupCounter } from '/imports/ui/redux/actions/actionTypes.js';
+import { selectGroupCounter } from '/imports/ui/redux/actions/creators.js';
 import { SelectableIcon } from './SelectableStatus.jsx';
 import ConnectedJustifiedImageHolder from './JustifiedImageHolder.jsx';
 
@@ -19,15 +19,25 @@ export class JustifiedGroupHolder extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const { day, groupTotal } = this.props;
+    const { total, day, groupTotal } = this.props;
+    if (nextProps.counter === total) {
+      this.setState({ isGroupSelect: true });
+      return;
+    }
+    if (nextProps.counter === 0) {
+      this.setState({ isGroupSelect: false });
+      return;
+    }
     if (!nextProps.group) {
       this.setState({ isGroupSelect: false });
       return;
     }
-    _.map(nextProps.group, (value, key) => {
-      if (key === day && value === groupTotal) this.setState({ isGroupSelect: true });
-      if (key === day && value < groupTotal) this.setState({ isGroupSelect: false });
+    let flag = false;
+    _.each(nextProps.group, (value, key) => {
+      if (key === day && value === groupTotal) flag = true;
     });
+    if (flag) this.setState({ isGroupSelect: true });
+    else this.setState({ isGroupSelect: false });
   }
 
   handleSelectGroup() {

@@ -17,7 +17,7 @@ import { insertCollection } from '/imports/api/collections/methods.js';
 import ConnectedNavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
 import Recap from '/imports/ui/components/Recap/Recap.jsx';
 import ColHolder from '/imports/ui/components/ColHolder/ColHolder.jsx';
-import { snackBarOpen } from '/imports/ui/redux/actions/actionTypes.js';
+import { snackBarOpen } from '/imports/ui/redux/actions/creators.js';
 
 const clientWidth = document.body.clientWidth;
 const sourceDomain = Meteor.settings.public.source;

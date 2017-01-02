@@ -19,7 +19,7 @@ import { Collections } from '/imports/api/collections/collection.js';
 import { Notes } from '/imports/api/notes/note.js';
 import { followUser, unFollowUser } from '/imports/api/users/methods.js';
 import ConnectedNavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
-import { snackBarOpen } from '/imports/ui/redux/actions/actionTypes.js';
+import { snackBarOpen } from '/imports/ui/redux/actions/creators.js';
 
 const domain = Meteor.settings.public.domain;
 

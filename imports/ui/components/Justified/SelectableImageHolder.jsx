@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { connect } from 'react-redux';
-import { selectCounter } from '/imports/ui/redux/actions/actionTypes.js';
+import { selectCounter } from '/imports/ui/redux/actions/creators.js';
 import { SelectableImageBackground } from './SelectableStatus.jsx';
 
 const domain = Meteor.settings.public.domain;

@@ -8,7 +8,7 @@ import { purple500, grey500 } from 'material-ui/styles/colors';
 import { createUser } from '/imports/api/users/methods.js';
 import { checkCode, useCode } from '/imports/api/codes/methods.js';
 import ConnectedNavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
-import { snackBarOpen } from '/imports/ui/redux/actions/actionTypes.js';
+import { snackBarOpen } from '/imports/ui/redux/actions/creators.js';
 
 const styles = {
   logBtn: {

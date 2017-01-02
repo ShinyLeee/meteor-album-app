@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { _ } from 'meteor/underscore';
 import { connect } from 'react-redux';
-import { selectCounter } from '/imports/ui/redux/actions/actionTypes.js';
+import { selectCounter } from '/imports/ui/redux/actions/creators.js';
 import { SelectableImageBackground } from './SelectableStatus.jsx';
 
 export class JustifiedImageHolder extends Component {
@@ -24,11 +24,16 @@ export class JustifiedImageHolder extends Component {
       this.setState({ isSelect: false });
       return;
     }
-    if (!nextProps.group) return;
-    _.map(nextProps.group, (value, key) => {
-      if (key === day && value === groupTotal) this.setState({ isSelect: true });
-      if (key === day && value === 0) this.setState({ isSelect: false });
+    if (!nextProps.group) {
+      this.setState({ isSelect: false });
+      return;
+    }
+    let flag = false;
+    _.each(nextProps.group, (value, key) => {
+      if (key === day && value === groupTotal) flag = true;
     });
+    if (flag) this.setState({ isSelect: true });
+    else this.setState({ isSelect: false });
   }
 
   handleSelect() {

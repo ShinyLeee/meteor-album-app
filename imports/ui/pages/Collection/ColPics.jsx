@@ -33,7 +33,7 @@ import {
 import scrollTo from '/imports/utils/scrollTo.js';
 import ConnectedNavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
 import ConnectedJustified from '/imports/ui/components/Justified/Justified.jsx';
-import { uploaderStart, disableSelectAll, snackBarOpen } from '/imports/ui/redux/actions/actionTypes.js';
+import { uploaderStart, disableSelectAll, snackBarOpen } from '/imports/ui/redux/actions/creators.js';
 
 const domain = Meteor.settings.public.domain;
 const initialAlertState = { isAlertOpen: false, alertTitle: '', alertContent: '', action: '' };

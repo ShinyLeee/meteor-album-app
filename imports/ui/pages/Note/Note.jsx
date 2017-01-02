@@ -17,7 +17,7 @@ import { readAllNotes } from '/imports/api/notes/methods.js';
 import Infinity from '/imports/ui/components/Infinity/Infinity.jsx';
 import ConnectedNavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
 import NoteHolder from '/imports/ui/components/Note/NoteHolder.jsx';
-import { snackBarOpen } from '/imports/ui/redux/actions/actionTypes.js';
+import { snackBarOpen } from '/imports/ui/redux/actions/creators.js';
 
 const sourceDomain = Meteor.settings.public.source;
 

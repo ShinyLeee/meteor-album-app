@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import EXIF from 'exif-js';
 import uuid from 'node-uuid';
 import { insertImage } from '/imports/api/images/methods.js';
-import { uploaderStop, snackBarOpen } from '/imports/ui/redux/actions/actionTypes.js';
+import { uploaderStop, snackBarOpen } from '/imports/ui/redux/actions/creators.js';
 
 const initialState = {
   pace: 0,               // Current File Uploading Progress

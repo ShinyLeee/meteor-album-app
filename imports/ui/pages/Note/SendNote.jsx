@@ -18,7 +18,7 @@ import { blue500 } from 'material-ui/styles/colors';
 import { insertNote } from '/imports/api/notes/methods.js';
 import ConnectedNavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
 import DatePickerCN from '/imports/ui/components/SubMaterialUI/DatePickerCN.jsx';
-import { snackBarOpen } from '/imports/ui/redux/actions/actionTypes.js';
+import { snackBarOpen } from '/imports/ui/redux/actions/creators.js';
 
 const styles = {
   noteTextField: {

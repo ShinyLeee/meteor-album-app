@@ -109,23 +109,26 @@ export const selectCounter = (state = { selectImages: [], group: null, counter: 
      * @param {number} action.counter - incre or decre the specific number { +-groupTotal }
      * @param {string} action.group - group name
      *
-     * Similar with SELECT_COUNTER, except trueCounter
+     * Similar with SELECT_COUNTER, except groupCounter
      *
      * If the action.counter > 0, which means the group's photo has been select some,
      * so we can not incre the whole groupTotal,
-     * however the trueCounter = action.counter - state.group[action.group].
+     * however the groupCounter = action.counter - state.group[action.group].
      */
     case 'SELECT_GROUP_COUNTER': {
       let group;
       const day = action.group;
-      let trueCounter = action.counter;
-      if (!state.group) group = { [day]: action.counter };
+      const groupCounter = action.counter;
+      if (!state.group) group = { [day]: groupCounter };
       else {
-        if (action.counter > 0) {
-          trueCounter = action.counter - (state.group[day] || 0);
+        if (groupCounter > 0) {
+          const newGroup = { [day]: groupCounter };
+          group = Object.assign({}, state.group, newGroup);
         }
-        const newGroup = { [day]: (state.group[day] || 0) + trueCounter };
-        group = _.extend(state.group, newGroup);
+        if (groupCounter < 0) {
+          group = Object.assign({}, state.group);
+          delete group[day];
+        }
       }
       let selectImages;
       const nextImages = action.selectImages;
@@ -133,11 +136,11 @@ export const selectCounter = (state = { selectImages: [], group: null, counter: 
       if (prevImages.length === 0) selectImages = [...nextImages];
       else {
         // If select a group, just concat nextImages with prevImages
-        if (action.counter > 0) {
+        if (groupCounter > 0) {
           selectImages = _.uniq([...prevImages, ...nextImages]);
         }
         // If disselect a group, we need to remove nextImages from prevImages
-        if (action.counter < 0) {
+        if (groupCounter < 0) {
           // selectImages = _.filter(prevImages, (prevImage) => _.indexOf(nextImages, prevImage) < 0);
 
           // Deal with array of object
@@ -148,7 +151,7 @@ export const selectCounter = (state = { selectImages: [], group: null, counter: 
         }
       }
       // console.log(selectImages);
-      const counter = state.counter + trueCounter;
+      const counter = state.counter + groupCounter;
       if (counter === 0) group = null;
       const globalCounter = Object.assign({}, { selectImages }, { group }, { counter });
       return globalCounter;

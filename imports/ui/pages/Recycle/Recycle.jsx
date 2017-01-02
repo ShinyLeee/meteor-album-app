@@ -20,7 +20,7 @@ import { SelectableIcon } from '/imports/ui/components/Justified/SelectableStatu
 import ConnectedNavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
 import ConnectedSelectableImageHolder from '/imports/ui/components/Justified/SelectableImageHolder.jsx';
 import GridLayout from '/imports/ui/components/GridLayout/GridLayout.jsx';
-import { enableSelectAll, disableSelectAll, snackBarOpen } from '/imports/ui/redux/actions/actionTypes.js';
+import { enableSelectAll, disableSelectAll, snackBarOpen } from '/imports/ui/redux/actions/creators.js';
 
 const sourceDomain = Meteor.settings.public.source;
 
