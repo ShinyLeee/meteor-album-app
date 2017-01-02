@@ -7,9 +7,7 @@
 import { Meteor } from 'meteor/meteor';
 
 if (Meteor.isClient) {
-  // import { Factory } from 'meteor/dburles:factory';
   import React from 'react';
-  // import faker from 'faker';
   import { shallow } from 'enzyme';
   import { chai } from 'meteor/practicalmeteor:chai';
   import { Justified } from './Justified.jsx';

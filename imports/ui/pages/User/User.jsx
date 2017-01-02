@@ -18,7 +18,7 @@ import { Images } from '/imports/api/images/image.js';
 import { Collections } from '/imports/api/collections/collection.js';
 import { Notes } from '/imports/api/notes/note.js';
 import { followUser, unFollowUser } from '/imports/api/users/methods.js';
-import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
+import ConnectedNavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
 import { snackBarOpen } from '/imports/ui/redux/actions/actionTypes.js';
 
 const domain = Meteor.settings.public.domain;
@@ -234,7 +234,7 @@ class UserPage extends Component {
       <div className="container">
         { isGuest
           ? (
-            <NavHeader
+            <ConnectedNavHeader
               User={User}
               title="相册"
               iconElementLeft={
@@ -243,7 +243,7 @@ class UserPage extends Component {
                 </IconButton>
               }
             />)
-          : (<NavHeader User={User} location={this.state.location} noteNum={noteNum} primary />)
+          : (<ConnectedNavHeader User={User} location={this.state.location} noteNum={noteNum} primary />)
         }
         <div className="content">
           { dataIsReady ? this.renderUserContent() : this.renderLoader() }

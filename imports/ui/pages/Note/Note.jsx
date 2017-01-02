@@ -15,9 +15,11 @@ import { makeCancelable } from '/imports/utils/utils.js';
 import { Notes } from '/imports/api/notes/note.js';
 import { readAllNotes } from '/imports/api/notes/methods.js';
 import Infinity from '/imports/ui/components/Infinity/Infinity.jsx';
-import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
+import ConnectedNavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
 import NoteHolder from '/imports/ui/components/Note/NoteHolder.jsx';
 import { snackBarOpen } from '/imports/ui/redux/actions/actionTypes.js';
+
+const sourceDomain = Meteor.settings.public.source;
 
 const styles = {
   indeterminateProgress: {
@@ -113,7 +115,7 @@ class NotePage extends Component {
       return (
         <div className="Empty">
           <div className="Empty__container">
-            <img className="Empty__logo" src="/img/empty.png" role="presentation" />
+            <img className="Empty__logo" src={`${sourceDomain}/GalleryPlus/Default/empty.png`} role="presentation" />
             <h2 className="Empty__header">Oops!</h2>
             <p className="Empty__info">暂未收到新消息</p>
           </div>
@@ -155,7 +157,7 @@ class NotePage extends Component {
     const { User, dataIsReady } = this.props;
     return (
       <div className="container">
-        <NavHeader
+        <ConnectedNavHeader
           User={User}
           title="未读消息"
           onTitleTouchTap={() => scrollTo(0, 1500)}

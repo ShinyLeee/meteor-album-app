@@ -16,11 +16,13 @@ import { blue500 } from 'material-ui/styles/colors';
 import { Images } from '/imports/api/images/image.js';
 import { removeImages, recoveryImages } from '/imports/api/images/methods.js';
 import scrollTo from '/imports/utils/scrollTo.js';
-import { SelectIcon } from '/imports/ui/components/Justified/SelectStatus.jsx';
-import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
-import SelectableImage from '/imports/ui/components/Justified/SelectableImage.jsx';
+import { SelectableIcon } from '/imports/ui/components/Justified/SelectableStatus.jsx';
+import ConnectedNavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
+import ConnectedSelectableImageHolder from '/imports/ui/components/Justified/SelectableImageHolder.jsx';
 import GridLayout from '/imports/ui/components/GridLayout/GridLayout.jsx';
 import { enableSelectAll, disableSelectAll, snackBarOpen } from '/imports/ui/redux/actions/actionTypes.js';
+
+const sourceDomain = Meteor.settings.public.source;
 
 const styles = {
   AppBarIconSvg: {
@@ -133,7 +135,7 @@ class RecyclePage extends Component {
       return (
         <div className="Empty">
           <div className="Empty__container">
-            <img className="Empty__logo" src="/img/empty.png" role="presentation" />
+            <img className="Empty__logo" src={`${sourceDomain}/GalleryPlus/Default/empty.png`} role="presentation" />
             <h2 className="Empty__header">Oops!</h2>
             <p className="Empty__info">您的回收站暂时是空闲的</p>
           </div>
@@ -149,14 +151,14 @@ class RecyclePage extends Component {
         <div className="recycle__content">
           <div className="recycle__toolbox">
             <div className="recycle__toolbox_left" onTouchTap={this.handleToggleSelectAll}>
-              <SelectIcon activate={this.state.isAllSelect} />
+              <SelectableIcon activate={this.state.isAllSelect} />
               <h4>选择全部</h4>
             </div>
           </div>
           <GridLayout>
             {
               images.map((image, i) => (
-                <SelectableImage
+                <ConnectedSelectableImageHolder
                   key={i}
                   image={image}
                   total={images.length}
@@ -210,7 +212,7 @@ class RecyclePage extends Component {
       : (<IconButton onTouchTap={() => browserHistory.goBack()}><ArrowBackIcon /></IconButton>);
     return (
       <div className="container">
-        <NavHeader
+        <ConnectedNavHeader
           User={User}
           title={counter ? `选择了${counter}张照片` : '回收站'}
           onTitleTouchTap={() => scrollTo(0, 1500)}

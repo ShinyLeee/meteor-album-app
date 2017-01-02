@@ -25,6 +25,7 @@ import { purple500 } from 'material-ui/styles/colors';
 import scrollTo from '/imports/utils/scrollTo.js';
 import { snackBarOpen } from '/imports/ui/redux/actions/actionTypes.js';
 
+const sourceDomain = Meteor.settings.public.source;
 const styles = {
   AppBar: {
     position: 'fixed',
@@ -88,12 +89,12 @@ export class NavHeader extends Component {
   }
 
   get avatarSrc() {
-    const defaultAvatar = '/img/default-avatar.jpg';
+    const defaultAvatar = `${sourceDomain}/GalleryPlus/Default/default-avatar.jpg`;
     return this.props.User ? this.props.User.profile.avatar : defaultAvatar;
   }
 
   get coverSrc() {
-    const defaultCover = 'url(/img/default-cover.jpg)';
+    const defaultCover = `url(${sourceDomain}/GalleryPlus/Default/default-cover.jpg)`;
     return this.props.User ? `url(${this.props.User.profile.cover})` : defaultCover;
   }
 

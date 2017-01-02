@@ -3,7 +3,9 @@ import { createContainer } from 'meteor/react-meteor-data';
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import { Notes } from '/imports/api/notes/note.js';
-import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
+import ConnectedNavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
+
+const sourceDomain = Meteor.settings.public.source;
 
 class InternalError extends Component {
 
@@ -18,11 +20,11 @@ class InternalError extends Component {
     const { User, noteNum } = this.props;
     return (
       <div className="container">
-        <NavHeader User={User} location={this.state.location} noteNum={noteNum} primary />
+        <ConnectedNavHeader User={User} location={this.state.location} noteNum={noteNum} primary />
         <div className="content Error">
           <div className="Error__container">
             <h2 className="Error__status">Error: 500 Unexpected Error</h2>
-            <img className="Error__logo" src="/img/500.png" alt="500 Unexpected Error" />
+            <img className="Error__logo" src={`${sourceDomain}/GalleryPlus/Error/500.png`} alt="500 Unexpected Error" />
             <p className="Error__info">服务器内部发生错误</p>
             <p className="Error__info">
               请检查地址是否输入正确&nbsp;

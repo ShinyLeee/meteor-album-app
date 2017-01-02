@@ -6,7 +6,7 @@ import { makeCancelable } from '/imports/utils/utils.js';
 import { Images } from '/imports/api/images/image.js';
 import { Notes } from '/imports/api/notes/note.js';
 import Infinity from '/imports/ui/components/Infinity/Infinity.jsx';
-import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
+import ConnectedNavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
 import Recap from '/imports/ui/components/Recap/Recap.jsx';
 import PicHolder from '/imports/ui/components/PicHolder/PicHolder.jsx';
 import ZoomerHolder from '/imports/ui/components/ZoomerHolder/ZoomerHolder.jsx';
@@ -125,7 +125,7 @@ class IndexPage extends Component {
     const { User, noteNum, dataIsReady } = this.props;
     return (
       <div className="container">
-        <NavHeader User={User} location={this.state.location} noteNum={noteNum} primary />
+        <ConnectedNavHeader User={User} location={this.state.location} noteNum={noteNum} primary />
         <div className="content">
           <Recap
             title="Gallery"

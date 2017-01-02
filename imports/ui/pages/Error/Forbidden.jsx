@@ -3,7 +3,9 @@ import { createContainer } from 'meteor/react-meteor-data';
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import { Notes } from '/imports/api/notes/note.js';
-import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
+import ConnectedNavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
+
+const sourceDomain = Meteor.settings.public.source;
 
 class Forbidden extends Component {
 
@@ -18,11 +20,11 @@ class Forbidden extends Component {
     const { User, noteNum, location } = this.props;
     return (
       <div className="container">
-        <NavHeader User={User} location={this.state.location} noteNum={noteNum} primary />
+        <ConnectedNavHeader User={User} location={this.state.location} noteNum={noteNum} primary />
         <div className="content Error">
           <div className="Error__container">
             <h2 className="Error__status">Error: 403 Access Denied</h2>
-            <img className="Error__logo" src="/img/403.png" alt="403 Access Denied" />
+            <img className="Error__logo" src={`${sourceDomain}/GalleryPlus/Error/403.png`} alt="403 Access Denied" />
             <p className="Error__info">您没有权限访问该页面</p>
             {
               (location.state && location.state.message)

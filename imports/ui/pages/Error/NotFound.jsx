@@ -3,7 +3,9 @@ import { createContainer } from 'meteor/react-meteor-data';
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import { Notes } from '/imports/api/notes/note.js';
-import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
+import ConnectedNavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
+
+const sourceDomain = Meteor.settings.public.source;
 
 class NotFound extends Component {
 
@@ -18,11 +20,11 @@ class NotFound extends Component {
     const { User, noteNum } = this.props;
     return (
       <div className="container">
-        <NavHeader User={User} location={this.state.location} noteNum={noteNum} primary />
+        <ConnectedNavHeader User={User} location={this.state.location} noteNum={noteNum} primary />
         <div className="content Error">
           <div className="Error__container">
             <h2 className="Error__status">Error: 404 Page Not Found</h2>
-            <img className="Error__logo" src="/img/404.png" alt="404 Not Found" />
+            <img className="Error__logo" src={`${sourceDomain}/GalleryPlus/Error/404.png`} alt="404 Not Found" />
             <p className="Error__info">您访问的这个页面不存在</p>
             <p className="Error__info">
               请检查地址是否输入正确&nbsp;

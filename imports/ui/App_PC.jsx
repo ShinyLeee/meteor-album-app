@@ -1,11 +1,14 @@
+import { Meteor } from 'meteor/meteor';
 import React, { Component } from 'react';
 
-const src1 = 'http://odsiu8xnd.bkt.clouddn.com/GalleryPlus/show/1.jpg?imageView2/1/w/180/h/210';
-const src2 = 'http://odsiu8xnd.bkt.clouddn.com/GalleryPlus/show/2.jpg?imageView2/1/w/180/h/210';
-const src3 = 'http://odsiu8xnd.bkt.clouddn.com/GalleryPlus/show/3.jpg?imageView2/1/w/180/h/210';
-const src4 = 'http://odsiu8xnd.bkt.clouddn.com/GalleryPlus/show/4.jpg?imageView2/1/w/180/h/210';
-const src5 = 'http://odsiu8xnd.bkt.clouddn.com/GalleryPlus/show/5.jpg?imageView2/1/w/180/h/210';
-const src6 = 'http://odsiu8xnd.bkt.clouddn.com/GalleryPlus/show/6.jpg?imageView2/1/w/180/h/210';
+const sourceDomain = Meteor.settings.public.source;
+
+const src1 = `${sourceDomain}/GalleryPlus/PC/1.jpg?imageView2/1/w/180/h/210`;
+const src2 = `${sourceDomain}/GalleryPlus/PC/2.jpg?imageView2/1/w/180/h/210`;
+const src3 = `${sourceDomain}/GalleryPlus/PC/3.jpg?imageView2/1/w/180/h/210`;
+const src4 = `${sourceDomain}/GalleryPlus/PC/4.jpg?imageView2/1/w/180/h/210`;
+const src5 = `${sourceDomain}/GalleryPlus/PC/5.jpg?imageView2/1/w/180/h/210`;
+const src6 = `${sourceDomain}/GalleryPlus/PC/6.jpg?imageView2/1/w/180/h/210`;
 
 export default class PC extends Component {
 

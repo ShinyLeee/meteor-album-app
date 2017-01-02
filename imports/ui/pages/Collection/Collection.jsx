@@ -20,6 +20,7 @@ import ColHolder from '/imports/ui/components/ColHolder/ColHolder.jsx';
 import { snackBarOpen } from '/imports/ui/redux/actions/actionTypes.js';
 
 const clientWidth = document.body.clientWidth;
+const sourceDomain = Meteor.settings.public.source;
 
 const styles = {
   floatBtn: {
@@ -106,7 +107,7 @@ class CollectionPage extends Component {
       return (
         <div className="Empty">
           <div className="Empty__container">
-            <img className="Empty__logo" src="/img/empty.png" role="presentation" />
+            <img className="Empty__logo" src={`${sourceDomain}/GalleryPlus/Default/empty.png`} role="presentation" />
             <h2 className="Empty__header">Oops</h2>
             <p className="Empty__info">你还尚未创建相册</p>
             <p className="Empty__info">点击右下角按钮创建属于自己的相册吧</p>

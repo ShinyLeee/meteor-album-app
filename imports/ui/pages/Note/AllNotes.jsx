@@ -9,8 +9,10 @@ import ArrowBackIcon from 'material-ui/svg-icons/navigation/arrow-back';
 import { blue500 } from 'material-ui/styles/colors';
 import scrollTo from '/imports/utils/scrollTo.js';
 import { Notes } from '/imports/api/notes/note.js';
-import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
+import ConnectedNavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
 import NoteHolder from '/imports/ui/components/Note/NoteHolder.jsx';
+
+const sourceDomain = Meteor.settings.public.source;
 
 const styles = {
   indeterminateProgress: {
@@ -28,7 +30,7 @@ class AllNotesPage extends Component {
       return (
         <div className="Empty">
           <div className="Empty__container">
-            <img className="Empty__logo" src="/img/empty.png" role="presentation" />
+            <img className="Empty__logo" src={`${sourceDomain}/GalleryPlus/Default/empty.png`} role="presentation" />
             <h2 className="Empty__header">Oops!</h2>
             <p className="Empty__info">您还未收到消息</p>
           </div>
@@ -56,7 +58,7 @@ class AllNotesPage extends Component {
     const { User, dataIsReady } = this.props;
     return (
       <div className="container">
-        <NavHeader
+        <ConnectedNavHeader
           User={User}
           title="全部消息"
           style={{ backgroundColor: blue500 }}

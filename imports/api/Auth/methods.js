@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-// import { _ } from 'meteor/underscore';
+import { _ } from 'meteor/underscore';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
-// import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
+import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 
 if (Meteor.isServer) {
   Meteor.methods({
@@ -47,19 +47,20 @@ if (Meteor.isServer) {
 
   });
 
-  // const AUTH_METHODS = _.pluck([
-  //   isLogin,
-  //   isAdmin,
-  //   isAllowVisit,
-  // ], 'name');
+  const AUTH_METHODS = [
+    'isLogin',
+    'isAdmin',
+    'isAllowVisitHome',
+    'isAllowVisitColl',
+  ];
 
   // Only allow 1 user operations per connection per second
-  // DDPRateLimiter.addRule({
-  //   name(name) {
-  //     return _.contains(AUTH_METHODS, name);
-  //   },
+  DDPRateLimiter.addRule({
+    name(name) {
+      return _.contains(AUTH_METHODS, name);
+    },
 
-  //   // Rate limit per connection ID
-  //   connectionId() { return true; },
-  // }, 1, 1000);
+    // Rate limit per connection ID
+    connectionId() { return true; },
+  }, 1, 1000);
 }

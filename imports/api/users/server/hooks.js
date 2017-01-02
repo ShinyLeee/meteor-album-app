@@ -1,12 +1,14 @@
+import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 
 Accounts.onCreateUser((options, user) => {
   let curUser = user;
+  const sourceDomain = Meteor.settings.public.source;
   curUser.profile = {
     nickname: '',
     intro: '',
-    avatar: '/img/default-avatar.jpg',
-    cover: '/img/default-cover.jpg',
+    avatar: `${sourceDomain}/GalleryPlus/Default/default-avatar.jpg`,
+    cover: `${sourceDomain}/GalleryPlus/Default/default-cover.jpg`,
     followers: [],
     settings: {
       allowNoti: true,

@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import { purple500, grey500 } from 'material-ui/styles/colors';
-import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
+import ConnectedNavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
 import { snackBarOpen } from '/imports/ui/redux/actions/actionTypes.js';
 
 const styles = {
@@ -51,7 +51,7 @@ class LoginPage extends Component {
   render() {
     return (
       <div className="container">
-        <NavHeader primary />
+        <ConnectedNavHeader primary />
         <div className="login">
           <div className="login__logo">Gallery +</div>
           <div className="login__form">

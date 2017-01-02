@@ -7,9 +7,7 @@
 import { Meteor } from 'meteor/meteor';
 
 if (Meteor.isClient) {
-  // import { Factory } from 'meteor/dburles:factory';
   import React from 'react';
-  // import faker from 'faker';
   import { shallow } from 'enzyme';
   import { chai } from 'meteor/practicalmeteor:chai';
   import { JustifiedGroupHolder } from './JustifiedGroupHolder.jsx';
@@ -76,7 +74,7 @@ if (Meteor.isClient) {
       .to.equal(false, 'When specfic day group exist but value not equal to groupTotal');
     });
 
-    it('should isGroupSelect state behave righ when group\'s key change', function () {
+    it('should isGroupSelect state behave right when group\'s key change', function () {
       wrapper.setProps({ group: null });
       expect(wrapper.state('isGroupSelect'))
       .to.equal(false, 'When group prop is NULL');

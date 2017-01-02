@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-// import { _ } from 'meteor/underscore';
+import { _ } from 'meteor/underscore';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
-// import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
+import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 
 if (Meteor.isServer) {
   import qiniu from 'qiniu';
@@ -79,18 +79,19 @@ if (Meteor.isServer) {
 
   });
 
-  // const QINIU_METHODS = _.pluck([
-  //   getUptoken,
-  //   move,
-  // ], 'name');
+  const QINIU_METHODS = [
+    'getUptoken',
+    'move',
+    'remove',
+  ];
 
-  // Only allow 1 user operations per connection per second
-  // DDPRateLimiter.addRule({
-  //   name(name) {
-  //     return _.contains(QINIU_METHODS, name);
-  //   },
+  // Only allow 2 operations per connection per 5 second
+  DDPRateLimiter.addRule({
+    name(name) {
+      return _.contains(QINIU_METHODS, name);
+    },
 
-  //   // Rate limit per connection ID
-  //   connectionId() { return true; },
-  // }, 1, 1000);
+    // Rate limit per connection ID
+    connectionId() { return true; },
+  }, 2, 5000);
 }

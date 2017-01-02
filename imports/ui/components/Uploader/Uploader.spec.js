@@ -7,9 +7,7 @@
 import { Meteor } from 'meteor/meteor';
 
 if (Meteor.isClient) {
-  // import { Factory } from 'meteor/dburles:factory';
   import React from 'react';
-  // import faker from 'faker';
   import { shallow } from 'enzyme';
   import { chai } from 'meteor/practicalmeteor:chai';
   import { Uploader } from './Uploader.jsx';
@@ -36,11 +34,11 @@ if (Meteor.isClient) {
       expect(openWrapper.children('input')).to.have.length(1);
     });
 
-    it('should render input when uploading', function () {
+    it('should not render input when uploading', function () {
       const wrapper = shallow(<Uploader open />);
       wrapper.setProps({ destination: 'test' });
       wrapper.setState({ uploading: true }, () => {
-        expect(wrapper.children('input')).to.have.length(1);
+        expect(wrapper.children('input')).to.have.length(0);
       });
     });
   });

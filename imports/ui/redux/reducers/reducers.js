@@ -24,7 +24,7 @@ export const zoomer = (state = null, action) => {
 export const uploader = (state = null, action) => {
   switch (action.type) {
     case 'UPLOADER_START':
-      return Object.assign(action.uploader, { open: true });
+      return Object.assign({}, action.uploader, { open: true });
     case 'UPLOADER_STOP':
       return null;
     default:
@@ -73,9 +73,10 @@ export const selectCounter = (state = { selectImages: [], group: null, counter: 
      */
     case 'SELECT_COUNTER': {
       let group;
-      if (!state.group) group = { [action.group]: action.counter };
+      const day = action.group;
+      if (!state.group) group = { [day]: action.counter };
       else {
-        const newGroup = { [action.group]: (state.group[action.group] || 0) + action.counter };
+        const newGroup = { [day]: (state.group[day] || 0) + action.counter };
         group = _.extend(state.group, newGroup);
       }
       let selectImages;
@@ -95,6 +96,7 @@ export const selectCounter = (state = { selectImages: [], group: null, counter: 
       }
       // console.log(selectImages);
       const counter = state.counter + action.counter;
+      if (counter === 0) group = null;
       const globalCounter = Object.assign({}, { selectImages }, { group }, { counter });
       return globalCounter;
     }
@@ -115,13 +117,14 @@ export const selectCounter = (state = { selectImages: [], group: null, counter: 
      */
     case 'SELECT_GROUP_COUNTER': {
       let group;
+      const day = action.group;
       let trueCounter = action.counter;
-      if (!state.group) group = { [action.group]: action.counter };
+      if (!state.group) group = { [day]: action.counter };
       else {
         if (action.counter > 0) {
-          trueCounter = action.counter - (state.group[action.group] || 0);
+          trueCounter = action.counter - (state.group[day] || 0);
         }
-        const newGroup = { [action.group]: (state.group[action.group] || 0) + trueCounter };
+        const newGroup = { [day]: (state.group[day] || 0) + trueCounter };
         group = _.extend(state.group, newGroup);
       }
       let selectImages;
@@ -146,6 +149,7 @@ export const selectCounter = (state = { selectImages: [], group: null, counter: 
       }
       // console.log(selectImages);
       const counter = state.counter + trueCounter;
+      if (counter === 0) group = null;
       const globalCounter = Object.assign({}, { selectImages }, { group }, { counter });
       return globalCounter;
     }

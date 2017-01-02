@@ -3,7 +3,9 @@ import { createContainer } from 'meteor/react-meteor-data';
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import { Notes } from '/imports/api/notes/note.js';
-import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
+import ConnectedNavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
+
+const sourceDomain = Meteor.settings.public.source;
 
 class Construction extends Component {
 
@@ -18,11 +20,11 @@ class Construction extends Component {
     const { User, noteNum } = this.props;
     return (
       <div className="container">
-        <NavHeader User={User} location={this.state.location} noteNum={noteNum} primary />
+        <ConnectedNavHeader User={User} location={this.state.location} noteNum={noteNum} primary />
         <div className="content Error">
           <div className="Error__container">
             <h2 className="Error__status">This Page is Under Construction</h2>
-            <img className="Error__logo" src="/img/Construction.png" alt="Under Construction" />
+            <img className="Error__logo" src={`${sourceDomain}/GalleryPlus/Error/Construction.png`} alt="Under Construction" />
             <p className="Error__info">该页面正在紧张的开发中</p>
             <p className="Error__info">
               请检查地址是否输入正确&nbsp;

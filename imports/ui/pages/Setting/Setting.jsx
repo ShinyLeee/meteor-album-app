@@ -23,7 +23,7 @@ import EmailIcon from 'material-ui/svg-icons/communication/email';
 import { blue500 } from 'material-ui/styles/colors';
 import { Notes } from '/imports/api/notes/note.js';
 import { updateUser } from '/imports/api/users/methods.js';
-import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
+import ConnectedNavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
 import { snackBarOpen } from '/imports/ui/redux/actions/actionTypes.js';
 
 const domain = Meteor.settings.public.domain;
@@ -173,7 +173,7 @@ class SettingPage extends Component {
   renderEditingNavHeader() {
     const { User } = this.props;
     return (
-      <NavHeader
+      <ConnectedNavHeader
         User={User}
         title={this.state.isProcessing ? '上传图片中' : '修改设置中'}
         style={{ backgroundColor: blue500 }}
@@ -384,7 +384,7 @@ class SettingPage extends Component {
       <div className="container">
         { this.state.isEditing
           ? this.renderEditingNavHeader()
-          : (<NavHeader User={User} location={this.state.location} noteNum={noteNum} primary />) }
+          : (<ConnectedNavHeader User={User} location={this.state.location} noteNum={noteNum} primary />) }
         <div className="content">
           { this.state.isProcessing && <LinearProgress style={styles.indeterminateProgress} mode="indeterminate" /> }
           { User && this.renderSettingContent() }

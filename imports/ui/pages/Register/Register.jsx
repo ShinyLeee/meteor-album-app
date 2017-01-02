@@ -7,7 +7,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import { purple500, grey500 } from 'material-ui/styles/colors';
 import { createUser } from '/imports/api/users/methods.js';
 import { checkCode, useCode } from '/imports/api/codes/methods.js';
-import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
+import ConnectedNavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
 import { snackBarOpen } from '/imports/ui/redux/actions/actionTypes.js';
 
 const styles = {
@@ -74,7 +74,7 @@ class RegisterPage extends Component {
   render() {
     return (
       <div className="container">
-        <NavHeader primary />
+        <ConnectedNavHeader primary />
         <div className="register">
           <div className="register__logo">Gallery +</div>
           <div className="register__form">
