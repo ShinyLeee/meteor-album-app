@@ -15,7 +15,7 @@ class CodesCollection extends Mongo.Collection {
 export const Codes = new CodesCollection('codes');
 
 Codes.schema = new SimpleSchema({
-  no: { type: String, label: '激活码' },
+  no: { type: String, label: '激活码', denyUpdate: true },
   isUsed: { type: Boolean, label: '是否已使用' },
 });
 

@@ -20,8 +20,8 @@ Notes.schema = new SimpleSchema({
   sender: { type: String, label: '发送者', regEx: SimpleSchema.RegEx.Id },
   receiver: { type: String, label: '接收者', regEx: SimpleSchema.RegEx.Id },
   isRead: { type: Boolean, defaultValue: false, optional: true },
-  sendAt: { type: Date, label: '发送时间', defaultValue: new Date() },
-  createdAt: { type: Date, defaultValue: new Date(), optional: true },
+  sendAt: { type: Date, label: '发送时间' },
+  createdAt: { type: Date, denyUpdate: true },
 });
 
 Notes.attachSchema(Notes.schema);

@@ -190,14 +190,14 @@ if (Meteor.isClient) {
           counter: 1,
         };
         const increAction = {
-          selectImages: [{ _id: 1, name: '2016' }, { _id: 2, name: '12-31' }],
+          selectImages: [{ _id: 2, name: '2016' }, { _id: 3, name: '12-31' }],
           group: '2016-12-31',
           counter: 2,
         };
         const actionWithType = Object.assign({}, { type: 'SELECT_GROUP_COUNTER' }, increAction);
         const nextState = reducers.selectCounter(prevState, actionWithType);
         const expectState = {
-          selectImages: [{ _id: 1, name: 'test' }, { _id: 1, name: '2016' }, { _id: 2, name: '12-31' }],
+          selectImages: [{ _id: 1, name: 'test' }, { _id: 2, name: '2016' }, { _id: 3, name: '12-31' }],
           group: { '2016-12-31': 2, '2017-1-1': 1 },
           counter: 3,
         };
@@ -206,12 +206,12 @@ if (Meteor.isClient) {
 
       it('should SELECT_GROUP_COUNTER decrement action behave right when ARBITRAY DISSELECT', () => {
         const prevState = {
-          selectImages: [{ _id: 1, name: 'test' }, { _id: 1, name: '2016' }, { _id: 2, name: '12-31' }],
+          selectImages: [{ _id: 1, name: 'test' }, { _id: 2, name: '2016' }, { _id: 3, name: '12-31' }],
           group: { '2016-12-31': 2, '2017-1-1': 1 },
           counter: 3,
         };
         const decreAction = {
-          selectImages: [{ _id: 1, name: '2016' }, { _id: 2, name: '12-31' }],
+          selectImages: [{ _id: 2, name: '2016' }, { _id: 3, name: '12-31' }],
           group: '2016-12-31',
           counter: -2,
         };

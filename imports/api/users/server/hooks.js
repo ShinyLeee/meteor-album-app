@@ -1,22 +1,9 @@
-import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
+import { defaultUserProfile } from '../user.js';
 
 Accounts.onCreateUser((options, user) => {
   let curUser = user;
-  const sourceDomain = Meteor.settings.public.source;
-  curUser.profile = {
-    nickname: '',
-    intro: '',
-    avatar: `${sourceDomain}/GalleryPlus/Default/default-avatar.jpg`,
-    cover: `${sourceDomain}/GalleryPlus/Default/default-cover.jpg`,
-    followers: [],
-    settings: {
-      allowNoti: true,
-      allowMsg: true,
-      allowVisitHome: true,
-      allowVisitColl: true,
-    },
-  };
+  curUser.profile = defaultUserProfile;
   curUser.createdAt = new Date();
   curUser = Object.assign({}, curUser);
   return curUser;

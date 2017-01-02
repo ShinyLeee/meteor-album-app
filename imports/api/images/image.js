@@ -1,5 +1,8 @@
 import { Mongo } from 'meteor/mongo';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
+import { Factory } from 'meteor/dburles:factory';
+import faker from 'faker';
+import { getRandomArbitrary } from '/imports/utils/utils';
 
 class ImagesCollection extends Mongo.Collection {
   insert(image, cb) {
@@ -15,9 +18,9 @@ class ImagesCollection extends Mongo.Collection {
 export const Images = new ImagesCollection('images');
 
 Images.schema = new SimpleSchema({
-  uid: { type: String, regEx: SimpleSchema.RegEx.Id },
-  user: { type: String, label: '用户名', max: 10 },
-  collection: { type: String, label: '相册', max: 10 },
+  uid: { type: String, regEx: SimpleSchema.RegEx.Id, denyUpdate: true },
+  user: { type: String, label: '用户名', max: 19, denyUpdate: true },
+  collection: { type: String, label: '相册', max: 19 },
   name: { type: String, label: '图片名' },
   type: { type: String, label: '图片类型', defaultValue: 'jpg' },
   ratio: { type: Number, label: '图片纵横比', decimal: true },
@@ -25,8 +28,8 @@ Images.schema = new SimpleSchema({
   download: { type: Number, defaultValue: 0, optional: true },
   private: { type: Boolean, defaultValue: false, optional: true },
   shootAt: { type: Date, label: '拍摄日期' },
-  createdAt: { type: Date, defaultValue: new Date(), optional: true },
-  updatedAt: { type: Date, defaultValue: new Date(), optional: true },
+  createdAt: { type: Date, denyUpdate: true },
+  updatedAt: { type: Date, optional: true },
   deletedAt: { type: Date, defaultValue: null, optional: true },
 });
 
@@ -37,4 +40,14 @@ Images.deny({
   insert() { return true; },
   update() { return true; },
   remove() { return true; },
+});
+
+Factory.define('image', Images, {
+  uid: () => Factory.get('user'),
+  user: () => faker.internet.userName(),
+  collection: () => faker.random.word(),
+  name: () => faker.random.uuid(),
+  ratio: () => Math.round(getRandomArbitrary(0.5, 2) * 10) / 10,
+  shootAt: () => new Date(),
+  createdAt: () => new Date(),
 });

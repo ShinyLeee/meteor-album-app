@@ -6,9 +6,9 @@
   "author": "shinylee <lshinylee007@gmail.com>",
   "scripts": {
     "start": "meteor --settings settings-development.json",
-    "test": "meteor test --settings settings-development.json --once --driver-package practicalmeteor:mocha",
-    "test-watch": "meteor test --settings settings-development.json --driver-package practicalmeteor:mocha --port 3100",
-    "test-app-watch": "meteor test --settings settings-development.json --full-app --driver-package practicalmeteor:mocha --port 3100",
+    "test": "meteor test --settings settings-test.json --once --driver-package practicalmeteor:mocha",
+    "test-watch": "meteor test --settings settings-test.json --driver-package practicalmeteor:mocha --port 3100",
+    "test-app-watch": "meteor test --settings settings-test.json --full-app --driver-package practicalmeteor:mocha --port 3100",
     "lint": "eslint --ext .js,.jsx ."
   },
   "dependencies": {

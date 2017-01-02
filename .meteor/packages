@@ -31,3 +31,4 @@ practicalmeteor:mocha
 dburles:factory
 practicalmeteor:chai
 practicalmeteor:sinon
+johanbrook:publication-collector
