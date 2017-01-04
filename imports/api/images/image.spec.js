@@ -1,36 +1,41 @@
 import { Meteor } from 'meteor/meteor';
+import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import { Factory } from 'meteor/dburles:factory';
-// import { PublicationCollector } from 'meteor/publication-collector';
-import { chai, assert, expect } from 'meteor/practicalmeteor:chai';
+// import { PublicationCollector } from 'meteor/johanbrook:publication-collector';
+import { assert, expect } from 'meteor/practicalmeteor:chai';
 // import { Random } from 'meteor/random';
 // import { _ } from 'meteor/underscore';
+import faker from 'faker';
 import { Images } from './image.js';
 
 if (Meteor.isServer) {
   import './server/publications.js';
 
   describe('image API', () => {
-    describe('mutators', () => {
+    describe('factory', () => {
       it('should builds correctly from factory', () => {
         const image = Factory.create('image');
-        expect(image).to.be.an('object');
-        expect(image.ratio).to.be.a('number');
-        expect(image.shootAt).to.be.an.instanceof(Date);
-        expect(image.createdAt).to.be.an.instanceof(Date);
+        assert.match(image.uid, SimpleSchema.RegEx.Id, 'uid field must be MongoId');
+        assert.typeOf(image.user, 'string', 'user field must be String');
+        assert.typeOf(image.collection, 'string', 'collection field must be String');
+        assert.typeOf(image.name, 'string', 'name field must be String');
+        assert.typeOf(image.ratio, 'number');
+        assert.typeOf(image.shootAt, 'date');
+        assert.typeOf(image.createdAt, 'date');
       });
     });
 
-    // it('should leaves createdAt on update', () => {
-    //   const createdAt = new Date(new Date() - 1000);
-    //   let todo = Factory.create('todo', { createdAt });
+    it('should not update createdAt on update', () => {
+      const createdAt = new Date(new Date() - 1000);
+      let image = Factory.create('image', { createdAt });
 
-    //   const text = 'some new text';
-    //   Images.update(todo, { $set: { text } });
+      const collection = faker.random.word();
+      Images.update(image, { $set: { collection } });
 
-    //   todo = Images.findOne(todo._id);
-    //   assert.equal(todo.text, text);
-    //   assert.equal(todo.createdAt.getTime(), createdAt.getTime());
-    // });
+      image = Images.findOne(image._id);
+      expect(image.collection).to.be.equal(collection, 'should update collection');
+      expect(image.createdAt.getTime()).to.be.equal(createdAt.getTime());
+    });
 
     // describe('publications', () => {
     //   let publicList;

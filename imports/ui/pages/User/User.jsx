@@ -67,7 +67,7 @@ class UserPage extends Component {
   handleFollow() {
     const { User, curUser, dispatch } = this.props;
     if (!User) return dispatch(snackBarOpen('您还尚未登录'));
-    return followUser.call({ follower: User._id, target: curUser._id }, (err, res) => {
+    return followUser.call({ target: curUser._id }, (err, res) => {
       if (err) throw new Meteor.Error(err.reason);
       dispatch(snackBarOpen('关注成功'));
       return res;
@@ -77,7 +77,7 @@ class UserPage extends Component {
   handleUnFollow() {
     const { User, curUser, dispatch } = this.props;
     if (!User) return dispatch(snackBarOpen('您还尚未登录'));
-    return unFollowUser.call({ unFollower: User._id, target: curUser._id }, (err, res) => {
+    return unFollowUser.call({ target: curUser._id }, (err, res) => {
       if (err) throw new Meteor.Error(err.reason);
       dispatch(snackBarOpen('取消关注成功'));
       return res;

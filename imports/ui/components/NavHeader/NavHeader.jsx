@@ -25,7 +25,7 @@ import { purple500 } from 'material-ui/styles/colors';
 import scrollTo from '/imports/utils/scrollTo.js';
 import { snackBarOpen } from '/imports/ui/redux/actions/creators.js';
 
-const sourceDomain = Meteor.settings.public.source;
+const sourceDomain = Meteor.settings.public.sourceDomain;
 const styles = {
   AppBar: {
     position: 'fixed',

@@ -12,7 +12,7 @@ import { Notes } from '/imports/api/notes/note.js';
 import ConnectedNavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
 import NoteHolder from '/imports/ui/components/Note/NoteHolder.jsx';
 
-const sourceDomain = Meteor.settings.public.source;
+const sourceDomain = Meteor.settings.public.sourceDomain;
 
 const styles = {
   indeterminateProgress: {

@@ -12,12 +12,12 @@ export const createUser = new ValidatedMethod({
   name: 'users.createUser',
   mixins: [CallPromiseMixin],
   validate: new SimpleSchema({
-    username: { type: String, regEx: /^([a-z]|[A-Z])[\w_]{3,19}$/ },
+    username: { type: String, label: '用户名', max: 20 },
     password: { type: String },
   }).validator({ clean: true, filter: false }),
   run({ username, password }) {
     if (this.userId) {
-      throw new Meteor.Error(403, 'Access Denied');
+      throw new Meteor.Error('api.users.createUser.hasLoggedIn');
     }
     Accounts.createUser({ username, password });
   },
@@ -27,8 +27,8 @@ export const createUser = new ValidatedMethod({
  * Clean: Intended to be called prior to validation to avoid any avoidable validation errors.
  * Filter: Filter out properties not found in the schema? True by default.
  */
-export const updateUser = new ValidatedMethod({
-  name: 'users.update',
+export const updateProfile = new ValidatedMethod({
+  name: 'users.updateProfile',
   validate: new SimpleSchema({
     nickname: { type: String, label: '昵称', max: 10, optional: true },
     intro: { type: String, label: '个人简介', max: 20, optional: true },
@@ -39,7 +39,7 @@ export const updateUser = new ValidatedMethod({
   }).validator({ clean: true, filter: false }),
   run({ nickname, intro, cover, avatar, settings }) {
     if (!this.userId) {
-      throw new Meteor.Error('user.accessDenied');
+      throw new Meteor.Error('api.users.updateProfile.notLoggedIn');
     }
     const User = Meteor.users.findOne(this.userId);
     let newProfile = {
@@ -55,36 +55,41 @@ export const updateUser = new ValidatedMethod({
 });
 
 export const followUser = new ValidatedMethod({
-  name: 'users.follow',
+  name: 'users.followUser',
   validate: new SimpleSchema({
-    follower: { type: String, label: '关注者', regEx: SimpleSchema.RegEx.Id },
     target: { type: String, label: '被关注者', regEx: SimpleSchema.RegEx.Id },
   }).validator({ clean: true, filter: false }),
-  run({ follower, target }) {
+  run({ target }) {
     if (!this.userId) {
-      throw new Meteor.Error('user.accessDenied');
+      throw new Meteor.Error('api.users.followUser.notLoggedIn');
     }
-    return Users.update(target, { $addToSet: { 'profile.followers': follower } });
+    if (this.userId === target) {
+      throw new Meteor.Error('api.users.followUser.targetDenied');
+    }
+    return Users.update(target, { $addToSet: { 'profile.followers': this.userId } });
   },
 });
 
 export const unFollowUser = new ValidatedMethod({
-  name: 'users.unFollow',
+  name: 'users.unFollowUser',
   validate: new SimpleSchema({
-    unFollower: { type: String, label: '取消关注者', regEx: SimpleSchema.RegEx.Id },
     target: { type: String, label: '被取消关注者', regEx: SimpleSchema.RegEx.Id },
   }).validator({ clean: true, filter: false }),
-  run({ unFollower, target }) {
+  run({ target }) {
     if (!this.userId) {
-      throw new Meteor.Error('user.accessDenied');
+      throw new Meteor.Error('api.users.unFollowUser.notLoggedIn');
     }
-    return Users.update(target, { $pull: { 'profile.followers': unFollower } });
+    if (this.userId === target) {
+      throw new Meteor.Error('api.users.unFollowUser.targetDenied');
+    }
+    return Users.update(target, { $pull: { 'profile.followers': this.userId } });
   },
 });
 
 // Get list of all method names on Users
 const USERS_METHODS = _.pluck([
-  updateUser,
+  createUser,
+  updateProfile,
   followUser,
   unFollowUser,
 ], 'name');

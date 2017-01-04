@@ -17,18 +17,29 @@ es5-shim@4.6.15                # ECMAScript 5 compatibility for older browsers.
 ecmascript@0.6.1              # Enable ECMAScript2015+ syntax in app code
 shell-server@0.2.1            # Server-side component of the `meteor shell` command
 
+# standard libraries
 less@2.7.8
+
+# data
 react-meteor-data
-accounts-password@1.3.3
 aldeed:simple-schema
 aldeed:collection2
 mdg:validated-method
-percolate:migrations
+
+# accounts
+accounts-password@1.3.3
+
+# promise
 deanius:promise
 didericis:callpromise-mixin
+
+# production
 nitrolabs:cdn
-practicalmeteor:mocha
+percolate:migrations
+
+# testing
 dburles:factory
+practicalmeteor:mocha
 practicalmeteor:chai
 practicalmeteor:sinon
 johanbrook:publication-collector

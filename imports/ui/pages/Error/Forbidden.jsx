@@ -5,7 +5,7 @@ import { Link } from 'react-router';
 import { Notes } from '/imports/api/notes/note.js';
 import ConnectedNavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
 
-const sourceDomain = Meteor.settings.public.source;
+const sourceDomain = Meteor.settings.public.sourceDomain;
 
 class Forbidden extends Component {
 

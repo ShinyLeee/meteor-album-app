@@ -1,5 +1,7 @@
 import { Mongo } from 'meteor/mongo';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
+import { Factory } from 'meteor/dburles:factory';
+import faker from 'faker';
 
 class CodesCollection extends Mongo.Collection {
   insert(note, cb) {
@@ -16,7 +18,7 @@ export const Codes = new CodesCollection('codes');
 
 Codes.schema = new SimpleSchema({
   no: { type: String, label: '激活码', denyUpdate: true },
-  isUsed: { type: Boolean, label: '是否已使用' },
+  isUsed: { type: Boolean, label: '是否已使用', defaultValue: false, optional: true },
 });
 
 Codes.attachSchema(Codes.schema);
@@ -26,4 +28,9 @@ Codes.deny({
   insert() { return true; },
   update() { return true; },
   remove() { return true; },
+});
+
+Factory.define('code', Codes, {
+  no: () => faker.random.number(),
+  createdAt: () => new Date(),
 });

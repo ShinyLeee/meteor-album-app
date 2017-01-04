@@ -20,7 +20,7 @@ import ColHolder from '/imports/ui/components/ColHolder/ColHolder.jsx';
 import { snackBarOpen } from '/imports/ui/redux/actions/creators.js';
 
 const clientWidth = document.body.clientWidth;
-const sourceDomain = Meteor.settings.public.source;
+const sourceDomain = Meteor.settings.public.sourceDomain;
 
 const styles = {
   floatBtn: {

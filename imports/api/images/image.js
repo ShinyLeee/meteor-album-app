@@ -2,7 +2,7 @@ import { Mongo } from 'meteor/mongo';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import { Factory } from 'meteor/dburles:factory';
 import faker from 'faker';
-import { getRandomArbitrary } from '/imports/utils/utils';
+import { getRandomArbitrary, limitStrLength } from '/imports/utils/utils.js';
 
 class ImagesCollection extends Mongo.Collection {
   insert(image, cb) {
@@ -19,8 +19,8 @@ export const Images = new ImagesCollection('images');
 
 Images.schema = new SimpleSchema({
   uid: { type: String, regEx: SimpleSchema.RegEx.Id, denyUpdate: true },
-  user: { type: String, label: '用户名', max: 19, denyUpdate: true },
-  collection: { type: String, label: '相册', max: 19 },
+  user: { type: String, label: '用户名', max: 20, denyUpdate: true },
+  collection: { type: String, label: '相册', max: 20 },
   name: { type: String, label: '图片名' },
   type: { type: String, label: '图片类型', defaultValue: 'jpg' },
   ratio: { type: Number, label: '图片纵横比', decimal: true },
@@ -44,9 +44,10 @@ Images.deny({
 
 Factory.define('image', Images, {
   uid: () => Factory.get('user'),
-  user: () => faker.internet.userName(),
-  collection: () => faker.random.word(),
+  user: () => limitStrLength(faker.internet.userName(), 20),
+  collection: () => limitStrLength(faker.hacker.noun(), 20),
   name: () => faker.random.uuid(),
+  type: () => 'jpg',
   ratio: () => Math.round(getRandomArbitrary(0.5, 2) * 10) / 10,
   shootAt: () => new Date(),
   createdAt: () => new Date(),

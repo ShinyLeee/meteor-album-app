@@ -2,7 +2,7 @@
 import { Meteor } from 'meteor/meteor';
 
 Meteor.publish('Users.all', function allUser() {
-  return Meteor.users.find();
+  return Meteor.users.find({}, { fields: { username: 1, profile: 1 } });
 });
 
 Meteor.publish('Users.others', function otherUsers() {

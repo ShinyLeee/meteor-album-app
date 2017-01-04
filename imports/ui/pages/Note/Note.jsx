@@ -19,7 +19,7 @@ import ConnectedNavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
 import NoteHolder from '/imports/ui/components/Note/NoteHolder.jsx';
 import { snackBarOpen } from '/imports/ui/redux/actions/creators.js';
 
-const sourceDomain = Meteor.settings.public.source;
+const sourceDomain = Meteor.settings.public.sourceDomain;
 
 const styles = {
   indeterminateProgress: {

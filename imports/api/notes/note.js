@@ -1,5 +1,8 @@
 import { Mongo } from 'meteor/mongo';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
+import { Factory } from 'meteor/dburles:factory';
+import faker from 'faker';
+import { limitStrLength } from '/imports/utils/utils.js';
 
 class NotesCollection extends Mongo.Collection {
   insert(note, cb) {
@@ -31,4 +34,13 @@ Notes.deny({
   insert() { return true; },
   update() { return true; },
   remove() { return true; },
+});
+
+Factory.define('note', Notes, {
+  title: () => limitStrLength(faker.hacker.noun(), 20),
+  content: () => faker.lorem.sentence(),
+  sender: () => Factory.get('user'),
+  receiver: () => Factory.get('user'),
+  sendAt: () => new Date(),
+  createdAt: () => new Date(),
 });

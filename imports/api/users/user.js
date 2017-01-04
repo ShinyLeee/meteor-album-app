@@ -2,8 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import { Factory } from 'meteor/dburles:factory';
 import faker from 'faker';
+import { limitStrLength } from '/imports/utils/utils.js';
 
-const sourceDomain = Meteor.settings.public.source;
+const sourceDomain = Meteor.settings.public.sourceDomain;
 
 export const Users = Meteor.users;
 
@@ -24,7 +25,7 @@ export const defaultUserProfile = {
 Users.schema = new SimpleSchema({
   _id: { type: String, regEx: SimpleSchema.RegEx.Id, denyUpdate: true },
   services: { type: Object, optional: true, blackbox: true },
-  username: { type: String, label: '用户名', max: 19, denyUpdate: true },
+  username: { type: String, label: '用户名', max: 20, denyUpdate: true },
   emails: { type: [Object], optional: true },
   'emails.$.address': { type: String, regEx: SimpleSchema.RegEx.Email },
   'emails.$.verified': { type: Boolean },
@@ -42,7 +43,7 @@ Users.deny({
 });
 
 Factory.define('user', Users, {
-  username: () => faker.internet.userName(),
+  username: () => limitStrLength(faker.internet.userName(), 20),
   profile: () => defaultUserProfile,
   createdAt: () => new Date(),
 });
