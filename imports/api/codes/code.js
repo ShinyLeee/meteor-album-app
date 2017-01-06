@@ -1,7 +1,6 @@
+import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
-import { Factory } from 'meteor/dburles:factory';
-import faker from 'faker';
 
 class CodesCollection extends Mongo.Collection {
   insert(note, cb) {
@@ -30,7 +29,13 @@ Codes.deny({
   remove() { return true; },
 });
 
-Factory.define('code', Codes, {
-  no: () => faker.random.number(),
-  createdAt: () => new Date(),
-});
+if (Meteor.isTest) {
+  import faker from 'faker';
+  import { Factory } from 'meteor/dburles:factory';
+
+  Factory.define('code', Codes, {
+    no: () => faker.random.number(),
+    createdAt: () => new Date(),
+  });
+}
+

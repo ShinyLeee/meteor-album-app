@@ -8,7 +8,7 @@ import App from '/imports/ui/App.jsx';
 import Index from '/imports/ui/pages/Index/Index.jsx';
 import User from '/imports/ui/pages/User/User.jsx';
 import Collection from '/imports/ui/pages/Collection/Collection.jsx';
-import ColPics from '/imports/ui/pages/Collection/ColPics.jsx';
+import CollPics from '/imports/ui/pages/Collection/CollPics.jsx';
 import Recycle from '/imports/ui/pages/Recycle/Recycle.jsx';
 import Setting from '/imports/ui/pages/Setting/Setting.jsx';
 import Note from '/imports/ui/pages/Note/Note.jsx';
@@ -39,7 +39,7 @@ const Root = () => {
             <Redirect from="explore" to="/" />
             <Route path="user/:username" component={User} onEnter={isAllowVisitHome} />
             <Route path="user/:username/collection" component={Collection} onEnter={isAllowVisitColl} />
-            <Route path="user/:username/collection/:colName" component={ColPics} onEnter={isAllowVisitColl} />
+            <Route path="user/:username/collection/:cid" component={CollPics} onEnter={isAllowVisitColl} />
             <Route path="memory" component={Construction} onEnter={isLogin} />
             <Route path="recycle" component={Recycle} onEnter={isLogin} />
             <Route path="setting" component={Setting} onEnter={isLogin} />

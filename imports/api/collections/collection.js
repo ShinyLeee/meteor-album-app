@@ -1,8 +1,7 @@
+import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
-import { Factory } from 'meteor/dburles:factory';
-import faker from 'faker';
-import { getRandomInt, limitStrLength } from '/imports/utils/utils.js';
+import { Images } from '../images/image';
 
 class CollectionCollection extends Mongo.Collection {
   insert(collection, cb) {
@@ -19,8 +18,7 @@ export const Collections = new CollectionCollection('collections');
 
 Collections.schema = new SimpleSchema({
   name: { type: String, label: '相册名', max: 20 },
-  uid: { type: String, regEx: SimpleSchema.RegEx.Id },
-  user: { type: String, label: '用户名', max: 20 },
+  user: { type: String, regEx: SimpleSchema.RegEx.Id },
   cover: { type: String, label: '封面图片' },
   private: { type: Boolean, defaultValue: false, optional: true },
   createdAt: { type: Date, denyUpdate: true },
@@ -36,10 +34,24 @@ Collections.deny({
   remove() { return true; },
 });
 
-Factory.define('collection', Collections, {
-  name: () => limitStrLength(faker.hacker.noun(), 20),
-  uid: () => Factory.get('user'),
-  user: () => limitStrLength(faker.internet.userName(), 20),
-  cover: () => `/img/pattern/VF_ac${getRandomInt(1, 28)}.jpg`,
-  createdAt: () => new Date(),
+Collections.helpers({
+  isLoggedIn() {
+    return !!this.userId;
+  },
+  images() {
+    return Images.find({ collection: this._id }, { sort: { createdAt: -1 } });
+  },
 });
+
+if (Meteor.isTest) {
+  import { Factory } from 'meteor/dburles:factory';
+  import faker from 'faker';
+  import { getRandomInt, limitStrLength } from '/imports/utils/utils.js';
+
+  Factory.define('collection', Collections, {
+    name: () => limitStrLength(faker.hacker.noun(), 20),
+    user: () => Factory.get('user'),
+    cover: () => `/img/pattern/VF_ac${getRandomInt(1, 28)}.jpg`,
+    createdAt: () => new Date(),
+  });
+}

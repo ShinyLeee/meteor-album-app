@@ -2,6 +2,7 @@
 import { Meteor } from 'meteor/meteor';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import { Images } from '../image.js';
+import { Collections } from '../../collections/collection.js';
 
 Meteor.publish('Images.all', function images() {
   return Images.find({ deletedAt: null });
@@ -27,14 +28,30 @@ Meteor.publish('Images.recycle', function inRecycleImages() {
   });
 });
 
-Meteor.publish('Images.spec', function spec({ username, colName }) {
+Meteor.publishComposite('Images.inCollection', function spec(collId) {
+  new SimpleSchema({
+    collId: { type: String, regEx: SimpleSchema.RegEx.Id },
+  }).validator({ clean: true, filter: false });
+  return {
+    find() {
+      return Collections.find(collId);
+    },
+    children: [{
+      find(collection) {
+        return Images.find({ collection: collection._id });
+      },
+    }],
+  };
+});
+
+Meteor.publish('Images.spec', function spec({ username, collName }) {
   new SimpleSchema({
     username: { type: String, label: '用户名', max: 10 },
-    colName: { type: String, label: '相册名', max: 10 },
+    collName: { type: String, label: '相册名', max: 10 },
   }).validator({ clean: true, filter: false });
   return Images.find({
     user: username,
     deletedAt: null,
-    collection: colName,
+    collection: collName,
   });
 });

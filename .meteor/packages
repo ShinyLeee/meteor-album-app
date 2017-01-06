@@ -25,6 +25,7 @@ react-meteor-data
 aldeed:simple-schema
 aldeed:collection2
 mdg:validated-method
+reywood:publish-composite
 
 # accounts
 accounts-password@1.3.3
@@ -45,3 +46,4 @@ practicalmeteor:sinon
 johanbrook:publication-collector
 dispatch:mocha-phantomjs
 dispatch:phantomjs-tests@=0.0.5
+dburles:collection-helpers

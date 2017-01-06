@@ -1,8 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
-import { Factory } from 'meteor/dburles:factory';
-import faker from 'faker';
-import { limitStrLength } from '/imports/utils/utils.js';
 
 const sourceDomain = Meteor.settings.public.sourceDomain;
 
@@ -42,8 +39,14 @@ Users.deny({
   remove() { return true; },
 });
 
-Factory.define('user', Users, {
-  username: () => limitStrLength(faker.internet.userName(), 20),
-  profile: () => defaultUserProfile,
-  createdAt: () => new Date(),
-});
+if (Meteor.isTest) {
+  import { Factory } from 'meteor/dburles:factory';
+  import faker from 'faker';
+  import { limitStrLength } from '/imports/utils/utils.js';
+
+  Factory.define('user', Users, {
+    username: () => limitStrLength(faker.internet.userName(), 20),
+    profile: () => defaultUserProfile,
+    createdAt: () => new Date(),
+  });
+}

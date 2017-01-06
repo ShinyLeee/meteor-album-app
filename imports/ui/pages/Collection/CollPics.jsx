@@ -23,7 +23,6 @@ import ShiftIcon from 'material-ui/svg-icons/hardware/keyboard-return';
 import RemoveIcon from 'material-ui/svg-icons/action/delete';
 import SetCoverIcon from 'material-ui/svg-icons/device/wallpaper';
 import { blue500 } from 'material-ui/styles/colors';
-import { Images } from '/imports/api/images/image.js';
 import { Collections } from '/imports/api/collections/collection.js';
 import { removeImagesToRecycle, shiftImages } from '/imports/api/images/methods.js';
 import {
@@ -59,7 +58,7 @@ const styles = {
   },
 };
 
-class ColPicsPage extends Component {
+class CollPicsPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -88,22 +87,22 @@ class ColPicsPage extends Component {
   }
 
   handleOpenUploader() {
-    const { uptoken, User, col, dispatch } = this.props;
+    const { uptoken, User, curColl, dispatch } = this.props;
     const data = {
       uptoken,
-      key: `${User.username}/${col.name}/`,
+      key: `${User.username}/${curColl.name}/`,
     };
     document.getElementById('uploader').click();
     dispatch(uploaderStart(data));
   }
 
   handleLockCollection(cb) {
-    const { col } = this.props;
-    const msg = col.private ? '公开' : '加密';
+    const { curColl } = this.props;
+    const msg = curColl.private ? '公开' : '加密';
     lockCollection.call({
-      colId: col._id,
-      colName: col.name,
-      privateStatus: col.private,
+      colId: curColl._id,
+      colName: curColl.name,
+      privateStatus: curColl.private,
     }, (err) => {
       if (err) {
         cb(err, `${msg}相册失败`);
@@ -113,10 +112,10 @@ class ColPicsPage extends Component {
   }
 
   handleRemoveCollection(cb) {
-    const { User, images, col, dispatch } = this.props;
+    const { User, images, curColl, dispatch } = this.props;
 
     if (images.length === 0) {
-      return removeCollection.call({ colName: col.name }, (err) => {
+      return removeCollection.call({ colName: curColl.name }, (err) => {
         if (err) {
           cb(err, '删除相册失败');
         }
@@ -127,8 +126,8 @@ class ColPicsPage extends Component {
 
     const keys = _.map(images, (image) => {
       let key = false;
-      if (image.collection === col.name) {
-        key = `${image.user}/${col.name}/${image.name}.${image.type}`;
+      if (image.collection === curColl.name) {
+        key = `${image.user}/${curColl.name}/${image.name}.${image.type}`;
       }
       return key;
     });
@@ -137,7 +136,7 @@ class ColPicsPage extends Component {
       if (error) {
         cb(error, '删除相册失败');
       }
-      return removeCollection.call({ colName: col.name }, (err) => {
+      return removeCollection.call({ colName: curColl.name }, (err) => {
         if (err) {
           cb(err, '删除相册失败');
         }
@@ -148,12 +147,12 @@ class ColPicsPage extends Component {
   }
 
   handleShiftPhoto(cb) {
-    const { selectImages, col } = this.props;
-    const { shiftTo } = this.state;
+    const { selectImages, curColl } = this.props;
+    const destColl = JSON.parse(this.state.destColl);
 
     const keys = _.map(selectImages, (image) => {
-      const srcKey = `${image.user}/${col.name}/${image.name}.${image.type}`;
-      const destKey = `${image.user}/${shiftTo}/${image.name}.${image.type}`;
+      const srcKey = `${image.user}/${curColl.name}/${image.name}.${image.type}`;
+      const destKey = `${image.user}/${destColl.name}/${image.name}.${image.type}`;
       return {
         src: srcKey,
         dest: destKey,
@@ -187,7 +186,7 @@ class ColPicsPage extends Component {
 
       shiftImages.call({
         selectImages: sucMovedImgIds,
-        dest: shiftTo,
+        dest: destColl.id,
       }, (err) => {
         if (err) {
           cb(err, '转移照片失败');
@@ -198,12 +197,12 @@ class ColPicsPage extends Component {
   }
 
   handleSetCover(cb) {
-    const { selectImages, col } = this.props;
+    const { selectImages, curColl } = this.props;
     const curImg = selectImages[0];
     const cover = `${domain}/${curImg.user}/${curImg.collection}/${curImg.name}.${curImg.type}`;
     mutateCollectionCover.call({
       cover,
-      colName: col.name,
+      colName: curColl.name,
     }, (err) => {
       if (err) {
         cb(err, '更换封面失败');
@@ -228,12 +227,12 @@ class ColPicsPage extends Component {
    * @param {String} action - One of / ShiftPhoto / RemovePhoto / SetCover / RemoveCollection
    */
   openAlert(action) {
-    const { col, colNames, selectImages, dispatch } = this.props;
+    const { curColl, otherColls, selectImages, dispatch } = this.props;
     let alertTitle;
     let alertContent;
     if (action === 'LockCollection') {
       alertTitle = '提示';
-      if (col.private) alertContent = '公开后所有人可查看该相册中的照片, 是否确认公开此相册？';
+      if (curColl.private) alertContent = '公开后所有人可查看该相册中的照片, 是否确认公开此相册？';
       else alertContent = '加密后该相册中的照片将对他人不可见，是否确认加密此相册？';
       this.setState({ isAlertOpen: true, alertTitle, alertContent, action });
       return;
@@ -254,14 +253,14 @@ class ColPicsPage extends Component {
     }
     if (action === 'ShiftPhoto') {
       const radios = [];
-      for (let i = 0; i < colNames.length; i++) {
-        const id = colNames[i]._id;
-        const destination = colNames[i].name;
+      for (let i = 0; i < otherColls.length; i++) {
+        const collId = otherColls[i]._id;
+        const collName = otherColls[i].name;
         radios.push(
           <RadioButton
-            key={id}
-            value={destination}
-            label={destination}
+            key={i}
+            value={JSON.stringify({ id: collId, name: collName })}
+            label={collName}
             style={styles.radioButton}
           />
         );
@@ -270,8 +269,8 @@ class ColPicsPage extends Component {
       alertContent = (
         <RadioButtonGroup
           name="collection"
-          defaultSelected={this.state.shiftTo}
-          onChange={(e) => this.setState({ shiftTo: e.target.value })}
+          defaultSelected={this.state.destColl}
+          onChange={(e) => this.setState({ destColl: e.target.value })}
         >
           {radios}
         </RadioButtonGroup>
@@ -301,7 +300,7 @@ class ColPicsPage extends Component {
   }
 
   renderIconRight() {
-    const { col } = this.props;
+    const { curColl } = this.props;
     return (
       <div>
         <IconButton iconStyle={styles.AppBarIconSvg} onTouchTap={this.handleOpenUploader}>
@@ -311,7 +310,7 @@ class ColPicsPage extends Component {
           iconStyle={styles.AppBarIconSvg}
           onTouchTap={() => this.openAlert('LockCollection')}
         >
-          { col && col.private ? (<LockOutIcon />) : (<LockInIcon />) }
+          { curColl && curColl.private ? (<LockOutIcon />) : (<LockInIcon />) }
         </IconButton>
         <IconMenu
           iconButtonElement={
@@ -406,15 +405,15 @@ class ColPicsPage extends Component {
   }
 
   renderColPics() {
-    const { col, images } = this.props;
+    const { curColl, images } = this.props;
     let duration;
     if (images.length === 0) {
       duration = '暂无相片';
       return (
-        <div className="col-pics-holder">
-          <div className="col-pics-header">
-            <div className="col-pics-name">{col.name}</div>
-            <div className="col-pics-duration">{duration}</div>
+        <div className="collPics">
+          <div className="collPics__header">
+            <div className="collPics__name">{curColl.name}</div>
+            <div className="collPics__duration">{duration}</div>
           </div>
         </div>
       );
@@ -427,11 +426,15 @@ class ColPicsPage extends Component {
       const end = moment(images[0].shootAt).format('YYYY年MM月DD日');
       duration = `${start} - ${end}`;
     }
+    images.forEach((image) => {
+      const img = image;
+      img.collection = curColl.name;
+    });
     return (
-      <div className="col-pics-holder">
-        <div className="col-pics-header">
-          <div className="col-pics-name">{col.name}</div>
-          <div className="col-pics-duration">{duration}</div>
+      <div className="collPics">
+        <div className="collPics__header">
+          <div className="collPics__name">{curColl.name}</div>
+          <div className="collPics__duration">{duration}</div>
         </div>
         <ConnectedJustified isEditing={this.state.isEditing} images={images} />
       </div>
@@ -480,13 +483,13 @@ class ColPicsPage extends Component {
 
 }
 
-ColPicsPage.propTypes = {
+CollPicsPage.propTypes = {
   User: PropTypes.object,
   // Below is Pass from database
   dataIsReady: PropTypes.bool.isRequired,
   isGuest: PropTypes.bool.isRequired,
-  col: PropTypes.object.isRequired,
-  colNames: PropTypes.array.isRequired,
+  curColl: PropTypes.object.isRequired,
+  otherColls: PropTypes.array.isRequired,
   images: PropTypes.array.isRequired,
   // Below Pass From Redux
   uptoken: PropTypes.string,
@@ -496,30 +499,31 @@ ColPicsPage.propTypes = {
 };
 
 const MeteorContainer = createContainer(({ params }) => {
-  const { username, colName } = params;
+  const { username, cid } = params;
   const User = Meteor.user();
   let isGuest = !User;  // if User is null, isGuest is true
   // if User exist and its name equal with params.username, isGuest is false
   if (User && User.username === username) isGuest = false;
   else isGuest = true;
 
-  const imageHandle = Meteor.subscribe('Images.spec', { username, colName });
-  const colHandle = Meteor.subscribe('Collections.targetUser', username);
-  const dataIsReady = imageHandle.ready() && colHandle.ready();
+  const collHandler = Meteor.subscribe('Collections.targetUser', username);
+  const imageHandler = Meteor.subscribe('Images.inCollection', cid);
+  const dataIsReady = collHandler.ready() && imageHandler.ready();
 
-  const images = Images.find({}, { sort: { shootAt: -1 } }).fetch();
-  // col is currentCollection use for lock/remove etc.
-  const col = Collections.findOne({ name: colName }, { fields: { name: 1, private: 1 } }) || {};
-  // colNames use for shift photos
-  const colNames = Collections.find({ name: { $ne: colName } }, { fields: { name: 1 } }).fetch();
+  // curColl is currentCollection use for lock/remove etc.
+  const curColl = Collections.findOne(cid) || {};
+  const collExists = dataIsReady && !!curColl;
+  // otherColls use for shift photos
+  const otherColls = Collections.find({ _id: { $ne: cid } }, { fields: { name: 1 } }).fetch();
+  const images = collExists ? curColl.images().fetch() : [];
   return {
     dataIsReady,
     isGuest,
-    col,
-    colNames,
+    curColl,
+    otherColls,
     images,
   };
-}, ColPicsPage);
+}, CollPicsPage);
 
 const mapStateToProps = (state) => ({
   uptoken: state.uptoken,

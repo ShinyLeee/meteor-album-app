@@ -7,18 +7,18 @@ import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import moment from 'moment';
 
 import { Images } from './image.js';
-import { Collections } from '../collections/collection.js';
 
 export const insertImage = new ValidatedMethod({
   name: 'images.insert',
   validate: Images.simpleSchema().validator({ clean: true, filter: false }),
   run(image) {
     if (!this.userId) {
-      throw new Meteor.Error('user.accessDenied');
+      throw new Meteor.Error('api.images.insertImage.notLoggedIn');
     }
-    const privateStatus = Collections.findOne({ name: image.collection }).private || false;
-    const newImage = Object.assign({}, image, { private: privateStatus });
-    return Images.insert(newImage);
+    if (this.userId !== image.user) {
+      throw new Meteor.Error('api.images.insertImage.accessDenied');
+    }
+    return Images.insert(image);
   },
 });
 
@@ -30,7 +30,7 @@ export const removeImages = new ValidatedMethod({
   }).validator({ clean: true, filter: false }),
   run({ selectImages }) {
     if (!this.userId) {
-      throw new Meteor.Error('user.accessDenied');
+      throw new Meteor.Error('api.images.removeImages.notLoggedIn');
     }
     Images.remove({ _id: { $in: selectImages } });
   },
@@ -43,7 +43,7 @@ export const removeImagesToRecycle = new ValidatedMethod({
   }).validator({ clean: true, filter: false }),
   run({ selectImages }) {
     if (!this.userId) {
-      throw new Meteor.Error('user.accessDenied');
+      throw new Meteor.Error('api.images.removeImagesToRecycle.notLoggedIn');
     }
     const deletedAt = moment().add(1, 'M').toDate();
 
@@ -62,7 +62,7 @@ export const recoveryImages = new ValidatedMethod({
   }).validator({ clean: true, filter: false }),
   run({ selectImages }) {
     if (!this.userId) {
-      throw new Meteor.Error('user.accessDenied');
+      throw new Meteor.Error('api.images.recoveryImages.notLoggedIn');
     }
     Images.update(
       { _id: { $in: selectImages } },
@@ -76,11 +76,11 @@ export const shiftImages = new ValidatedMethod({
   name: 'images.shift',
   validate: new SimpleSchema({
     selectImages: { type: [String], regEx: SimpleSchema.RegEx.Id },
-    dest: { type: String, max: 10 },
+    dest: { type: String, regEx: SimpleSchema.RegEx.Id },
   }).validator({ clean: true, filter: false }),
   run({ selectImages, dest }) {
     if (!this.userId) {
-      throw new Meteor.Error('user.accessDenied');
+      throw new Meteor.Error('api.images.shiftImages.notLoggedIn');
     }
     const count = selectImages.length;
 
@@ -102,7 +102,7 @@ export const likeImage = new ValidatedMethod({
   }).validator({ clean: true, filter: false }),
   run({ imageId, liker }) {
     if (!this.userId) {
-      throw new Meteor.Error('user.accessDenied');
+      throw new Meteor.Error('api.images.likeImage.notLoggedIn');
     }
     Images.update(imageId, { $addToSet: { liker } });
   },
@@ -116,7 +116,7 @@ export const unlikeImage = new ValidatedMethod({
   }).validator({ clean: true, filter: false }),
   run({ imageId, unliker }) {
     if (!this.userId) {
-      throw new Meteor.Error('user.accessDenied');
+      throw new Meteor.Error('api.images.unlikeImage.notLoggedIn');
     }
     Images.update(imageId, { $pull: { liker: unliker } });
   },
@@ -134,7 +134,7 @@ const IMAGES_METHODS = _.pluck([
 ], 'name');
 
 if (Meteor.isServer) {
-  // Only allow 1 user operations per connection per second
+  // Only allow 2 operations per connection per 5 second
   DDPRateLimiter.addRule({
     name(name) {
       return _.contains(IMAGES_METHODS, name);
@@ -142,5 +142,5 @@ if (Meteor.isServer) {
 
     // Rate limit per connection ID
     connectionId() { return true; },
-  }, 1, 1000);
+  }, 2, 5000);
 }

@@ -95,7 +95,7 @@ const USERS_METHODS = _.pluck([
 ], 'name');
 
 if (Meteor.isServer) {
-  // Only allow 1 user operations per connection per second
+  // Only allow 2 user operations per connection per 5 second
   DDPRateLimiter.addRule({
     name(name) {
       return _.contains(USERS_METHODS, name);
@@ -103,5 +103,5 @@ if (Meteor.isServer) {
 
     // Rate limit per connection ID
     connectionId() { return true; },
-  }, 1, 1000);
+  }, 2, 5000);
 }

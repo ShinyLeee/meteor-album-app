@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import React, { Component } from 'react';
 
-const sourceDomain = Meteor.settings.public.source;
+const sourceDomain = Meteor.settings.public.sourceDomain;
 
 const src1 = `${sourceDomain}/GalleryPlus/PC/1.jpg?imageView2/1/w/180/h/210`;
 const src2 = `${sourceDomain}/GalleryPlus/PC/2.jpg?imageView2/1/w/180/h/210`;

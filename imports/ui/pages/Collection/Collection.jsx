@@ -88,7 +88,6 @@ class CollectionPage extends Component {
     this.handleClose();
     insertCollection.call({
       name: this.state.newColName,
-      uid: User._id,
       user: User.username,
       createdAt: new Date(),
       updatedAt: new Date(),

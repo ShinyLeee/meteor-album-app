@@ -21,6 +21,7 @@ callback-hook@1.0.10
 check@1.2.4
 coffeescript@1.0.17
 cosmos:browserify@0.8.4
+dburles:collection-helpers@1.1.0
 dburles:factory@1.1.0
 ddp@1.2.5
 ddp-client@1.2.9
@@ -84,6 +85,7 @@ react-meteor-data@0.2.9
 reactive-var@1.0.11
 reload@1.1.11
 retry@1.0.9
+reywood:publish-composite@1.4.2
 routepolicy@1.0.12
 service-configuration@1.0.11
 sha@1.0.9
