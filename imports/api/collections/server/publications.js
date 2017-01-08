@@ -14,7 +14,7 @@ Meteor.publish('Collections.own', function ownCollections() {
   });
 });
 
-Meteor.publish('Collections.targetUser', function targetUserCollections(user) {
+Meteor.publish('Collections.inUser', function targetUserCollections(user) {
   new SimpleSchema({
     user: { type: String, label: '用户名', max: 10 },
   }).validator({ clean: true, filter: false });

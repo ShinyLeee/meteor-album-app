@@ -82,7 +82,7 @@ class IndexPage extends Component {
     images.forEach((image) => {
       const img = image;
       users.forEach((user) => {
-        if (user._id === img.uid) {
+        if (user.username === img.user) {
           img.avatar = user.profile.avatar;
         }
       });

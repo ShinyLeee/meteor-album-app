@@ -15,9 +15,20 @@ if (Meteor.isServer) {
       return response;
     },
 
+    'Auth.isPermission': function isPermission({ username }) {
+      new SimpleSchema({
+        username: { type: String, label: '用户名', max: 20 },
+      }).validator({ clean: true, filter: false });
+      if (!this.userId) {
+        return false;
+      }
+      const uid = Meteor.users.findOne({ username })._id;
+      return this.userId === uid;
+    },
+
     'Auth.isAllowVisitHome': function isAllowVisitHome({ username }) {
       new SimpleSchema({
-        username: { type: String, label: '用户名', regEx: /^([a-z]|[A-Z])[\w_]{5,19}$/ },
+        username: { type: String, label: '用户名', max: 20 },
       }).validator({ clean: true, filter: false });
       const targetUser = Meteor.users.findOne({ username });
       if (!targetUser) {
@@ -32,7 +43,7 @@ if (Meteor.isServer) {
 
     'Auth.isAllowVisitColl': function isAllowVisitColl({ username }) {
       new SimpleSchema({
-        username: { type: String, label: '用户名', regEx: /^([a-z]|[A-Z])[\w_]{5,19}$/ },
+        username: { type: String, label: '用户名', max: 20 },
       }).validator({ clean: true, filter: false });
       const targetUser = Meteor.users.findOne({ username });
       if (!targetUser) {

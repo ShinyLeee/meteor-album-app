@@ -52,7 +52,7 @@ export default class ColHolder extends Component {
       <div
         className="colHolder"
         style={styles.colHolder}
-        onTouchTap={() => browserHistory.push(`/user/${User.username}/collection/${col._id}`)}
+        onTouchTap={() => browserHistory.push(`/user/${User.username}/collection/${col.name}`)}
       >
         <div className="colHolder__cover">
           <div className="colHolder__background" />

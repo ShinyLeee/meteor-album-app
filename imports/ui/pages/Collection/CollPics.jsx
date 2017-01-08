@@ -426,10 +426,6 @@ class CollPicsPage extends Component {
       const end = moment(images[0].shootAt).format('YYYY年MM月DD日');
       duration = `${start} - ${end}`;
     }
-    images.forEach((image) => {
-      const img = image;
-      img.collection = curColl.name;
-    });
     return (
       <div className="collPics">
         <div className="collPics__header">
@@ -499,29 +495,31 @@ CollPicsPage.propTypes = {
 };
 
 const MeteorContainer = createContainer(({ params }) => {
-  const { username, cid } = params;
+  const { username, cname } = params;
   const User = Meteor.user();
   let isGuest = !User;  // if User is null, isGuest is true
   // if User exist and its name equal with params.username, isGuest is false
   if (User && User.username === username) isGuest = false;
   else isGuest = true;
 
-  const collHandler = Meteor.subscribe('Collections.targetUser', username);
-  const imageHandler = Meteor.subscribe('Images.inCollection', cid);
+  const collHandler = Meteor.subscribe('Collections.inUser', username);
+  const imageHandler = Meteor.subscribe('Images.inCollection', { username, cname });
   const dataIsReady = collHandler.ready() && imageHandler.ready();
 
   // curColl is currentCollection use for lock/remove etc.
-  const curColl = Collections.findOne(cid) || {};
+  const curColl = Collections.findOne({ name: cname }) || {};
   const collExists = dataIsReady && !!curColl;
   // otherColls use for shift photos
-  const otherColls = Collections.find({ _id: { $ne: cid } }, { fields: { name: 1 } }).fetch();
-  const images = collExists ? curColl.images().fetch() : [];
+  const otherColls = Collections.find(
+    { name: { $ne: cname } },
+    { fields: { name: 1 } }
+  ).fetch();
   return {
     dataIsReady,
     isGuest,
     curColl,
     otherColls,
-    images,
+    images: collExists ? curColl.images().fetch() : [],
   };
 }, CollPicsPage);
 

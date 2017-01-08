@@ -130,7 +130,7 @@ class NotePage extends Component {
           offsetToBottom={100}
         >
           {
-            this.state.notes.map((note) => otherUsers.map((user) => note.sender === user._id &&
+            this.state.notes.map((note) => otherUsers.map((user) => note.sender === user.username &&
             (
               <NoteHolder
                 User={User}
@@ -178,7 +178,7 @@ class NotePage extends Component {
               />
               <MenuItem
                 primaryText="查看所有信息"
-                onTouchTap={() => browserHistory.push('allNotes')}
+                onTouchTap={() => browserHistory.push(`/note/${User.username}/all`)}
               />
             </IconMenu>
           }
@@ -202,12 +202,13 @@ NotePage.propTypes = {
   dispatch: PropTypes.func,
 };
 
-const MeteorContainer = createContainer(() => {
+const MeteorContainer = createContainer(({ params }) => {
+  const { username } = params;
   // Define How many notes render in the first time
   const limit = 5;
 
   const userHandler = Meteor.subscribe('Users.others');
-  const noteHandler = Meteor.subscribe('Notes.own');
+  const noteHandler = Meteor.subscribe('Notes.own', username);
   const dataIsReady = userHandler.ready() && noteHandler.ready();
   const otherUsers = Meteor.users.find({}).fetch();
   const initialNotes = Notes.find(

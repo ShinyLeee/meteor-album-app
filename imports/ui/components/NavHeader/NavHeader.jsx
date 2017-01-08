@@ -157,7 +157,7 @@ export class NavHeader extends Component {
               className={bellStyle}
               style={styles.AppBarIcon}
               iconStyle={styles.AppBarIconSvg}
-              onTouchTap={() => browserHistory.push('/note')}
+              onTouchTap={() => browserHistory.push(`/note/${User.username}`)}
             >
               <NotificationIcon />
             </IconButton>

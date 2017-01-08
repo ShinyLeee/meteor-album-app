@@ -1,62 +1,73 @@
 import { Meteor } from 'meteor/meteor';
 
 // If not login redirect location to /login
-export const isLogin = (nextState, replace, cb) => {
+export const isLogin = (nextState, replace, done) => {
   Meteor.callPromise('Auth.isLogin')
   .then((login) => {
     if (!login) replace({ pathname: '/login' });
-    cb();
+    done();
   })
   .catch((err) => {
     replace({ pathname: `/${err.error}` });
-    cb();
+    done();
     throw new Meteor.Error(err);
   });
 };
 
 // If has login, redirect to index page
-export const isLogout = (nextState, replace, cb) => {
+export const isLogout = (nextState, replace, done) => {
   Meteor.callPromise('Auth.isLogin')
   .then((login) => {
     if (login) replace({ pathname: '/' });
-    cb();
+    done();
   })
   .catch((err) => {
     replace({ pathname: `/${err.error}` });
-    cb();
+    done();
     throw new Meteor.Error(err);
   });
 };
 
+export const isPermission = (nextState, replace, done) => {
+  const { params } = nextState;
+  Meteor.callPromise('Auth.isPermission', { username: params.username })
+  .then((isPermit) => {
+    if (!isPermit) replace({ pathname: '/404' });
+    done();
+  })
+  .catch((err) => {
+    replace({ pathname: `/${err.error}` });
+    done();
+    throw new Error(err);
+  });
+};
+
 // Check is this user permit other visit home page TODO FIX USER NOT FOUND ERROR
-export const isAllowVisitHome = (nextState, replace, cb) => {
+export const isAllowVisitHome = (nextState, replace, done) => {
   const { params } = nextState;
   Meteor.callPromise('Auth.isAllowVisitHome', { username: params.username })
   .then((allowVisitHome) => {
     if (!allowVisitHome) replace({ pathname: '/403', state: { message: '该用户不允许他人访问其主页' } });
-    cb();
+    done();
   })
   .catch((err) => {
     replace({ pathname: `/${err.error}` });
-    cb();
+    done();
     throw new Error(err);
   });
 };
 
 // Check is this user permit other visit this specific collection
-export const isAllowVisitColl = (nextState, replace, cb) => {
+export const isAllowVisitColl = (nextState, replace, done) => {
   const { params } = nextState;
-  Meteor.callPromise('Auth.isAllowVisitColl', {
-    username: params.username,
-    dest: params.colName,
-  })
+  Meteor.callPromise('Auth.isAllowVisitColl', { username: params.username })
   .then((allowVisitColl) => {
     if (!allowVisitColl) replace({ pathname: '/403', state: { message: '该用户不允许他人访问其相册' } });
-    cb();
+    done();
   })
   .catch((err) => {
     replace({ pathname: `/${err.error}` });
-    cb();
+    done();
     throw new Meteor.Error(err);
   });
 };

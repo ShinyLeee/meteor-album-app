@@ -1,4 +1,4 @@
-/* eslint prefer-arrow-callback: 0 */
+/* eslint-disable prefer-arrow-callback */
 import { Meteor } from 'meteor/meteor';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import { Images } from '../image.js';
@@ -28,30 +28,23 @@ Meteor.publish('Images.recycle', function inRecycleImages() {
   });
 });
 
-Meteor.publishComposite('Images.inCollection', function spec(collId) {
+Meteor.publishComposite('Images.inCollection', function spec({ username, cname }) {
   new SimpleSchema({
-    collId: { type: String, regEx: SimpleSchema.RegEx.Id },
+    username: { type: String, label: '用户名', max: 20 },
+    cname: { type: String, label: '相册名', max: 20 },
   }).validator({ clean: true, filter: false });
   return {
     find() {
-      return Collections.find(collId);
+      return Collections.find({
+        name: cname,
+        user: username,
+        deletedAt: null,
+      });
     },
     children: [{
       find(collection) {
-        return Images.find({ collection: collection._id });
+        return Images.find({ user: collection.user, collection: collection.name });
       },
     }],
   };
-});
-
-Meteor.publish('Images.spec', function spec({ username, collName }) {
-  new SimpleSchema({
-    username: { type: String, label: '用户名', max: 10 },
-    collName: { type: String, label: '相册名', max: 10 },
-  }).validator({ clean: true, filter: false });
-  return Images.find({
-    user: username,
-    deletedAt: null,
-    collection: collName,
-  });
 });

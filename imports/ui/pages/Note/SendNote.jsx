@@ -79,7 +79,6 @@ class SendNotePage extends Component {
   handleSent() {
     const { User, dispatch } = this.props;
     const { receiver, sendAt, title, content } = this.state;
-    const sender = User._id;
     if (!receiver) {
       dispatch(snackBarOpen('请选择接受用户'));
       return;
@@ -87,8 +86,8 @@ class SendNotePage extends Component {
     insertNote.call({
       title,
       content,
-      sender,
-      receiver: receiver._id,
+      sender: User.username,
+      receiver: receiver.username,
       sendAt,
       createdAt: new Date(),
     }, (err) => {

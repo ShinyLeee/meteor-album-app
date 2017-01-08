@@ -174,7 +174,7 @@ class UserPage extends Component {
                     <Menu>
                       <MenuItem
                         primaryText="我的信息"
-                        onTouchTap={() => browserHistory.push('/note')}
+                        onTouchTap={() => browserHistory.push(`/note/${curUser.username}`)}
                         leftIcon={<MessageIcon />}
                       />
                       <MenuItem
@@ -277,7 +277,7 @@ const MeteorContainer = createContainer(({ params }) => {
 
   const userHandler = Meteor.subscribe('Users.all');
   const imageHandler = Meteor.subscribe('Images.all');
-  const collectionHandler = Meteor.subscribe('Collections.targetUser', username);
+  const collectionHandler = Meteor.subscribe('Collections.inUser', username);
   const noteHandler = Meteor.subscribe('Notes.own');
 
   let dataIsReady = false;
@@ -288,10 +288,9 @@ const MeteorContainer = createContainer(({ params }) => {
   const userIsReady = userHandler.ready();
   const curUser = Meteor.users.findOne({ username }) || {};
   if (userIsReady) {
-    const uid = curUser._id;
     dataIsReady = imageHandler.ready() && collectionHandler.ready() && noteHandler.ready();
-    likedCount = Images.find({ liker: { $in: [uid] } }).count();
-    unOrderedImages = Images.find({ uid }, { limit: 10 }).fetch();
+    likedCount = Images.find({ liker: { $in: [curUser._id] } }).count();
+    unOrderedImages = Images.find({ user: curUser.username }, { limit: 10 }).fetch();
     collectionCount = Collections.find().count();
     noteNum = Notes.find({ isRead: { $ne: true } }).count();
   }

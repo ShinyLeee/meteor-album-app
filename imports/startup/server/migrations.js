@@ -1,12 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Migrations } from 'meteor/percolate:migrations';
-import { Collections } from '/imports/api/collections/collection';
-import { Images } from '/imports/api/images/image';
 import { Users } from '/imports/api/users/user';
-
-// Use rawCollection in order to avoid break schema
-const rawImages = Images.rawCollection();
-const rawCollections = Collections.rawCollection();
+import { Notes } from '/imports/api/notes/note';
+import { Images } from '/imports/api/images/image';
+import { Collections } from '/imports/api/collections/collection';
 
 Migrations.config({
   // Log job run details to console
@@ -24,56 +21,57 @@ Migrations.config({
 
 Migrations.add({
   version: 1,
-  name: 'Refactoring IMAGE collection and COLLECTIONS collection, make user field as userId, etc..',
+  name: `Refactoring IMAGES & COLLECTIONS & NOTES collection,
+  unset uid field in IMAGES & COLLECTIONS collection,
+  change sender and receiver field's value from uid to username.
+  `,
   up: () => {
-    // Remove all uid field in Images 表
-    Meteor.wrapAsync(rawImages.update(
-      {},
-      { $unset: { uid: 1 } },
-      { multi: true }
-    ));
-    // Remove all uid field in Collections 表
-    Meteor.wrapAsync(rawCollections.update(
-      {},
-      { $unset: { uid: 1 } },
-      { multi: true }
-    ));
-    // Update all collection field from cname to cid in Images 表
-    // accroding to current collection name
-    Collections.find().forEach((coll) => {
-      const cid = coll._id;
-      const cname = coll.name;
-      Meteor.wrapAsync(rawImages.update(
-        { collection: cname },
-        { $set: { collection: cid } },
-        { multi: true }
-      ));
-    });
-  },
-  down: () => {
-    // Recovery Images and Collections' uid field accroding to User's id
+    // Get access to the raw MongoDB node collection that the Meteor server collection wraps
+    const notesBulk = Notes.rawCollection().initializeUnorderedBulkOp();
+    const imagesBulk = Images.rawCollection().initializeUnorderedBulkOp();
+    const collectionsBulk = Collections.rawCollection().initializeUnorderedBulkOp();
+
+    // Unset all uid field in Collections & Images collection
+    imagesBulk.find({}).update({ $unset: { uid: 1 } });
+    collectionsBulk.find({}).update({ $unset: { uid: 1 } });
+
+    // Change all sender and receiver fields' value from uid to username
     Users.find().forEach((user) => {
       const uid = user._id;
       const username = user.username;
-      Meteor.wrapAsync(rawImages.update(
-        { user: username },
-        { $set: { uid } },
-        { multi: true }
-      ));
-      Meteor.wrapAsync(rawCollections.update(
-        { user: username },
-        { $set: { uid } },
-        { multi: true }
-      ));
+      notesBulk.find({ sender: uid }).update({ $set: { sender: username } });
+      notesBulk.find({ receiver: uid }).update({ $set: { receiver: username } });
     });
-    Collections.find().forEach((coll) => {
-      const cid = coll._id;
-      const cname = coll.name;
-      Meteor.wrapAsync(rawImages.update(
-        { collection: cid },
-        { $set: { collection: cname } },
-        { multi: true }
-      ));
+
+    // We need to wrap the async function to get a synchronous API that migrations expects
+    const executeNotes = Meteor.wrapAsync(notesBulk.execute, notesBulk);
+    const executeImages = Meteor.wrapAsync(imagesBulk.execute, imagesBulk);
+    const executeCollections = Meteor.wrapAsync(collectionsBulk.execute, collectionsBulk);
+
+    executeNotes();
+    executeImages();
+    executeCollections();
+  },
+  down: () => {
+    const notesBulk = Notes.rawCollection().initializeUnorderedBulkOp();
+    const imagesBulk = Images.rawCollection().initializeUnorderedBulkOp();
+    const collectionsBulk = Collections.rawCollection().initializeUnorderedBulkOp();
+
+    Users.find().forEach((user) => {
+      const uid = user._id;
+      const username = user.username;
+      notesBulk.find({ sender: username }).update({ $set: { sender: uid } });
+      notesBulk.find({ receiver: username }).update({ $set: { receiver: uid } });
+      imagesBulk.find({ user: username }).update({ $set: { uid } });
+      collectionsBulk.find({ user: username }).update({ $set: { uid } });
     });
+
+    const executeNotes = Meteor.wrapAsync(notesBulk.execute, notesBulk);
+    const executeImages = Meteor.wrapAsync(imagesBulk.execute, imagesBulk);
+    const executeCollections = Meteor.wrapAsync(collectionsBulk.execute, collectionsBulk);
+
+    executeNotes();
+    executeImages();
+    executeCollections();
   },
 });

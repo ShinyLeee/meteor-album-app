@@ -23,7 +23,7 @@ import InternalError from '/imports/ui/pages/Error/InternalError.jsx';
 import { platform } from '/imports/utils/utils.js';
 import reducers from '/imports/ui/redux/reducers';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import { isLogin, isLogout, isAllowVisitHome, isAllowVisitColl } from './policies.js';
+import { isLogin, isLogout, isPermission, isAllowVisitHome, isAllowVisitColl } from './policies.js';
 
 const store = createStore(reducers);
 
@@ -39,12 +39,12 @@ const Root = () => {
             <Redirect from="explore" to="/" />
             <Route path="user/:username" component={User} onEnter={isAllowVisitHome} />
             <Route path="user/:username/collection" component={Collection} onEnter={isAllowVisitColl} />
-            <Route path="user/:username/collection/:cid" component={CollPics} onEnter={isAllowVisitColl} />
+            <Route path="user/:username/collection/:cname" component={CollPics} onEnter={isAllowVisitColl} />
             <Route path="memory" component={Construction} onEnter={isLogin} />
             <Route path="recycle" component={Recycle} onEnter={isLogin} />
             <Route path="setting" component={Setting} onEnter={isLogin} />
-            <Route path="note" component={Note} onEnter={isLogin} />
-            <Route path="allNotes" component={AllNotes} onEnter={isLogin} />
+            <Route path="note/:username" component={Note} onEnter={isPermission} />
+            <Route path="note/:username/all" component={AllNotes} onEnter={isPermission} />
             <Route path="sendNote" component={SendNote} onEnter={isLogin} />
             <Route path="login" component={Login} onEnter={isLogout} />
             <Route path="register" component={Register} onEnter={isLogout} />

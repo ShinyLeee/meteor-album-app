@@ -39,7 +39,10 @@ Collections.helpers({
     return !!this.userId;
   },
   images() {
-    return Images.find({ collection: this._id }, { sort: { createdAt: -1 } });
+    return Images.find(
+      { user: this.user, collection: this.name },
+      { sort: { createdAt: -1 } }
+    );
   },
 });
 

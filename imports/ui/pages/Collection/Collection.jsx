@@ -230,7 +230,7 @@ const MeteorContainer = createContainer(({ params }) => {
   else isGuest = true;
 
   const userHandler = Meteor.subscribe('Users.all');
-  const colHandler = Meteor.subscribe('Collections.targetUser', username);
+  const colHandler = Meteor.subscribe('Collections.inUser', username);
   const noteHandler = Meteor.subscribe('Notes.own');
   const dataIsReady = userHandler.ready() && colHandler.ready() && noteHandler.ready();
   let cols;

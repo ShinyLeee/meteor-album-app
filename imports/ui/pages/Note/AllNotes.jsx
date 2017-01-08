@@ -40,7 +40,7 @@ class AllNotesPage extends Component {
     return (
       <div className="note">
         {
-          AllNotes.map((note) => otherUsers.map((user) => note.sender === user._id &&
+          AllNotes.map((note) => otherUsers.map((user) => note.sender === user.username &&
           (
             <NoteHolder
               User={User}
@@ -90,9 +90,11 @@ AllNotesPage.propTypes = {
   dispatch: PropTypes.func,
 };
 
-const MeteorContainer = createContainer(() => {
+const MeteorContainer = createContainer(({ params }) => {
+  const { username } = params;
+
   const userHandler = Meteor.subscribe('Users.others');
-  const noteHandler = Meteor.subscribe('Notes.own');
+  const noteHandler = Meteor.subscribe('Notes.own', username);
   const dataIsReady = userHandler.ready() && noteHandler.ready();
   const otherUsers = Meteor.users.find({}).fetch();
   const AllNotes = Notes.find({}, { sort: { createdAt: -1 } }).fetch();
