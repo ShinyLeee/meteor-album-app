@@ -1,10 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import moment from 'moment';
 import { browserHistory } from 'react-router';
-import { connect } from 'react-redux';
 import { Meteor } from 'meteor/meteor';
 import { _ } from 'meteor/underscore';
-import { createContainer } from 'meteor/react-meteor-data';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import IconButton from 'material-ui/IconButton';
@@ -23,19 +21,16 @@ import ShiftIcon from 'material-ui/svg-icons/hardware/keyboard-return';
 import RemoveIcon from 'material-ui/svg-icons/action/delete';
 import SetCoverIcon from 'material-ui/svg-icons/device/wallpaper';
 import { blue500 } from 'material-ui/styles/colors';
-import { Collections } from '/imports/api/collections/collection.js';
 import { removeImagesToRecycle, shiftImages } from '/imports/api/images/methods.js';
 import {
   removeCollection,
   lockCollection,
-  mutateCollectionCover } from '/imports/api/collections/methods.js';
+  mutateCollectionCover,
+} from '/imports/api/collections/methods.js';
 import scrollTo from '/imports/utils/scrollTo.js';
-import ConnectedNavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
-import ConnectedJustified from '/imports/ui/components/Justified/Justified.jsx';
-import { uploaderStart, disableSelectAll, snackBarOpen } from '/imports/ui/redux/actions/creators.js';
 
-const domain = Meteor.settings.public.domain;
-const initialAlertState = { isAlertOpen: false, alertTitle: '', alertContent: '', action: '' };
+import ConnectedNavHeader from '../../containers/NavHeaderContainer.jsx';
+import ConnectedJustified from '../../components/Justified/Justified.jsx';
 
 const styles = {
   AppBarIconSvg: {
@@ -58,7 +53,8 @@ const styles = {
   },
 };
 
-class CollPicsPage extends Component {
+export default class CollPicsPage extends Component {
+
   constructor(props) {
     super(props);
     this.state = {
@@ -80,20 +76,18 @@ class CollPicsPage extends Component {
   }
 
   handleQuitEditing(e) {
-    const { dispatch } = this.props;
     e.preventDefault();
-    dispatch(disableSelectAll());
+    this.props.disableSelectAll();
     this.setState({ isEditing: false });
   }
 
   handleOpenUploader() {
-    const { uptoken, User, curColl, dispatch } = this.props;
     const data = {
-      uptoken,
-      key: `${User.username}/${curColl.name}/`,
+      uptoken: this.props.uptoken,
+      key: `${this.props.User.username}/${this.props.curColl.name}/`,
     };
     document.getElementById('uploader').click();
-    dispatch(uploaderStart(data));
+    this.props.uploaderStart(data);
   }
 
   handleLockCollection(cb) {
@@ -113,8 +107,7 @@ class CollPicsPage extends Component {
   }
 
   handleRemoveCollection(cb) {
-    const { User, images, curColl, dispatch } = this.props;
-
+    const { User, images, curColl } = this.props;
     if (images.length === 0) {
       return removeCollection.call({
         username: User.username,
@@ -125,7 +118,7 @@ class CollPicsPage extends Component {
           cb(err, '删除相册失败');
         }
         browserHistory.replace(`/user/${User.username}/collection`);
-        dispatch(snackBarOpen('删除相册成功'));
+        this.props.snackBarOpen('删除相册成功');
       });
     }
 
@@ -150,7 +143,7 @@ class CollPicsPage extends Component {
           cb(err, '删除相册失败');
         }
         browserHistory.replace(`/user/${User.username}/collection`);
-        dispatch(snackBarOpen('删除相册成功'));
+        this.props.snackBarOpen('删除相册成功');
       });
     });
   }
@@ -206,7 +199,7 @@ class CollPicsPage extends Component {
   }
 
   handleSetCover(cb) {
-    const { selectImages, curColl } = this.props;
+    const { domain, selectImages, curColl } = this.props;
     const curImg = selectImages[0];
     const cover = `${domain}/${curImg.user}/${curImg.collection}/${curImg.name}.${curImg.type}`;
     mutateCollectionCover.call({
@@ -236,7 +229,7 @@ class CollPicsPage extends Component {
    * @param {String} action - One of / ShiftPhoto / RemovePhoto / SetCover / RemoveCollection
    */
   openAlert(action) {
-    const { curColl, otherColls, selectImages, dispatch } = this.props;
+    const { curColl, otherColls, selectImages } = this.props;
     let alertTitle;
     let alertContent;
     if (action === 'LockCollection') {
@@ -253,11 +246,11 @@ class CollPicsPage extends Component {
       return;
     }
     if (!selectImages || selectImages.length === 0) {
-      dispatch(snackBarOpen('您没有选择照片'));
+      this.props.snackBarOpen('您没有选择照片');
       return;
     }
     if (action === 'SetCover' && selectImages.length > 1) {
-      dispatch(snackBarOpen('只能选择一张照片作为封面'));
+      this.props.snackBarOpen('只能选择一张照片作为封面');
       return;
     }
     if (action === 'ShiftPhoto') {
@@ -291,17 +284,16 @@ class CollPicsPage extends Component {
   }
 
   triggerDialogAction(action) {
-    const { dispatch } = this.props;
-    const curState = Object.assign({}, initialAlertState, { isProcessing: true });
+    const curState = Object.assign({}, this.props.initialAlertState, { isProcessing: true });
 
     this.setState(curState);
 
     const actionCallback = (err, msg, isEditing) => {
-      dispatch(snackBarOpen(msg));
+      this.props.snackBarOpen(msg);
       if (err) {
         throw new Meteor.Error(err);
       }
-      if (isEditing) dispatch(disableSelectAll());
+      if (isEditing) this.props.disableSelectAll();
       this.setState({ isProcessing: false });
     };
 
@@ -447,11 +439,10 @@ class CollPicsPage extends Component {
   }
 
   render() {
-    const { dataIsReady } = this.props;
     const actions = [
       <FlatButton
         label="取消"
-        onTouchTap={() => this.setState(initialAlertState)}
+        onTouchTap={() => this.setState(this.props.initialAlertState)}
         primary
       />,
       <FlatButton
@@ -467,7 +458,7 @@ class CollPicsPage extends Component {
           : this.renderNavHeader() }
         <div className="content">
           { this.state.isProcessing && <LinearProgress style={styles.indeterminateProgress} mode="indeterminate" /> }
-          { dataIsReady
+          { this.props.dataIsReady
             ? this.renderColPics()
             : this.renderLoader() }
           <Dialog
@@ -476,7 +467,7 @@ class CollPicsPage extends Component {
             actions={actions}
             actionsContainerStyle={{ border: 'none' }}
             open={this.state.isAlertOpen}
-            onRequestClose={() => this.setState(initialAlertState)}
+            onRequestClose={() => this.setState(this.props.initialAlertState)}
             autoScrollBodyContent
           >
             {this.state.alertContent}
@@ -488,54 +479,26 @@ class CollPicsPage extends Component {
 
 }
 
+CollPicsPage.defaultProps = {
+  domain: Meteor.settings.public.domain,
+  initialAlertState: { isAlertOpen: false, alertTitle: '', alertContent: '', action: '' },
+};
+
 CollPicsPage.propTypes = {
   User: PropTypes.object,
-  // Below is Pass from database
+  domain: PropTypes.string.isRequired,
+  initialAlertState: PropTypes.object.isRequired,
+  // Below Pass from database
   dataIsReady: PropTypes.bool.isRequired,
   isGuest: PropTypes.bool.isRequired,
   curColl: PropTypes.object.isRequired,
   otherColls: PropTypes.array.isRequired,
   images: PropTypes.array.isRequired,
   // Below Pass From Redux
-  uptoken: PropTypes.string,
-  selectImages: PropTypes.array,
-  counter: PropTypes.number,
-  dispatch: PropTypes.func,
+  uptoken: PropTypes.string, // not required bc guest can vist this page
+  selectImages: PropTypes.array, // not required bc guest can vist this page
+  counter: PropTypes.number, // not required bc guest can vist this page
+  uploaderStart: PropTypes.func.isRequired,
+  disableSelectAll: PropTypes.func.isRequired,
+  snackBarOpen: PropTypes.func.isRequired,
 };
-
-const MeteorContainer = createContainer(({ params }) => {
-  const { username, cname } = params;
-  const User = Meteor.user();
-  let isGuest = !User;  // if User is null, isGuest is true
-  // if User exist and its name equal with params.username, isGuest is false
-  if (User && User.username === username) isGuest = false;
-  else isGuest = true;
-
-  const collHandler = Meteor.subscribe('Collections.inUser', username);
-  const imageHandler = Meteor.subscribe('Images.inCollection', { username, cname });
-  const dataIsReady = collHandler.ready() && imageHandler.ready();
-
-  // curColl is currentCollection use for lock/remove etc.
-  const curColl = Collections.findOne({ name: cname }) || {};
-  const collExists = dataIsReady && !!curColl;
-  // otherColls use for shift photos
-  const otherColls = Collections.find(
-    { name: { $ne: cname } },
-    { fields: { name: 1 } }
-  ).fetch();
-  return {
-    dataIsReady,
-    isGuest,
-    curColl,
-    otherColls,
-    images: collExists ? curColl.images().fetch() : [],
-  };
-}, CollPicsPage);
-
-const mapStateToProps = (state) => ({
-  uptoken: state.uptoken,
-  selectImages: state.selectCounter.selectImages,
-  counter: state.selectCounter.counter,
-});
-
-export default connect(mapStateToProps)(MeteorContainer);

@@ -1,19 +1,17 @@
 import React, { Component, PropTypes } from 'react';
 import { Meteor } from 'meteor/meteor';
-import { createContainer } from 'meteor/react-meteor-data';
 import CircularProgress from 'material-ui/CircularProgress';
 import { makeCancelable } from '/imports/utils/utils.js';
 import { Images } from '/imports/api/images/image.js';
-import { Notes } from '/imports/api/notes/note.js';
-import Infinity from '/imports/ui/components/Infinity/Infinity.jsx';
-import ConnectedNavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
-import Recap from '/imports/ui/components/Recap/Recap.jsx';
-import PicHolder from '/imports/ui/components/PicHolder/PicHolder.jsx';
-import ZoomerHolder from '/imports/ui/components/ZoomerHolder/ZoomerHolder.jsx';
 
-const clientWidth = document.body.clientWidth;
+import ConnectedNavHeader from '../../containers/NavHeaderContainer.jsx';
+import Infinity from '../../components/Infinity/Infinity.jsx';
+import Recap from '../../components/Recap/Recap.jsx';
+import PicHolder from '../../components/PicHolder/PicHolder.jsx';
+import ZoomerHolder from '../../components/ZoomerHolder/ZoomerHolder.jsx';
 
-class IndexPage extends Component {
+export default class IndexPage extends Component {
+
   constructor(props) {
     super(props);
     this.state = {
@@ -92,7 +90,7 @@ class IndexPage extends Component {
         key={i}
         User={this.props.User}
         image={image}
-        clientWidth={clientWidth}
+        clientWidth={this.props.clientWidth}
         onLikeOrUnlikeAction={this.handleRefreshImages}
       />
     ));
@@ -107,7 +105,7 @@ class IndexPage extends Component {
           offsetToBottom={100}
         >
           { this.renderPicHolder() }
-          <ZoomerHolder clientWidth={clientWidth} />
+          <ZoomerHolder clientWidth={this.props.clientWidth} />
         </Infinity>
       </div>
     );
@@ -141,33 +139,17 @@ class IndexPage extends Component {
 
 }
 
-IndexPage.propTypes = {
-  User: PropTypes.object,
-  dataIsReady: PropTypes.bool.isRequired,
-  users: PropTypes.array.isRequired,
-  initialImages: PropTypes.array.isRequired,
-  noteNum: PropTypes.number.isRequired,
-  limit: PropTypes.number.isRequired,
+IndexPage.defaultProps = {
+  clientWidth: document.body.clientWidth,
 };
 
-export default createContainer(() => {
-  // Define How many pictures render in the first time
-  const limit = 5;
-
-  const userHandler = Meteor.subscribe('Users.all');
-  const imageHandler = Meteor.subscribe('Images.all');
-  const noteHandler = Meteor.subscribe('Notes.own');
-  const dataIsReady = userHandler.ready() && imageHandler.ready() && noteHandler.ready();
-  const users = Meteor.users.find().fetch();
-  const initialImages = Images.find(
-    { private: { $ne: true } },
-    { sort: { createdAt: -1 }, limit }).fetch();
-  const noteNum = Notes.find({ isRead: { $ne: true } }).count();
-  return {
-    dataIsReady,
-    users,
-    initialImages,
-    noteNum,
-    limit,
-  };
-}, IndexPage);
+IndexPage.propTypes = {
+  User: PropTypes.object,
+  clientWidth: PropTypes.number.isRequired,
+  // Below Pass from database
+  limit: PropTypes.number.isRequired,
+  dataIsReady: PropTypes.bool.isRequired,
+  users: PropTypes.array.isRequired,
+  noteNum: PropTypes.number.isRequired,
+  initialImages: PropTypes.array.isRequired,
+};

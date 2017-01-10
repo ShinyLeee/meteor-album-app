@@ -1,8 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { browserHistory } from 'react-router';
-import { connect } from 'react-redux';
 import { Meteor } from 'meteor/meteor';
-import { createContainer } from 'meteor/react-meteor-data';
 import CircularProgress from 'material-ui/CircularProgress';
 import LinearProgress from 'material-ui/LinearProgress';
 import IconButton from 'material-ui/IconButton';
@@ -13,16 +11,13 @@ import CloseIcon from 'material-ui/svg-icons/navigation/close';
 import RecoveryIcon from 'material-ui/svg-icons/av/replay';
 import RemoveIcon from 'material-ui/svg-icons/action/delete';
 import { blue500 } from 'material-ui/styles/colors';
-import { Images } from '/imports/api/images/image.js';
 import { removeImages, recoveryImages } from '/imports/api/images/methods.js';
 import scrollTo from '/imports/utils/scrollTo.js';
-import { SelectableIcon } from '/imports/ui/components/Justified/SelectableStatus.jsx';
-import ConnectedNavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
-import ConnectedSelectableImageHolder from '/imports/ui/components/Justified/SelectableImageHolder.jsx';
-import GridLayout from '/imports/ui/components/GridLayout/GridLayout.jsx';
-import { enableSelectAll, disableSelectAll, snackBarOpen } from '/imports/ui/redux/actions/creators.js';
 
-const sourceDomain = Meteor.settings.public.sourceDomain;
+import ConnectedNavHeader from '../../containers/NavHeaderContainer.jsx';
+import ConnectedSelectableImageHolder from '../../components/Justified/SelectableImageHolder.jsx';
+import GridLayout from '../../components/GridLayout/GridLayout.jsx';
+import { SelectableIcon } from '../../components/Justified/SelectableStatus.jsx';
 
 const styles = {
   AppBarIconSvg: {
@@ -37,7 +32,8 @@ const styles = {
   },
 };
 
-class RecyclePage extends Component {
+export default class RecyclePage extends Component {
+
   constructor(props) {
     super(props);
     this.state = {
@@ -67,50 +63,47 @@ class RecyclePage extends Component {
   }
 
   handleQuitEditing(e) {
-    const { dispatch } = this.props;
     e.preventDefault();
-    dispatch(disableSelectAll());
+    this.props.disableSelectAll();
   }
 
   handleToggleSelectAll() {
-    const { images, dispatch } = this.props;
+    const { images } = this.props;
     if (this.state.isAllSelect) {
-      dispatch(disableSelectAll());
+      this.props.disableSelectAll();
     } else {
       const counter = images.length;
-      dispatch(enableSelectAll({ selectImages: images, group: { recycle: counter }, counter }));
+      this.props.enableSelectAll({ selectImages: images, group: { recycle: counter }, counter });
     }
   }
 
   handleOpenAlert(type) {
-    const { selectImages, dispatch } = this.props;
+    const { selectImages } = this.props;
     if (selectImages.length === 0) {
-      dispatch(snackBarOpen('您尚未选择相片'));
+      this.props.snackBarOpen('您尚未选择相片');
       return;
     }
     this.setState({ [type]: true });
   }
 
   handleRecovery() {
-    const { selectImages, dispatch } = this.props;
     this.setState({ isProcessing: true });
-    const selectImagesIds = selectImages.map((image) => image._id);
+    const selectImagesIds = this.props.selectImages.map((image) => image._id);
     recoveryImages.call({ selectImages: selectImagesIds }, (err) => {
       if (err) {
-        dispatch(snackBarOpen('恢复相片失败'));
+        this.props.snackBarOpen('恢复相片失败');
         throw new Meteor.Error(err);
       }
-      dispatch(snackBarOpen('恢复相片成功'));
-      dispatch(disableSelectAll());
+      this.props.snackBarOpen('恢复相片成功');
+      this.props.disableSelectAll();
       this.setState({ isProcessing: false, recoveryAlert: false });
     });
   }
 
   handleDelete() {
-    const { selectImages, dispatch } = this.props;
     this.setState({ isProcessing: true });
-    const selectImagesIds = selectImages.map((image) => image._id);
-    const keys = selectImages.map((image) => {
+    const selectImagesIds = this.props.selectImages.map((image) => image._id);
+    const keys = this.props.selectImages.map((image) => {
       const key = `${image.user}/${image.collection}/${image.name}.${image.type}`;
       return key;
     });
@@ -119,23 +112,26 @@ class RecyclePage extends Component {
       removeImages.callPromise({ selectImages: selectImagesIds });
     })
     .then(() => {
-      dispatch(snackBarOpen('删除相片成功'));
-      dispatch(disableSelectAll());
+      this.props.snackBarOpen('删除相片成功');
+      this.props.disableSelectAll();
       this.setState({ isProcessing: false, deleteAlert: false });
     })
     .catch((err) => {
-      dispatch(snackBarOpen('删除相片失败'));
+      this.props.snackBarOpen('删除相片失败');
       throw new Meteor.Error(err);
     });
   }
 
   renderRecycle() {
-    const { images } = this.props;
-    if (images.length === 0) {
+    if (this.props.images.length === 0) {
       return (
         <div className="Empty">
           <div className="Empty__container">
-            <img className="Empty__logo" src={`${sourceDomain}/GalleryPlus/Default/empty.png`} role="presentation" />
+            <img
+              className="Empty__logo"
+              src={`${this.props.sourceDomain}/GalleryPlus/Default/empty.png`}
+              role="presentation"
+            />
             <h2 className="Empty__header">Oops!</h2>
             <p className="Empty__info">您的回收站暂时是空闲的</p>
           </div>
@@ -157,11 +153,11 @@ class RecyclePage extends Component {
           </div>
           <GridLayout>
             {
-              images.map((image, i) => (
+              this.props.images.map((image, i) => (
                 <ConnectedSelectableImageHolder
                   key={i}
                   image={image}
-                  total={images.length}
+                  total={this.props.images.length}
                   isEditing
                 />
               ))
@@ -265,32 +261,21 @@ class RecyclePage extends Component {
 
 }
 
+RecyclePage.defaultProps = {
+  sourceDomain: Meteor.settings.public.sourceDomain,
+};
+
 RecyclePage.propTypes = {
   User: PropTypes.object,
-  // Below is Pass from database
+  sourceDomain: PropTypes.string.isRequired,
+  // Below Pass from database
   dataIsReady: PropTypes.bool.isRequired,
   images: PropTypes.array.isRequired,
   // Below Pass From Redux
-  uptoken: PropTypes.string,
-  selectImages: PropTypes.array,
-  counter: PropTypes.number,
-  dispatch: PropTypes.func,
+  uptoken: PropTypes.string.isRequired,
+  selectImages: PropTypes.array.isRequired,
+  counter: PropTypes.number.isRequired,
+  disableSelectAll: PropTypes.func.isRequired,
+  enableSelectAll: PropTypes.func.isRequired,
+  snackBarOpen: PropTypes.func.isRequired,
 };
-
-const MeteorContainer = createContainer(() => {
-  const imageHandle = Meteor.subscribe('Images.recycle');
-  const dataIsReady = imageHandle.ready();
-  const images = Images.find({}, { sort: { shootAt: -1 } }).fetch();
-  return {
-    dataIsReady,
-    images,
-  };
-}, RecyclePage);
-
-const mapStateToProps = (state) => ({
-  uptoken: state.uptoken,
-  selectImages: state.selectCounter.selectImages,
-  counter: state.selectCounter.counter,
-});
-
-export default connect(mapStateToProps)(MeteorContainer);

@@ -1,13 +1,10 @@
 import { Meteor } from 'meteor/meteor';
-import { createContainer } from 'meteor/react-meteor-data';
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
-import { Notes } from '/imports/api/notes/note.js';
-import ConnectedNavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
 
-const sourceDomain = Meteor.settings.public.sourceDomain;
+import ConnectedNavHeader from '../../containers/NavHeaderContainer.jsx';
 
-class InternalError extends Component {
+export default class InternalError extends Component {
 
   constructor(props) {
     super(props);
@@ -17,14 +14,22 @@ class InternalError extends Component {
   }
 
   render() {
-    const { User, noteNum } = this.props;
     return (
       <div className="container">
-        <ConnectedNavHeader User={User} location={this.state.location} noteNum={noteNum} primary />
+        <ConnectedNavHeader
+          User={this.props.User}
+          location={this.state.location}
+          noteNum={this.props.noteNum}
+          primary
+        />
         <div className="content Error">
           <div className="Error__container">
             <h2 className="Error__status">Error: 500 Unexpected Error</h2>
-            <img className="Error__logo" src={`${sourceDomain}/GalleryPlus/Error/500.png`} alt="500 Unexpected Error" />
+            <img
+              className="Error__logo"
+              src={`${this.props.sourceDomain}/GalleryPlus/Error/500.png`}
+              alt="500 Unexpected Error"
+            />
             <p className="Error__info">服务器内部发生错误</p>
             <p className="Error__info">
               请检查地址是否输入正确&nbsp;
@@ -38,15 +43,12 @@ class InternalError extends Component {
 
 }
 
-InternalError.propTypes = {
-  User: PropTypes.object,
-  noteNum: PropTypes.number.isRequired,
+InternalError.defaultProps = {
+  sourceDomain: Meteor.settings.public.sourceDomain,
 };
 
-export default createContainer(() => {
-  Meteor.subscribe('Notes.own');
-  const noteNum = Notes.find({ isRead: { $ne: true } }).count();
-  return {
-    noteNum,
-  };
-}, InternalError);
+InternalError.propTypes = {
+  User: PropTypes.object,
+  sourceDomain: PropTypes.string.isRequired,
+  noteNum: PropTypes.number.isRequired,
+};

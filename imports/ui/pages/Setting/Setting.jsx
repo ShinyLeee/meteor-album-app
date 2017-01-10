@@ -1,7 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { createContainer } from 'meteor/react-meteor-data';
 import React, { Component, PropTypes } from 'react';
-import { connect } from 'react-redux';
 import { List, ListItem } from 'material-ui/List';
 import TextField from 'material-ui/TextField';
 import Subheader from 'material-ui/Subheader';
@@ -21,12 +19,10 @@ import UserIcon from 'material-ui/svg-icons/action/account-box';
 import InboxIcon from 'material-ui/svg-icons/content/inbox';
 import EmailIcon from 'material-ui/svg-icons/communication/email';
 import { blue500 } from 'material-ui/styles/colors';
-import { Notes } from '/imports/api/notes/note.js';
 import { updateProfile } from '/imports/api/users/methods.js';
-import ConnectedNavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
-import { snackBarOpen } from '/imports/ui/redux/actions/creators.js';
 
-const domain = Meteor.settings.public.domain;
+import ConnectedNavHeader from '../../containers/NavHeaderContainer.jsx';
+
 const styles = {
   cameraIconStyle: {
     height: '38px',
@@ -47,7 +43,7 @@ const styles = {
 
 let initialSettings;
 
-class SettingPage extends Component {
+export default class SettingPage extends Component {
 
   constructor(props) {
     super(props);
@@ -78,7 +74,6 @@ class SettingPage extends Component {
   }
 
   handleSubmit() {
-    const { dispatch } = this.props;
     updateProfile.call({
       nickname: this.state.nickname,
       intro: this.state.intro,
@@ -92,10 +87,10 @@ class SettingPage extends Component {
       },
     }, (err) => {
       if (err) {
-        dispatch(snackBarOpen('设置保存失败'));
+        this.props.snackBarOpen('设置保存失败');
         throw new Meteor.Error(err);
       }
-      dispatch(snackBarOpen('设置保存成功'));
+      this.props.snackBarOpen('设置保存成功');
       this.setState({ isEditing: false });
     });
   }
@@ -103,36 +98,34 @@ class SettingPage extends Component {
   handleSetCover(e) {
     this.setState({ isEditing: true, isProcessing: true });
     e.preventDefault();
-    const { User, uptoken, uploadURL, dispatch } = this.props;
     const cover = e.target.files[0];
     if (!cover) return;
-    const key = `${User.username}/setting/cover/${cover.name}`;
+    const key = `${this.props.User.username}/setting/cover/${cover.name}`;
     const formData = new FormData();
     formData.append('file', cover);
     formData.append('key', key);
-    formData.append('token', uptoken);
+    formData.append('token', this.props.uptoken);
 
     $.ajax({
       method: 'POST',
-      url: uploadURL,
+      url: this.props.uploadURL,
       data: formData,
       dataType: 'json',
       contentType: false,
       processData: false,
     })
     .done((res) => {
-      this.setState({ isEditing: true, isProcessing: false, cover: `${domain}/${res.key}` });
+      this.setState({ isEditing: true, isProcessing: false, cover: `${this.props.domain}/${res.key}` });
     })
     .fail((err) => {
       this.setState({ isEditing: false, isProcessing: false });
-      dispatch(snackBarOpen('上传封面失败'));
+      this.props.snackBarOpen('上传封面失败');
       throw new Meteor.Error(err);
     });
   }
 
   handleSetAvatar(e) {
     this.setState({ isEditing: true, isProcessing: true });
-    const { User, uptoken, uploadURL, dispatch } = this.props;
     e.preventDefault();
     const avatar = e.target.files[0];
     const size = Math.round(avatar.size / 1024);
@@ -144,27 +137,27 @@ class SettingPage extends Component {
       };
       reader.readAsDataURL(avatar);
     } else {
-      const key = `${User.username}/setting/avatar/${avatar.name}`;
+      const key = `${this.props.User.username}/setting/avatar/${avatar.name}`;
       const formData = new FormData();
       formData.append('file', avatar);
       formData.append('key', key);
-      formData.append('token', uptoken);
+      formData.append('token', this.props.uptoken);
 
       $.ajax({
         method: 'POST',
-        url: uploadURL,
+        url: this.props.uploadURL,
         data: formData,
         dataType: 'json',
         contentType: false,
         processData: false,
       })
       .done((res) => {
-        const avatarSrc = `${domain}/${res.key}?imageView2/1/w/240/h/240`;
+        const avatarSrc = `${this.props.domain}/${res.key}?imageView2/1/w/240/h/240`;
         this.setState({ isEditing: true, isProcessing: false, avatar: avatarSrc });
       })
       .fail((err) => {
         this.setState({ isEditing: false, isProcessing: false });
-        dispatch(snackBarOpen('上传头像失败'));
+        this.props.snackBarOpen('上传头像失败');
         throw new Meteor.Error(err);
       });
     }
@@ -406,27 +399,16 @@ class SettingPage extends Component {
 }
 
 SettingPage.defaultProps = {
+  domain: Meteor.settings.public.domain,
   uploadURL: window.location.protocol === 'https:' ? 'https://up.qbox.me/' : 'http://upload.qiniu.com',
 };
 
 SettingPage.propTypes = {
-  uptoken: PropTypes.string,
-  uploadURL: PropTypes.string.isRequired,
   User: PropTypes.object,
+  domain: PropTypes.string.isRequired,
+  uploadURL: PropTypes.string.isRequired,
+  // Below Pass from Redux
+  uptoken: PropTypes.string.isRequired,
   noteNum: PropTypes.number.isRequired,
-  dispatch: PropTypes.func,
+  snackBarOpen: PropTypes.func.isRequired,
 };
-
-const mapStateToProps = (state) => ({
-  uptoken: state.uptoken,
-});
-
-const MeteorContainer = createContainer(() => {
-  Meteor.subscribe('Notes.own');
-  const noteNum = Notes.find({ isRead: { $ne: true } }).count();
-  return {
-    noteNum,
-  };
-}, SettingPage);
-
-export default connect(mapStateToProps)(MeteorContainer);

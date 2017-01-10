@@ -1,14 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import React, { Component, PropTypes } from 'react';
 import { browserHistory } from 'react-router';
-import { connect } from 'react-redux';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import { purple500, grey500 } from 'material-ui/styles/colors';
 import { createUser } from '/imports/api/users/methods.js';
 import { checkCode, useCode } from '/imports/api/codes/methods.js';
-import ConnectedNavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
-import { snackBarOpen } from '/imports/ui/redux/actions/creators.js';
+
+import ConnectedNavHeader from '../../containers/NavHeaderContainer.jsx';
 
 const styles = {
   logBtn: {
@@ -24,7 +23,7 @@ const styles = {
   },
 };
 
-class RegisterPage extends Component {
+export default class RegisterPage extends Component {
 
   constructor(props) {
     super(props);
@@ -33,7 +32,6 @@ class RegisterPage extends Component {
 
   handleRegister(e) {
     e.preventDefault();
-    const { dispatch } = this.props;
 
     const username = this.usrField.input.value;
     const password = this.pwdField.input.value;
@@ -41,15 +39,15 @@ class RegisterPage extends Component {
     const code = parseInt(this.codeField.input.value, 10);
 
     if (!password || !password2) {
-      dispatch(snackBarOpen('请输入密码'));
+      this.props.snackBarOpen('请输入密码');
       return;
     }
     if (password !== password2) {
-      dispatch(snackBarOpen('请确认两次密码输入是否正确'));
+      this.props.snackBarOpen('请确认两次密码输入是否正确');
       return;
     }
     if (password.length < 6) {
-      dispatch(snackBarOpen('密码长度必须大于6位'));
+      this.props.snackBarOpen('密码长度必须大于6位');
       return;
     }
     checkCode.callPromise({ codeNo: code })
@@ -63,10 +61,10 @@ class RegisterPage extends Component {
     .then(() => {
       Meteor.loginWithPassword(username, password);
       browserHistory.replace('/');
-      dispatch(snackBarOpen('注册成功'));
+      this.props.snackBarOpen('注册成功');
     })
     .catch((err) => {
-      dispatch(snackBarOpen(err.reason));
+      this.props.snackBarOpen(err.reason);
       throw new Meteor.Error(err);
     });
   }
@@ -127,8 +125,5 @@ class RegisterPage extends Component {
 }
 
 RegisterPage.propTypes = {
-  history: PropTypes.object.isRequired,
-  dispatch: PropTypes.func,
+  snackBarOpen: PropTypes.func.isRequired,
 };
-
-export default connect()(RegisterPage);

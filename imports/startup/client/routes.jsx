@@ -4,22 +4,25 @@ import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 
 import PC from '/imports/ui/App_PC.jsx';
-import App from '/imports/ui/App.jsx';
-import Index from '/imports/ui/pages/Index/Index.jsx';
-import User from '/imports/ui/pages/User/User.jsx';
-import Collection from '/imports/ui/pages/Collection/Collection.jsx';
-import CollPics from '/imports/ui/pages/Collection/CollPics.jsx';
-import Recycle from '/imports/ui/pages/Recycle/Recycle.jsx';
-import Setting from '/imports/ui/pages/Setting/Setting.jsx';
-import Note from '/imports/ui/pages/Note/Note.jsx';
-import AllNotes from '/imports/ui/pages/Note/AllNotes.jsx';
-import SendNote from '/imports/ui/pages/Note/SendNote.jsx';
-import Login from '/imports/ui/pages/Login/Login.jsx';
-import Register from '/imports/ui/pages/Register/Register.jsx';
-import Construction from '/imports/ui/pages/Error/Construction.jsx';
-import Forbidden from '/imports/ui/pages/Error/Forbidden.jsx';
-import NotFound from '/imports/ui/pages/Error/NotFound.jsx';
-import InternalError from '/imports/ui/pages/Error/InternalError.jsx';
+import AppContainer from '/imports/ui/containers/AppContainer.jsx';
+import Login from '/imports/ui/containers/LoginContainer.jsx';
+import Register from '/imports/ui/containers/RegisterContainer.jsx';
+import Index from '/imports/ui/containers/IndexContainer.jsx';
+import User from '/imports/ui/containers/UserContainer.jsx';
+import Collection from '/imports/ui/containers/CollectionContainer.jsx';
+import CollPics from '/imports/ui/containers/CollPicsContainer.jsx';
+import Recycle from '/imports/ui/containers/RecycleContainer.jsx';
+import Setting from '/imports/ui/containers/SettingContainer.jsx';
+import Note from '/imports/ui/containers/NoteContainer.jsx';
+import AllNotes from '/imports/ui/containers/AllNotesContainer.jsx';
+import SendNote from '/imports/ui/containers/SendNoteContainer.jsx';
+import {
+  ConnectedConstruction,
+  ConnectedForbidden,
+  ConnectedInternalError,
+  ConnectedNotFound,
+} from '/imports/ui/containers/ErrorContainers.jsx';
+
 import { platform } from '/imports/utils/utils.js';
 import reducers from '/imports/ui/redux/reducers';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
@@ -34,13 +37,13 @@ const Root = () => {
     <Provider store={store}>
       <MuiThemeProvider>
         <Router history={browserHistory}>
-          <Route path="/" component={App}>
+          <Route path="/" component={AppContainer}>
             <IndexRoute component={Index} />
             <Redirect from="explore" to="/" />
             <Route path="user/:username" component={User} onEnter={isAllowVisitHome} />
             <Route path="user/:username/collection" component={Collection} onEnter={isAllowVisitColl} />
             <Route path="user/:username/collection/:cname" component={CollPics} onEnter={isAllowVisitColl} />
-            <Route path="memory" component={Construction} onEnter={isLogin} />
+            <Route path="memory" component={ConnectedConstruction} onEnter={isLogin} />
             <Route path="recycle" component={Recycle} onEnter={isLogin} />
             <Route path="setting" component={Setting} onEnter={isLogin} />
             <Route path="note/:username" component={Note} onEnter={isPermission} />
@@ -48,10 +51,10 @@ const Root = () => {
             <Route path="sendNote" component={SendNote} onEnter={isLogin} />
             <Route path="login" component={Login} onEnter={isLogout} />
             <Route path="register" component={Register} onEnter={isLogout} />
-            <Route path="403" component={Forbidden} />
-            <Route path="404" component={NotFound} />
-            <Route path="500" component={InternalError} />
-            <Route path="*" component={NotFound} />
+            <Route path="403" component={ConnectedForbidden} />
+            <Route path="404" component={ConnectedNotFound} />
+            <Route path="500" component={ConnectedInternalError} />
+            <Route path="*" component={ConnectedNotFound} />
           </Route>
         </Router>
       </MuiThemeProvider>

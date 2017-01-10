@@ -1,8 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { browserHistory } from 'react-router';
-import { connect } from 'react-redux';
 import { Meteor } from 'meteor/meteor';
-import { createContainer } from 'meteor/react-meteor-data';
 import CircularProgress from 'material-ui/CircularProgress';
 import LinearProgress from 'material-ui/LinearProgress';
 import IconMenu from 'material-ui/IconMenu';
@@ -15,11 +13,9 @@ import { makeCancelable } from '/imports/utils/utils.js';
 import { Notes } from '/imports/api/notes/note.js';
 import { readAllNotes } from '/imports/api/notes/methods.js';
 import Infinity from '/imports/ui/components/Infinity/Infinity.jsx';
-import ConnectedNavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
-import NoteHolder from '/imports/ui/components/Note/NoteHolder.jsx';
-import { snackBarOpen } from '/imports/ui/redux/actions/creators.js';
 
-const sourceDomain = Meteor.settings.public.sourceDomain;
+import ConnectedNavHeader from '../../containers/NavHeaderContainer.jsx';
+import NoteHolder from '../../components/Note/NoteHolder.jsx';
 
 const styles = {
   indeterminateProgress: {
@@ -29,7 +25,8 @@ const styles = {
   },
 };
 
-class NotePage extends Component {
+export default class NotePage extends Component {
+
   constructor(props) {
     super(props);
     this.state = {
@@ -60,15 +57,14 @@ class NotePage extends Component {
   }
 
   handleReadAll() {
-    const { User, dispatch } = this.props;
     if (this.state.notes.length === 0) {
-      dispatch(snackBarOpen('您没有未读的信息'));
+      this.props.snackBarOpen('您没有未读的信息');
       return;
     }
     this.setState({ isProcessing: true });
-    readAllNotes.call({ receiver: User.username }, (err) => {
+    readAllNotes.call({ receiver: this.props.User.username }, (err) => {
       if (err) {
-        dispatch(snackBarOpen('发生位置错误'));
+        this.props.snackBarOpen('发生位置错误');
         throw new Meteor.Error(err);
       }
       this.setState({ isProcessing: false, notes: [] });
@@ -110,12 +106,15 @@ class NotePage extends Component {
   }
 
   renderNotes() {
-    const { User, otherUsers } = this.props;
     if (this.state.notes.length === 0) {
       return (
         <div className="Empty">
           <div className="Empty__container">
-            <img className="Empty__logo" src={`${sourceDomain}/GalleryPlus/Default/empty.png`} role="presentation" />
+            <img
+              className="Empty__logo"
+              src={`${this.props.sourceDomain}/GalleryPlus/Default/empty.png`}
+              role="presentation"
+            />
             <h2 className="Empty__header">Oops!</h2>
             <p className="Empty__info">暂未收到新消息</p>
           </div>
@@ -130,10 +129,10 @@ class NotePage extends Component {
           offsetToBottom={100}
         >
           {
-            this.state.notes.map((note) => otherUsers.map((user) => note.sender === user.username &&
+            this.state.notes.map((note) => this.props.otherUsers.map((user) => note.sender === user.username &&
             (
               <NoteHolder
-                User={User}
+                User={this.props.User}
                 sender={user}
                 note={note}
                 onReadNote={this.handleRefreshNotes}
@@ -193,33 +192,18 @@ class NotePage extends Component {
 
 }
 
-NotePage.propTypes = {
-  User: PropTypes.object,
-  dataIsReady: PropTypes.bool.isRequired,
-  otherUsers: PropTypes.array.isRequired,
-  initialNotes: PropTypes.array.isRequired,
-  limit: PropTypes.number.isRequired,
-  dispatch: PropTypes.func,
+NotePage.defaultProps = {
+  sourceDomain: Meteor.settings.public.sourceDomain,
 };
 
-const MeteorContainer = createContainer(({ params }) => {
-  const { username } = params;
-  // Define How many notes render in the first time
-  const limit = 5;
-
-  const userHandler = Meteor.subscribe('Users.others');
-  const noteHandler = Meteor.subscribe('Notes.own', username);
-  const dataIsReady = userHandler.ready() && noteHandler.ready();
-  const otherUsers = Meteor.users.find({}).fetch();
-  const initialNotes = Notes.find(
-    { isRead: { $ne: true } },
-    { sort: { sendAt: -1 }, limit }).fetch();
-  return {
-    dataIsReady,
-    otherUsers,
-    initialNotes,
-    limit,
-  };
-}, NotePage);
-
-export default connect()(MeteorContainer);
+NotePage.propTypes = {
+  User: PropTypes.object,
+  sourceDomain: PropTypes.string.isRequired,
+  dataIsReady: PropTypes.bool.isRequired,
+  // Below Pass from database
+  limit: PropTypes.number.isRequired,
+  otherUsers: PropTypes.array.isRequired,
+  initialNotes: PropTypes.array.isRequired,
+  // Below Pass from Redux
+  snackBarOpen: PropTypes.func.isRequired,
+};

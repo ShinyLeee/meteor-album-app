@@ -1,15 +1,11 @@
 import React, { Component, PropTypes } from 'react';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
 import { Meteor } from 'meteor/meteor';
-import { createContainer } from 'meteor/react-meteor-data';
 import CircularProgress from 'material-ui/CircularProgress';
-import { storeUptoken, clearUptoken } from '/imports/ui/redux/actions/creators.js';
 import SnackBar from './components/SnackBar/SnackBar.jsx';
-import ConnectedNavHeader from './components/NavHeader/NavHeader.jsx';
+import NavHeader from './components/NavHeader/NavHeader.jsx';
 import ConnectedUploader from './components/Uploader/Uploader.jsx';
 
-class App extends Component {
+export default class App extends Component {
 
   componentDidMount() {
     if (this.props.User) {
@@ -43,7 +39,7 @@ class App extends Component {
     if (!userIsReady) {
       return (
         <div className="container">
-          <ConnectedNavHeader loading />
+          <NavHeader loading />
           <div className="content text-center">
             <CircularProgress style={{ top: '150px' }} />
           </div>
@@ -73,27 +69,6 @@ App.propTypes = {
   userIsReady: PropTypes.bool.isRequired,
   children: PropTypes.element.isRequired,
   // Below is Pass From redux
-  storeUptoken: PropTypes.func,
-  clearUptoken: PropTypes.func,
-  dispatch: PropTypes.func,
+  storeUptoken: PropTypes.func.isRequired,
+  clearUptoken: PropTypes.func.isRequired,
 };
-
-const MeteorContainer = createContainer(() => {
-  let userIsReady;
-  const User = Meteor.user();
-  if (typeof User === 'undefined' || User) userIsReady = !!User;
-  else userIsReady = true;
-  return {
-    User,
-    userIsReady,
-  };
-}, App);
-
-const mapStateToProps = (state) => state;
-
-const mapDispatchToProps = (dispatch) => bindActionCreators({
-  storeUptoken,
-  clearUptoken,
-}, dispatch);
-
-export default connect(mapStateToProps, mapDispatchToProps)(MeteorContainer);

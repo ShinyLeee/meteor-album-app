@@ -11,7 +11,7 @@ if (Meteor.isClient) {
   import { shallow } from 'enzyme';
   import { chai } from 'meteor/practicalmeteor:chai';
   import Drawer from 'material-ui/Drawer';
-  import { NavHeader } from './NavHeader.jsx';
+  import NavHeader from './NavHeader.jsx';
 
   const expect = chai.expect;
 

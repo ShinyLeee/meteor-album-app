@@ -1,8 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { createContainer } from 'meteor/react-meteor-data';
 import React, { Component, PropTypes } from 'react';
 import { browserHistory } from 'react-router';
-import { connect } from 'react-redux';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
@@ -11,16 +9,11 @@ import ArrowBackIcon from 'material-ui/svg-icons/navigation/arrow-back';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import CircularProgress from 'material-ui/CircularProgress';
 import AddIcon from 'material-ui/svg-icons/content/add';
-import { Collections } from '/imports/api/collections/collection.js';
-import { Notes } from '/imports/api/notes/note.js';
 import { insertCollection } from '/imports/api/collections/methods.js';
-import ConnectedNavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
-import Recap from '/imports/ui/components/Recap/Recap.jsx';
-import ColHolder from '/imports/ui/components/ColHolder/ColHolder.jsx';
-import { snackBarOpen } from '/imports/ui/redux/actions/creators.js';
 
-const clientWidth = document.body.clientWidth;
-const sourceDomain = Meteor.settings.public.sourceDomain;
+import ConnectedNavHeader from '../../containers/NavHeaderContainer.jsx';
+import Recap from '../../components/Recap/Recap.jsx';
+import ColHolder from '../../components/ColHolder/ColHolder.jsx';
 
 const styles = {
   floatBtn: {
@@ -33,7 +26,8 @@ const styles = {
   },
 };
 
-class CollectionPage extends Component {
+export default class CollectionPage extends Component {
+
   constructor(props) {
     super(props);
     this.state = {
@@ -79,34 +73,36 @@ class CollectionPage extends Component {
   }
 
   handleAddCollection() {
-    const { User, dispatch } = this.props;
     if (this.state.errorText) {
-      dispatch(snackBarOpen(this.state.errorText));
+      this.props.snackBarOpen(this.state.errorText);
       this.handleClose();
       return;
     }
     this.handleClose();
     insertCollection.call({
       name: this.state.newColName,
-      user: User.username,
+      user: this.props.User.username,
       createdAt: new Date(),
       updatedAt: new Date(),
     }, (err) => {
       if (err) {
-        dispatch(snackBarOpen('新建相册失败'));
+        this.props.snackBarOpen('新建相册失败');
         throw new Meteor.Error(err);
       }
-      dispatch(snackBarOpen('新建相册成功'));
+      this.props.snackBarOpen('新建相册成功');
     });
   }
 
   renderColHolder() {
-    const { curUser, cols } = this.props;
-    if (cols.length === 0) {
+    if (this.props.cols.length === 0) {
       return (
         <div className="Empty">
           <div className="Empty__container">
-            <img className="Empty__logo" src={`${sourceDomain}/GalleryPlus/Default/empty.png`} role="presentation" />
+            <img
+              className="Empty__logo"
+              src={`${this.props.sourceDomain}/GalleryPlus/Default/empty.png`}
+              role="presentation"
+            />
             <h2 className="Empty__header">Oops</h2>
             <p className="Empty__info">你还尚未创建相册</p>
             <p className="Empty__info">点击右下角按钮创建属于自己的相册吧</p>
@@ -114,8 +110,13 @@ class CollectionPage extends Component {
         </div>
       );
     }
-    return cols.map((col) => (
-      <ColHolder key={col._id} User={curUser} col={col} clientWidth={clientWidth} />
+    return this.props.cols.map((col) => (
+      <ColHolder
+        key={col._id}
+        User={this.props.curUser}
+        col={col}
+        clientWidth={this.props.clientWidth}
+      />
     ));
   }
 
@@ -208,46 +209,21 @@ class CollectionPage extends Component {
 
 }
 
+CollectionPage.defaultProps = {
+  clientWidth: document.body.clientWidth,
+  sourceDomain: Meteor.settings.public.sourceDomain,
+};
+
 CollectionPage.propTypes = {
   User: PropTypes.object,
-  dispatch: PropTypes.func,
-  // Below is pass from database
+  clientWidth: PropTypes.number.isRequired,
+  sourceDomain: PropTypes.string.isRequired,
+  // Below Pass from database
   dataIsReady: PropTypes.bool.isRequired,
   isGuest: PropTypes.bool.isRequired,
   curUser: PropTypes.object.isRequired,
   cols: PropTypes.array.isRequired,
   noteNum: PropTypes.number.isRequired,
+  // Below Pass from Redux
+  snackBarOpen: PropTypes.func.isRequired,
 };
-
-const preCurUser = Meteor.settings.public.preCurUser;
-
-const MeteorContainer = createContainer(({ params }) => {
-  const { username } = params;
-  const User = Meteor.user();
-  let isGuest = !User;  // if User is null, isGuest is true
-  // if User exist and its name equal with params.username, isGuest is false
-  if (User && User.username === username) isGuest = false;
-  else isGuest = true;
-
-  const userHandler = Meteor.subscribe('Users.all');
-  const colHandler = Meteor.subscribe('Collections.inUser', username);
-  const noteHandler = Meteor.subscribe('Notes.own');
-  const dataIsReady = userHandler.ready() && colHandler.ready() && noteHandler.ready();
-  let cols;
-  const curUser = Meteor.users.findOne({ username }) || preCurUser;
-  const noteNum = Notes.find({ isRead: { $ne: true } }).count();
-  if (!isGuest) {
-    cols = Collections.find({}, { sort: { createdAt: -1 } }).fetch();
-  } else {
-    cols = Collections.find({ private: false }, { sort: { createdAt: -1 } }).fetch();
-  }
-  return {
-    dataIsReady,
-    isGuest,
-    curUser,
-    cols,
-    noteNum,
-  };
-}, CollectionPage);
-
-export default connect()(MeteorContainer);

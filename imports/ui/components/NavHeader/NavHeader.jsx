@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import React, { Component, PropTypes } from 'react';
 import { browserHistory } from 'react-router';
-import { connect } from 'react-redux';
 import AppBar from 'material-ui/AppBar';
 import Avatar from 'material-ui/Avatar';
 import Badge from 'material-ui/Badge';
@@ -23,9 +22,7 @@ import SettingsIcon from 'material-ui/svg-icons/action/settings';
 import ArrowDropdownIcon from 'material-ui/svg-icons/navigation/arrow-drop-down';
 import { purple500 } from 'material-ui/styles/colors';
 import scrollTo from '/imports/utils/scrollTo.js';
-import { snackBarOpen } from '/imports/ui/redux/actions/creators.js';
 
-const sourceDomain = Meteor.settings.public.sourceDomain;
 const styles = {
   AppBar: {
     position: 'fixed',
@@ -74,8 +71,7 @@ const styles = {
   },
 };
 
-export class NavHeader extends Component {
-
+export default class NavHeader extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -89,12 +85,12 @@ export class NavHeader extends Component {
   }
 
   get avatarSrc() {
-    const defaultAvatar = `${sourceDomain}/GalleryPlus/Default/default-avatar.jpg`;
+    const defaultAvatar = `${this.props.sourceDomain}/GalleryPlus/Default/default-avatar.jpg`;
     return this.props.User ? this.props.User.profile.avatar : defaultAvatar;
   }
 
   get coverSrc() {
-    const defaultCover = `url(${sourceDomain}/GalleryPlus/Default/default-cover.jpg)`;
+    const defaultCover = `url(${this.props.sourceDomain}/GalleryPlus/Default/default-cover.jpg)`;
     return this.props.User ? `url(${this.props.User.profile.cover})` : defaultCover;
   }
 
@@ -118,20 +114,18 @@ export class NavHeader extends Component {
   }
 
   handleLogout() {
-    const { dispatch } = this.props;
     Meteor.logout((err) => {
       if (err) {
-        dispatch(snackBarOpen('发生未知错误'));
+        this.props.snackBarOpen('发生未知错误');
         throw new Meteor.Error(err);
       }
       browserHistory.replace('/login');
-      dispatch(snackBarOpen('登出成功'));
+      this.props.snackBarOpen('登出成功');
     });
   }
 
   handlePrompt() {
-    const { dispatch } = this.props;
-    dispatch(snackBarOpen('功能开发中'));
+    this.props.snackBarOpen('功能开发中');
   }
 
   renderPrimaryIconRight(User) {
@@ -338,9 +332,17 @@ export class NavHeader extends Component {
 
 }
 
+NavHeader.defaultProps = {
+  sourceDomain: Meteor.settings.public.sourceDomain,
+  loading: false,
+  primary: false,
+  noteNum: 0,
+};
+
 NavHeader.propTypes = {
+  sourceDomain: PropTypes.string.isRequired,
   User: PropTypes.object,
-  loading: PropTypes.bool,
+  loading: PropTypes.bool.isRequired,
   /**
    * primary:
    *
@@ -351,7 +353,7 @@ NavHeader.propTypes = {
    *
    * if false, we need to set icon & title by yourself,
    */
-  primary: PropTypes.bool,
+  primary: PropTypes.bool.isRequired,
   /**
    * location:
    *
@@ -365,7 +367,7 @@ NavHeader.propTypes = {
    *
    * for notification badge
    */
-  noteNum: PropTypes.number,
+  noteNum: PropTypes.number.isRequired,
   /**
    * Below:
    *
@@ -380,7 +382,6 @@ NavHeader.propTypes = {
   iconElementLeft: PropTypes.element,
   iconElementRight: PropTypes.element,
   onLeftIconButtonTouchTap: PropTypes.func,
-  dispatch: PropTypes.func,
+  // Below pass from Redux
+  snackBarOpen: PropTypes.func, // not required when prop loading and without primary
 };
-
-export default connect()(NavHeader);

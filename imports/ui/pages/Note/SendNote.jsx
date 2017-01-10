@@ -1,8 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { browserHistory } from 'react-router';
-import { connect } from 'react-redux';
 import { Meteor } from 'meteor/meteor';
-import { createContainer } from 'meteor/react-meteor-data';
 import Avatar from 'material-ui/Avatar';
 import Chip from 'material-ui/Chip';
 import AutoComplete from 'material-ui/AutoComplete';
@@ -16,9 +14,9 @@ import ArrowBackIcon from 'material-ui/svg-icons/navigation/arrow-back';
 import SendIcon from 'material-ui/svg-icons/content/send';
 import { blue500 } from 'material-ui/styles/colors';
 import { insertNote } from '/imports/api/notes/methods.js';
-import ConnectedNavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
-import DatePickerCN from '/imports/ui/components/SubMaterialUI/DatePickerCN.jsx';
-import { snackBarOpen } from '/imports/ui/redux/actions/creators.js';
+
+import ConnectedNavHeader from '../../containers/NavHeaderContainer.jsx';
+import DatePickerCN from '../../components/SubMaterialUI/DatePickerCN.jsx';
 
 const styles = {
   noteTextField: {
@@ -46,7 +44,7 @@ const styles = {
   },
 };
 
-class SendNotePage extends Component {
+export default class SendNotePage extends Component {
 
   constructor(props) {
     super(props);
@@ -77,26 +75,24 @@ class SendNotePage extends Component {
   }
 
   handleSent() {
-    const { User, dispatch } = this.props;
-    const { receiver, sendAt, title, content } = this.state;
-    if (!receiver) {
-      dispatch(snackBarOpen('请选择接受用户'));
+    if (!this.state.receiver) {
+      this.props.snackBarOpen('请选择接受用户');
       return;
     }
     insertNote.call({
-      title,
-      content,
-      sender: User.username,
-      receiver: receiver.username,
-      sendAt,
+      title: this.state.title,
+      content: this.state.content,
+      sender: this.props.User.username,
+      receiver: this.state.receiver.username,
+      sendAt: this.state.sendAt,
       createdAt: new Date(),
     }, (err) => {
       if (err) {
-        dispatch(snackBarOpen(err.reason));
+        this.props.snackBarOpen(err.reason);
         throw new Meteor.Error(err);
       }
       browserHistory.goBack();
-      dispatch(snackBarOpen('发送成功'));
+      this.props.snackBarOpen('发送成功');
     });
   }
 
@@ -207,24 +203,10 @@ class SendNotePage extends Component {
 
 SendNotePage.propTypes = {
   User: PropTypes.object,
+  // Below Pass from database
   userIsReady: PropTypes.bool.isRequired,
   initialReceiver: PropTypes.object,
   otherUsers: PropTypes.array.isRequired,
-  dispatch: PropTypes.func,
+  // Below Pass from Redux
+  snackBarOpen: PropTypes.func.isRequired,
 };
-
-const MeteorContainer = createContainer(({ location }) => {
-  const { receiver } = location.query;
-  const userHandler = Meteor.subscribe('Users.all');
-  const userIsReady = userHandler.ready();
-  const uid = Meteor.userId();
-  const initialReceiver = receiver && Meteor.users.findOne({ username: receiver });
-  const otherUsers = Meteor.users.find({ _id: { $ne: uid } }).fetch();
-  return {
-    userIsReady,
-    initialReceiver,
-    otherUsers,
-  };
-}, SendNotePage);
-
-export default connect()(MeteorContainer);

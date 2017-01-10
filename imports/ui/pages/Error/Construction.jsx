@@ -1,13 +1,10 @@
 import { Meteor } from 'meteor/meteor';
-import { createContainer } from 'meteor/react-meteor-data';
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
-import { Notes } from '/imports/api/notes/note.js';
-import ConnectedNavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
 
-const sourceDomain = Meteor.settings.public.sourceDomain;
+import ConnectedNavHeader from '../../containers/NavHeaderContainer.jsx';
 
-class Construction extends Component {
+export default class Construction extends Component {
 
   constructor(props) {
     super(props);
@@ -17,14 +14,22 @@ class Construction extends Component {
   }
 
   render() {
-    const { User, noteNum } = this.props;
     return (
       <div className="container">
-        <ConnectedNavHeader User={User} location={this.state.location} noteNum={noteNum} primary />
+        <ConnectedNavHeader
+          User={this.props.User}
+          location={this.state.location}
+          noteNum={this.props.noteNum}
+          primary
+        />
         <div className="content Error">
           <div className="Error__container">
             <h2 className="Error__status">This Page is Under Construction</h2>
-            <img className="Error__logo" src={`${sourceDomain}/GalleryPlus/Error/Construction.png`} alt="Under Construction" />
+            <img
+              className="Error__logo"
+              src={`${this.props.sourceDomain}/GalleryPlus/Error/Construction.png`}
+              alt="Under Construction"
+            />
             <p className="Error__info">该页面正在紧张的开发中</p>
             <p className="Error__info">
               请检查地址是否输入正确&nbsp;
@@ -38,15 +43,13 @@ class Construction extends Component {
 
 }
 
-Construction.propTypes = {
-  User: PropTypes.object,
-  noteNum: PropTypes.number.isRequired,
+Construction.defaultProps = {
+  sourceDomain: Meteor.settings.public.sourceDomain,
 };
 
-export default createContainer(() => {
-  Meteor.subscribe('Notes.own');
-  const noteNum = Notes.find({ isRead: { $ne: true } }).count();
-  return {
-    noteNum,
-  };
-}, Construction);
+Construction.propTypes = {
+  User: PropTypes.object,
+  sourceDomain: PropTypes.string.isRequired,
+  noteNum: PropTypes.number.isRequired,
+  snackBarOpen: PropTypes.func.isRequired,
+};

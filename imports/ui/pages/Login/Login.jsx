@@ -1,12 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import React, { Component, PropTypes } from 'react';
 import { browserHistory } from 'react-router';
-import { connect } from 'react-redux';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import { purple500, grey500 } from 'material-ui/styles/colors';
-import ConnectedNavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
-import { snackBarOpen } from '/imports/ui/redux/actions/creators.js';
+
+import ConnectedNavHeader from '../../containers/NavHeaderContainer.jsx';
 
 const styles = {
   logBtn: {
@@ -22,7 +21,7 @@ const styles = {
   },
 };
 
-class LoginPage extends Component {
+export default class LoginPage extends Component {
 
   constructor(props) {
     super(props);
@@ -33,18 +32,16 @@ class LoginPage extends Component {
     const usr = this.usrInput.input.value;
     const pwd = this.pwdInput.input.value;
 
-    const { dispatch } = this.props;
-
     this.usrInput.blur();
     this.pwdInput.blur();
 
     Meteor.loginWithPassword(usr, pwd, (err) => {
       if (err) {
-        dispatch(snackBarOpen(err.message));
+        this.props.snackBarOpen(err.message);
         throw new Meteor.Error(err);
       }
       browserHistory.push('/');
-      dispatch(snackBarOpen('登录成功'));
+      this.props.snackBarOpen('登录成功');
     });
   }
 
@@ -92,7 +89,5 @@ class LoginPage extends Component {
 }
 
 LoginPage.propTypes = {
-  dispatch: PropTypes.func,
+  snackBarOpen: PropTypes.func.isRequired,
 };
-
-export default connect()(LoginPage);
