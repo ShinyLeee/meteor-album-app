@@ -9,8 +9,9 @@ Meteor.publish('Images.all', function images() {
 });
 
 Meteor.publish('Images.own', function ownImages() {
+  const username = Meteor.users.findOne(this.userId).username;
   return Images.find({
-    uid: this.userId,
+    user: username,
     deletedAt: null,
   });
 });
@@ -22,13 +23,14 @@ Meteor.publish('Images.liked', function likedImages() {
 });
 
 Meteor.publish('Images.recycle', function inRecycleImages() {
+  const username = Meteor.users.findOne(this.userId).username;
   return Images.find({
-    uid: this.userId,
+    user: username,
     deletedAt: { $ne: null },
   });
 });
 
-Meteor.publishComposite('Images.inCollection', function spec({ username, cname }) {
+Meteor.publishComposite('Images.inCollection', function inCollection({ username, cname }) {
   new SimpleSchema({
     username: { type: String, label: '用户名', max: 20 },
     cname: { type: String, label: '相册名', max: 20 },
@@ -38,12 +40,15 @@ Meteor.publishComposite('Images.inCollection', function spec({ username, cname }
       return Collections.find({
         name: cname,
         user: username,
-        deletedAt: null,
       });
     },
     children: [{
       find(collection) {
-        return Images.find({ user: collection.user, collection: collection.name });
+        return Images.find({
+          user: collection.user,
+          collection: collection.name,
+          deletedAt: null,
+        });
       },
     }],
   };

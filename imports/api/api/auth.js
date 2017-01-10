@@ -61,6 +61,7 @@ if (Meteor.isServer) {
   const AUTH_METHODS = [
     'isLogin',
     'isAdmin',
+    'isPermission',
     'isAllowVisitHome',
     'isAllowVisitColl',
   ];
@@ -73,5 +74,5 @@ if (Meteor.isServer) {
 
     // Rate limit per connection ID
     connectionId() { return true; },
-  }, 1, 1000);
+  }, 2, 5000);
 }

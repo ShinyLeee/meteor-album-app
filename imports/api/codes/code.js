@@ -16,8 +16,10 @@ class CodesCollection extends Mongo.Collection {
 export const Codes = new CodesCollection('codes');
 
 Codes.schema = new SimpleSchema({
-  no: { type: String, label: '激活码', denyUpdate: true },
+  no: { type: Number, label: '激活码', denyUpdate: true },
   isUsed: { type: Boolean, label: '是否已使用', defaultValue: false, optional: true },
+  createdAt: { type: Date, denyUpdate: true },
+  usedAt: { type: Date, optional: true },
 });
 
 Codes.attachSchema(Codes.schema);

@@ -35,15 +35,15 @@ Notes.deny({
 });
 
 if (Meteor.isTest) {
-  import { Factory } from 'meteor/dburles:factory';
   import faker from 'faker';
+  import { Factory } from 'meteor/dburles:factory';
   import { limitStrLength } from '/imports/utils/utils.js';
 
   Factory.define('note', Notes, {
     title: () => limitStrLength(faker.hacker.noun(), 20),
     content: () => faker.lorem.sentence(),
-    sender: () => Factory.get('user'),
-    receiver: () => Factory.get('user'),
+    sender: () => limitStrLength(faker.internet.userName(), 20),
+    receiver: () => limitStrLength(faker.internet.userName(), 20),
     sendAt: () => new Date(),
     createdAt: () => new Date(),
   });

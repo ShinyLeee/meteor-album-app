@@ -1,6 +1,6 @@
 
-import '/imports/api/Auth/methods.js';
-import '/imports/api/Qiniu/methods.js';
+import '/imports/api/api/auth.js';
+import '/imports/api/api/qiniu.js';
 
 import '/imports/api/codes/methods.js';
 

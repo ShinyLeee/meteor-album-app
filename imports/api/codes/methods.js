@@ -10,13 +10,13 @@ export const checkCode = new ValidatedMethod({
   name: 'codes.check',
   mixins: [CallPromiseMixin],
   validate: new SimpleSchema({
-    codeNo: { type: String },
+    codeNo: { type: Number },
   }).validator({ clean: true, filter: false }),
   run({ codeNo }) {
     if (this.userId) {
-      throw new Meteor.Error(403, 'Access Denied');
+      throw new Meteor.Error('api.codes.check.hasLoggedIn');
     }
-    const isExist = Codes.findOne({ no: codeNo, isUsed: false });
+    const isExist = !!Codes.findOne({ no: codeNo, isUsed: false });
     return isExist;
   },
 });
@@ -25,17 +25,20 @@ export const useCode = new ValidatedMethod({
   name: 'codes.use',
   mixins: [CallPromiseMixin],
   validate: new SimpleSchema({
-    codeNo: { type: String },
+    codeNo: { type: Number },
   }).validator({ clean: true, filter: false }),
   run({ codeNo }) {
     if (this.userId) {
-      throw new Meteor.Error(403, 'Access Denied');
+      throw new Meteor.Error('api.codes.use.hasLoggedIn');
     }
-    Codes.update({ no: codeNo, isUsed: false }, { $set: { isUsed: true } });
+    Codes.update(
+      { no: codeNo, isUsed: false },
+      { $set: { isUsed: true, usedAt: new Date() } }
+    );
   },
 });
-// Get list of all method names on Collections
-const COLLECTIONS_METHODS = _.pluck([
+
+const CODES_METHODS = _.pluck([
   checkCode,
   useCode,
 ], 'name');
@@ -44,10 +47,10 @@ if (Meteor.isServer) {
   // Only allow 1 user operations per connection per second
   DDPRateLimiter.addRule({
     name(name) {
-      return _.contains(COLLECTIONS_METHODS, name);
+      return _.contains(CODES_METHODS, name);
     },
 
     // Rate limit per connection ID
     connectionId() { return true; },
-  }, 1, 1000);
+  }, 2, 5000);
 }

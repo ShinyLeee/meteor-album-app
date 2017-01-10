@@ -5,7 +5,6 @@ import { CallPromiseMixin } from 'meteor/didericis:callpromise-mixin';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import moment from 'moment';
-
 import { Images } from './image.js';
 
 export const insertImage = new ValidatedMethod({
@@ -13,10 +12,11 @@ export const insertImage = new ValidatedMethod({
   validate: Images.simpleSchema().validator({ clean: true, filter: false }),
   run(image) {
     if (!this.userId) {
-      throw new Meteor.Error('api.images.insertImage.notLoggedIn');
+      throw new Meteor.Error('api.images.insert.notLoggedIn');
     }
-    if (this.userId !== image.user) {
-      throw new Meteor.Error('api.images.insertImage.accessDenied');
+    const username = Meteor.users.findOne(this.userId).username;
+    if (username !== image.user) {
+      throw new Meteor.Error('api.images.insert.accessDenied');
     }
     return Images.insert(image);
   },
@@ -26,11 +26,11 @@ export const removeImages = new ValidatedMethod({
   name: 'images.remove',
   mixins: [CallPromiseMixin],
   validate: new SimpleSchema({
-    selectImages: { type: [String], regEx: SimpleSchema.RegEx.Id },
+    selectImages: { type: [String], label: '被选择图片Id', regEx: SimpleSchema.RegEx.Id },
   }).validator({ clean: true, filter: false }),
   run({ selectImages }) {
     if (!this.userId) {
-      throw new Meteor.Error('api.images.removeImages.notLoggedIn');
+      throw new Meteor.Error('api.images.remove.notLoggedIn');
     }
     Images.remove({ _id: { $in: selectImages } });
   },
@@ -39,11 +39,11 @@ export const removeImages = new ValidatedMethod({
 export const removeImagesToRecycle = new ValidatedMethod({
   name: 'images.removeToRecycle',
   validate: new SimpleSchema({
-    selectImages: { type: [String], regEx: SimpleSchema.RegEx.Id },
+    selectImages: { type: [String], label: '被选择图片Id', regEx: SimpleSchema.RegEx.Id },
   }).validator({ clean: true, filter: false }),
   run({ selectImages }) {
     if (!this.userId) {
-      throw new Meteor.Error('api.images.removeImagesToRecycle.notLoggedIn');
+      throw new Meteor.Error('api.images.removeToRecycle.notLoggedIn');
     }
     const deletedAt = moment().add(1, 'M').toDate();
 
@@ -58,11 +58,11 @@ export const removeImagesToRecycle = new ValidatedMethod({
 export const recoveryImages = new ValidatedMethod({
   name: 'images.recovery',
   validate: new SimpleSchema({
-    selectImages: { type: [String], regEx: SimpleSchema.RegEx.Id },
+    selectImages: { type: [String], label: '被选择图片Id', regEx: SimpleSchema.RegEx.Id },
   }).validator({ clean: true, filter: false }),
   run({ selectImages }) {
     if (!this.userId) {
-      throw new Meteor.Error('api.images.recoveryImages.notLoggedIn');
+      throw new Meteor.Error('api.images.recovery.notLoggedIn');
     }
     Images.update(
       { _id: { $in: selectImages } },
@@ -75,12 +75,12 @@ export const recoveryImages = new ValidatedMethod({
 export const shiftImages = new ValidatedMethod({
   name: 'images.shift',
   validate: new SimpleSchema({
-    selectImages: { type: [String], regEx: SimpleSchema.RegEx.Id },
-    dest: { type: String, regEx: SimpleSchema.RegEx.Id },
+    selectImages: { type: [String], label: '被选择图片Id', regEx: SimpleSchema.RegEx.Id },
+    dest: { type: String, label: '目标相册名', max: 20 },
   }).validator({ clean: true, filter: false }),
   run({ selectImages, dest }) {
     if (!this.userId) {
-      throw new Meteor.Error('api.images.shiftImages.notLoggedIn');
+      throw new Meteor.Error('api.images.shift.notLoggedIn');
     }
     const count = selectImages.length;
 
@@ -102,7 +102,7 @@ export const likeImage = new ValidatedMethod({
   }).validator({ clean: true, filter: false }),
   run({ imageId, liker }) {
     if (!this.userId) {
-      throw new Meteor.Error('api.images.likeImage.notLoggedIn');
+      throw new Meteor.Error('api.images.like.notLoggedIn');
     }
     Images.update(imageId, { $addToSet: { liker } });
   },
@@ -116,7 +116,7 @@ export const unlikeImage = new ValidatedMethod({
   }).validator({ clean: true, filter: false }),
   run({ imageId, unliker }) {
     if (!this.userId) {
-      throw new Meteor.Error('api.images.unlikeImage.notLoggedIn');
+      throw new Meteor.Error('api.images.unlike.notLoggedIn');
     }
     Images.update(imageId, { $pull: { liker: unliker } });
   },

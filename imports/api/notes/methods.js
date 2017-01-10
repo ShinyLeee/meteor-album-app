@@ -3,7 +3,6 @@ import { _ } from 'meteor/underscore';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
-
 import { Notes } from './note.js';
 
 /**
@@ -16,7 +15,7 @@ export const insertNote = new ValidatedMethod({
   validate: Notes.simpleSchema().validator({ clean: true, filter: false }),
   run(note) {
     if (!this.userId) {
-      throw new Meteor.Error('user.accessDenied');
+      throw new Meteor.Error('api.notes.insert.notLoggedIn');
     }
     return Notes.insert(note);
   },
@@ -25,17 +24,14 @@ export const insertNote = new ValidatedMethod({
 export const readAllNotes = new ValidatedMethod({
   name: 'notes.readAll',
   validate: new SimpleSchema({
-    uid: { type: String, regEx: SimpleSchema.RegEx.Id },
+    receiver: { type: String, label: '接受者', max: 20 },
   }).validator({ clean: true, filter: false }),
-  run({ uid }) {
+  run({ receiver }) {
     if (!this.userId) {
-      throw new Meteor.Error('user.accessDenied');
-    }
-    if (this.userId !== uid) {
-      throw new Meteor.Error('user.accessDenied');
+      throw new Meteor.Error('api.notes.readAll.notLoggedIn');
     }
     Notes.update(
-      { receiver: uid },
+      { receiver, isRead: false },
       { $set: { isRead: true } },
       { multi: true }
     );
@@ -49,9 +45,12 @@ export const readNote = new ValidatedMethod({
   }).validator({ clean: true, filter: false }),
   run({ noteId }) {
     if (!this.userId) {
-      throw new Meteor.Error('user.accessDenied');
+      throw new Meteor.Error('api.notes.read.notLoggedIn');
     }
-    Notes.update({ _id: noteId }, { $set: { isRead: true } });
+    Notes.update(
+      noteId,
+      { $set: { isRead: true } }
+    );
   },
 });
 
@@ -71,5 +70,5 @@ if (Meteor.isServer) {
 
     // Rate limit per connection ID
     connectionId() { return true; },
-  }, 1, 1000);
+  }, 2, 5000);
 }

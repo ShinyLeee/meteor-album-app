@@ -1,17 +1,15 @@
-/* eslint prefer-arrow-callback: 0 */
-/* eslint meteor/audit-argument-checks: 0 */
+/* eslint-disable prefer-arrow-callback, meteor/audit-argument-checks */
 import { Meteor } from 'meteor/meteor';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import { Collections } from '../collection.js';
 
 Meteor.publish('Collections.all', function all() {
-  return Collections.find();
+  return Collections.find({});
 });
 
 Meteor.publish('Collections.own', function ownCollections() {
-  return Collections.find({
-    uid: this.userId,
-  });
+  const user = Meteor.users.findOne(this.userId).username;
+  return Collections.find({ user });
 });
 
 Meteor.publish('Collections.inUser', function targetUserCollections(user) {
@@ -23,10 +21,10 @@ Meteor.publish('Collections.inUser', function targetUserCollections(user) {
   });
 });
 
-Meteor.publish('Collections.colNames', function colNames() {
-  return Collections.find({
-    uid: this.userId,
-  }, {
-    fields: { name: 1 },
-  });
+Meteor.publish('Collections.collNames', function collNames() {
+  const user = Meteor.users.findOne(this.userId).username;
+  return Collections.find(
+    { user },
+    { fields: { name: 1 } }
+  );
 });

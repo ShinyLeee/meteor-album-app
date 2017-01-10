@@ -11,12 +11,12 @@ if (Meteor.isClient) {
 
   describe('reducers', () => {
     describe('uptoken', () => {
-      it('should store uptoken', () => {
+      it('should STORE_UPTOKEN store uptoken', () => {
         const uptoken = faker.random.number();
         expect(reducers.uptoken('', { type: 'STORE_UPTOKEN', uptoken })).to.equal(uptoken);
       });
 
-      it('should clear uptoken', () => {
+      it('should CLEAR_UPTOKEN clear uptoken', () => {
         expect(reducers.uptoken('', { type: 'CLEAR_UPTOKEN' })).to.be.null;
       });
     });

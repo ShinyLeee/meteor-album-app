@@ -66,7 +66,7 @@ class NotePage extends Component {
       return;
     }
     this.setState({ isProcessing: true });
-    readAllNotes.call({ uid: User._id }, (err) => {
+    readAllNotes.call({ receiver: User.username }, (err) => {
       if (err) {
         dispatch(snackBarOpen('发生位置错误'));
         throw new Meteor.Error(err);

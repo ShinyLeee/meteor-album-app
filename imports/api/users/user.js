@@ -40,8 +40,8 @@ Users.deny({
 });
 
 if (Meteor.isTest) {
-  import { Factory } from 'meteor/dburles:factory';
   import faker from 'faker';
+  import { Factory } from 'meteor/dburles:factory';
   import { limitStrLength } from '/imports/utils/utils.js';
 
   Factory.define('user', Users, {

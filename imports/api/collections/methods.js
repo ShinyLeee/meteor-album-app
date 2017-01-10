@@ -7,48 +7,61 @@ import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Images } from '../images/image.js';
 import { Collections } from './collection.js';
 
+/**
+ * Method contains manipulate Images collection ,
+ * should provide username and collName value other than collId.
+ *
+ * Bc some collection name might be same.
+ */
+
 export const insertCollection = new ValidatedMethod({
   name: 'collections.insert',
   validate: Collections.simpleSchema().validator({ clean: true, filter: false }),
   run(collection) {
     if (!this.userId) {
-      throw new Meteor.Error('user.accessDenied');
+      throw new Meteor.Error('api.collections.insert.notLoggedIn');
     }
     // 根据用户设置来确认新建相册是否公开, 默认公开相册
-    const settings = Meteor.user().profile.settings;
+    const settings = Meteor.users.findOne(this.userId).profile.settings;
     const mergedCollection = Object.assign({}, collection, { private: !settings.allowVisitColl });
-    return Collections.insert(mergedCollection);
+    Collections.insert(mergedCollection);
   },
 });
 
 export const removeCollection = new ValidatedMethod({
   name: 'collections.remove',
   validate: new SimpleSchema({
-    colName: { type: String, label: '相册名' },
+    username: { type: String, label: '用户名', max: 20 },
+    collId: { type: String, label: '相册Id', regEx: SimpleSchema.RegEx.Id },
+    collName: { type: String, label: '相册名', max: 20 },
   }).validator({ clean: true, filter: false }),
-  run({ colName }) {
+  run({ username, collId, collName }) {
     if (!this.userId) {
-      throw new Meteor.Error('user.accessDenied');
+      throw new Meteor.Error('api.collections.remove.notLoggedIn');
     }
-    Collections.remove({ uid: this.userId, name: colName });
-    Images.remove({ collection: colName });
+    Collections.remove(collId);
+    Images.remove({ user: username, collection: collName });
   },
 });
 
 export const lockCollection = new ValidatedMethod({
   name: 'collections.lock',
   validate: new SimpleSchema({
-    colId: { type: String, regEx: SimpleSchema.RegEx.Id },
-    colName: { type: String, max: 10 },
-    privateStatus: { type: Boolean },
+    username: { type: String, label: '用户名', max: 20 },
+    collId: { type: String, label: '相册Id', regEx: SimpleSchema.RegEx.Id },
+    collName: { type: String, label: '相册名', max: 20 },
+    privateStatus: { type: Boolean, label: '当前相册状态' },
   }).validator({ clean: true, filter: false }),
-  run({ colId, colName, privateStatus }) {
+  run({ username, collId, collName, privateStatus }) {
     if (!this.userId) {
-      throw new Meteor.Error('user.accessDenied');
+      throw new Meteor.Error('api.collections.lock.notLoggedIn');
     }
-    Collections.update(colId, { $set: { private: !privateStatus } });
+    Collections.update(
+      collId,
+      { $set: { private: !privateStatus } }
+    );
     Images.update(
-      { collection: colName },
+      { user: username, collection: collName },
       { $set: { private: !privateStatus } },
       { multi: true }
     );
@@ -58,14 +71,17 @@ export const lockCollection = new ValidatedMethod({
 export const mutateCollectionCover = new ValidatedMethod({
   name: 'collections.mutateCover',
   validate: new SimpleSchema({
+    collId: { type: String, label: '相册Id', regEx: SimpleSchema.RegEx.Id },
     cover: { type: String, label: '封面图片' },
-    colName: { type: String, label: '相册名' },
   }).validator({ clean: true, filter: false }),
-  run({ cover, colName }) {
+  run({ collId, cover }) {
     if (!this.userId) {
-      throw new Meteor.Error('user.accessDenied');
+      throw new Meteor.Error('api.collections.mutateCover.notLoggedIn');
     }
-    return Collections.update({ uid: this.userId, name: colName }, { $set: { cover } });
+    Collections.update(
+      collId,
+      { $set: { cover } }
+    );
   },
 });
 
@@ -86,5 +102,5 @@ if (Meteor.isServer) {
 
     // Rate limit per connection ID
     connectionId() { return true; },
-  }, 1, 1000);
+  }, 2, 5000);
 }

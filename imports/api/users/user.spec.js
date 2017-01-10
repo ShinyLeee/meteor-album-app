@@ -11,7 +11,7 @@ const sourceDomain = Meteor.settings.public.sourceDomain;
 if (Meteor.isServer) {
   import './server/publications.js';
 
-  describe('user API', () => {
+  describe('USERS API', () => {
     describe('factory', () => {
       it('should builds correctly from factory', () => {
         const user = Factory.create('user');

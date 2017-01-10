@@ -18,7 +18,7 @@ export const Collections = new CollectionCollection('collections');
 
 Collections.schema = new SimpleSchema({
   name: { type: String, label: '相册名', max: 20 },
-  user: { type: String, regEx: SimpleSchema.RegEx.Id },
+  user: { type: String, max: 20, denyUpdate: true },
   cover: { type: String, label: '封面图片' },
   private: { type: Boolean, defaultValue: false, optional: true },
   createdAt: { type: Date, denyUpdate: true },
@@ -47,13 +47,13 @@ Collections.helpers({
 });
 
 if (Meteor.isTest) {
-  import { Factory } from 'meteor/dburles:factory';
   import faker from 'faker';
+  import { Factory } from 'meteor/dburles:factory';
   import { getRandomInt, limitStrLength } from '/imports/utils/utils.js';
 
   Factory.define('collection', Collections, {
     name: () => limitStrLength(faker.hacker.noun(), 20),
-    user: () => Factory.get('user'),
+    user: () => limitStrLength(faker.internet.userName(), 20),
     cover: () => `/img/pattern/VF_ac${getRandomInt(1, 28)}.jpg`,
     createdAt: () => new Date(),
   });

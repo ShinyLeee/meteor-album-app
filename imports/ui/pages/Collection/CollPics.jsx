@@ -97,11 +97,12 @@ class CollPicsPage extends Component {
   }
 
   handleLockCollection(cb) {
-    const { curColl } = this.props;
+    const { User, curColl } = this.props;
     const msg = curColl.private ? '公开' : '加密';
     lockCollection.call({
-      colId: curColl._id,
-      colName: curColl.name,
+      username: User.username,
+      collId: curColl._id,
+      collName: curColl.name,
       privateStatus: curColl.private,
     }, (err) => {
       if (err) {
@@ -115,7 +116,11 @@ class CollPicsPage extends Component {
     const { User, images, curColl, dispatch } = this.props;
 
     if (images.length === 0) {
-      return removeCollection.call({ colName: curColl.name }, (err) => {
+      return removeCollection.call({
+        username: User.username,
+        collId: curColl._id,
+        collName: curColl.name,
+      }, (err) => {
         if (err) {
           cb(err, '删除相册失败');
         }
@@ -136,7 +141,11 @@ class CollPicsPage extends Component {
       if (error) {
         cb(error, '删除相册失败');
       }
-      return removeCollection.call({ colName: curColl.name }, (err) => {
+      return removeCollection.call({
+        username: User.username,
+        collId: curColl._id,
+        colName: curColl.name,
+      }, (err) => {
         if (err) {
           cb(err, '删除相册失败');
         }
@@ -186,7 +195,7 @@ class CollPicsPage extends Component {
 
       shiftImages.call({
         selectImages: sucMovedImgIds,
-        dest: destColl.id,
+        dest: destColl.name,
       }, (err) => {
         if (err) {
           cb(err, '转移照片失败');
@@ -201,8 +210,8 @@ class CollPicsPage extends Component {
     const curImg = selectImages[0];
     const cover = `${domain}/${curImg.user}/${curImg.collection}/${curImg.name}.${curImg.type}`;
     mutateCollectionCover.call({
+      collId: curColl._id,
       cover,
-      colName: curColl.name,
     }, (err) => {
       if (err) {
         cb(err, '更换封面失败');
