@@ -4,7 +4,7 @@ import CircularProgress from 'material-ui/CircularProgress';
 import { makeCancelable } from '/imports/utils/utils.js';
 import { Images } from '/imports/api/images/image.js';
 
-import ConnectedNavHeader from '../../containers/NavHeaderContainer.jsx';
+import NavHeader from '../../components/NavHeader/NavHeader.jsx';
 import Infinity from '../../components/Infinity/Infinity.jsx';
 import Recap from '../../components/Recap/Recap.jsx';
 import PicHolder from '../../components/PicHolder/PicHolder.jsx';
@@ -120,10 +120,16 @@ export default class IndexPage extends Component {
   }
 
   render() {
-    const { User, noteNum, dataIsReady } = this.props;
+    const { User, noteNum, dataIsReady, snackBarOpen } = this.props;
     return (
       <div className="container">
-        <ConnectedNavHeader User={User} location={this.state.location} noteNum={noteNum} primary />
+        <NavHeader
+          User={User}
+          location={this.state.location}
+          noteNum={noteNum}
+          snackBarOpen={snackBarOpen}
+          primary
+        />
         <div className="content">
           <Recap
             title="Gallery"
@@ -152,4 +158,5 @@ IndexPage.propTypes = {
   users: PropTypes.array.isRequired,
   noteNum: PropTypes.number.isRequired,
   initialImages: PropTypes.array.isRequired,
+  snackBarOpen: PropTypes.func.isRequired,
 };

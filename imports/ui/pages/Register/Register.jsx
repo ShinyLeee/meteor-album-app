@@ -7,7 +7,7 @@ import { purple500, grey500 } from 'material-ui/styles/colors';
 import { createUser } from '/imports/api/users/methods.js';
 import { checkCode, useCode } from '/imports/api/codes/methods.js';
 
-import ConnectedNavHeader from '../../containers/NavHeaderContainer.jsx';
+import NavHeader from '../../components/NavHeader/NavHeader.jsx';
 
 const styles = {
   logBtn: {
@@ -72,7 +72,10 @@ export default class RegisterPage extends Component {
   render() {
     return (
       <div className="container">
-        <ConnectedNavHeader primary />
+        <NavHeader
+          snackBarOpen={this.props.snackBarOpen}
+          primary
+        />
         <div className="register">
           <div className="register__logo">Gallery +</div>
           <div className="register__form">

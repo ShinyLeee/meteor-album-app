@@ -21,7 +21,7 @@ import EmailIcon from 'material-ui/svg-icons/communication/email';
 import { blue500 } from 'material-ui/styles/colors';
 import { updateProfile } from '/imports/api/users/methods.js';
 
-import ConnectedNavHeader from '../../containers/NavHeaderContainer.jsx';
+import NavHeader from '../../components/NavHeader/NavHeader.jsx';
 
 const styles = {
   cameraIconStyle: {
@@ -166,7 +166,7 @@ export default class SettingPage extends Component {
   renderEditingNavHeader() {
     const { User } = this.props;
     return (
-      <ConnectedNavHeader
+      <NavHeader
         User={User}
         title={this.state.isProcessing ? '上传图片中' : '修改设置中'}
         style={{ backgroundColor: blue500 }}
@@ -359,7 +359,6 @@ export default class SettingPage extends Component {
   }
 
   render() {
-    const { User, noteNum } = this.props;
     const actions = [
       <FlatButton
         label="取消"
@@ -377,10 +376,17 @@ export default class SettingPage extends Component {
       <div className="container">
         { this.state.isEditing
           ? this.renderEditingNavHeader()
-          : (<ConnectedNavHeader User={User} location={this.state.location} noteNum={noteNum} primary />) }
+          : (
+            <NavHeader
+              User={this.props.User}
+              location={this.state.location}
+              noteNum={this.props.noteNum}
+              snackBarOpen={this.props.snackBarOpen}
+              primary
+            />) }
         <div className="content">
           { this.state.isProcessing && <LinearProgress style={styles.indeterminateProgress} mode="indeterminate" /> }
-          { User && this.renderSettingContent() }
+          { this.props.User && this.renderSettingContent() }
           <Dialog
             title="提示"
             titleStyle={{ border: 'none' }}

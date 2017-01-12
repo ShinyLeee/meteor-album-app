@@ -8,9 +8,11 @@ import { Meteor } from 'meteor/meteor';
 
 if (Meteor.isClient) {
   import React from 'react';
+  import faker from 'faker';
   import { shallow } from 'enzyme';
   import { chai } from 'meteor/practicalmeteor:chai';
-  import { JustifiedGroupHolder } from './JustifiedGroupHolder.jsx';
+  import { sinon } from 'meteor/practicalmeteor:sinon';
+  import JustifiedGroupHolder from './JustifiedGroupHolder.jsx';
 
   const expect = chai.expect;
   const geometry = {
@@ -40,52 +42,112 @@ if (Meteor.isClient) {
     ],
   };
 
-  const arr = new Array(3);
-  const wrapper = shallow(
-    <JustifiedGroupHolder
-      day={'2016-12-31'}
-      geometry={geometry}
-      dayGroupImage={arr}
-      isEditing
-      total={6}
-      groupTotal={3}
-    />
-  );
+  const domain = Meteor.settings.public.domain;
+
+  const dayGroupImages = [
+    {
+      user: faker.internet.userName(),
+      collection: faker.random.word(),
+      name: faker.random.uuid(),
+      type: 'jpg',
+    },
+    {
+      user: faker.internet.userName(),
+      collection: faker.random.word(),
+      name: faker.random.uuid(),
+      type: 'jpg',
+    },
+    {
+      user: faker.internet.userName(),
+      collection: faker.random.word(),
+      name: faker.random.uuid(),
+      type: 'jpg',
+    },
+  ];
+
+  const setup = (group = null, counter = 0) => {
+    const actions = {
+      selectCounter: sinon.spy(),
+      selectGroupCounter: sinon.spy(),
+    };
+    const component = shallow(
+      <JustifiedGroupHolder
+        domain={domain}
+        isEditing
+        day={'2016-12-31'}
+        geometry={geometry}
+        dayGroupImage={dayGroupImages}
+        total={6}
+        groupTotal={3}
+        group={group}
+        counter={counter}
+        {...actions}
+      />
+    );
+    return {
+      actions,
+      component,
+    };
+  };
 
   describe('JustifiedGroupHolder', () => {
-    it('should isGroupSelect state behave right when group\'s value change', function () {
-      expect(wrapper.state('isGroupSelect'))
+    it('should isGroupSelect state behave right when group\'s key change', () => {
+      const { component } = setup();
+      expect(component.state('isGroupSelect'))
+      .to.equal(false, 'When group prop is NULL');
+
+      component.setProps({ group: { '2016-12-31': 3 }, counter: 3 });
+      expect(component.state('isGroupSelect'))
+      .to.equal(true, 'When group prop equal to groupTotal');
+
+      component.setProps({ group: { '2016-12-30': 3 }, counter: 3 });
+      expect(component.state('isGroupSelect'))
+      .to.equal(false, 'When specfic day group not exist');
+    });
+
+    it('should isGroupSelect state behave right when group\'s value change', () => {
+      const { component } = setup();
+      expect(component.state('isGroupSelect'))
       .to.equal(false, 'Initial isGroupSelect state must be false');
 
-      wrapper.setProps({ group: { '2016-12-31': 3, '2016-12-30': 3 } });
-      expect(wrapper.state('isGroupSelect'))
+      component.setProps({ group: { '2016-12-31': 3, '2016-12-30': 3 }, counter: 6 });
+      expect(component.state('isGroupSelect'))
       .to.equal(true, 'When specfic day group exist and value equal to groupTotal');
 
-      wrapper.setProps({ group: { '2016-12-31': 0, '2016-12-30': 3 } });
-      expect(wrapper.state('isGroupSelect'))
+      component.setProps({ group: { '2016-12-31': 0, '2016-12-30': 3 }, counter: 3 });
+      expect(component.state('isGroupSelect'))
       .to.equal(false, 'When specfic day group exist but value is empty');
 
-      wrapper.setProps({ group: { '2016-12-31': 3 } });
-      expect(wrapper.state('isGroupSelect'))
+      component.setProps({ group: { '2016-12-31': 3 }, counter: 3 });
+      expect(component.state('isGroupSelect'))
       .to.equal(true, 'When only has specfic day group');
 
-      wrapper.setProps({ group: { '2016-12-31': 2 } });
-      expect(wrapper.state('isGroupSelect'))
+      component.setProps({ group: { '2016-12-31': 2 }, counter: 2 });
+      expect(component.state('isGroupSelect'))
       .to.equal(false, 'When specfic day group exist but value not equal to groupTotal');
     });
 
-    it('should isGroupSelect state behave right when group\'s key change', function () {
-      wrapper.setProps({ group: null });
-      expect(wrapper.state('isGroupSelect'))
-      .to.equal(false, 'When group prop is NULL');
+    it('should have toggle button dispatch selectGroupCounter action', () => {
+      const { actions, component } = setup();
+      const props = component.instance().props;
 
-      wrapper.setProps({ group: { '2016-12-31': 3 } });
-      expect(wrapper.state('isGroupSelect'))
-      .to.equal(true, 'When group prop equal to groupTotal');
+      const toggleBtn = component.find('.Justified__title');
+      expect(toggleBtn).to.have.length(1);
 
-      wrapper.setProps({ group: { '2016-12-30': 3 } });
-      expect(wrapper.state('isGroupSelect'))
-      .to.equal(false, 'When specfic day group not exist');
+      toggleBtn.simulate('touchTap');
+      sinon.assert.calledWith(actions.selectGroupCounter, {
+        selectImages: props.dayGroupImage,
+        group: props.day,
+        counter: props.groupTotal,
+      });
+      component.setState({ isGroupSelect: true }); // have to set it by self without redux mock store
+
+      toggleBtn.simulate('touchTap');
+      sinon.assert.calledWith(actions.selectGroupCounter, {
+        selectImages: props.dayGroupImage,
+        group: props.day,
+        counter: -props.groupTotal,
+      });
     });
   });
 }

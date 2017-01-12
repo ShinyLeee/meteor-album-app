@@ -4,7 +4,14 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Collections } from '/imports/api/collections/collection.js';
 
-import { uploaderStart, disableSelectAll, snackBarOpen } from '../redux/actions/creators.js';
+import {
+  snackBarOpen,
+  uploaderStart,
+  selectCounter,
+  selectGroupCounter,
+  enableSelectAll,
+  disableSelectAll,
+} from '../redux/actions/creators.js';
 import CollPicsPage from '../pages/Collection/CollPics.jsx';
 
 const MeteorContainer = createContainer(({ params }) => {
@@ -42,13 +49,17 @@ const MeteorContainer = createContainer(({ params }) => {
 const mapStateToProps = (state) => ({
   uptoken: state.uptoken,
   selectImages: state.selectCounter.selectImages,
+  group: state.selectCounter.group,
   counter: state.selectCounter.counter,
 });
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
-  uploaderStart,
-  disableSelectAll,
   snackBarOpen,
+  uploaderStart,
+  selectCounter,
+  selectGroupCounter,
+  enableSelectAll,
+  disableSelectAll,
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(MeteorContainer);

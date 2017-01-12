@@ -1,13 +1,8 @@
 import React, { Component, PropTypes } from 'react';
-import { Meteor } from 'meteor/meteor';
-import { connect } from 'react-redux';
-import { selectCounter } from '/imports/ui/redux/actions/creators.js';
+
 import { SelectableImageBackground } from './SelectableStatus.jsx';
 
-const domain = Meteor.settings.public.domain;
-const square = Math.ceil(document.body.clientWidth / 3);
-
-export class SelectableImageHolder extends Component {
+export default class SelectableImageHolder extends Component {
 
   constructor(props) {
     super(props);
@@ -30,20 +25,26 @@ export class SelectableImageHolder extends Component {
   }
 
   handleSelect() {
-    const { isEditing, image, dispatch } = this.props;
-    if (isEditing) {
+    if (this.props.isEditing) {
       if (this.state.isSelect) {
-        dispatch(selectCounter({ selectImages: [image], group: 'nested', counter: -1 }));
-        this.setState({ isSelect: false });
+        this.props.selectCounter({
+          selectImages: [this.props.image],
+          group: 'nested',
+          counter: -1,
+        });
       } else {
-        dispatch(selectCounter({ selectImages: [image], group: 'nested', counter: 1 }));
-        this.setState({ isSelect: true });
+        this.props.selectCounter({
+          selectImages: [this.props.image],
+          group: 'nested',
+          counter: 1,
+        });
       }
     }
   }
 
   render() {
-    const { isEditing, image } = this.props;
+    const { domain, isEditing, clientWidth, image } = this.props;
+    const square = Math.ceil(clientWidth / 3);
     const url = `${domain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
     const imageSource = `${url}?imageView2/1/w/${square * 2}/h/${square * 2}`;
     const imageStyle = {
@@ -68,19 +69,16 @@ export class SelectableImageHolder extends Component {
 
 SelectableImageHolder.defaultProps = {
   isEditing: false,
+  clientWidth: document.body.clientWidth,
 };
 
 SelectableImageHolder.propTypes = {
+  domain: PropTypes.string.isRequired,
   isEditing: PropTypes.bool.isRequired,
+  clientWidth: PropTypes.number.isRequired,
   image: PropTypes.object.isRequired,
   total: PropTypes.number.isRequired,
   // Below Pass from Redux
-  counter: PropTypes.number,
-  dispatch: PropTypes.func,
+  counter: PropTypes.number.isRequired,
+  selectCounter: PropTypes.func.isRequired,
 };
-
-const mapStateToProps = (state) => ({
-  counter: state.selectCounter.counter,
-});
-
-export default connect(mapStateToProps)(SelectableImageHolder);

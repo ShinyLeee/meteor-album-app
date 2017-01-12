@@ -45,7 +45,7 @@ export const snackBar = (state = null, action) => {
   }
 };
 
-export const selectCounter = (state = { selectImages: [], group: null, counter: 0 }, action) => {
+export const selectCounter = (state = { selectImages: [], group: {}, counter: 0 }, action) => {
   switch (action.type) {
     /**
      * Return the new gloabl counter and group state, when select or cancel one photo
@@ -56,7 +56,7 @@ export const selectCounter = (state = { selectImages: [], group: null, counter: 
      * @param {number} action.counter - incre or decre the specific number { +-1 }
      * @param {string} action.group - group name
      *
-     * If state.group is NOT EXIST, eg: null,
+     * If state.group is NOT EXIST, eg: {},
      * We Create a new group, eg: { 20160101: 1 }, Means the group 20160101 select ONE photo
      *
      * else if state.group is CREATED, eg: { 20160101: 1 },
@@ -74,7 +74,8 @@ export const selectCounter = (state = { selectImages: [], group: null, counter: 
     case 'SELECT_COUNTER': {
       let group;
       const day = action.group;
-      if (!state.group) group = { [day]: action.counter };
+      // When group is empty object: {}
+      if (Object.keys(state.group).length === 0) group = { [day]: action.counter };
       else {
         const newGroup = { [day]: (state.group[day] || 0) + action.counter };
         group = _.extend(state.group, newGroup);
@@ -96,7 +97,7 @@ export const selectCounter = (state = { selectImages: [], group: null, counter: 
       }
       // console.log(selectImages);
       const counter = state.counter + action.counter;
-      if (counter === 0) group = null;
+      if (counter === 0) group = {};
       const globalCounter = Object.assign({}, { selectImages }, { group }, { counter });
       return globalCounter;
     }
@@ -119,7 +120,7 @@ export const selectCounter = (state = { selectImages: [], group: null, counter: 
       let group;
       const day = action.group;
       const groupCounter = action.counter;
-      if (!state.group) group = { [day]: groupCounter };
+      if (Object.keys(state.group).length === 0) group = { [day]: groupCounter };
       else {
         if (groupCounter > 0) {
           const newGroup = { [day]: groupCounter };
@@ -152,7 +153,7 @@ export const selectCounter = (state = { selectImages: [], group: null, counter: 
       }
       // console.log(selectImages);
       const counter = state.counter + groupCounter;
-      if (counter === 0) group = null;
+      if (counter === 0) group = {};
       const globalCounter = Object.assign({}, { selectImages }, { group }, { counter });
       return globalCounter;
     }
@@ -161,7 +162,7 @@ export const selectCounter = (state = { selectImages: [], group: null, counter: 
       // console.log(action.selectImages);
       return { selectImages: action.selectImages, group: action.group, counter: action.counter };
     case 'DISABLE_SELECT_ALL':
-      return { selectImages: [], group: null, counter: 0 };
+      return { selectImages: [], group: {}, counter: 0 };
     default:
       return state;
   }

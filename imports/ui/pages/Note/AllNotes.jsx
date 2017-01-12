@@ -7,7 +7,7 @@ import ArrowBackIcon from 'material-ui/svg-icons/navigation/arrow-back';
 import { blue500 } from 'material-ui/styles/colors';
 import scrollTo from '/imports/utils/scrollTo.js';
 
-import ConnectedNavHeader from '../../containers/NavHeaderContainer.jsx';
+import NavHeader from '../../components/NavHeader/NavHeader.jsx';
 import NoteHolder from '../../components/Note/NoteHolder.jsx';
 
 const styles = {
@@ -42,7 +42,6 @@ export default class AllNotesPage extends Component {
           this.props.AllNotes.map((note) => this.props.otherUsers.map((user) => note.sender === user.username &&
           (
             <NoteHolder
-              User={this.props.User}
               sender={user}
               note={note}
               isRead
@@ -57,7 +56,7 @@ export default class AllNotesPage extends Component {
     const { User, dataIsReady } = this.props;
     return (
       <div className="container">
-        <ConnectedNavHeader
+        <NavHeader
           User={User}
           title="全部消息"
           style={{ backgroundColor: blue500 }}

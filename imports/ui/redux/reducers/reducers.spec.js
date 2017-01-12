@@ -39,7 +39,7 @@ if (Meteor.isClient) {
     });
 
     describe('selectCounter', () => {
-      const initialState = { selectImages: [], group: null, counter: 0 };
+      const initialState = { selectImages: [], group: {}, counter: 0 };
 
       it('should provide the initial state', () => {
         expect(reducers.selectCounter(undefined, {})).to.eql(initialState);

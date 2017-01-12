@@ -1,18 +1,18 @@
 import React, { PureComponent, PropTypes } from 'react';
-import { connect } from 'react-redux';
+import { Meteor } from 'meteor/meteor';
 import { _ } from 'meteor/underscore';
 import justifiedLayout from 'justified-layout';
 import moment from 'moment';
 import IconButton from 'material-ui/IconButton';
 import ComfyIcon from 'material-ui/svg-icons/image/view-comfy';
 import CompactIcon from 'material-ui/svg-icons/image/view-compact';
-import { enableSelectAll, disableSelectAll } from '/imports/ui/redux/actions/creators.js';
-import { SelectableIcon } from './SelectableStatus.jsx';
-import ConnectedSelectableImageHolder from './SelectableImageHolder.jsx';
-import GridLayout from '../GridLayout/GridLayout.jsx';
-import ConnectedJustifiedGroupHolder from './JustifiedGroupHolder.jsx';
 
-export class Justified extends PureComponent {
+import JustifiedGroupHolder from './JustifiedGroupHolder.jsx';
+import GridLayout from '../GridLayout/GridLayout.jsx';
+import { SelectableIcon } from './SelectableStatus.jsx';
+import SelectableImageHolder from './SelectableImageHolder.jsx';
+
+export default class Justified extends PureComponent {
 
   constructor(props) {
     super(props);
@@ -20,7 +20,6 @@ export class Justified extends PureComponent {
       isAllSelect: false,
       layoutType: 'nested',
     };
-    this.handleResize = this.handleResize.bind(this);
     this.handleToggleSelectAll = this.handleToggleSelectAll.bind(this);
   }
 
@@ -32,29 +31,36 @@ export class Justified extends PureComponent {
     else this.setState({ isAllSelect: false });
   }
 
-  handleResize() {}
-
   handleToggleSelectAll() {
-    const { images, dispatch } = this.props;
-    if (this.state.isAllSelect) dispatch(disableSelectAll());
+    if (this.state.isAllSelect) this.props.disableSelectAll();
     else {
-      const counter = images.length;
+      const counter = this.props.images.length;
       if (this.state.layoutType === 'nested') {
-        dispatch(enableSelectAll({ selectImages: images, group: { nested: counter }, counter }));
+        this.props.enableSelectAll({
+          selectImages: this.props.images,
+          group: { nested: counter },
+          counter,
+        });
       }
       if (this.state.layoutType === 'day-group') {
         const group = {};
-        const dayGroupImages = _.groupBy(images, (image) => moment(image.shootAt).format('YYYYMMDD'));
+        const dayGroupImages = _.groupBy(
+          this.props.images,
+          (image) => moment(image.shootAt).format('YYYYMMDD')
+        );
         _.map(dayGroupImages, (value, key) => (group[key] = value.length));
-        dispatch(enableSelectAll({ selectImages: images, group, counter }));
+        this.props.enableSelectAll({
+          selectImages: this.props.images,
+          group,
+          counter,
+        });
       }
     }
   }
 
   handleChangeLayout(type) {
-    const { dispatch } = this.props;
     this.setState({ layoutType: type });
-    dispatch(disableSelectAll());
+    this.props.disableSelectAll();
   }
 
   renderToolbox() {
@@ -81,14 +87,18 @@ export class Justified extends PureComponent {
 
   renderDayGroupLayout() {
     const {
-      images,
+      domain,
       isEditing,
+      images,
       containerWidth,
       containerPadding,
       targetRowHeight,
       targetRowHeightTolerance,
       boxSpacing,
       fullWidthBreakoutRowCadence,
+      group,
+      counter,
+      selectGroupCounter,
     } = this.props;
 
     const ratios = [];
@@ -112,30 +122,37 @@ export class Justified extends PureComponent {
 
     return (
       _.map(dayGroupImages, (dayGroupImage, day) => (
-        <ConnectedJustifiedGroupHolder
+        <JustifiedGroupHolder
           key={day}
+          domain={domain}
+          isEditing={isEditing}
           day={day}
           geometry={geometrys[day]}
           dayGroupImage={dayGroupImage}
-          isEditing={isEditing}
           total={images.length}
           groupTotal={dayGroupImages[day].length}
+          group={group}
+          counter={counter}
+          selectGroupCounter={selectGroupCounter}
         />
       ))
     );
   }
 
   renderNestedLayout() {
-    const { isEditing, images } = this.props;
+    const { domain, isEditing, images, counter, selectCounter } = this.props;
     return (
       <GridLayout>
         {
           images.map((image, i) => (
-            <ConnectedSelectableImageHolder
+            <SelectableImageHolder
               key={i}
+              domain={domain}
               isEditing={isEditing}
               image={image}
               total={images.length}
+              counter={counter}
+              selectCounter={selectCounter}
             />
           ))
         }
@@ -159,16 +176,18 @@ export class Justified extends PureComponent {
 }
 
 Justified.defaultProps = {
+  domain: Meteor.settings.public.domain,
+  isEditing: false,
   containerWidth: document.body.clientWidth,
   containerPadding: 0,
   targetRowHeight: 200,
   targetRowHeightTolerance: 0.25,
   boxSpacing: 4,
   fullWidthBreakoutRowCadence: false,
-  onResize: this.handleResize,
 };
 
 Justified.propTypes = {
+  domain: PropTypes.string.isRequired,
   isEditing: PropTypes.bool.isRequired,
   images: PropTypes.array.isRequired,
   /**
@@ -187,11 +206,11 @@ Justified.propTypes = {
   targetRowHeight: PropTypes.number.isRequired,
   targetRowHeightTolerance: PropTypes.number.isRequired,
   justifiedContainer: PropTypes.string,
-  onResize: PropTypes.func,
-  counter: PropTypes.number,
-  dispatch: PropTypes.func,
+  // Below Pass from Redux
+  group: PropTypes.object.isRequired,
+  counter: PropTypes.number.isRequired,
+  selectCounter: PropTypes.func.isRequired,
+  selectGroupCounter: PropTypes.func.isRequired,
+  enableSelectAll: PropTypes.func.isRequired,
+  disableSelectAll: PropTypes.func.isRequired,
 };
-
-const mapStateToProps = (state) => ({ counter: state.selectCounter.counter });
-
-export default connect(mapStateToProps)(Justified);

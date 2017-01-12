@@ -8,38 +8,96 @@ import { Meteor } from 'meteor/meteor';
 
 if (Meteor.isClient) {
   import React from 'react';
+  import faker from 'faker';
   import { shallow } from 'enzyme';
   import { chai } from 'meteor/practicalmeteor:chai';
-  import { Justified } from './Justified.jsx';
+  import { sinon } from 'meteor/practicalmeteor:sinon';
+  import Justified from './Justified.jsx';
 
   const expect = chai.expect;
+  const domain = Meteor.settings.public.domain;
+  const images = [
+    {
+      user: faker.internet.userName(),
+      collection: faker.random.word(),
+      name: faker.random.uuid(),
+      type: 'jpg',
+    },
+    {
+      user: faker.internet.userName(),
+      collection: faker.random.word(),
+      name: faker.random.uuid(),
+      type: 'jpg',
+    },
+    {
+      user: faker.internet.userName(),
+      collection: faker.random.word(),
+      name: faker.random.uuid(),
+      type: 'jpg',
+    },
+  ];
+  const setup = (group = null, counter = 0) => {
+    const actions = {
+      selectCounter: sinon.spy(),
+      selectGroupCounter: sinon.spy(),
+      enableSelectAll: sinon.spy(),
+      disableSelectAll: sinon.spy(),
+    };
+    const component = shallow(
+      <Justified
+        domain={domain}
+        isEditing={false}
+        images={images}
+        group={group}
+        counter={counter}
+        {...actions}
+      />
+    );
+    return {
+      actions,
+      component,
+    };
+  };
 
-  describe('Justified', () => {
-    it('should isAllSelect false when isEditing prop false', function () {
-      const arr = new Array(3);
-      const wrapper = shallow(<Justified images={arr} isEditing={false} />);
-      wrapper.setProps({ counter: 3 });
-      expect(wrapper.state('isAllSelect')).not.to.be.ok;
+  describe('Justified Component', () => {
+    it('should isAllSelect state always false if isEditing prop false', () => {
+      const { component } = setup();
+      expect(component.state('isAllSelect')).to.be.false;
+
+      component.setProps({ counter: 3 });
+      expect(component.state('isAllSelect')).to.be.false;
     });
 
-    it('should isAllSelect state behave right when counter prop change', function () {
-      const arr = new Array(3);
-      const wrapper = shallow(<Justified images={arr} isEditing />);
+    it('should isAllSelect state behave right when counter prop change', () => {
+      const { component } = setup({ '2017-01-12': 3 }, 3);
+      component.setProps({ isEditing: true });
 
-      expect(wrapper.state('isAllSelect'))
-      .to.equal(false, 'Initial isAllSelect state must be false');
-
-      wrapper.setProps({ counter: 3 });
-      expect(wrapper.state('isAllSelect'))
+      expect(component.state('isAllSelect'))
       .to.equal(true, 'When counter equal to images\' length');
 
-      wrapper.setProps({ counter: 2 });
-      expect(wrapper.state('isAllSelect'))
+      component.setProps({ group: { '2017-01-12': 2 }, counter: 2 });
+      expect(component.state('isAllSelect'))
       .to.equal(false, 'When counter not equal to images\' length');
 
-      wrapper.setProps({ counter: -1 });
-      expect(wrapper.state('isAllSelect'))
+      component.setProps({ group: { '2017-01-12': -1 }, counter: -1 });
+      expect(component.state('isAllSelect'))
       .to.equal(false, 'When counter is negative');
+    });
+
+    it('should have toggle button dispatch enable/disable selectAll actions when isEditing true', () => {
+      const { actions, component } = setup();
+
+      component.setProps({ isEditing: true });
+
+      const toggleBtn = component.find('.Justified__toolbox_left');
+      expect(toggleBtn).to.have.length(1);
+
+      toggleBtn.simulate('touchTap');
+      sinon.assert.calledOnce(actions.enableSelectAll);
+      component.setState({ isAllSelect: true }); // have to set it by self without redux mock store
+
+      toggleBtn.simulate('touchTap');
+      sinon.assert.calledOnce(actions.disableSelectAll);
     });
   });
 }

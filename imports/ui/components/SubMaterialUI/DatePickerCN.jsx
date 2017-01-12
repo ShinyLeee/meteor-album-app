@@ -38,6 +38,6 @@ const DatePickerCN = (props) => (
     DateTimeFormat={dateTimeFormat}
     locale="zh-CN"
   />
-  );
+);
 
 export default DatePickerCN;

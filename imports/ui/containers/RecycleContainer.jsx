@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Images } from '/imports/api/images/image.js';
 
-import { enableSelectAll, disableSelectAll, snackBarOpen } from '../redux/actions/creators.js';
+import { selectCounter, enableSelectAll, disableSelectAll, snackBarOpen } from '../redux/actions/creators.js';
 import RecyclePage from '../pages/Recycle/Recycle.jsx';
 
 const MeteorContainer = createContainer(() => {
@@ -24,6 +24,7 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
+  selectCounter,
   enableSelectAll,
   disableSelectAll,
   snackBarOpen,

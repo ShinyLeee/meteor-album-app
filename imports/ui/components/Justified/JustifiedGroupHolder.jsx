@@ -1,21 +1,17 @@
-import { Meteor } from 'meteor/meteor';
 import React, { Component, PropTypes } from 'react';
-import { connect } from 'react-redux';
 import { _ } from 'meteor/underscore';
-import { selectGroupCounter } from '/imports/ui/redux/actions/creators.js';
+
 import { SelectableIcon } from './SelectableStatus.jsx';
-import ConnectedJustifiedImageHolder from './JustifiedImageHolder.jsx';
+import JustifiedImageHolder from './JustifiedImageHolder.jsx';
 
-const domain = Meteor.settings.public.domain;
-
-export class JustifiedGroupHolder extends Component {
+export default class JustifiedGroupHolder extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
       isGroupSelect: false,
     };
-    this.handleSelectGroup = this.handleSelectGroup.bind(this);
+    this.handleToggleSelectGroup = this.handleToggleSelectGroup.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -28,7 +24,8 @@ export class JustifiedGroupHolder extends Component {
       this.setState({ isGroupSelect: false });
       return;
     }
-    if (!nextProps.group) {
+    // When next group prop is {}
+    if (Object.keys(nextProps.group).length === 0) {
       this.setState({ isGroupSelect: false });
       return;
     }
@@ -40,15 +37,21 @@ export class JustifiedGroupHolder extends Component {
     else this.setState({ isGroupSelect: false });
   }
 
-  handleSelectGroup() {
-    const { day, isEditing, dayGroupImage, groupTotal, dispatch } = this.props;
+  handleToggleSelectGroup() {
+    const { day, isEditing, dayGroupImage, groupTotal } = this.props;
     if (isEditing) {
       if (this.state.isGroupSelect) {
-        dispatch(selectGroupCounter({ selectImages: dayGroupImage, group: day, counter: -groupTotal }));
-        this.setState({ isGroupSelect: false });
+        this.props.selectGroupCounter({
+          selectImages: dayGroupImage,
+          group: day,
+          counter: -groupTotal,
+        });
       } else {
-        dispatch(selectGroupCounter({ selectImages: dayGroupImage, group: day, counter: groupTotal }));
-        this.setState({ isGroupSelect: true });
+        this.props.selectGroupCounter({
+          selectImages: dayGroupImage,
+          group: day,
+          counter: groupTotal,
+        });
       }
     }
   }
@@ -61,6 +64,9 @@ export class JustifiedGroupHolder extends Component {
       isEditing,
       total,
       groupTotal,
+      group,
+      counter,
+      selectCounter,
     } = this.props;
     const showDay = day.split('');
     showDay[3] += '年';
@@ -72,17 +78,15 @@ export class JustifiedGroupHolder extends Component {
       <div className="Justified__dayGroup" style={dayGroupStyle}>
         <div
           className="Justified__title"
-          onTouchTap={this.handleSelectGroup}
+          onTouchTap={this.handleToggleSelectGroup}
         >
-          {
-            isEditing && <SelectableIcon activate={this.state.isGroupSelect} />
-          }
+          { isEditing && <SelectableIcon activate={this.state.isGroupSelect} /> }
           <h4>{showDay}</h4>
         </div>
         {
           _.map(dayGroupImage, (image, i) => {
-            const url = `${domain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
-            const imageSource = `${url}?imageView2/1/w/${geometry.boxes[i].width * 2}/h/${geometry.boxes[i].height * 2}`;
+            const url = `${this.props.domain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
+            const imageSrc = `${url}?imageView2/1/w/${geometry.boxes[i].width * 2}/h/${geometry.boxes[i].height * 2}`;
             const imageHolderStyle = {
               left: `${geometry.boxes[i].left}px`,
               top: `${geometry.boxes[i].top}px`,
@@ -90,15 +94,18 @@ export class JustifiedGroupHolder extends Component {
               height: `${geometry.boxes[i].height}px`,
             };
             return (
-              <ConnectedJustifiedImageHolder
-                key={image._id}
-                image={image}
-                style={imageHolderStyle}
-                imageSource={imageSource}
+              <JustifiedImageHolder
+                key={i}
                 isEditing={isEditing}
-                total={total}
                 day={day}
+                image={image}
+                imageSrc={imageSrc}
+                imageHolderStyle={imageHolderStyle}
+                total={total}
                 groupTotal={groupTotal}
+                group={group}
+                counter={counter}
+                selectCounter={selectCounter}
               />
             );
           })
@@ -109,21 +116,16 @@ export class JustifiedGroupHolder extends Component {
 }
 
 JustifiedGroupHolder.propTypes = {
+  domain: PropTypes.string.isRequired,
+  isEditing: PropTypes.bool.isRequired,
   day: PropTypes.string.isRequired,
   geometry: PropTypes.object.isRequired,
   dayGroupImage: PropTypes.array.isRequired,
-  isEditing: PropTypes.bool.isRequired,
   total: PropTypes.number.isRequired,
   groupTotal: PropTypes.number.isRequired,
   // Below Pass from Redux
-  group: PropTypes.object,
-  counter: PropTypes.number,
-  dispatch: PropTypes.func,
+  group: PropTypes.object.isRequired,
+  counter: PropTypes.number.isRequired,
+  selectCounter: PropTypes.func.isRequired,
+  selectGroupCounter: PropTypes.func.isRequired,
 };
-
-const mapStateTopProps = (state) => ({
-  group: state.selectCounter.group,
-  counter: state.selectCounter.counter,
-});
-
-export default connect(mapStateTopProps)(JustifiedGroupHolder);

@@ -11,7 +11,7 @@ import CircularProgress from 'material-ui/CircularProgress';
 import AddIcon from 'material-ui/svg-icons/content/add';
 import { insertCollection } from '/imports/api/collections/methods.js';
 
-import ConnectedNavHeader from '../../containers/NavHeaderContainer.jsx';
+import NavHeader from '../../components/NavHeader/NavHeader.jsx';
 import Recap from '../../components/Recap/Recap.jsx';
 import ColHolder from '../../components/ColHolder/ColHolder.jsx';
 
@@ -129,7 +129,7 @@ export default class CollectionPage extends Component {
   }
 
   render() {
-    const { User, curUser, cols, noteNum, dataIsReady, isGuest } = this.props;
+    const { User, curUser, cols, noteNum, dataIsReady, isGuest, snackBarOpen } = this.props;
     const actions = [
       <FlatButton
         label="取消"
@@ -147,7 +147,7 @@ export default class CollectionPage extends Component {
       <div className="container">
         { isGuest
           ? (
-            <ConnectedNavHeader
+            <NavHeader
               User={User}
               title="相册"
               iconElementLeft={
@@ -156,7 +156,14 @@ export default class CollectionPage extends Component {
                 </IconButton>
               }
             />)
-          : (<ConnectedNavHeader User={User} location={this.state.location} noteNum={noteNum} primary />)
+          : (
+            <NavHeader
+              User={User}
+              location={this.state.location}
+              noteNum={noteNum}
+              snackBarOpen={snackBarOpen}
+              primary
+            />)
         }
         <div className="content">
           { isGuest
@@ -192,16 +199,14 @@ export default class CollectionPage extends Component {
             </Dialog>
           </div>
         </div>
-        { isGuest
-          ? null
-          : (
-            <FloatingActionButton
-              style={styles.floatBtn}
-              onTouchTap={() => { this.setState({ open: true }); }}
-              secondary
-            >
-              <AddIcon />
-            </FloatingActionButton>)
+        { isGuest && (
+          <FloatingActionButton
+            style={styles.floatBtn}
+            onTouchTap={() => { this.setState({ open: true }); }}
+            secondary
+          >
+            <AddIcon />
+          </FloatingActionButton>)
         }
       </div>
     );

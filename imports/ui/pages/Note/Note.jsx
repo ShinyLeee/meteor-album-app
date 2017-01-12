@@ -11,10 +11,10 @@ import ArrowBackIcon from 'material-ui/svg-icons/navigation/arrow-back';
 import scrollTo from '/imports/utils/scrollTo.js';
 import { makeCancelable } from '/imports/utils/utils.js';
 import { Notes } from '/imports/api/notes/note.js';
-import { readAllNotes } from '/imports/api/notes/methods.js';
+import { readNote, readAllNotes } from '/imports/api/notes/methods.js';
 import Infinity from '/imports/ui/components/Infinity/Infinity.jsx';
 
-import ConnectedNavHeader from '../../containers/NavHeaderContainer.jsx';
+import NavHeader from '../../components/NavHeader/NavHeader.jsx';
 import NoteHolder from '../../components/Note/NoteHolder.jsx';
 
 const styles = {
@@ -34,9 +34,9 @@ export default class NotePage extends Component {
       isLoading: false,
       notes: props.initialNotes,
     };
-    this.handleReadAll = this.handleReadAll.bind(this);
     this.handleLoadNotes = this.handleLoadNotes.bind(this);
-    this.handleRefreshNotes = this.handleRefreshNotes.bind(this);
+    this.handleReadNote = this.handleReadNote.bind(this);
+    this.handleReadAll = this.handleReadAll.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -54,21 +54,6 @@ export default class NotePage extends Component {
     if (this.loadPromise) {
       this.loadPromise.cancel();
     }
-  }
-
-  handleReadAll() {
-    if (this.state.notes.length === 0) {
-      this.props.snackBarOpen('您没有未读的信息');
-      return;
-    }
-    this.setState({ isProcessing: true });
-    readAllNotes.call({ receiver: this.props.User.username }, (err) => {
-      if (err) {
-        this.props.snackBarOpen('发生位置错误');
-        throw new Meteor.Error(err);
-      }
-      this.setState({ isProcessing: false, notes: [] });
-    });
   }
 
   handleLoadNotes() {
@@ -97,12 +82,39 @@ export default class NotePage extends Component {
       });
   }
 
-  handleRefreshNotes() {
-    // after read a note, we need to refresh the data
-    const trueNotes = Notes.find(
-      { isRead: { $ne: true } },
-      { sort: { sendAt: -1 }, limit: this.state.notes.length - 1 }).fetch();
-    this.setState({ notes: trueNotes });
+  /**
+   * call Meteor method and mark specific note is read.
+   * @param {Object} e  - onTouchTap event object
+   * @param {String} id - note id which has been read
+   */
+  handleReadNote(e, id) {
+    e.preventDefault();
+    readNote.call({ noteId: id }, (err) => {
+      if (err) {
+        this.props.snackBarOpen('发生未知错误');
+        throw new Meteor.Error(err);
+      }
+      const trueNotes = Notes.find(
+        { isRead: { $ne: true } },
+        { sort: { sendAt: -1 }, limit: this.state.notes.length - 1 }
+      ).fetch();
+      this.setState({ notes: trueNotes });
+    });
+  }
+
+  handleReadAll() {
+    if (this.state.notes.length === 0) {
+      this.props.snackBarOpen('您没有未读的信息');
+      return;
+    }
+    this.setState({ isProcessing: true });
+    readAllNotes.call({ receiver: this.props.User.username }, (err) => {
+      if (err) {
+        this.props.snackBarOpen('发生位置错误');
+        throw new Meteor.Error(err);
+      }
+      this.setState({ isProcessing: false, notes: [] });
+    });
   }
 
   renderNotes() {
@@ -132,10 +144,9 @@ export default class NotePage extends Component {
             this.state.notes.map((note) => this.props.otherUsers.map((user) => note.sender === user.username &&
             (
               <NoteHolder
-                User={this.props.User}
                 sender={user}
                 note={note}
-                onReadNote={this.handleRefreshNotes}
+                onReadNote={(e) => this.handleReadNote(e, note._id)}
               />
             )))
           }
@@ -156,7 +167,7 @@ export default class NotePage extends Component {
     const { User, dataIsReady } = this.props;
     return (
       <div className="container">
-        <ConnectedNavHeader
+        <NavHeader
           User={User}
           title="未读消息"
           onTitleTouchTap={() => scrollTo(0, 1500)}

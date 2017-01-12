@@ -29,8 +29,8 @@ import {
 } from '/imports/api/collections/methods.js';
 import scrollTo from '/imports/utils/scrollTo.js';
 
-import ConnectedNavHeader from '../../containers/NavHeaderContainer.jsx';
-import ConnectedJustified from '../../components/Justified/Justified.jsx';
+import NavHeader from '../../components/NavHeader/NavHeader.jsx';
+import Justified from '../../components/Justified/Justified.jsx';
 
 const styles = {
   AppBarIconSvg: {
@@ -337,7 +337,7 @@ export default class CollPicsPage extends Component {
     const { User, isGuest } = this.props;
     if (!isGuest) {
       return (
-        <ConnectedNavHeader
+        <NavHeader
           User={User}
           title="相册"
           onTitleTouchTap={() => scrollTo(0, 1500)}
@@ -351,7 +351,7 @@ export default class CollPicsPage extends Component {
       );
     }
     return (
-      <ConnectedNavHeader
+      <NavHeader
         User={User}
         title="相册"
         iconElementLeft={
@@ -366,7 +366,7 @@ export default class CollPicsPage extends Component {
   renderEditingNavHeader() {
     const { User, counter } = this.props;
     return (
-      <ConnectedNavHeader
+      <NavHeader
         User={User}
         title={counter ? `选择了${counter}张照片` : ''}
         style={{ backgroundColor: blue500 }}
@@ -406,34 +406,42 @@ export default class CollPicsPage extends Component {
   }
 
   renderColPics() {
-    const { curColl, images } = this.props;
     let duration;
-    if (images.length === 0) {
+    const imageLen = this.props.images.length;
+    if (imageLen === 0) {
       duration = '暂无相片';
       return (
         <div className="collPics">
           <div className="collPics__header">
-            <div className="collPics__name">{curColl.name}</div>
+            <div className="collPics__name">{this.props.curColl.name}</div>
             <div className="collPics__duration">{duration}</div>
           </div>
         </div>
       );
     }
-    if (images.length === 1) {
-      duration = moment(images[0].shootAt).format('YYYY年MM月DD日');
+    if (imageLen === 1) {
+      duration = moment(this.props.images[0].shootAt).format('YYYY年MM月DD日');
     }
-    if (images.length > 1) {
-      const start = moment(images[images.length - 1].shootAt).format('YYYY年MM月DD日');
-      const end = moment(images[0].shootAt).format('YYYY年MM月DD日');
+    if (imageLen > 1) {
+      const start = moment(this.props.images[imageLen - 1].shootAt).format('YYYY年MM月DD日');
+      const end = moment(this.props.images[0].shootAt).format('YYYY年MM月DD日');
       duration = `${start} - ${end}`;
     }
     return (
       <div className="collPics">
         <div className="collPics__header">
-          <div className="collPics__name">{curColl.name}</div>
+          <div className="collPics__name">{this.props.curColl.name}</div>
           <div className="collPics__duration">{duration}</div>
         </div>
-        <ConnectedJustified isEditing={this.state.isEditing} images={images} />
+        <Justified
+          domain={this.props.domain}
+          isEditing={this.state.isEditing}
+          images={this.props.images}
+          group={this.props.group}
+          counter={this.props.counter}
+          enableSelectAll={this.props.enableSelectAll}
+          disableSelectAll={this.props.disableSelectAll}
+        />
       </div>
     );
   }
@@ -495,10 +503,14 @@ CollPicsPage.propTypes = {
   otherColls: PropTypes.array.isRequired,
   images: PropTypes.array.isRequired,
   // Below Pass From Redux
-  uptoken: PropTypes.string, // not required bc guest can vist this page
-  selectImages: PropTypes.array, // not required bc guest can vist this page
-  counter: PropTypes.number, // not required bc guest can vist this page
-  uploaderStart: PropTypes.func.isRequired,
-  disableSelectAll: PropTypes.func.isRequired,
+  uptoken: PropTypes.string, // not required bc guest can vist this page but without uptoken
+  selectImages: PropTypes.array.isRequired,
+  group: PropTypes.object.isRequired,
+  counter: PropTypes.number.isRequired,
   snackBarOpen: PropTypes.func.isRequired,
+  uploaderStart: PropTypes.func.isRequired,
+  selectCounter: PropTypes.func.isRequired,
+  selectGroupCounter: PropTypes.func.isRequired,
+  enableSelectAll: PropTypes.func.isRequired,
+  disableSelectAll: PropTypes.func.isRequired,
 };

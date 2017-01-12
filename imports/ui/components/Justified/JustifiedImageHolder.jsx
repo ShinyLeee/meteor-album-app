@@ -1,10 +1,9 @@
 import React, { Component, PropTypes } from 'react';
 import { _ } from 'meteor/underscore';
-import { connect } from 'react-redux';
-import { selectCounter } from '/imports/ui/redux/actions/creators.js';
+
 import { SelectableImageBackground } from './SelectableStatus.jsx';
 
-export class JustifiedImageHolder extends Component {
+export default class JustifiedImageHolder extends Component {
 
   constructor(props) {
     super(props);
@@ -24,7 +23,8 @@ export class JustifiedImageHolder extends Component {
       this.setState({ isSelect: false });
       return;
     }
-    if (!nextProps.group) {
+    // When next group prop is {}
+    if (Object.keys(nextProps.group).length === 0) {
       this.setState({ isSelect: false });
       return;
     }
@@ -37,53 +37,51 @@ export class JustifiedImageHolder extends Component {
   }
 
   handleSelect() {
-    const { day, isEditing, image, dispatch } = this.props;
-    if (isEditing) {
+    if (this.props.isEditing) {
       if (this.state.isSelect) {
-        dispatch(selectCounter({ selectImages: [image], group: day, counter: -1 }));
-        this.setState({ isSelect: false });
+        this.props.selectCounter({
+          selectImages: [this.props.image],
+          group: this.props.day,
+          counter: -1,
+        });
       } else {
-        dispatch(selectCounter({ selectImages: [image], group: day, counter: 1 }));
-        this.setState({ isSelect: true });
+        this.props.selectCounter({
+          selectImages: [this.props.image],
+          group: this.props.day,
+          counter: 1,
+        });
       }
     }
   }
 
   render() {
-    const { isEditing, image, imageSource, style } = this.props;
+    const { isEditing, image, imageSrc, imageHolderStyle } = this.props;
     const imageStyle = {
       transform: this.state.isSelect && 'scale(.8)',
     };
     return (
       <div
         className="Justified__imageHolder"
-        style={style}
+        style={imageHolderStyle}
         onTouchTap={this.handleSelect}
       >
         <SelectableImageBackground isEditing={isEditing} isSelect={this.state.isSelect} />
-        <img src={imageSource} alt={image.name} style={imageStyle} />
+        <img src={imageSrc} alt={image.name} style={imageStyle} />
       </div>
     );
   }
 }
 
 JustifiedImageHolder.propTypes = {
-  image: PropTypes.object.isRequired,
-  imageSource: PropTypes.string.isRequired,
-  style: PropTypes.object.isRequired,
   isEditing: PropTypes.bool.isRequired,
+  day: PropTypes.string.isRequired,
+  image: PropTypes.object.isRequired,
+  imageSrc: PropTypes.string.isRequired,
+  imageHolderStyle: PropTypes.object.isRequired,
   total: PropTypes.number.isRequired,
-  day: PropTypes.string,
   groupTotal: PropTypes.number,
   // Below Pass from Redux
-  group: PropTypes.object,
-  counter: PropTypes.number,
-  dispatch: PropTypes.func,
+  group: PropTypes.object.isRequired,
+  counter: PropTypes.number.isRequired,
+  selectCounter: PropTypes.func.isRequired,
 };
-
-const mapStateToProps = (state) => ({
-  group: state.selectCounter.group,
-  counter: state.selectCounter.counter,
-});
-
-export default connect(mapStateToProps)(JustifiedImageHolder);

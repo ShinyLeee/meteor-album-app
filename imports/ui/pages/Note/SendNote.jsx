@@ -15,7 +15,7 @@ import SendIcon from 'material-ui/svg-icons/content/send';
 import { blue500 } from 'material-ui/styles/colors';
 import { insertNote } from '/imports/api/notes/methods.js';
 
-import ConnectedNavHeader from '../../containers/NavHeaderContainer.jsx';
+import NavHeader from '../../components/NavHeader/NavHeader.jsx';
 import DatePickerCN from '../../components/SubMaterialUI/DatePickerCN.jsx';
 
 const styles = {
@@ -176,7 +176,7 @@ export default class SendNotePage extends Component {
     ];
     return (
       <div className="container note-container">
-        <ConnectedNavHeader
+        <NavHeader
           title="发送信息"
           style={{ backgroundColor: blue500 }}
           iconElementLeft={<IconButton onTouchTap={this.handleBack}><ArrowBackIcon /></IconButton>}

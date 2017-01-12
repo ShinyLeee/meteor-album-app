@@ -5,7 +5,7 @@ import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import { purple500, grey500 } from 'material-ui/styles/colors';
 
-import ConnectedNavHeader from '../../containers/NavHeaderContainer.jsx';
+import NavHeader from '../../components/NavHeader/NavHeader.jsx';
 
 const styles = {
   logBtn: {
@@ -48,7 +48,10 @@ export default class LoginPage extends Component {
   render() {
     return (
       <div className="container">
-        <ConnectedNavHeader primary />
+        <NavHeader
+          snackBarOpen={this.props.snackBarOpen}
+          primary
+        />
         <div className="login">
           <div className="login__logo">Gallery +</div>
           <div className="login__form">

@@ -346,12 +346,7 @@ NavHeader.propTypes = {
   /**
    * primary:
    *
-   * If true, we render a common NavHeader,
-   *   LeftIcon is Menu Icon --> click activate Drawer,
-   *   Title is Gallery +,
-   *   RightIcon is Search & Notification & Avatar,
-   *
-   * if false, we need to set icon & title by yourself,
+   * If true, render a common NavHeader,
    */
   primary: PropTypes.bool.isRequired,
   /**

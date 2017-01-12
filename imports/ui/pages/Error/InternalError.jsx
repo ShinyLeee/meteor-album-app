@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 
-import ConnectedNavHeader from '../../containers/NavHeaderContainer.jsx';
+import NavHeader from '../../components/NavHeader/NavHeader.jsx';
 
 export default class InternalError extends Component {
 
@@ -16,10 +16,11 @@ export default class InternalError extends Component {
   render() {
     return (
       <div className="container">
-        <ConnectedNavHeader
+        <NavHeader
           User={this.props.User}
           location={this.state.location}
           noteNum={this.props.noteNum}
+          snackBarOpen={this.props.snackBarOpen}
           primary
         />
         <div className="content Error">
@@ -51,4 +52,5 @@ InternalError.propTypes = {
   User: PropTypes.object,
   sourceDomain: PropTypes.string.isRequired,
   noteNum: PropTypes.number.isRequired,
+  snackBarOpen: PropTypes.func.isRequired,
 };

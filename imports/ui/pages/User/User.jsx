@@ -14,7 +14,7 @@ import SettingsIcon from 'material-ui/svg-icons/action/settings';
 import ExitToAppIcon from 'material-ui/svg-icons/action/exit-to-app';
 import { followUser, unFollowUser } from '/imports/api/users/methods.js';
 
-import ConnectedNavHeader from '../../containers/NavHeaderContainer.jsx';
+import NavHeader from '../../components/NavHeader/NavHeader.jsx';
 
 export default class UserPage extends Component {
 
@@ -218,13 +218,12 @@ export default class UserPage extends Component {
   }
 
   render() {
-    const { User, noteNum, dataIsReady, isGuest } = this.props;
     return (
       <div className="container">
-        { isGuest
+        { this.props.isGuest
           ? (
-            <ConnectedNavHeader
-              User={User}
+            <NavHeader
+              User={this.props.User}
               title="相册"
               iconElementLeft={
                 <IconButton onTouchTap={() => browserHistory.goBack()}>
@@ -232,10 +231,17 @@ export default class UserPage extends Component {
                 </IconButton>
               }
             />)
-          : (<ConnectedNavHeader User={User} location={this.state.location} noteNum={noteNum} primary />)
+          : (
+            <NavHeader
+              User={this.props.User}
+              location={this.state.location}
+              noteNum={this.props.noteNum}
+              snackBarOpen={this.props.snackBarOpen}
+              primary
+            />)
         }
         <div className="content">
-          { dataIsReady ? this.renderUserContent() : this.renderLoader() }
+          { this.props.dataIsReady ? this.renderUserContent() : this.renderLoader() }
         </div>
       </div>
     );

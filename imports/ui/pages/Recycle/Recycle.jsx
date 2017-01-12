@@ -14,9 +14,9 @@ import { blue500 } from 'material-ui/styles/colors';
 import { removeImages, recoveryImages } from '/imports/api/images/methods.js';
 import scrollTo from '/imports/utils/scrollTo.js';
 
-import ConnectedNavHeader from '../../containers/NavHeaderContainer.jsx';
-import ConnectedSelectableImageHolder from '../../components/Justified/SelectableImageHolder.jsx';
+import NavHeader from '../../components/NavHeader/NavHeader.jsx';
 import GridLayout from '../../components/GridLayout/GridLayout.jsx';
+import SelectableImageHolder from '../../components/Justified/SelectableImageHolder.jsx';
 import { SelectableIcon } from '../../components/Justified/SelectableStatus.jsx';
 
 const styles = {
@@ -154,11 +154,13 @@ export default class RecyclePage extends Component {
           <GridLayout>
             {
               this.props.images.map((image, i) => (
-                <ConnectedSelectableImageHolder
+                <SelectableImageHolder
                   key={i}
+                  isEditing
                   image={image}
                   total={this.props.images.length}
-                  isEditing
+                  counter={this.props.counter}
+                  selectCounter={this.props.selectCounter}
                 />
               ))
             }
@@ -208,7 +210,7 @@ export default class RecyclePage extends Component {
       : (<IconButton onTouchTap={() => browserHistory.goBack()}><ArrowBackIcon /></IconButton>);
     return (
       <div className="container">
-        <ConnectedNavHeader
+        <NavHeader
           User={User}
           title={counter ? `选择了${counter}张照片` : '回收站'}
           onTitleTouchTap={() => scrollTo(0, 1500)}
@@ -275,6 +277,7 @@ RecyclePage.propTypes = {
   uptoken: PropTypes.string.isRequired,
   selectImages: PropTypes.array.isRequired,
   counter: PropTypes.number.isRequired,
+  selectCounter: PropTypes.func.isRequired,
   disableSelectAll: PropTypes.func.isRequired,
   enableSelectAll: PropTypes.func.isRequired,
   snackBarOpen: PropTypes.func.isRequired,
