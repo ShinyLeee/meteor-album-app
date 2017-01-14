@@ -1,8 +1,9 @@
 import React, { Component, PropTypes } from 'react';
+import pure from 'recompose/pure';
 import CircularProgress from 'material-ui/CircularProgress';
 import { on, off } from '/imports/utils/events.js';
 
-export default class Infinity extends Component {
+class Infinity extends Component {
 
   constructor(props) {
     super(props);
@@ -38,6 +39,8 @@ export default class Infinity extends Component {
   }
 }
 
+Infinity.displayName = 'Infinity';
+
 Infinity.defaultProps = {
   isLoading: false,
   offsetToBottom: 0,
@@ -56,3 +59,5 @@ Infinity.propTypes = {
   beforeInfinityLoad: PropTypes.node,
   onInfinityLoad: PropTypes.func.isRequired,
 };
+
+export default pure(Infinity);

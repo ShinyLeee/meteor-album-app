@@ -29,12 +29,10 @@ export default class JustifiedGroupHolder extends Component {
       this.setState({ isGroupSelect: false });
       return;
     }
-    let flag = false;
     _.each(nextProps.group, (value, key) => {
-      if (key === day && value === groupTotal) flag = true;
+      if (key === day && value === groupTotal) this.setState({ isGroupSelect: true });
+      else this.setState({ isGroupSelect: false });
     });
-    if (flag) this.setState({ isGroupSelect: true });
-    else this.setState({ isGroupSelect: false });
   }
 
   handleToggleSelectGroup() {

@@ -10,9 +10,8 @@ import AddIcon from 'material-ui/svg-icons/content/add';
 import DownloadIcon from 'material-ui/svg-icons/file/file-download';
 import InfoIcon from 'material-ui/svg-icons/action/info';
 import TimelineIcon from 'material-ui/svg-icons/action/timeline';
-import { zoomerClose, snackBarOpen } from '/imports/ui/redux/actions/creators.js';
 
-const domain = Meteor.settings.public.domain;
+import { zoomerClose, snackBarOpen } from '../../redux/actions/index.js';
 
 class ZoomerHolder extends Component {
 
@@ -38,7 +37,7 @@ class ZoomerHolder extends Component {
     if (!open) {
       return <div />;
     }
-    const url = `${domain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
+    const url = `${this.props.domain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
     const src = `${url}?imageView2/0/w/${clientWidth * 2}`;
     const styles = {
       zoomer: {
@@ -113,11 +112,16 @@ class ZoomerHolder extends Component {
   }
 }
 
+ZoomerHolder.defaultProps = {
+  domain: Meteor.settings.public.domain,
+};
+
 ZoomerHolder.propTypes = {
-  dispatch: PropTypes.func.isRequired,
+  domain: PropTypes.string.isRequired,
   clientWidth: PropTypes.number.isRequired,
   open: PropTypes.bool.isRequired,
   image: PropTypes.object,
+  dispatch: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => {

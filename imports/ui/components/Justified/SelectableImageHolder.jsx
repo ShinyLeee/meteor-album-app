@@ -32,12 +32,14 @@ export default class SelectableImageHolder extends Component {
           group: 'nested',
           counter: -1,
         });
+        this.setState({ isSelect: false });
       } else {
         this.props.selectCounter({
           selectImages: [this.props.image],
           group: 'nested',
           counter: 1,
         });
+        this.setState({ isSelect: true });
       }
     }
   }

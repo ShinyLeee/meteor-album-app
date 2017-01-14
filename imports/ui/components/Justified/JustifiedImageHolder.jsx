@@ -23,17 +23,16 @@ export default class JustifiedImageHolder extends Component {
       this.setState({ isSelect: false });
       return;
     }
+    const allGroups = Object.keys(nextProps.group);
     // When next group prop is {}
-    if (Object.keys(nextProps.group).length === 0) {
+    if (allGroups.length === 0 || allGroups.indexOf(day) < 0) {
       this.setState({ isSelect: false });
       return;
     }
-    let flag = false;
     _.each(nextProps.group, (value, key) => {
-      if (key === day && value === groupTotal) flag = true;
+      if (key === day && value === groupTotal) this.setState({ isSelect: true });
+      else if (key === day && value === 0) this.setState({ isSelect: false });
     });
-    if (flag) this.setState({ isSelect: true });
-    else this.setState({ isSelect: false });
   }
 
   handleSelect() {
@@ -44,12 +43,14 @@ export default class JustifiedImageHolder extends Component {
           group: this.props.day,
           counter: -1,
         });
+        this.setState({ isSelect: false });
       } else {
         this.props.selectCounter({
           selectImages: [this.props.image],
           group: this.props.day,
           counter: 1,
         });
+        this.setState({ isSelect: true });
       }
     }
   }

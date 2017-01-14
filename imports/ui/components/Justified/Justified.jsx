@@ -98,6 +98,7 @@ export default class Justified extends PureComponent {
       fullWidthBreakoutRowCadence,
       group,
       counter,
+      selectCounter,
       selectGroupCounter,
     } = this.props;
 
@@ -133,6 +134,7 @@ export default class Justified extends PureComponent {
           groupTotal={dayGroupImages[day].length}
           group={group}
           counter={counter}
+          selectCounter={selectCounter}
           selectGroupCounter={selectGroupCounter}
         />
       ))

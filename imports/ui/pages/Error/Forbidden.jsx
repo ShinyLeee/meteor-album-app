@@ -1,54 +1,44 @@
 import { Meteor } from 'meteor/meteor';
-import React, { Component, PropTypes } from 'react';
+import React, { PropTypes } from 'react';
 import { Link } from 'react-router';
 
+import errorHOC from '../../containers/Error/index.jsx';
 import NavHeader from '../../components/NavHeader/NavHeader.jsx';
 
-export default class Forbidden extends Component {
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      location: '403',
-    };
-  }
-
-  render() {
-    return (
-      <div className="container">
-        <NavHeader
-          User={this.props.User}
-          location={this.state.location}
-          noteNum={this.props.noteNum}
-          snackBarOpen={this.props.snackBarOpen}
-          primary
+const Forbidden = ({ User, sourceDomain, noteNum, snackBarOpen }) => (
+  <div className="container">
+    <NavHeader
+      User={User}
+      location={this.state.location}
+      noteNum={noteNum}
+      snackBarOpen={snackBarOpen}
+      primary
+    />
+    <div className="content Error">
+      <div className="Error__container">
+        <h2 className="Error__status">Error: 403 Access Denied</h2>
+        <img
+          className="Error__logo"
+          src={`${sourceDomain}/GalleryPlus/Error/403.png`}
+          alt="403 Access Denied"
         />
-        <div className="content Error">
-          <div className="Error__container">
-            <h2 className="Error__status">Error: 403 Access Denied</h2>
-            <img
-              className="Error__logo"
-              src={`${this.props.sourceDomain}/GalleryPlus/Error/403.png`}
-              alt="403 Access Denied"
-            />
-            <p className="Error__info">您没有权限访问该页面</p>
-            {
-              (this.props.location.state && this.props.location.state.message)
-                ? (<p className="Error__info">{this.props.location.state.message}</p>)
-                : (
-                  <p className="Error__info">
-                    请检查地址是否输入正确&nbsp;
-                    <Link to="/">返回首页</Link>，或向管理员汇报这个问题
-                  </p>
-                )
-            }
-          </div>
-        </div>
+        <p className="Error__info">您没有权限访问该页面</p>
+        {
+          (this.props.location.state && this.props.location.state.message)
+            ? (<p className="Error__info">{this.props.location.state.message}</p>)
+            : (
+              <p className="Error__info">
+                请检查地址是否输入正确&nbsp;
+                <Link to="/">返回首页</Link>，或向管理员汇报这个问题
+              </p>
+            )
+        }
       </div>
-    );
-  }
+    </div>
+  </div>
+);
 
-}
+Forbidden.displayName = 'Forbidden';
 
 Forbidden.defaultProps = {
   sourceDomain: Meteor.settings.public.sourceDomain,
@@ -61,3 +51,5 @@ Forbidden.propTypes = {
   noteNum: PropTypes.number.isRequired,
   snackBarOpen: PropTypes.func.isRequired,
 };
+
+export default errorHOC(Forbidden);

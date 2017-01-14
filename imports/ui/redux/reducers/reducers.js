@@ -72,14 +72,6 @@ export const selectCounter = (state = { selectImages: [], group: {}, counter: 0 
      * Finally we create and return a new Object which contains counter group props
      */
     case 'SELECT_COUNTER': {
-      let group;
-      const day = action.group;
-      // When group is empty object: {}
-      if (Object.keys(state.group).length === 0) group = { [day]: action.counter };
-      else {
-        const newGroup = { [day]: (state.group[day] || 0) + action.counter };
-        group = _.extend(state.group, newGroup);
-      }
       let selectImages;
       const nextImage = action.selectImages;
       const prevImages = state.selectImages;
@@ -95,6 +87,16 @@ export const selectCounter = (state = { selectImages: [], group: {}, counter: 0 
           selectImages = _.filter(prevImages, (prevImage) => prevImage._id !== nextImage[0]._id);
         }
       }
+
+      let group;
+      const day = action.group;
+      // When group is empty object: {}
+      if (Object.keys(state.group).length === 0) group = { [day]: action.counter };
+      else {
+        const newGroup = { [day]: (state.group[day] || 0) + action.counter };
+        group = _.extend(state.group, newGroup);
+      }
+
       // console.log(selectImages);
       const counter = state.counter + action.counter;
       if (counter === 0) group = {};
@@ -117,28 +119,15 @@ export const selectCounter = (state = { selectImages: [], group: {}, counter: 0 
      * however the groupCounter = action.counter - state.group[action.group].
      */
     case 'SELECT_GROUP_COUNTER': {
-      let group;
-      const day = action.group;
       const groupCounter = action.counter;
-      if (Object.keys(state.group).length === 0) group = { [day]: groupCounter };
-      else {
-        if (groupCounter > 0) {
-          const newGroup = { [day]: groupCounter };
-          group = Object.assign({}, state.group, newGroup);
-        }
-        if (groupCounter < 0) {
-          group = Object.assign({}, state.group);
-          delete group[day];
-        }
-      }
+
       let selectImages;
       const nextImages = action.selectImages;
       const prevImages = state.selectImages;
       if (prevImages.length === 0) selectImages = [...nextImages];
       else {
-        // If select a group, just concat nextImages with prevImages
         if (groupCounter > 0) {
-          selectImages = _.uniq([...prevImages, ...nextImages]);
+          selectImages = _.uniq([...prevImages, ...nextImages], (image) => image._id);
         }
         // If disselect a group, we need to remove nextImages from prevImages
         if (groupCounter < 0) {
@@ -151,8 +140,24 @@ export const selectCounter = (state = { selectImages: [], group: {}, counter: 0 
           });
         }
       }
-      // console.log(selectImages);
-      const counter = state.counter + groupCounter;
+
+      let group;
+      const prevGroup = state.group;
+      const day = action.group;
+      if (Object.keys(prevGroup).length === 0) group = { [day]: groupCounter };
+      else {
+        if (groupCounter > 0) {
+          const newGroup = { [day]: groupCounter };
+          group = Object.assign({}, prevGroup, newGroup);
+        }
+        if (groupCounter < 0) {
+          group = Object.assign({}, prevGroup);
+          delete group[day];
+        }
+      }
+
+      let counter = state.counter + groupCounter;
+      if (prevGroup[day] && groupCounter > 0) counter = state.counter + (groupCounter - prevGroup[day]);
       if (counter === 0) group = {};
       const globalCounter = Object.assign({}, { selectImages }, { group }, { counter });
       return globalCounter;

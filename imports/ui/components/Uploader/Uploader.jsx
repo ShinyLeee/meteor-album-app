@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
-import React, { Component, PropTypes } from 'react';
+import React, { PureComponent, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import EXIF from 'exif-js';
 import uuid from 'node-uuid';
 import { insertImage } from '/imports/api/images/methods.js';
-import { uploaderStop, snackBarOpen } from '/imports/ui/redux/actions/creators.js';
+
+import { uploaderStop, snackBarOpen } from '../../redux/actions/index.js';
 
 const initialState = {
   pace: 0,               // Current File Uploading Progress
@@ -14,7 +15,7 @@ const initialState = {
   uploading: false,  // Is in Uploading Progress
 };
 
-export class Uploader extends Component {
+export class Uploader extends PureComponent {
 
   constructor(props) {
     super(props);

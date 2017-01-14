@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import React, { Component, PropTypes } from 'react';
+import React, { PureComponent, PropTypes } from 'react';
 import { browserHistory } from 'react-router';
 import AppBar from 'material-ui/AppBar';
 import Avatar from 'material-ui/Avatar';
@@ -71,7 +71,7 @@ const styles = {
   },
 };
 
-export default class NavHeader extends Component {
+export default class NavHeader extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {

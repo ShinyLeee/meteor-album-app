@@ -1,4 +1,5 @@
 import React from 'react';
+import pure from 'recompose/pure';
 import DatePicker from 'material-ui/DatePicker';
 import warning from 'warning';
 
@@ -40,4 +41,6 @@ const DatePickerCN = (props) => (
   />
 );
 
-export default DatePickerCN;
+DatePickerCN.displayName = 'DatePickerCN';
+
+export default pure(DatePickerCN);

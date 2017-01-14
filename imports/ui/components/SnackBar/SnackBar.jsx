@@ -1,7 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import Snackbar from 'material-ui/Snackbar';
-import { snackBarClose } from '/imports/ui/redux/actions/creators.js';
+
+import { snackBarClose } from '../../redux/actions/index.js';
 
 class SnackBar extends Component {
 
