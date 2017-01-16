@@ -2,20 +2,21 @@ import React, { PropTypes } from 'react';
 import { Router, Route, browserHistory, IndexRoute, Redirect } from 'react-router';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import PC from '/imports/ui/App_PC.jsx';
-import App from '/imports/ui/containers/App.jsx';
-import Login from '/imports/ui/containers/Login/index.jsx';
-import Register from '/imports/ui/containers/Register/index.jsx';
-import Index from '/imports/ui/containers/Index/index.jsx';
-import User from '/imports/ui/containers/User/index.jsx';
-import AllCollections from '/imports/ui/containers/Collection/AllCollections/index.jsx';
-import Colletion from '/imports/ui/containers/Collection/Collection/index.jsx';
-import Recycle from '/imports/ui/containers/Recycle/index.jsx';
-import Setting from '/imports/ui/containers/Setting/index.jsx';
-import Note from '/imports/ui/containers/Note/Note/index.jsx';
-import AllNotes from '/imports/ui/containers/Note/AllNotes/index.jsx';
-import SendNote from '/imports/ui/containers/Note/SendNote/index.jsx';
+import App from '/imports/ui/App.jsx';
+import Login from '/imports/ui/pages/Login/index.js';
+import Register from '/imports/ui/pages/Register/index.js';
+import Index from '/imports/ui/pages/Index/index.js';
+import User from '/imports/ui/pages/User/index.js';
+import AllCollections from '/imports/ui/pages/Collection/pages/AllCollections/index.js';
+import Colletion from '/imports/ui/pages/Collection/pages/Collection/index.js';
+import Recycle from '/imports/ui/pages/Recycle/index.js';
+import Setting from '/imports/ui/pages/Setting/index.js';
+import Note from '/imports/ui/pages/Note/pages/Note/index.js';
+import AllNotes from '/imports/ui/pages/Note/pages/AllNotes/index.js';
+import SendNote from '/imports/ui/pages/Note/pages/SendNote/index.js';
 import Construction from '/imports/ui/pages/Error/Construction.jsx';
 import Forbidden from '/imports/ui/pages/Error/Forbidden.jsx';
 import InternalError from '/imports/ui/pages/Error/InternalError.jsx';
@@ -23,7 +24,7 @@ import NotFound from '/imports/ui/pages/Error/NotFound.jsx';
 
 import { platform } from '/imports/utils/utils.js';
 import reducers from '/imports/ui/redux/reducers';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+
 import { isLogin, isLogout, isPermission, isAllowVisitHome, isAllowVisitColl } from './policies.js';
 
 const store = createStore(reducers);

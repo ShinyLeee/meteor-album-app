@@ -1,9 +1,9 @@
 /* DRAWER */
-.drawer-profile {
+.drawer__profile {
   position: relative;
   height: 150px;
   background-size: cover;
-  & > .drawer-profile-background {
+  & > .drawer__background {
     position: absolute;
     width: 100%;
     height: 100%;
@@ -11,7 +11,7 @@
     background: -webkit-linear-gradient(top, rgba(0, 0, 0, 0.3), transparent 30%, transparent 70%, rgba(0, 0, 0, 0.3));
     background: linear-gradient(180deg, rgba(0, 0, 0, 0.3) 0, transparent 30%, transparent 70%, rgba(0, 0, 0, 0.3));
   }
-  & .drawer-profile-avatar {
+  & .drawer__avatar {
     position: absolute;
     left: 0;
     top: 0;
@@ -19,7 +19,7 @@
     height: 50%;
     padding: 24px 0 0px 26px
   }
-  & .drawer-profile-email {
+  & .drawer__email {
     position: absolute;
     left: 0;
     bottom: 0;
@@ -50,18 +50,18 @@
 }
 
 /* RECAP */
-.recap {
+.component__Recap {
   padding-top: 48px;
   padding-bottom: 48px;
   text-align: center;
   color: @color-font-prominent;
-  .recap-title {
+  .Recap__title {
     margin: 0 0 18px;
   }
-  .recap-detail {
+  .Recap__detail {
     .type-space;
   }
-  .recap-icons {
+  .Recap__icons {
     margin-top: 15px;
     margin-bottom: 15px;
     li {
@@ -74,21 +74,21 @@
 }
 
 /* Empty */
-.Empty {
+.component__Empty {
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 396px;
-}
-.Empty__container {
-  font-family: 'Microsoft Yahei';
-  text-align: center;
-  & > h2 {
-    font-size: 26px;
-    color: #222;
-  }
-  & > p {
-    font-size: 14px;
-    color: #666;
-  }
+  & > .Empty__container {
+      font-family: 'Microsoft Yahei';
+      text-align: center;
+      & > .Empty__header {
+        font-size: 26px;
+        color: #222;
+      }
+      & > .Empty__info {
+        font-size: 14px;
+        color: #666;
+      }
+    }
 }

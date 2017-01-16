@@ -1,14 +1,22 @@
 import React, { Component, PropTypes } from 'react';
 import { Meteor } from 'meteor/meteor';
-import CircularProgress from 'material-ui/CircularProgress';
-import { makeCancelable } from '/imports/utils/utils.js';
+import LinearProgress from 'material-ui/LinearProgress';
 import { Images } from '/imports/api/images/image.js';
+import { makeCancelable } from '/imports/utils/utils.js';
 
 import NavHeader from '../../components/NavHeader/NavHeader.jsx';
 import Infinity from '../../components/Infinity/Infinity.jsx';
 import Recap from '../../components/Recap/Recap.jsx';
 import PicHolder from '../../components/PicHolder/PicHolder.jsx';
 import ZoomerHolder from '../../components/ZoomerHolder/ZoomerHolder.jsx';
+
+const styles = {
+  indeterminateProgress: {
+    position: 'fixed',
+    backgroundColor: 'none',
+    zIndex: 99,
+  },
+};
 
 export default class IndexPage extends Component {
 
@@ -96,40 +104,18 @@ export default class IndexPage extends Component {
     ));
   }
 
-  renderInfinite() {
-    return (
-      <div className="index">
-        <Infinity
-          onInfinityLoad={this.handleLoadImages}
-          isLoading={this.state.isLoading}
-          offsetToBottom={100}
-        >
-          { this.renderPicHolder() }
-          <ZoomerHolder clientWidth={this.props.clientWidth} />
-        </Infinity>
-      </div>
-    );
-  }
-
-  renderLoader() {
-    return (
-      <div className="content text-center">
-        <CircularProgress style={{ top: '150px' }} />
-      </div>
-    );
-  }
-
   render() {
-    const { User, noteNum, dataIsReady, snackBarOpen } = this.props;
     return (
       <div className="container">
         <NavHeader
-          User={User}
+          User={this.props.User}
           location={this.state.location}
-          noteNum={noteNum}
-          snackBarOpen={snackBarOpen}
+          noteNum={this.props.noteNum}
+          snackBarOpen={this.props.snackBarOpen}
           primary
         />
+        { !this.props.dataIsReady
+          && (<LinearProgress style={styles.indeterminateProgress} mode="indeterminate" />) }
         <div className="content">
           <Recap
             title="Gallery"
@@ -137,7 +123,19 @@ export default class IndexPage extends Component {
             detailSec="Created By Shiny Lee"
             showIcon
           />
-          { dataIsReady ? this.renderInfinite() : this.renderLoader() }
+          { this.props.dataIsReady && (
+            <div className="content__index">
+              <Infinity
+                isLoading={this.state.isLoading}
+                onInfinityLoad={this.handleLoadImages}
+                offsetToBottom={100}
+              >
+                { this.renderPicHolder() }
+                <ZoomerHolder clientWidth={this.props.clientWidth} />
+              </Infinity>
+            </div>
+            )
+          }
         </div>
       </div>
     );
@@ -145,8 +143,10 @@ export default class IndexPage extends Component {
 
 }
 
+IndexPage.displayName = 'IndexPage';
+
 IndexPage.defaultProps = {
-  clientWidth: document.body.clientWidth,
+  clientWidth: document.body.clientWidth, // for PicHolder and ZoomerHolder
 };
 
 IndexPage.propTypes = {

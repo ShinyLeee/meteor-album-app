@@ -2,14 +2,13 @@ import { Meteor } from 'meteor/meteor';
 import React, { PropTypes } from 'react';
 import { Link } from 'react-router';
 
-import errorHOC from '../../containers/Error/index.jsx';
+import errorHOC from './errorHOC';
 import NavHeader from '../../components/NavHeader/NavHeader.jsx';
 
 const InternalError = ({ User, sourceDomain, noteNum, snackBarOpen }) => (
   <div className="container">
     <NavHeader
       User={User}
-      location={this.state.location}
       noteNum={noteNum}
       snackBarOpen={snackBarOpen}
       primary

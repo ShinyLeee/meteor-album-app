@@ -1,5 +1,5 @@
 /* route /index */
-.index {
+.content__index {
   background-color: #ededed;
   & .pic-holder {
     margin-bottom: 20px;
@@ -7,7 +7,7 @@
 }
 
 /* route /login, /register */
-.login, .register {
+.content__login, .content__register {
   width: 100%;
   height: 100%;
   margin-top: 64px;
@@ -48,13 +48,13 @@
 }
 
 /* route /user */
-.user-main {
-  & > .main-cover {
+.user__main {
+  & > .main__cover {
     position: relative;
     height: 200px;
     background-size: cover;
     overflow: hidden;
-    & > .main-cover-background {
+    & > .main__background {
       position: absolute;
       width: 100%;
       height: 100%;
@@ -63,14 +63,14 @@
       background: linear-gradient(180deg, rgba(0, 0, 0, 0.3) 0, transparent 30%, transparent 70%, rgba(0, 0, 0, 0.3));
     }
   }
-  .main-profile {
+  .main__profile {
     position: relative;
     margin-bottom: 140px;
-    & > .main-profile-content {
+    & > .main__content {
       position: absolute;
       left: 127px; // We will set this more specific in jsx
       top: -60px;
-      & > .main-profile-avatar {
+      & > .main__avatar {
         width: 120px;
         height: 120px;
         overflow: hidden;
@@ -80,19 +80,19 @@
           border-radius: 50%;
         }
       }
-      & > .main-profile-detail {
+      & > .main__detail {
         text-align: center;
         & > h4 { margin: 10px 0 10px 0; color: #222; }
         & > span { font-size: 14px; color: #999; }
       }
     }
   }
-  .main-action {
+  .main__action {
     text-align: center;
   }
 }
 
-.user-counter {
+.user__counter {
   margin: 20px 0 10px 0;
   border: 1px solid #eee;
   & > .counter {
@@ -110,27 +110,27 @@
   }
 }
 
-.user-rank {
+.user__rank {
   padding: 0 20px;
-  & > .rank-header {
+  & > .rank__header {
     font-size: 14px;
     color: #555;
     text-decoration: underline;
   }
-  & > .rank-content {
+  & > .rank__content {
     width: 100%;
   }
 }
 
 /* route /setting */
-.setting-content {
-  .setting-cover {
+.content__setting {
+  .setting__cover {
     position: relative;
     height: 200px;
     background-size: cover;
     overflow: hidden;
     img { width: 100% }
-    .setting-cover-background {
+    & > .setting__background {
       position: absolute;
       width: 100%;
       height: 100%;
@@ -138,7 +138,7 @@
       background: -webkit-linear-gradient(top, rgba(0, 0, 0, 0.3), transparent 30%, transparent 70%, rgba(0, 0, 0, 0.3));
       background: linear-gradient(180deg, rgba(0, 0, 0, 0.3) 0, transparent 30%, transparent 70%, rgba(0, 0, 0, 0.3));
     }
-    .setting-cover-upload {
+    & > .setting__uploader {
       position: absolute;
       right: 24px;
       bottom: 24px;
@@ -150,9 +150,9 @@
       cursor: pointer;
     }
   }
-  .setting-avatar {
+  .setting__avatar {
     padding: 0 24px;
-    .setting-avatar-upload {
+    .setting__uploader {
       position: relative;
       width: 60px;
       height: 60px;
@@ -163,17 +163,32 @@
 }
 
 /* route /note */
-.note {
+.content__note {
   padding: 5px 6px;
   background-color: #ededed;
   min-height: 495px;
-  & .note-holder {
+  & .component__noteHolder {
     margin-bottom: 10px;
   }
 }
 
+/* route /note/:username/all */
+.content__allNotes {
+  padding: 5px 6px;
+  background-color: #ededed;
+  min-height: 495px;
+  & .component__noteHolder {
+    margin-bottom: 10px;
+  }
+}
+
+/* route /collection */
+.content__allCollection {
+  padding: 0 12px;
+}
+
 /* route /collection/:colName */
-.collPics {
+.content__collPics {
   padding-top: 64px;
 }
 
@@ -192,7 +207,7 @@
 }
 
 /* route /recycle */
-.recycle {
+.content__recycle {
   padding: 30px 0;
   & > .recycle__header {
     & > .recycle__title {
@@ -291,24 +306,24 @@
   }
 }
 
-/* route /500 /404 /403 */
-.Error {
+/* route /403 /404 /500 /Construction */
+.content__error {
   display: flex;
   align-items: center;
   justify-content: center;
 }
-.Error__container {
+.error__container {
   padding: 5px;
   text-align: center;
-  & > .Error__status {
+  & > .error__status {
     font-size: 26px;
     color: #222;
   }
-  & > .Error__logo {
+  & > .error__logo {
     width: 280px;
     margin: 30px 0;
   }
-  & > .Error__info {
+  & > .error__info {
     font-size: 12px;
     color: #666;
     & a { color: blue; }

@@ -1,10 +1,10 @@
-import React, { Component, PropTypes } from 'react';
+import React, { PureComponent, PropTypes } from 'react';
 import { _ } from 'meteor/underscore';
 
 import { SelectableIcon } from './SelectableStatus.jsx';
 import JustifiedImageHolder from './JustifiedImageHolder.jsx';
 
-export default class JustifiedGroupHolder extends Component {
+export default class JustifiedGroupHolder extends PureComponent {
 
   constructor(props) {
     super(props);
@@ -112,6 +112,8 @@ export default class JustifiedGroupHolder extends Component {
     );
   }
 }
+
+JustifiedGroupHolder.displayName = 'JustifiedGroupHolder';
 
 JustifiedGroupHolder.propTypes = {
   domain: PropTypes.string.isRequired,

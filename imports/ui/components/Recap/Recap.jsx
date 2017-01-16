@@ -5,12 +5,12 @@ import IconButton from 'material-ui/IconButton';
 import { Github, Wechat, Twitter, Instagram, Website } from '../SubMaterialUI/SvgIcons.jsx';
 
 const Recap = ({ title, detailFir, detailSec, showIcon }) => (
-  <div className="recap">
-    <h1 className="recap-title">{title}</h1>
-    <p className="recap-detail recap-detail-1">{detailFir}</p>
-    <p className="recap-detail recap-detail-2">{detailSec}</p>
+  <div className="component__Recap">
+    <h1 className="Recap__title">{title}</h1>
+    <p className="Recap__detail Recap__detail-1">{detailFir}</p>
+    <p className="Recap__detail Recap__detail-2">{detailSec}</p>
     { showIcon ? (
-      <ul className="recap-icons">
+      <ul className="Recap__icons">
         <IconButton
           href="https://github.com/ShinyLeee"
           target="_blank"

@@ -56,21 +56,21 @@ class ZoomerHolder extends Component {
       },
     };
     return (
-      <div className="zoomer-holder" style={styles.zoomer}>
+      <div className="component__ZoomerHolder" style={styles.zoomer}>
         <div
-          className="zoomer-image"
+          className="ZoomerHolder__image"
           style={styles.imageHolder}
           onTouchTap={this.handleClose}
         >
-          <div className="zoomer-image-background" />
+          <div className="ZoomerHolder__background" />
         </div>
-        <div className="zoomer-toolbox">
-          <div className="toolbox-logo">
+        <div className="ZoomerHolder__toolbox">
+          <div className="ZoomerHolder__logo">
             <IconButton iconStyle={styles.iconButton}>
               <CameraIcon />
             </IconButton>
           </div>
-          <div className="toolbox-action">
+          <div className="ZoomerHolder__action">
             <IconButton iconStyle={styles.iconButton} onTouchTap={this.handlePrompt}>
               <HeartIcon />
             </IconButton>
@@ -82,23 +82,23 @@ class ZoomerHolder extends Component {
             </IconButton>
           </div>
         </div>
-        <div className="zoomer-info">
-          <div className="info-profile">
+        <div className="ZoomerHolder__info">
+          <div className="ZoomerHolder__profile">
             <img
               src={image.avatar}
               role="presentation"
               onTouchTap={() => browserHistory.push(`/user/${image.user}`)}
             />
-            <div className="info-profile-detail">
-              <span className="detail-title">
+            <div className="ZoomerHolder__detail">
+              <span className="ZoomerHolder__title">
                 {image.user}
               </span>
-              <span className="detail-subtitle">
+              <span className="ZoomerHolder__subtitle">
                 {moment(image.createdAt).format('YYYY-MM-DD HH:mm')}
               </span>
             </div>
           </div>
-          <div className="info-action">
+          <div className="ZoomerHolder__action">
             <IconButton iconStyle={styles.iconButton} onTouchTap={this.handlePrompt}>
               <TimelineIcon />
             </IconButton>

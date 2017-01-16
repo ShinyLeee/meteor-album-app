@@ -1,9 +1,9 @@
-import React, { Component, PropTypes } from 'react';
+import React, { PureComponent, PropTypes } from 'react';
 import { _ } from 'meteor/underscore';
 
 import { SelectableImageBackground } from './SelectableStatus.jsx';
 
-export default class JustifiedImageHolder extends Component {
+export default class JustifiedImageHolder extends PureComponent {
 
   constructor(props) {
     super(props);
@@ -72,6 +72,8 @@ export default class JustifiedImageHolder extends Component {
     );
   }
 }
+
+JustifiedImageHolder.displayName = 'JustifiedImageHolder';
 
 JustifiedImageHolder.propTypes = {
   isEditing: PropTypes.bool.isRequired,

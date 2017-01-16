@@ -1,8 +1,9 @@
-import React, { Component, PropTypes } from 'react';
+import { Meteor } from 'meteor/meteor';
+import React, { PureComponent, PropTypes } from 'react';
 
 import { SelectableImageBackground } from './SelectableStatus.jsx';
 
-export default class SelectableImageHolder extends Component {
+export default class SelectableImageHolder extends PureComponent {
 
   constructor(props) {
     super(props);
@@ -69,8 +70,11 @@ export default class SelectableImageHolder extends Component {
   }
 }
 
+SelectableImageHolder.displayName = 'SelectableImageHolder';
+
 SelectableImageHolder.defaultProps = {
   isEditing: false,
+  domain: Meteor.settings.public.domain,
   clientWidth: document.body.clientWidth,
 };
 

@@ -187,7 +187,7 @@ export default class NavHeader extends PureComponent {
   renderPrimaryNavHeader() {
     const { User, location } = this.props;
     return (
-      <div className="NavHeader-container">
+      <div className="component__NavHeader">
         <AppBar
           style={styles.AppBar}
           title="Gallery +"
@@ -204,20 +204,20 @@ export default class NavHeader extends PureComponent {
           onRequestChange={(open) => this.setState({ drawer: open })}
         >
           <div
-            className="drawer-profile"
+            className="drawer__profile"
             style={{ backgroundImage: this.coverSrc }}
           >
-            <div className="drawer-profile-background" />
+            <div className="drawer__background" />
             { User && (
               <div>
-                <div className="drawer-profile-avatar">
+                <div className="drawer__avatar">
                   <Avatar
                     size={54}
                     src={User.profile.avatar}
                     onTouchTap={() => browserHistory.push(`/user/${User.username}`)}
                   />
                 </div>
-                <div className="drawer-profile-email">
+                <div className="drawer__email">
                   <div>
                     <span>{(User.emails && User.emails[0].address) || User.username}</span>
                     <div><ArrowDropdownIcon color="#fff" onTouchTap={this.handleOpenUserAction} /></div>
@@ -302,7 +302,7 @@ export default class NavHeader extends PureComponent {
 
     if (loading) {
       return (
-        <div className="NavHeader-container">
+        <div className="component__NavHeader">
           <AppBar
             style={styles.AppBar}
             titleStyle={styles.AppBarTitle}
@@ -315,7 +315,7 @@ export default class NavHeader extends PureComponent {
       return this.renderPrimaryNavHeader();
     }
     return (
-      <div className="NavHeader-container">
+      <div className="component__NavHeader">
         <AppBar
           style={Object.assign({}, styles.AppBar, style)}
           titleStyle={styles.AppBarTitle}

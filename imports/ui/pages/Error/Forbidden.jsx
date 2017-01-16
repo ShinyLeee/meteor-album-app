@@ -2,14 +2,13 @@ import { Meteor } from 'meteor/meteor';
 import React, { PropTypes } from 'react';
 import { Link } from 'react-router';
 
-import errorHOC from '../../containers/Error/index.jsx';
+import errorHOC from './errorHOC';
 import NavHeader from '../../components/NavHeader/NavHeader.jsx';
 
-const Forbidden = ({ User, sourceDomain, noteNum, snackBarOpen }) => (
+const Forbidden = ({ User, location, sourceDomain, noteNum, snackBarOpen }) => (
   <div className="container">
     <NavHeader
       User={User}
-      location={this.state.location}
       noteNum={noteNum}
       snackBarOpen={snackBarOpen}
       primary
@@ -24,8 +23,8 @@ const Forbidden = ({ User, sourceDomain, noteNum, snackBarOpen }) => (
         />
         <p className="Error__info">您没有权限访问该页面</p>
         {
-          (this.props.location.state && this.props.location.state.message)
-            ? (<p className="Error__info">{this.props.location.state.message}</p>)
+          (location.state && location.state.message)
+            ? (<p className="Error__info">{location.state.message}</p>)
             : (
               <p className="Error__info">
                 请检查地址是否输入正确&nbsp;

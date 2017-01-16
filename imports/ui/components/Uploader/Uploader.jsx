@@ -159,12 +159,11 @@ export class Uploader extends PureComponent {
   afterUploadFile(file) {
     const { User, destination, dispatch } = this.props;
     const image = {
-      uid: User._id,
       user: User.username,
       collection: destination.split('/')[1],
       name: file.fileName,
-      ratio: file.ratio,
       type: file.surfix,
+      ratio: file.ratio,
       shootAt: file.shootAt,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -225,15 +224,15 @@ export class Uploader extends PureComponent {
     if (open && uploading) {
       return (
         <div>
-          <div className="uploader-wrapper">
-            <div className="uploader">
-              <div className="thumbnails" style={{ backgroundImage: `url(${thumbnail})` }} />
-              <div className="details">
+          <div className="component__Uploader">
+            <div className="Uploader__container">
+              <div className="Uploader__thumbnails" style={{ backgroundImage: `url(${thumbnail})` }} />
+              <div className="Uploader__details">
                 <span>正在上传至</span>
                 <h4>{ destination.split('/')[1] }</h4>
                 <span>第{current}张, 共{total}张</span>
-                <a className="stop" ref={(ref) => { this.stopButton = ref; }}>停止</a>
-                <div className="pace" style={{ width: pace }} />
+                <a className="Uploader__stop" ref={(ref) => { this.stopButton = ref; }}>停止</a>
+                <div className="Uploader__pace" style={{ width: pace }} />
               </div>
             </div>
           </div>
@@ -243,7 +242,7 @@ export class Uploader extends PureComponent {
     return (
       <div>
         <input
-          id="uploader"
+          id="Uploader__container"
           type="file"
           style={{ display: 'none' }}
           onChange={this.handleOnChange}

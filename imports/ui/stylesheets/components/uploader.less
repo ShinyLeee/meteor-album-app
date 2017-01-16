@@ -1,4 +1,4 @@
-.uploader-wrapper {
+.component__Uploader {
   position: fixed;
   left: 0;
   bottom: 0;
@@ -9,11 +9,11 @@
   z-index: 9999;
 }
 
-.uploader {
+.Uploader__container {
   position: relative;
   width: 100%;
   height: 100%;
-  & > .thumbnails {
+  & > .Uploader__thumbnails {
     position: absolute;
     left: 0;
     width: 100px;
@@ -21,7 +21,7 @@
     background-color: #eee;
     background-size: cover;
   }
-  & > .details {
+  & > .Uploader__details {
     position: absolute;
     left: 100px;
     width: ~"calc(100% - 100px)";
@@ -38,13 +38,13 @@
       font-size: 16px;
       font-weight: bold;
     }
-    & > .stop {
+    & > .Uploader__stop {
       margin-left: 20%;
       font-size: 14px;
       font-weight: bold;
       color: #3F51B5;
     }
-    & > .pace {
+    & > .Uploader__pace {
       position: absolute;
       left: 0;
       bottom: 0;

@@ -177,6 +177,8 @@ export default class Justified extends PureComponent {
   }
 }
 
+Justified.displayName = 'Justified';
+
 Justified.defaultProps = {
   domain: Meteor.settings.public.domain,
   isEditing: false,
