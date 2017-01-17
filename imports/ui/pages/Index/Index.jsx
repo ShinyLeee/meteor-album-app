@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react';
+import React, { PureComponent, PropTypes } from 'react';
 import { Meteor } from 'meteor/meteor';
 import LinearProgress from 'material-ui/LinearProgress';
 import { Images } from '/imports/api/images/image.js';
@@ -7,8 +7,8 @@ import { makeCancelable } from '/imports/utils/utils.js';
 import NavHeader from '../../components/NavHeader/NavHeader.jsx';
 import Infinity from '../../components/Infinity/Infinity.jsx';
 import Recap from '../../components/Recap/Recap.jsx';
-import PicHolder from '../../components/PicHolder/PicHolder.jsx';
 import ZoomerHolder from '../../components/ZoomerHolder/ZoomerHolder.jsx';
+import ImageList from './components/ImageList/ImageList.jsx';
 
 const styles = {
   indeterminateProgress: {
@@ -18,7 +18,7 @@ const styles = {
   },
 };
 
-export default class IndexPage extends Component {
+export default class IndexPage extends PureComponent {
 
   constructor(props) {
     super(props);
@@ -57,7 +57,8 @@ export default class IndexPage extends Component {
       Meteor.defer(() => {
         const newImages = Images.find(
           { private: { $ne: true } },
-          { sort: { createdAt: -1 }, limit, skip }).fetch();
+          { sort: { createdAt: -1 }, limit, skip }
+        ).fetch();
         const curImages = [...images, ...newImages];
         this.setState({ images: curImages }, () => resolve());
       });
@@ -82,7 +83,7 @@ export default class IndexPage extends Component {
     this.setState({ images: trueImages });
   }
 
-  renderPicHolder() {
+  renderImageList() {
     const { users } = this.props;
     const images = this.state.images;
     images.forEach((image) => {
@@ -93,15 +94,14 @@ export default class IndexPage extends Component {
         }
       });
     });
-    return images.map((image, i) => (
-      <PicHolder
-        key={i}
+    return (
+      <ImageList
         User={this.props.User}
-        image={image}
+        images={images}
         clientWidth={this.props.clientWidth}
         onLikeOrUnlikeAction={this.handleRefreshImages}
       />
-    ));
+    );
   }
 
   render() {
@@ -130,7 +130,7 @@ export default class IndexPage extends Component {
                 onInfinityLoad={this.handleLoadImages}
                 offsetToBottom={100}
               >
-                { this.renderPicHolder() }
+                { this.renderImageList() }
                 <ZoomerHolder clientWidth={this.props.clientWidth} />
               </Infinity>
             </div>
@@ -146,7 +146,7 @@ export default class IndexPage extends Component {
 IndexPage.displayName = 'IndexPage';
 
 IndexPage.defaultProps = {
-  clientWidth: document.body.clientWidth, // for PicHolder and ZoomerHolder
+  clientWidth: document.body.clientWidth, // for ImageList and ZoomerHolder
 };
 
 IndexPage.propTypes = {

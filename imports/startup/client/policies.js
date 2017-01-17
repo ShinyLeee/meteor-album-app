@@ -10,7 +10,7 @@ export const isLogin = (nextState, replace, done) => {
   .catch((err) => {
     replace({ pathname: `/${err.error}` });
     done();
-    throw new Meteor.Error(err);
+    console.log(err); // eslint-disable-line
   });
 };
 
@@ -24,7 +24,7 @@ export const isLogout = (nextState, replace, done) => {
   .catch((err) => {
     replace({ pathname: `/${err.error}` });
     done();
-    throw new Meteor.Error(err);
+    console.log(err); // eslint-disable-line
   });
 };
 
@@ -38,7 +38,7 @@ export const isPermission = (nextState, replace, done) => {
   .catch((err) => {
     replace({ pathname: `/${err.error}` });
     done();
-    throw new Error(err);
+    console.log(err); // eslint-disable-line
   });
 };
 
@@ -53,7 +53,7 @@ export const isAllowVisitHome = (nextState, replace, done) => {
   .catch((err) => {
     replace({ pathname: `/${err.error}` });
     done();
-    throw new Error(err);
+    console.log(err); // eslint-disable-line
   });
 };
 
@@ -68,6 +68,6 @@ export const isAllowVisitColl = (nextState, replace, done) => {
   .catch((err) => {
     replace({ pathname: `/${err.error}` });
     done();
-    throw new Meteor.Error(err);
+    console.log(err); // eslint-disable-line
   });
 };

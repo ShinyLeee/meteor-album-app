@@ -20,7 +20,7 @@ import DatePickerCN from '/imports/ui/components/SubMaterialUI/DatePickerCN.jsx'
 
 const styles = {
   noteTextField: {
-    marginLeft: '20px',
+    padding: '0 20px',
   },
   noteHint: {
     position: 'absolute',
@@ -57,7 +57,8 @@ export default class SendNotePage extends Component {
     };
     this.handleBack = this.handleBack.bind(this);
     this.handleSent = this.handleSent.bind(this);
-    this.handleChosenReceiver = this.handleChosenReceiver.bind(this);
+    this.handleChangeReceiver = this.handleChangeReceiver.bind(this);
+    this.handleChangeContent = this.handleChangeContent.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -96,13 +97,21 @@ export default class SendNotePage extends Component {
     });
   }
 
-  handleChosenReceiver(receiver) {
+  handleChangeReceiver(receiver) {
     this.setState({ receiver });
+  }
+
+  handleChangeContent(e) {
+    const contentValue = e.target.value;
+    if (contentValue.length > 256) {
+      this.props.snackBarOpen('文本内容不能超过256个字符');
+    }
+    this.setState({ content: contentValue });
   }
 
   renderContent() {
     return (
-      <div className="note-content">
+      <div className="content__sendNote">
         <AutoComplete
           hintText="发送给"
           maxSearchResults={5}
@@ -111,7 +120,7 @@ export default class SendNotePage extends Component {
           filter={AutoComplete.caseInsensitiveFilter}
           underlineShow={false}
           style={styles.noteTextField}
-          onNewRequest={this.handleChosenReceiver}
+          onNewRequest={this.handleChangeReceiver}
           fullWidth
         >
           { this.state.receiver && (
@@ -151,7 +160,7 @@ export default class SendNotePage extends Component {
           underlineShow={false}
           style={styles.noteTextField}
           value={this.state.content}
-          onChange={(e) => this.setState({ content: e.target.value })}
+          onChange={(e) => this.handleChangeContent(e)}
           fullWidth
           multiLine
         />

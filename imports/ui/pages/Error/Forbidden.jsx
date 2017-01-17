@@ -13,26 +13,29 @@ const Forbidden = ({ User, location, sourceDomain, noteNum, snackBarOpen }) => (
       snackBarOpen={snackBarOpen}
       primary
     />
-    <div className="content Error">
-      <div className="Error__container">
-        <h2 className="Error__status">Error: 403 Access Denied</h2>
-        <img
-          className="Error__logo"
-          src={`${sourceDomain}/GalleryPlus/Error/403.png`}
-          alt="403 Access Denied"
-        />
-        <p className="Error__info">您没有权限访问该页面</p>
-        {
-          (location.state && location.state.message)
-            ? (<p className="Error__info">{location.state.message}</p>)
-            : (
-              <p className="Error__info">
-                请检查地址是否输入正确&nbsp;
-                <Link to="/">返回首页</Link>，或向管理员汇报这个问题
-              </p>
-            )
-        }
+    <div className="content">
+      <div className="content__error">
+        <div className="error__container">
+          <h2 className="error__status">Error: 403 Access Denied</h2>
+          <img
+            className="error__logo"
+            src={`${sourceDomain}/GalleryPlus/Error/403.png`}
+            alt="403 Access Denied"
+          />
+          <p className="error__info">您没有权限访问该页面</p>
+          {
+            (location.state && location.state.message)
+              ? (<p className="error__info">{location.state.message}</p>)
+              : (
+                <p className="error__info">
+                  请检查地址是否输入正确&nbsp;
+                  <Link to="/">返回首页</Link>，或向管理员汇报这个问题
+                </p>
+              )
+          }
+        </div>
       </div>
+
     </div>
   </div>
 );

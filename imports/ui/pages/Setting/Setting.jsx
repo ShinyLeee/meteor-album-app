@@ -231,6 +231,7 @@ export default class SettingPage extends Component {
                 style={styles.textFieldStyle}
                 floatingLabelText="用户名"
                 value={User.username}
+                fullWidth
                 disabled
               />
             </ListItem>
@@ -244,6 +245,7 @@ export default class SettingPage extends Component {
                 style={styles.textFieldStyle}
                 floatingLabelText="邮箱"
                 value={(User.emails && User.emails[0].address) || '暂无邮箱'}
+                fullWidth
                 disabled
               />
             </ListItem>
@@ -257,6 +259,7 @@ export default class SettingPage extends Component {
                 floatingLabelText="昵称"
                 value={this.state.nickname}
                 onChange={(e) => this.setState({ isEditing: true, nickname: e.target.value })}
+                fullWidth
               />
             </ListItem>
             <ListItem
@@ -269,6 +272,7 @@ export default class SettingPage extends Component {
                 floatingLabelText="个人简介"
                 value={this.state.intro}
                 onChange={(e) => this.setState({ isEditing: true, intro: e.target.value })}
+                fullWidth
               />
             </ListItem>
             <ListItem

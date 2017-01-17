@@ -13,19 +13,21 @@ const InternalError = ({ User, sourceDomain, noteNum, snackBarOpen }) => (
       snackBarOpen={snackBarOpen}
       primary
     />
-    <div className="content Error">
-      <div className="Error__container">
-        <h2 className="Error__status">Error: 500 Unexpected Error</h2>
-        <img
-          className="Error__logo"
-          src={`${sourceDomain}/GalleryPlus/Error/500.png`}
-          alt="500 Unexpected Error"
-        />
-        <p className="Error__info">服务器内部发生错误</p>
-        <p className="Error__info">
-          请检查地址是否输入正确&nbsp;
-          <Link to="/">返回首页</Link>，或向管理员汇报这个问题
-        </p>
+    <div className="content">
+      <div className="content__error">
+        <div className="error__container">
+          <h2 className="error__status">Error: 500 Unexpected Error</h2>
+          <img
+            className="error__logo"
+            src={`${sourceDomain}/GalleryPlus/Error/500.png`}
+            alt="500 Unexpected Error"
+          />
+          <p className="error__info">服务器内部发生错误</p>
+          <p className="error__info">
+            请检查地址是否输入正确&nbsp;
+            <Link to="/">返回首页</Link>，或向管理员汇报这个问题
+          </p>
+        </div>
       </div>
     </div>
   </div>
