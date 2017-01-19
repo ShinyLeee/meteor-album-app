@@ -4,7 +4,6 @@ import { Meteor } from 'meteor/meteor';
 import Avatar from 'material-ui/Avatar';
 import Chip from 'material-ui/Chip';
 import AutoComplete from 'material-ui/AutoComplete';
-import LinearProgress from 'material-ui/LinearProgress';
 import Dialog from 'material-ui/Dialog';
 import Divider from 'material-ui/Divider';
 import FlatButton from 'material-ui/FlatButton';
@@ -17,32 +16,8 @@ import { insertNote } from '/imports/api/notes/methods.js';
 
 import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
 import DatePickerCN from '/imports/ui/components/SubMaterialUI/DatePickerCN.jsx';
-
-const styles = {
-  noteTextField: {
-    padding: '0 20px',
-  },
-  noteHint: {
-    position: 'absolute',
-    left: 0,
-    top: '12px',
-    color: 'rgba(0, 0, 0, 0.298039)',
-    transition: 'all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms',
-  },
-  noteChip: {
-    position: 'absolute',
-    left: '100px',
-    top: '8px',
-    width: 'auto',
-    height: 'auto',
-    backgroundColor: '#e7e7e7',
-  },
-  indeterminateProgress: {
-    position: 'fixed',
-    backgroundColor: 'none',
-    zIndex: 99,
-  },
-};
+import Loading from '/imports/ui/components/Loader/Loading.jsx';
+import styles from './SendNote.style.js';
 
 export default class SendNotePage extends Component {
 
@@ -193,7 +168,7 @@ export default class SendNotePage extends Component {
         <div className="content">
           { this.props.userIsReady
             ? this.renderContent()
-            : (<LinearProgress style={styles.indeterminateProgress} mode="indeterminate" />) }
+            : (<Loading />) }
         </div>
         <Dialog
           title="提示"

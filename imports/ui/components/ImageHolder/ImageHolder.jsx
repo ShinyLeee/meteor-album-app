@@ -15,14 +15,6 @@ import CommentIcon from 'material-ui/svg-icons/communication/chat-bubble-outline
 const formatter = buildFormatter(CNStrings);
 
 const styles = {
-  cardMedia: {
-    cursor: 'zoom-in',
-  },
-  mediaImage: {
-    maxWidth: '100%',
-    minWidth: '100%',
-    width: '100%',
-  },
   flipReplyStyle: {
     MozTransform: 'scaleX(-1)',
     WebkitTransform: 'scaleX(-1)',
@@ -48,12 +40,9 @@ const ImageHolder = ({ image, src, isLiked, onMediaClick, onLikeClick, onUnlikeC
         transitionEnter={false}
         transitionLeave={false}
       >
-        <CardMedia
-          mediaStyle={styles.cardMedia}
-          onTouchTap={onMediaClick}
-        >
+        <CardMedia onTouchTap={onMediaClick}>
           <LazyLoad height={200} offset={200} once>
-            <img style={styles.mediaImage} src={src} role="presentation" />
+            <img style={{ width: '100%' }} src={src} role="presentation" />
           </LazyLoad>
         </CardMedia>
       </ReactCSSTransitionGroup>

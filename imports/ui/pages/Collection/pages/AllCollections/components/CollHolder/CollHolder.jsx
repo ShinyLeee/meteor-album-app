@@ -1,7 +1,6 @@
 import React, { PropTypes } from 'react';
 import { browserHistory } from 'react-router';
 import moment from 'moment';
-import pure from 'recompose/pure';
 
 const CollHolder = ({ User, coll, clientWidth }) => {
   const fastSrc = `${coll.cover}?imageView2/2/w/${clientWidth * 2}`;
@@ -47,4 +46,4 @@ CollHolder.propTypes = {
   clientWidth: PropTypes.number.isRequired,
 };
 
-export default pure(CollHolder);
+export default CollHolder;

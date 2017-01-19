@@ -9,7 +9,6 @@ import IconButton from 'material-ui/IconButton';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import { RadioButton, RadioButtonGroup } from 'material-ui/RadioButton';
-import LinearProgress from 'material-ui/LinearProgress';
 import ArrowBackIcon from 'material-ui/svg-icons/navigation/arrow-back';
 import AddPhotoIcon from 'material-ui/svg-icons/image/add-to-photos';
 import LockInIcon from 'material-ui/svg-icons/action/lock-outline';
@@ -30,27 +29,8 @@ import scrollTo from '/imports/utils/scrollTo.js';
 
 import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
 import Justified from '/imports/ui/components/JustifiedLayout/Justified.jsx';
-
-const styles = {
-  AppBarIconSvg: {
-    width: '26px',
-    height: '26px',
-    color: '#fff',
-  },
-  floatBtn: {
-    position: 'fixed',
-    right: '16px',
-    bottom: '16px',
-  },
-  radioButton: {
-    marginTop: '16px',
-  },
-  indeterminateProgress: {
-    position: 'fixed',
-    backgroundColor: 'none',
-    zIndex: 99,
-  },
-};
+import Loader from '/imports/ui/components/Loader/Loader.jsx';
+import Loading from '/imports/ui/components/Loader/Loading.jsx';
 
 export default class CollectionPage extends Component {
 
@@ -72,6 +52,7 @@ export default class CollectionPage extends Component {
     this.handleShiftPhoto = this.handleShiftPhoto.bind(this);
     this.handleSetCover = this.handleSetCover.bind(this);
     this.handleRemovePhoto = this.handleRemovePhoto.bind(this);
+    this.handleOnTimeout = this.handleOnTimeout.bind(this);
   }
 
   handleQuitEditing(e) {
@@ -223,6 +204,10 @@ export default class CollectionPage extends Component {
     });
   }
 
+  handleOnTimeout() {
+    this.props.snackBarOpen('上传超时，请重试');
+  }
+
   /**
    * setState base on action
    * @param {String} action - One of / ShiftPhoto / RemovePhoto / SetCover / RemoveCollection
@@ -262,7 +247,7 @@ export default class CollectionPage extends Component {
             key={i}
             value={JSON.stringify({ id: collId, name: collName })}
             label={collName}
-            style={styles.radioButton}
+            style={{ marginTop: '16px' }}
           />
         );
       }
@@ -283,39 +268,34 @@ export default class CollectionPage extends Component {
   }
 
   triggerDialogAction(action) {
-    const curState = Object.assign({}, this.props.initialAlertState, { isProcessing: true });
+    const curState = Object.assign({}, this.props.initialAlertState, { isProcessing: true, processMsg: '处理中' });
 
     this.setState(curState);
 
     const actionCallback = (err, msg, isEditing) => {
       this.props.snackBarOpen(msg);
       if (err) {
+        console.log(err); // eslint-disable-line no-console
         throw new Meteor.Error(err);
       }
       if (isEditing) this.props.disableSelectAll();
-      this.setState({ isProcessing: false });
+      this.setState({ isProcessing: false, processMsg: '' });
     };
 
     this[`handle${action}`](actionCallback);
   }
 
   renderIconRight() {
-    const { curColl } = this.props;
     return (
       <div>
-        <IconButton iconStyle={styles.AppBarIconSvg} onTouchTap={this.handleOpenUploader}>
+        <IconButton iconStyle={{ color: '#fff' }} onTouchTap={this.handleOpenUploader}>
           <AddPhotoIcon />
         </IconButton>
-        <IconButton
-          iconStyle={styles.AppBarIconSvg}
-          onTouchTap={() => this.openAlert('LockCollection')}
-        >
-          { curColl && curColl.private ? (<LockOutIcon />) : (<LockInIcon />) }
+        <IconButton iconStyle={{ color: '#fff' }} onTouchTap={() => this.openAlert('LockCollection')}>
+          { this.props.curColl && this.props.curColl.private ? (<LockOutIcon />) : (<LockInIcon />) }
         </IconButton>
         <IconMenu
-          iconButtonElement={
-            <IconButton iconStyle={styles.AppBarIconSvg}><MoreVertIcon /></IconButton>
-          }
+          iconButtonElement={<IconButton iconStyle={{ color: '#fff' }}><MoreVertIcon /></IconButton>}
           anchorOrigin={{ horizontal: 'left', vertical: 'top' }}
           targetOrigin={{ horizontal: 'left', vertical: 'top' }}
         >
@@ -371,17 +351,17 @@ export default class CollectionPage extends Component {
         iconElementRight={
           <div>
             <IconButton
-              iconStyle={styles.AppBarIconSvg}
+              iconStyle={{ color: '#fff' }}
               onTouchTap={() => { this.openAlert('ShiftPhoto'); }}
             ><ShiftIcon />
             </IconButton>
             <IconButton
-              iconStyle={styles.AppBarIconSvg}
+              iconStyle={{ color: '#fff' }}
               onTouchTap={() => { this.openAlert('SetCover'); }}
             ><SetCoverIcon />
             </IconButton>
             <IconButton
-              iconStyle={styles.AppBarIconSvg}
+              iconStyle={{ color: '#fff' }}
               onTouchTap={() => { this.openAlert('RemovePhoto'); }}
             ><RemoveIcon />
             </IconButton>
@@ -391,7 +371,7 @@ export default class CollectionPage extends Component {
     );
   }
 
-  renderCollPics() {
+  renderContent() {
     let duration;
     const imgLen = this.props.images.length;
     if (imgLen === 0) duration = '暂无相片';
@@ -443,11 +423,14 @@ export default class CollectionPage extends Component {
           ? this.renderEditingNavHeader()
           : this.renderNavHeader() }
         <div className="content">
-          { this.state.isProcessing
-              && <LinearProgress style={styles.indeterminateProgress} mode="indeterminate" /> }
+          <Loader
+            open={this.state.isProcessing}
+            message={this.state.processMsg}
+            onTimeout={this.handleOnTimeout}
+          />
           { this.props.dataIsReady
-            ? this.renderCollPics()
-            : (<LinearProgress style={styles.indeterminateProgress} mode="indeterminate" />) }
+            ? this.renderContent()
+            : (<Loading />) }
           <Dialog
             title={this.state.alertTitle}
             titleStyle={{ border: 'none' }}

@@ -1,6 +1,5 @@
 import React, { PureComponent, PropTypes } from 'react';
 import { browserHistory } from 'react-router';
-import LinearProgress from 'material-ui/LinearProgress';
 import IconButton from 'material-ui/IconButton';
 import ArrowBackIcon from 'material-ui/svg-icons/navigation/arrow-back';
 import { blue500 } from 'material-ui/styles/colors';
@@ -8,15 +7,8 @@ import scrollTo from '/imports/utils/scrollTo.js';
 
 import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
 import EmptyHolder from '/imports/ui/components/EmptyHolder/EmptyHolder.jsx';
+import Loading from '/imports/ui/components/Loader/Loading.jsx';
 import NoteHolder from '../../components/NoteHolder/NoteHolder.jsx';
-
-const styles = {
-  indeterminateProgress: {
-    position: 'fixed',
-    backgroundColor: 'none',
-    zIndex: 99,
-  },
-};
 
 export default class AllNotesPage extends PureComponent {
 
@@ -56,7 +48,7 @@ export default class AllNotesPage extends PureComponent {
           {
             this.props.dataIsReady
             ? this.renderContent()
-            : (<LinearProgress style={styles.indeterminateProgress} mode="indeterminate" />)
+            : (<Loading />)
           }
         </div>
       </div>

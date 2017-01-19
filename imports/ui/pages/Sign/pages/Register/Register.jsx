@@ -3,27 +3,14 @@ import React, { Component, PropTypes } from 'react';
 import { browserHistory } from 'react-router';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
-import { purple500, grey500 } from 'material-ui/styles/colors';
 import { createUser } from '/imports/api/users/methods.js';
 import { checkCode, useCode } from '/imports/api/codes/methods.js';
 
-import NavHeader from '../../components/NavHeader/NavHeader.jsx';
+import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
+import signHOC from '../../components/signHOC.js';
+import styles from '../../sign.style.js';
 
-const styles = {
-  logBtn: {
-    fontFamily: 'Microsoft Yahei',
-    backgroundColor: purple500,
-  },
-  regBtn: {
-    fontFamily: 'Microsoft Yahei',
-    backgroundColor: grey500,
-  },
-  label: {
-    color: '#fff',
-  },
-};
-
-export default class RegisterPage extends Component {
+class RegisterPage extends Component {
 
   constructor(props) {
     super(props);
@@ -65,6 +52,7 @@ export default class RegisterPage extends Component {
     })
     .catch((err) => {
       this.props.snackBarOpen(err.reason);
+      console.log(err); // eslint-disable-line no-console
       throw new Meteor.Error(err);
     });
   }
@@ -127,6 +115,10 @@ export default class RegisterPage extends Component {
 
 }
 
+RegisterPage.displayName = 'RegisterPage';
+
 RegisterPage.propTypes = {
   snackBarOpen: PropTypes.func.isRequired,
 };
+
+export default signHOC(RegisterPage);

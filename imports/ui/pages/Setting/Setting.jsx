@@ -10,7 +10,6 @@ import Toggle from 'material-ui/Toggle';
 import Avatar from 'material-ui/Avatar';
 import IconButton from 'material-ui/IconButton';
 import FlatButton from 'material-ui/FlatButton';
-import LinearProgress from 'material-ui/LinearProgress';
 import ArrowBackIcon from 'material-ui/svg-icons/navigation/arrow-back';
 import DoneIcon from 'material-ui/svg-icons/action/done';
 import CameraIcon from 'material-ui/svg-icons/image/photo-camera';
@@ -22,24 +21,8 @@ import { blue500 } from 'material-ui/styles/colors';
 import { updateProfile } from '/imports/api/users/methods.js';
 
 import NavHeader from '../../components/NavHeader/NavHeader.jsx';
-
-const styles = {
-  cameraIconStyle: {
-    height: '38px',
-    color: '#fff',
-  },
-  liForTextFieldStyle: {
-    padding: '0 16px 16px 72px',
-  },
-  textFieldStyle: {
-    marginTop: '-30px',
-  },
-  indeterminateProgress: {
-    position: 'fixed',
-    backgroundColor: 'none',
-    zIndex: 99,
-  },
-};
+import Loader from '../../components/Loader/Loader.jsx';
+import styles from './Setting.style.js';
 
 let initialSettings;
 
@@ -67,9 +50,29 @@ export default class SettingPage extends Component {
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleSetCover = this.handleSetCover.bind(this);
     this.handleSetAvatar = this.handleSetAvatar.bind(this);
+    this.handleOnTimeout = this.handleOnTimeout.bind(this);
   }
 
   handleDiscard() {
+    const { User } = this.props;
+    const { avatar, cover } = this.state;
+    const keys = [];
+
+    // if has uploaded, we need to remove it before quit
+    if (avatar !== User.profile.avatar) {
+      const regex = /\.com\/(.*)\?imageView2/;
+      const avatarKey = avatar.split(regex)[1];
+      keys.push(avatarKey);
+    }
+    if (cover !== User.profile.cover) {
+      const regex = /\.com\/(.*)/;
+      const coverKey = cover.split(regex)[1];
+      keys.push(coverKey);
+    }
+
+    if (keys.length !== 0) {
+      Meteor.call('Qiniu.remove', { keys }, (err) => err && console.log(err)); // eslint-disable-line no-console
+    }
     this.setState(initialSettings);
   }
 
@@ -88,6 +91,7 @@ export default class SettingPage extends Component {
     }, (err) => {
       if (err) {
         this.props.snackBarOpen('设置保存失败');
+        console.log(err); // eslint-disable-line no-console
         throw new Meteor.Error(err);
       }
       this.props.snackBarOpen('设置保存成功');
@@ -96,7 +100,11 @@ export default class SettingPage extends Component {
   }
 
   handleSetCover(e) {
-    this.setState({ isEditing: true, isProcessing: true });
+    this.setState({
+      isEditing: true,
+      isProcessing: true,
+      processMsg: '上传封面中',
+    });
     e.preventDefault();
     const cover = e.target.files[0];
     if (!cover) return;
@@ -113,19 +121,34 @@ export default class SettingPage extends Component {
       dataType: 'json',
       contentType: false,
       processData: false,
+      timeout: 5000,
     })
     .done((res) => {
-      this.setState({ isEditing: true, isProcessing: false, cover: `${this.props.domain}/${res.key}` });
+      this.setState({
+        isEditing: true,
+        isProcessing: false,
+        processMsg: '',
+        cover: `${this.props.domain}/${res.key}`,
+      });
+      this.props.snackBarOpen('上传封面成功');
     })
     .fail((err) => {
-      this.setState({ isEditing: false, isProcessing: false });
+      this.setState({
+        isEditing: false,
+        isProcessing: false,
+        processMsg: '',
+      });
       this.props.snackBarOpen('上传封面失败');
       throw new Meteor.Error(err);
     });
   }
 
   handleSetAvatar(e) {
-    this.setState({ isEditing: true, isProcessing: true });
+    this.setState({
+      isEditing: true,
+      isProcessing: true,
+      processMsg: '上传头像中',
+    });
     e.preventDefault();
     const avatar = e.target.files[0];
     const size = Math.round(avatar.size / 1024);
@@ -133,7 +156,13 @@ export default class SettingPage extends Component {
       const reader = new FileReader();
       reader.onload = (event) => {
         const dataURL = event.target.result;
-        this.setState({ isEditing: true, isProcessing: false, avatar: dataURL });
+        this.setState({
+          isEditing: true,
+          isProcessing: false,
+          processMsg: '',
+          avatar: dataURL,
+        });
+        this.props.snackBarOpen('上传头像成功');
       };
       reader.readAsDataURL(avatar);
     } else {
@@ -150,24 +179,38 @@ export default class SettingPage extends Component {
         dataType: 'json',
         contentType: false,
         processData: false,
+        timeout: 5000,
       })
       .done((res) => {
         const avatarSrc = `${this.props.domain}/${res.key}?imageView2/1/w/240/h/240`;
-        this.setState({ isEditing: true, isProcessing: false, avatar: avatarSrc });
+        this.setState({
+          isEditing: true,
+          isProcessing: false,
+          processMsg: '',
+          avatar: avatarSrc,
+        });
+        this.props.snackBarOpen('上传头像成功');
       })
       .fail((err) => {
-        this.setState({ isEditing: false, isProcessing: false });
+        this.setState({
+          isEditing: false,
+          isProcessing: false,
+          processMsg: '',
+        });
         this.props.snackBarOpen('上传头像失败');
         throw new Meteor.Error(err);
       });
     }
   }
 
+  handleOnTimeout() {
+    this.props.snackBarOpen('上传超时，请重试');
+  }
+
   renderEditingNavHeader() {
-    const { User } = this.props;
     return (
       <NavHeader
-        User={User}
+        User={this.props.User}
         title={this.state.isProcessing ? '上传图片中' : '修改设置中'}
         style={{ backgroundColor: blue500 }}
         iconElementLeft={
@@ -391,8 +434,11 @@ export default class SettingPage extends Component {
               primary
             />) }
         <div className="content">
-          { this.state.isProcessing
-            && <LinearProgress style={styles.indeterminateProgress} mode="indeterminate" /> }
+          <Loader
+            open={this.state.isProcessing}
+            message={this.state.processMsg}
+            onTimeout={this.handleOnTimeout}
+          />
           { this.props.User && this.renderContent() }
           <Dialog
             title="提示"

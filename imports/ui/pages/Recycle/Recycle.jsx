@@ -1,7 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { browserHistory } from 'react-router';
 import { Meteor } from 'meteor/meteor';
-import LinearProgress from 'material-ui/LinearProgress';
 import IconButton from 'material-ui/IconButton';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
@@ -15,22 +14,10 @@ import scrollTo from '/imports/utils/scrollTo.js';
 
 import NavHeader from '../../components/NavHeader/NavHeader.jsx';
 import EmptyHolder from '../../components/EmptyHolder/EmptyHolder.jsx';
+import Loading from '../../components/Loader/Loading.jsx';
 import GridLayout from '../../components/GridLayout/GridLayout.jsx';
 import SelectableImageHolder from '../../components/SelectableImage/SelectableImageHolder.jsx';
 import SelectableIcon from '../../components/SelectableImage/SelectableIcon.jsx';
-
-const styles = {
-  AppBarIconSvg: {
-    width: '26px',
-    height: '26px',
-    color: '#fff',
-  },
-  indeterminateProgress: {
-    position: 'fixed',
-    backgroundColor: 'none',
-    zIndex: 99,
-  },
-};
 
 export default class RecyclePage extends Component {
 
@@ -203,12 +190,12 @@ export default class RecyclePage extends Component {
           iconElementRight={
             <div>
               <IconButton
-                iconStyle={styles.AppBarIconSvg}
+                iconStyle={{ color: '#fff' }}
                 onTouchTap={() => this.handleOpenAlert('recoveryAlert')}
               ><RecoveryIcon />
               </IconButton>
               <IconButton
-                iconStyle={styles.AppBarIconSvg}
+                iconStyle={{ color: '#fff' }}
                 onTouchTap={() => this.handleOpenAlert('deleteAlert')}
               ><RemoveIcon />
               </IconButton>
@@ -216,11 +203,10 @@ export default class RecyclePage extends Component {
           }
         />
         <div className="content">
-          { this.state.isProcessing
-            && <LinearProgress style={styles.indeterminateProgress} mode="indeterminate" /> }
+          { this.state.isProcessing && (<Loading />) }
           { dataIsReady
             ? this.renderContent()
-            : (<LinearProgress style={styles.indeterminateProgress} mode="indeterminate" />) }
+            : (<Loading />) }
           <Dialog
             title="提示"
             titleStyle={{ border: 'none' }}

@@ -2,7 +2,6 @@ import { Meteor } from 'meteor/meteor';
 import React, { Component, PropTypes } from 'react';
 import { browserHistory } from 'react-router';
 import Slider from 'react-slick';
-import LinearProgress from 'material-ui/LinearProgress';
 import Popover from 'material-ui/Popover';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
@@ -15,14 +14,7 @@ import ExitToAppIcon from 'material-ui/svg-icons/action/exit-to-app';
 import { followUser, unFollowUser } from '/imports/api/users/methods.js';
 
 import NavHeader from '../../components/NavHeader/NavHeader.jsx';
-
-const styles = {
-  indeterminateProgress: {
-    position: 'fixed',
-    backgroundColor: 'none',
-    zIndex: 99,
-  },
-};
+import Loading from '../../components/Loader/Loading.jsx';
 
 export default class UserPage extends Component {
 
@@ -246,7 +238,7 @@ export default class UserPage extends Component {
         <div className="content">
           { this.props.dataIsReady
             ? this.renderContent()
-            : (<LinearProgress style={styles.indeterminateProgress} mode="indeterminate" />) }
+            : (<Loading />) }
         </div>
       </div>
     );

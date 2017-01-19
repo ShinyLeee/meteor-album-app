@@ -3,25 +3,12 @@ import React, { Component, PropTypes } from 'react';
 import { browserHistory } from 'react-router';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
-import { purple500, grey500 } from 'material-ui/styles/colors';
 
-import NavHeader from '../../components/NavHeader/NavHeader.jsx';
+import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
+import signHOC from '../../components/signHOC.js';
+import styles from '../../sign.style.js';
 
-const styles = {
-  logBtn: {
-    fontFamily: 'Microsoft Yahei',
-    backgroundColor: purple500,
-  },
-  regBtn: {
-    fontFamily: 'Microsoft Yahei',
-    backgroundColor: grey500,
-  },
-  label: {
-    color: '#fff',
-  },
-};
-
-export default class LoginPage extends Component {
+class LoginPage extends Component {
 
   constructor(props) {
     super(props);
@@ -38,6 +25,7 @@ export default class LoginPage extends Component {
     Meteor.loginWithPassword(usr, pwd, (err) => {
       if (err) {
         this.props.snackBarOpen(err.message);
+        console.log(err); // eslint-disable-line no-console
         throw new Meteor.Error(err);
       }
       browserHistory.push('/');
@@ -91,6 +79,10 @@ export default class LoginPage extends Component {
 
 }
 
+LoginPage.displayName = 'LoginPage';
+
 LoginPage.propTypes = {
   snackBarOpen: PropTypes.func.isRequired,
 };
+
+export default signHOC(LoginPage);

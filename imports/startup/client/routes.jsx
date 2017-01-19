@@ -6,8 +6,8 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import PC from '/imports/ui/App_PC.jsx';
 import App from '/imports/ui/App.jsx';
-import Login from '/imports/ui/pages/Login/index.js';
-import Register from '/imports/ui/pages/Register/index.js';
+import Login from '/imports/ui/pages/Sign/pages/Login/Login.jsx';
+import Register from '/imports/ui/pages/Sign/pages/Register/Register.jsx';
 import Index from '/imports/ui/pages/Index/index.js';
 import User from '/imports/ui/pages/User/index.js';
 import AllCollections from '/imports/ui/pages/Collection/pages/AllCollections/index.js';

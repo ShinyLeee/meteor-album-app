@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import React, { Component, PropTypes } from 'react';
 import { browserHistory } from 'react-router';
-import LinearProgress from 'material-ui/LinearProgress';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
@@ -15,20 +14,8 @@ import { getRandomInt } from '/imports/utils/utils.js';
 import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
 import Recap from '/imports/ui/components/Recap/Recap.jsx';
 import EmptyHolder from '/imports/ui/components/EmptyHolder/EmptyHolder.jsx';
+import Loading from '/imports/ui/components/Loader/Loading.jsx';
 import CollHolder from './components/CollHolder/CollHolder.jsx';
-
-const styles = {
-  floatBtn: {
-    position: 'fixed',
-    right: '16px',
-    bottom: '16px',
-  },
-  indeterminateProgress: {
-    position: 'fixed',
-    backgroundColor: 'none',
-    zIndex: 99,
-  },
-};
 
 export default class AllCollectionPage extends Component {
 
@@ -157,8 +144,7 @@ export default class AllCollectionPage extends Component {
             />)
         }
         <div className="content">
-          { !this.props.dataIsReady
-            && (<LinearProgress style={styles.indeterminateProgress} mode="indeterminate" />) }
+          { !this.props.dataIsReady && (<Loading />) }
           { this.props.isGuest
             ? (
               <Recap
@@ -192,13 +178,14 @@ export default class AllCollectionPage extends Component {
             </Dialog>
           </div>
         </div>
-        { this.props.isGuest && (
-          <FloatingActionButton
-            style={styles.floatBtn}
-            onTouchTap={() => this.setState({ open: true })}
-            secondary
-          ><AddIcon />
-          </FloatingActionButton>)
+        { !this.props.isGuest && (
+          <div className="component__FloatBtn">
+            <FloatingActionButton
+              onTouchTap={() => this.setState({ open: true })}
+              secondary
+            ><AddIcon />
+            </FloatingActionButton>
+          </div>)
         }
       </div>
     );

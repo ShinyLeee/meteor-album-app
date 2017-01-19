@@ -1,22 +1,14 @@
 import React, { PureComponent, PropTypes } from 'react';
 import { Meteor } from 'meteor/meteor';
-import LinearProgress from 'material-ui/LinearProgress';
 import { Images } from '/imports/api/images/image.js';
 import { makeCancelable } from '/imports/utils/utils.js';
 
 import NavHeader from '../../components/NavHeader/NavHeader.jsx';
 import Infinity from '../../components/Infinity/Infinity.jsx';
 import Recap from '../../components/Recap/Recap.jsx';
+import Loading from '../../components/Loader/Loading.jsx';
 import ZoomerHolder from '../../components/ZoomerHolder/ZoomerHolder.jsx';
 import ImageList from './components/ImageList/ImageList.jsx';
-
-const styles = {
-  indeterminateProgress: {
-    position: 'fixed',
-    backgroundColor: 'none',
-    zIndex: 99,
-  },
-};
 
 export default class IndexPage extends PureComponent {
 
@@ -114,8 +106,7 @@ export default class IndexPage extends PureComponent {
           snackBarOpen={this.props.snackBarOpen}
           primary
         />
-        { !this.props.dataIsReady
-          && (<LinearProgress style={styles.indeterminateProgress} mode="indeterminate" />) }
+        { !this.props.dataIsReady && (<Loading />) }
         <div className="content">
           <Recap
             title="Gallery"

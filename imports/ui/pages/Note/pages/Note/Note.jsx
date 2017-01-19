@@ -1,7 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { browserHistory } from 'react-router';
 import { Meteor } from 'meteor/meteor';
-import LinearProgress from 'material-ui/LinearProgress';
 import IconMenu from 'material-ui/IconMenu';
 import IconButton from 'material-ui/IconButton';
 import MenuItem from 'material-ui/MenuItem';
@@ -15,15 +14,8 @@ import { makeCancelable } from '/imports/utils/utils.js';
 import Infinity from '/imports/ui/components/Infinity/Infinity.jsx';
 import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
 import EmptyHolder from '/imports/ui/components/EmptyHolder/EmptyHolder.jsx';
+import Loading from '/imports/ui/components/Loader/Loading.jsx';
 import NoteHolder from '../../components/NoteHolder/NoteHolder.jsx';
-
-const styles = {
-  indeterminateProgress: {
-    position: 'fixed',
-    backgroundColor: 'none',
-    zIndex: 99,
-  },
-};
 
 export default class NotePage extends Component {
 
@@ -172,11 +164,10 @@ export default class NotePage extends Component {
           }
         />
         <div className="content">
-          { this.state.isProcessing
-            && <LinearProgress style={styles.indeterminateProgress} mode="indeterminate" /> }
+          { this.state.isProcessing && (<Loading />) }
           { dataIsReady
             ? this.renderContent()
-            : (<LinearProgress style={styles.indeterminateProgress} mode="indeterminate" />) }
+            : (<Loading />) }
         </div>
       </div>
     );
