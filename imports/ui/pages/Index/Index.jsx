@@ -33,7 +33,7 @@ export default class IndexPage extends PureComponent {
 
   componentWillReceiveProps(nextProps) {
     // When dataIsReady return true start setState
-    if (nextProps.dataIsReady) {
+    if (!this.props.dataIsReady && nextProps.dataIsReady) {
       this.setState({
         images: nextProps.initialImages,
       });

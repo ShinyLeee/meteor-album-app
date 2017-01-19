@@ -16,8 +16,8 @@ import scrollTo from '/imports/utils/scrollTo.js';
 import NavHeader from '../../components/NavHeader/NavHeader.jsx';
 import EmptyHolder from '../../components/EmptyHolder/EmptyHolder.jsx';
 import GridLayout from '../../components/GridLayout/GridLayout.jsx';
-import SelectableImageHolder from '../../components/Justified/SelectableImageHolder.jsx';
-import { SelectableIcon } from '../../components/Justified/SelectableStatus.jsx';
+import SelectableImageHolder from '../../components/SelectableImage/SelectableImageHolder.jsx';
+import SelectableIcon from '../../components/SelectableImage/SelectableIcon.jsx';
 
 const styles = {
   AppBarIconSvg: {
@@ -73,7 +73,11 @@ export default class RecyclePage extends Component {
       this.props.disableSelectAll();
     } else {
       const counter = images.length;
-      this.props.enableSelectAll({ selectImages: images, group: { recycle: counter }, counter });
+      this.props.enableSelectAll({
+        selectImages: images,
+        group: { recycle: counter },
+        counter,
+      });
     }
   }
 

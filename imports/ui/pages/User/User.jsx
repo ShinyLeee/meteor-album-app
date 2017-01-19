@@ -30,9 +30,9 @@ export default class UserPage extends Component {
     super(props);
     this.state = {
       location: 'user',
-      open: false,
+      popOpen: false,
     };
-    this.handleOpen = this.handleOpen.bind(this);
+    this.handleOpenPopup = this.handleOpenPopup.bind(this);
     this.handleLogout = this.handleLogout.bind(this);
     this.handleFollow = this.handleFollow.bind(this);
     this.handleUnFollow = this.handleUnFollow.bind(this);
@@ -47,9 +47,12 @@ export default class UserPage extends Component {
     return link;
   }
 
-  handleOpen(e) {
+  handleOpenPopup(e) {
     e.preventDefault();
-    this.setState({ open: true });
+    this.setState({
+      popOpen: true,
+      anchorEl: e.currentTarget,
+    });
   }
 
   handleLogout() {
@@ -83,7 +86,7 @@ export default class UserPage extends Component {
 
   renderSlider() {
     const { curUser, unOrderedImages } = this.props;
-    const topImages = unOrderedImages.sort((p, n) => n.liker.length - p.liker.length);
+    const topImages = unOrderedImages.sort((p, n) => n.liker.length - p.liker.length); // sort by likers length
     return (
       <Slider
         slidesToScroll={3}
@@ -151,14 +154,14 @@ export default class UserPage extends Component {
                 <div style={{ display: 'inline-block' }}>
                   <RaisedButton
                     label="更多操作"
-                    onTouchTap={this.handleOpen}
+                    onTouchTap={this.handleOpenPopup}
                   />
                   <Popover
-                    open={this.state.open}
+                    open={this.state.popOpen}
                     anchorEl={this.state.anchorEl}
                     anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
-                    targetOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-                    onRequestClose={() => this.setState({ open: false })}
+                    targetOrigin={{ horizontal: 'middle', vertical: 'bottom' }}
+                    onRequestClose={() => this.setState({ popOpen: false })}
                   >
                     <Menu>
                       <MenuItem

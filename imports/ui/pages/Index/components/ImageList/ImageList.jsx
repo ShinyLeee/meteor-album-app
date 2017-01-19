@@ -92,7 +92,7 @@ class ImageList extends Component {
         {
           images.map((image, i) => {
             const url = `${domain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
-            const src = `${url}?imageView2/0/w/${clientWidth * 2}`;
+            const src = `${url}?imageView2/2/w/${clientWidth * 2}`;
             const likers = image.liker;
             const curUser = User && User._id;
             const isLiked = likers.indexOf(curUser) > -1;

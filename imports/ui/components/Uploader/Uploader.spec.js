@@ -10,9 +10,27 @@ if (Meteor.isClient) {
   import React from 'react';
   import { shallow } from 'enzyme';
   import { chai } from 'meteor/practicalmeteor:chai';
-  import { Uploader } from './Uploader.jsx';
+  import { sinon } from 'meteor/practicalmeteor:sinon';
+  import Uploader from './Uploader.jsx';
 
   const expect = chai.expect;
+
+  const setup = (open = false) => {
+    const actions = {
+      snackBarOpen: sinon.spy(),
+      uploaderStop: sinon.spy(),
+    };
+    const component = shallow(
+      <Uploader
+        open={open}
+        {...actions}
+      />
+    );
+    return {
+      actions,
+      component,
+    };
+  };
 
   describe('Uploader', () => {
     it('should have correct initial state', function () {
@@ -23,23 +41,22 @@ if (Meteor.isClient) {
         thumbnail: '',      // Current Uploading thumbnail
         uploading: false,  // Is in Uploading Progress
       };
-      const wrapper = shallow(<Uploader />);
-      expect(wrapper.state()).to.eql(initialState);
+      const { component } = setup();
+      expect(component.state()).to.eql(initialState);
     });
 
-    it('should render input', function () {
-      const wrapper = shallow(<Uploader />);
-      const openWrapper = shallow(<Uploader open />);
-      expect(wrapper.children('input')).to.have.length(1);
-      expect(openWrapper.children('input')).to.have.length(1);
+    it('should render input when open', function () {
+      const { component } = setup();
+      const openedComponent = setup(true).component;
+      expect(component.children('input')).to.have.length(1);
+      expect(openedComponent.children('input')).to.have.length(1);
     });
 
     it('should not render input when uploading', function () {
-      const wrapper = shallow(<Uploader open />);
-      wrapper.setProps({ destination: 'test' });
-      wrapper.setState({ uploading: true }, () => {
-        expect(wrapper.children('input')).to.have.length(0);
-      });
+      const { component } = setup(true);
+      component.setProps({ destination: 'test' });
+      component.setState({ uploading: true });
+      expect(component.children('input')).to.have.length(0);
     });
   });
 }

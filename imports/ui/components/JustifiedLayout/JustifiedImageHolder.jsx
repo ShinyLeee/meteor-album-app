@@ -1,9 +1,9 @@
-import { Meteor } from 'meteor/meteor';
 import React, { PureComponent, PropTypes } from 'react';
+import { _ } from 'meteor/underscore';
 
-import { SelectableImageBackground } from './SelectableStatus.jsx';
+import SelectableImageBackground from '../SelectableImage/SelectableImageBackground.jsx';
 
-export default class SelectableImageHolder extends PureComponent {
+export default class JustifiedImageHolder extends PureComponent {
 
   constructor(props) {
     super(props);
@@ -14,7 +14,7 @@ export default class SelectableImageHolder extends PureComponent {
   }
 
   componentWillReceiveProps(nextProps) {
-    const { total } = this.props;
+    const { total, day, groupTotal } = this.props;
     if (nextProps.counter === total) {
       this.setState({ isSelect: true });
       return;
@@ -23,6 +23,18 @@ export default class SelectableImageHolder extends PureComponent {
       this.setState({ isSelect: false });
       return;
     }
+    const allGroups = Object.keys(nextProps.group);
+    // When next group prop is {}
+    if (allGroups.length === 0 || allGroups.indexOf(day) < 0) {
+      this.setState({ isSelect: false });
+      return;
+    }
+    _.each(nextProps.group, (value, key) => {
+      if (key === day) {
+        if (value === groupTotal) this.setState({ isSelect: true });
+        if (value === 0) this.setState({ isSelect: false });
+      }
+    });
   }
 
   handleSelect() {
@@ -30,14 +42,14 @@ export default class SelectableImageHolder extends PureComponent {
       if (this.state.isSelect) {
         this.props.selectCounter({
           selectImages: [this.props.image],
-          group: 'nested',
+          group: this.props.day,
           counter: -1,
         });
         this.setState({ isSelect: false });
       } else {
         this.props.selectCounter({
           selectImages: [this.props.image],
-          group: 'nested',
+          group: this.props.day,
           counter: 1,
         });
         this.setState({ isSelect: true });
@@ -46,45 +58,35 @@ export default class SelectableImageHolder extends PureComponent {
   }
 
   render() {
-    const { domain, isEditing, clientWidth, image } = this.props;
-    const square = Math.ceil(clientWidth / 3);
-    const url = `${domain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
-    const imageSource = `${url}?imageView2/1/w/${square * 2}/h/${square * 2}`;
+    const { isEditing, image, imageSrc, imageHolderStyle } = this.props;
     const imageStyle = {
       transform: this.state.isSelect && 'scale(.8)',
     };
     return (
       <div
-        className="GridList__Tile"
-        style={{ backgroundColor: isEditing ? '#eee' : '#fff' }}
+        className="Justified__imageHolder"
+        style={imageHolderStyle}
         onTouchTap={this.handleSelect}
       >
         <SelectableImageBackground isEditing={isEditing} isSelect={this.state.isSelect} />
-        <img
-          src={imageSource}
-          alt={image.name}
-          style={imageStyle}
-        />
+        <img src={imageSrc} alt={image.name} style={imageStyle} />
       </div>
     );
   }
 }
 
-SelectableImageHolder.displayName = 'SelectableImageHolder';
+JustifiedImageHolder.displayName = 'JustifiedImageHolder';
 
-SelectableImageHolder.defaultProps = {
-  isEditing: false,
-  domain: Meteor.settings.public.domain,
-  clientWidth: document.body.clientWidth,
-};
-
-SelectableImageHolder.propTypes = {
-  domain: PropTypes.string.isRequired,
+JustifiedImageHolder.propTypes = {
   isEditing: PropTypes.bool.isRequired,
-  clientWidth: PropTypes.number.isRequired,
+  day: PropTypes.string.isRequired,
   image: PropTypes.object.isRequired,
+  imageSrc: PropTypes.string.isRequired,
+  imageHolderStyle: PropTypes.object.isRequired,
   total: PropTypes.number.isRequired,
+  groupTotal: PropTypes.number,
   // Below Pass from Redux
+  group: PropTypes.object.isRequired,
   counter: PropTypes.number.isRequired,
   selectCounter: PropTypes.func.isRequired,
 };

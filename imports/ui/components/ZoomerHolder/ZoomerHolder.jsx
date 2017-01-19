@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import React, { Component, PropTypes } from 'react';
+import { bindActionCreators } from 'redux';
 import { browserHistory } from 'react-router';
 import { connect } from 'react-redux';
 import moment from 'moment';
@@ -17,19 +18,17 @@ class ZoomerHolder extends Component {
 
   constructor(props) {
     super(props);
-    this.handleClose = this.handleClose.bind(this);
+    this.handleCloseZoomer = this.handleCloseZoomer.bind(this);
     this.handlePrompt = this.handlePrompt.bind(this);
   }
 
-  handleClose() {
-    const { dispatch } = this.props;
+  handleCloseZoomer() {
     document.body.style.overflow = '';
-    dispatch(zoomerClose());
+    this.props.zoomerClose();
   }
 
   handlePrompt() {
-    const { dispatch } = this.props;
-    dispatch(snackBarOpen('功能开发中'));
+    this.props.snackBarOpen('功能开发中');
   }
 
   render() {
@@ -38,7 +37,7 @@ class ZoomerHolder extends Component {
       return <div />;
     }
     const url = `${this.props.domain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
-    const src = `${url}?imageView2/0/w/${clientWidth * 2}`;
+    const src = `${url}?imageView2/2/w/${clientWidth * 2}`;
     const styles = {
       zoomer: {
         width: open ? '100%' : 0,
@@ -60,7 +59,7 @@ class ZoomerHolder extends Component {
         <div
           className="ZoomerHolder__image"
           style={styles.imageHolder}
-          onTouchTap={this.handleClose}
+          onTouchTap={this.handleCloseZoomer}
         >
           <div className="ZoomerHolder__background" />
         </div>
@@ -119,19 +118,28 @@ ZoomerHolder.defaultProps = {
 ZoomerHolder.propTypes = {
   domain: PropTypes.string.isRequired,
   clientWidth: PropTypes.number.isRequired,
+  // Below Pass from Redux
   open: PropTypes.bool.isRequired,
   image: PropTypes.object,
-  dispatch: PropTypes.func.isRequired,
+  snackBarOpen: PropTypes.func.isRequired,
+  zoomerClose: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => {
-  if (state.zoomer) {
+  const zoomer = state.zoomer;
+  if (zoomer) {
     return {
-      open: state.zoomer.open,
-      image: state.zoomer.image,
+      open: zoomer.open,
+      image: zoomer.image,
     };
   }
   return { open: false };
 };
 
-export default connect(mapStateToProps)(ZoomerHolder);
+const mapDispatchToProps = (dispatch) => bindActionCreators({
+  snackBarOpen,
+  zoomerClose,
+}, dispatch);
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(ZoomerHolder);

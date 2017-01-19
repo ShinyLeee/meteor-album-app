@@ -25,7 +25,7 @@ if (Meteor.isClient) {
   const imageSrc = faker.image.imageUrl();
   const imageHolderStyle = { left: 0, top: 0, width: '100px', height: '100px' };
 
-  const setup = (group = null, counter = 0) => {
+  const setup = (group = {}, counter = 0) => {
     const actions = {
       selectCounter: sinon.spy(),
     };
@@ -53,36 +53,29 @@ if (Meteor.isClient) {
   describe('JustifiedImageHolder', () => {
     it('should isSelect state behave right when counter prop change', () => {
       const { component } = setup();
-      expect(component.state('isSelect'))
-      .to.equal(false, 'Initial isSelect state must be false');
+      expect(component.state('isSelect')).to.equal(false, 'Initial isSelect state must be false');
 
       component.setProps({ group: { '2016-12-31': 3, '2016-12-30': 3 }, counter: 6 });
-      expect(component.state('isSelect'))
-      .to.equal(true, 'When counter equal to total');
+      expect(component.state('isSelect')).to.equal(true, 'When counter equal to total');
 
       component.setProps({ group: { '2016-12-31': 0, '2016-12-30': 0 }, counter: 0 });
-      expect(component.state('isSelect'))
-      .to.equal(false, 'When counter is empty');
+      expect(component.state('isSelect')).to.equal(false, 'When counter is empty');
     });
 
     it('should isSelect state behave right when group prop change', () => {
       const { component } = setup();
 
       component.setProps({ group: { '2016-12-31': 3, '2016-12-30': 3 }, counter: 6 });
-      expect(component.state('isSelect'))
-      .to.equal(true, 'When specfic day group exist and value equal to groupTotal');
+      expect(component.state('isSelect')).to.equal(true, 'When specfic day group exist and value equal to groupTotal');
 
       component.setProps({ group: { '2016-12-31': 0, '2016-12-30': 3 }, counter: 3 });
-      expect(component.state('isSelect'))
-      .to.equal(false, 'When specfic day group exist but value is empty');
+      expect(component.state('isSelect')).to.equal(false, 'When specfic day group exist but value is empty');
 
       component.setProps({ group: { '2016-12-30': 3 }, counter: 3 });
-      expect(component.state('isSelect'))
-      .to.equal(false, 'When specfic day group not exist');
+      expect(component.state('isSelect')).to.equal(false, 'When specfic day group not exist');
 
-      component.setProps({ group: null, counter: 0 });
-      expect(component.state('isSelect'))
-      .to.equal(false, 'when group prop is NULL');
+      component.setProps({ group: {}, counter: 0 });
+      expect(component.state('isSelect')).to.equal(false, 'when group prop is empty');
     });
 
     it('should have toggle button dispatch selectCounter action', () => {

@@ -1,7 +1,7 @@
 import React, { PureComponent, PropTypes } from 'react';
 import { _ } from 'meteor/underscore';
 
-import { SelectableIcon } from './SelectableStatus.jsx';
+import SelectableIcon from '../SelectableImage/SelectableIcon.jsx';
 import JustifiedImageHolder from './JustifiedImageHolder.jsx';
 
 export default class JustifiedGroupHolder extends PureComponent {
@@ -29,10 +29,17 @@ export default class JustifiedGroupHolder extends PureComponent {
       this.setState({ isGroupSelect: false });
       return;
     }
+
+    let hasGroup = false;
     _.each(nextProps.group, (value, key) => {
-      if (key === day && value === groupTotal) this.setState({ isGroupSelect: true });
-      else this.setState({ isGroupSelect: false });
+      if (key === day) {
+        hasGroup = true;
+        if (value === groupTotal) this.setState({ isGroupSelect: true });
+        else this.setState({ isGroupSelect: false });
+      }
     });
+
+    if (!hasGroup) this.setState({ isGroupSelect: false }); // if specific group not exist, make isGroupSelect false
   }
 
   handleToggleSelectGroup() {

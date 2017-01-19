@@ -29,7 +29,7 @@ import {
 import scrollTo from '/imports/utils/scrollTo.js';
 
 import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
-import Justified from '/imports/ui/components/Justified/Justified.jsx';
+import Justified from '/imports/ui/components/JustifiedLayout/Justified.jsx';
 
 const styles = {
   AppBarIconSvg: {

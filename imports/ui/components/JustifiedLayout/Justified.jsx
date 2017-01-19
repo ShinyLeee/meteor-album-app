@@ -9,8 +9,8 @@ import CompactIcon from 'material-ui/svg-icons/image/view-compact';
 
 import JustifiedGroupHolder from './JustifiedGroupHolder.jsx';
 import GridLayout from '../GridLayout/GridLayout.jsx';
-import { SelectableIcon } from './SelectableStatus.jsx';
-import SelectableImageHolder from './SelectableImageHolder.jsx';
+import SelectableIcon from '../SelectableImage/SelectableIcon.jsx';
+import SelectableImageHolder from '../SelectableImage/SelectableImageHolder.jsx';
 
 export default class Justified extends PureComponent {
 

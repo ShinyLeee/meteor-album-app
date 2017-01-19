@@ -3,8 +3,8 @@ import { browserHistory } from 'react-router';
 import moment from 'moment';
 import pure from 'recompose/pure';
 
-const CollHolder = ({ User, coll }) => {
-  const fastSrc = `${coll.cover}?imageView2/0/w/${document.body.clientWidth * 2}`;
+const CollHolder = ({ User, coll, clientWidth }) => {
+  const fastSrc = `${coll.cover}?imageView2/2/w/${clientWidth * 2}`;
   const collHolderStyle = coll.cover.indexOf('VF_ac') > 0
                           ? {
                             backgroundSize: 'inherit',
@@ -37,9 +37,14 @@ const CollHolder = ({ User, coll }) => {
 
 CollHolder.displayName = 'CollHolder';
 
+CollHolder.defaultProps = {
+  clientWidth: document.body.clientWidth,
+};
+
 CollHolder.propTypes = {
   User: PropTypes.object.isRequired,
   coll: PropTypes.object.isRequired,
+  clientWidth: PropTypes.number.isRequired,
 };
 
 export default pure(CollHolder);

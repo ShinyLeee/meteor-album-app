@@ -1,11 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import React, { PureComponent, PropTypes } from 'react';
-import { connect } from 'react-redux';
 import EXIF from 'exif-js';
 import uuid from 'node-uuid';
 import { insertImage } from '/imports/api/images/methods.js';
-
-import { uploaderStop, snackBarOpen } from '../../redux/actions/index.js';
 
 const initialState = {
   pace: 0,               // Current File Uploading Progress
@@ -15,15 +12,15 @@ const initialState = {
   uploading: false,  // Is in Uploading Progress
 };
 
-export class Uploader extends PureComponent {
+export default class Uploader extends PureComponent {
 
   constructor(props) {
     super(props);
     this.state = initialState;
-    this.handleOnChange = this.handleOnChange.bind(this);
+    this.handleImageChange = this.handleImageChange.bind(this);
   }
 
-  handleOnChange(e) {
+  handleImageChange(e) {
     e.preventDefault();
     const files = [...e.target.files];
     this.setState({
@@ -39,9 +36,8 @@ export class Uploader extends PureComponent {
 
   uploadToQiniu(files, currentFile) {
     if (!files) {
-      throw new Meteor.Error('File is empty, check if miss select upload files');
+      console.error('File is empty, check if miss select upload files'); // eslint-disable-line no-console
     }
-    const { destination, token, uploadURL, dispatch } = this.props;
 
     const allowedFiles = ['image/jpeg', 'image/png', 'image/gif'];
 
@@ -49,8 +45,8 @@ export class Uploader extends PureComponent {
 
     // If upload not allowedFiles, We need stop upload.
     if (allowedFiles.indexOf(f.type) < 0) {
-      dispatch(uploaderStop());
-      dispatch(snackBarOpen('只允许上传.jpg .png或.gif文件'));
+      this.props.uploaderStop();
+      this.props.snackBarOpen('只允许上传.jpg .png或.gif文件');
       return;
     } else if (allowedFiles.indexOf(f.type) === 0) f.surfix = 'jpg';
     else if (allowedFiles.indexOf(f.type) === 1) f.surfix = 'png';
@@ -64,8 +60,8 @@ export class Uploader extends PureComponent {
       thumbnail: URL.createObjectURL(f),
     }, () => {
       formData.append('file', f);
-      formData.append('key', `${destination}${fileName}.${f.surfix}`);
-      formData.append('token', token);
+      formData.append('key', `${this.props.destination}${fileName}.${f.surfix}`);
+      formData.append('token', this.props.token);
       const img = new Image();
       img.onload = () => {
         const width = img.naturalWidth || img.width;
@@ -89,7 +85,7 @@ export class Uploader extends PureComponent {
               return xhr;
             },
             method: 'POST',
-            url: uploadURL,
+            url: this.props.uploadURL,
             data: formData,
             dataType: 'json',
             contentType: false,
@@ -157,10 +153,9 @@ export class Uploader extends PureComponent {
   }
 
   afterUploadFile(file) {
-    const { User, destination, dispatch } = this.props;
     const image = {
-      user: User.username,
-      collection: destination.split('/')[1],
+      user: this.props.User.username,
+      collection: this.props.destination.split('/')[1],
       name: file.fileName,
       type: file.surfix,
       ratio: file.ratio,
@@ -170,39 +165,41 @@ export class Uploader extends PureComponent {
     };
     return insertImage.call(image, (err) => {
       if (err) {
-        dispatch(uploaderStop());
-        dispatch(snackBarOpen(err.message));
+        this.props.uploaderStop();
+        this.props.snackBarOpen(err.message);
       }
     });
   }
 
   finishUpload(err) {
-    const { dispatch, afterUpload } = this.props;
     const { current } = this.state;
     if (err) {
       this.setState(initialState);
-      dispatch(uploaderStop());
-      dispatch(snackBarOpen('上传失败'));
-      if (afterUpload) afterUpload(err);
+      this.props.uploaderStop();
+      this.props.snackBarOpen('上传失败');
+      if (this.props.afterUpload) {
+        this.props.afterUpload(err);
+      }
       throw new Meteor.Error(err);
     }
 
     this.setState(initialState);
-    dispatch(uploaderStop());
-    dispatch(snackBarOpen(`成功上传${current}个文件`));
-    if (afterUpload) afterUpload(null);
+    this.props.uploaderStop();
+    this.props.snackBarOpen(`成功上传${current}个文件`);
+    if (this.props.afterUpload) {
+      this.props.afterUpload(null);
+    }
     return;
   }
 
   stopUploading(e, xhr) {
-    const { dispatch } = this.props;
     e.preventDefault();
     if (xhr && xhr.readyState !== 4) {
       xhr.abort();
       const stopMsg = `您取消了上传文件, 已成功上传${this.state.current}个文件`;
       this.setState(initialState);
-      dispatch(uploaderStop());
-      dispatch(snackBarOpen(stopMsg));
+      this.props.uploaderStop();
+      this.props.snackBarOpen(stopMsg);
     }
   }
 
@@ -245,7 +242,7 @@ export class Uploader extends PureComponent {
           id="Uploader__container"
           type="file"
           style={{ display: 'none' }}
-          onChange={this.handleOnChange}
+          onChange={this.handleImageChange}
           ref={(ref) => { this.filesInput = ref; }}
           multiple={multiple}
           accept="image/*"
@@ -259,8 +256,6 @@ Uploader.defaultProps = {
   open: false,
   multiple: false,
   uploadURL: window.location.protocol === 'https:' ? 'https://up.qbox.me/' : 'http://upload.qiniu.com',
-  // beforeUpload: () => {},
-  // afterUpload: () => {},
 };
 
 Uploader.propTypes = {
@@ -278,24 +273,11 @@ Uploader.propTypes = {
   /**
    * destination:
    *
-   * Compose by Username and Collection name,
+   * Composed by Username and Collection name,
    * eg: ShinyLee/风景.
    */
-  destination: PropTypes.string,
-  token: PropTypes.string,
-  dispatch: PropTypes.func,
+  token: PropTypes.string,        // not required bc don't need it before Uploading
+  destination: PropTypes.string,  // not required bc don't need it before Uploading
+  snackBarOpen: PropTypes.func.isRequired,
+  uploaderStop: PropTypes.func.isRequired,
 };
-
-const mapStateToProps = (state) => {
-  const uploader = state.uploader;
-  if (uploader) {
-    return {
-      open: uploader.open,
-      token: uploader.uptoken,
-      destination: uploader.key,
-    };
-  }
-  return { open: false };
-};
-
-export default connect(mapStateToProps)(Uploader);

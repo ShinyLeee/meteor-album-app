@@ -49,12 +49,10 @@ if (Meteor.isClient) {
     it('should isSelect state behave right when counter prop change', () => {
       const { component } = setup();
       component.setProps({ counter: 6 });
-      expect(component.state('isSelect'))
-      .to.equal(true, 'When counter equal to total');
+      expect(component.state('isSelect')).to.equal(true, 'When counter equal to total');
 
       component.setProps({ counter: 0 });
-      expect(component.state('isSelect'))
-      .to.equal(false, 'When counter is empty');
+      expect(component.state('isSelect')).to.equal(false, 'When counter is empty');
     });
 
     it('should have toggle button dispatch selectCounter action', () => {

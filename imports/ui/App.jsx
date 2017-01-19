@@ -8,7 +8,7 @@ import LinearProgress from 'material-ui/LinearProgress';
 import { storeUptoken, clearUptoken } from './redux/actions/index.js';
 import SnackBar from './components/SnackBar/SnackBar.jsx';
 import NavHeader from './components/NavHeader/NavHeader.jsx';
-import ConnectedUploader from './components/Uploader/Uploader.jsx';
+import ConnectedUploader from './components/Uploader/index.js';
 
 const styles = {
   indeterminateProgress: {
@@ -81,7 +81,7 @@ App.propTypes = {
   User: PropTypes.object,
   userIsReady: PropTypes.bool.isRequired,
   children: PropTypes.element.isRequired,
-  // Below is Pass From redux
+  // Below is Pass From Redux
   storeUptoken: PropTypes.func.isRequired,
   clearUptoken: PropTypes.func.isRequired,
 };

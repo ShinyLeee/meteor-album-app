@@ -16,27 +16,21 @@ if (Meteor.isClient) {
 
   const expect = chai.expect;
   const domain = Meteor.settings.public.domain;
-  const images = [
-    {
-      user: faker.internet.userName(),
-      collection: faker.random.word(),
-      name: faker.random.uuid(),
-      type: 'jpg',
-    },
-    {
-      user: faker.internet.userName(),
-      collection: faker.random.word(),
-      name: faker.random.uuid(),
-      type: 'jpg',
-    },
-    {
-      user: faker.internet.userName(),
-      collection: faker.random.word(),
-      name: faker.random.uuid(),
-      type: 'jpg',
-    },
-  ];
-  const setup = (group = null, counter = 0) => {
+
+  const generateImages = (len) => {
+    const images = [];
+    for (let i = 0; i < len; i++) {
+      images[i] = {
+        user: faker.internet.userName(),
+        collection: faker.random.word(),
+        name: faker.random.uuid(),
+        type: 'jpg',
+      };
+    }
+    return images;
+  };
+
+  const setup = (group = {}, counter = 0) => {
     const actions = {
       selectCounter: sinon.spy(),
       selectGroupCounter: sinon.spy(),
@@ -47,7 +41,7 @@ if (Meteor.isClient) {
       <Justified
         domain={domain}
         isEditing={false}
-        images={images}
+        images={generateImages(3)}
         group={group}
         counter={counter}
         {...actions}
@@ -72,16 +66,13 @@ if (Meteor.isClient) {
       const { component } = setup({ '2017-01-12': 3 }, 3);
       component.setProps({ isEditing: true });
 
-      expect(component.state('isAllSelect'))
-      .to.equal(true, 'When counter equal to images\' length');
+      expect(component.state('isAllSelect')).to.equal(true, 'When counter equal to images\' length');
 
       component.setProps({ group: { '2017-01-12': 2 }, counter: 2 });
-      expect(component.state('isAllSelect'))
-      .to.equal(false, 'When counter not equal to images\' length');
+      expect(component.state('isAllSelect')).to.equal(false, 'When counter not equal to images\' length');
 
       component.setProps({ group: { '2017-01-12': -1 }, counter: -1 });
-      expect(component.state('isAllSelect'))
-      .to.equal(false, 'When counter is negative');
+      expect(component.state('isAllSelect')).to.equal(false, 'When counter is negative');
     });
 
     it('should have toggle button dispatch enable/disable selectAll actions when isEditing true', () => {

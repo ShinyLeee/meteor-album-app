@@ -76,10 +76,10 @@ export default class NavHeader extends PureComponent {
     super(props);
     this.state = {
       drawer: false,
-      userAction: false,
+      actionPop: false,
     };
     this.handlePrimaryTitleTouchTap = this.handlePrimaryTitleTouchTap.bind(this);
-    this.handleOpenUserAction = this.handleOpenUserAction.bind(this);
+    this.handleOpenActionPop = this.handleOpenActionPop.bind(this);
     this.handleLogout = this.handleLogout.bind(this);
     this.handlePrompt = this.handlePrompt.bind(this);
   }
@@ -107,10 +107,12 @@ export default class NavHeader extends PureComponent {
     browserHistory.push('/');
   }
 
-  handleOpenUserAction(e) {
+  handleOpenActionPop(e) {
     e.preventDefault();
-    const anchorEl = e.target;
-    this.setState({ userAction: true, anchorEl });
+    this.setState({
+      actionPop: true,
+      anchorEl: e.currentTarget,
+    });
   }
 
   handleLogout() {
@@ -220,13 +222,13 @@ export default class NavHeader extends PureComponent {
                 <div className="drawer__email">
                   <div>
                     <span>{(User.emails && User.emails[0].address) || User.username}</span>
-                    <div><ArrowDropdownIcon color="#fff" onTouchTap={this.handleOpenUserAction} /></div>
+                    <div><ArrowDropdownIcon color="#fff" onTouchTap={this.handleOpenActionPop} /></div>
                     <Popover
-                      open={this.state.userAction}
+                      open={this.state.actionPop}
                       anchorEl={this.state.anchorEl}
                       anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
                       targetOrigin={{ horizontal: 'middle', vertical: 'top' }}
-                      onRequestClose={() => { this.setState({ userAction: false }); }}
+                      onRequestClose={() => this.setState({ actionPop: false })}
                     >
                       <Menu>
                         <MenuItem primaryText="登出" onTouchTap={this.handleLogout} />
