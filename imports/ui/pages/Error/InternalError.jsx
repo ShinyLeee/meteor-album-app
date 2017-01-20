@@ -2,15 +2,12 @@ import { Meteor } from 'meteor/meteor';
 import React, { PropTypes } from 'react';
 import { Link } from 'react-router';
 
-import errorHOC from './errorHOC';
 import NavHeader from '../../components/NavHeader/NavHeader.jsx';
 
-const InternalError = ({ User, sourceDomain, noteNum, snackBarOpen }) => (
+const InternalError = ({ User, sourceDomain }) => (
   <div className="container">
     <NavHeader
       User={User}
-      noteNum={noteNum}
-      snackBarOpen={snackBarOpen}
       primary
     />
     <div className="content">
@@ -42,8 +39,6 @@ InternalError.defaultProps = {
 InternalError.propTypes = {
   User: PropTypes.object,
   sourceDomain: PropTypes.string.isRequired,
-  noteNum: PropTypes.number.isRequired,
-  snackBarOpen: PropTypes.func.isRequired,
 };
 
-export default errorHOC(InternalError);
+export default InternalError;

@@ -36,10 +36,7 @@ class LoginPage extends Component {
   render() {
     return (
       <div className="container">
-        <NavHeader
-          snackBarOpen={this.props.snackBarOpen}
-          primary
-        />
+        <NavHeader primary />
         <div className="content__login">
           <div className="login__logo">Gallery +</div>
           <div className="login__form">

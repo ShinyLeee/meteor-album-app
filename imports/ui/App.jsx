@@ -1,22 +1,15 @@
 import React, { Component, PropTypes } from 'react';
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import LinearProgress from 'material-ui/LinearProgress';
 
 import { storeUptoken, clearUptoken } from './redux/actions/index.js';
 import SnackBar from './components/SnackBar/SnackBar.jsx';
+import Loading from './components/Loader/Loading.jsx';
 import NavHeader from './components/NavHeader/NavHeader.jsx';
 import ConnectedUploader from './components/Uploader/index.js';
-
-const styles = {
-  indeterminateProgress: {
-    position: 'fixed',
-    backgroundColor: 'none',
-    zIndex: 99,
-  },
-};
 
 class App extends Component {
 
@@ -48,13 +41,12 @@ class App extends Component {
   }
 
   render() {
-    const { userIsReady, User } = this.props;
-    if (!userIsReady) {
+    if (!this.props.userIsReady) {
       return (
         <div className="container">
           <NavHeader loading />
           <div className="content">
-            <LinearProgress style={styles.indeterminateProgress} mode="indeterminate" />
+            <Loading />
           </div>
         </div>
       );
@@ -62,24 +54,42 @@ class App extends Component {
     return (
       <div>
         <SnackBar />
-        {
-          // React validates propTypes on elements when those elements are created,
-          // rather than when they're about to render.
-          // This means that any prop types with isRequired will fail validation
-          // when those props are supplied via this approach. In these cases,
-          // you should not specify isRequired for those props.
-          React.cloneElement(this.props.children, { User })
-        }
-        <ConnectedUploader User={User} multiple />
+        <ReactCSSTransitionGroup
+          transitionName="pageSlider"
+          transitionEnterTimeout={600}
+          transitionLeaveTimeout={600}
+        >
+          {
+            // this.cloneChildren()
+            // React validates propTypes on elements when those elements are created,
+            // rather than when they're about to render.
+            // This means that any prop types with isRequired will fail validation
+            // when those props are supplied via this approach. In these cases,
+            // you should not specify isRequired for those props.
+            React.cloneElement(
+              this.props.children,
+              { key: this.props.location.pathname, User: this.props.User }
+            )
+          }
+        </ReactCSSTransitionGroup>
+        <ConnectedUploader User={this.props.User} multiple />
       </div>
     );
   }
 
 }
 
+App.displayName = 'RootApp';
+
+App.defaultProps = {
+  User: {},
+  userIsReady: false,
+};
+
 App.propTypes = {
   User: PropTypes.object,
   userIsReady: PropTypes.bool.isRequired,
+  location: PropTypes.object.isRequired,
   children: PropTypes.element.isRequired,
   // Below is Pass From Redux
   storeUptoken: PropTypes.func.isRequired,

@@ -35,7 +35,7 @@ const Root = () => {
   return (
     <Provider store={store}>
       <MuiThemeProvider>
-        <Router history={browserHistory}>
+        <Router onUpdate={() => window.scrollTo(0, 0)} history={browserHistory}>
           <Route path="/" component={App}>
             <IndexRoute component={Index} />
             <Redirect from="explore" to="/" />

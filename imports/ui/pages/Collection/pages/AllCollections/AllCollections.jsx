@@ -138,8 +138,6 @@ export default class AllCollectionPage extends Component {
             <NavHeader
               User={this.props.User}
               location={this.state.location}
-              noteNum={this.props.noteNum}
-              snackBarOpen={this.props.snackBarOpen}
               primary
             />)
         }
@@ -202,7 +200,6 @@ AllCollectionPage.propTypes = {
   isGuest: PropTypes.bool.isRequired,
   curUser: PropTypes.object.isRequired,
   colls: PropTypes.array.isRequired,
-  noteNum: PropTypes.number.isRequired,
   // Below Pass from Redux
   snackBarOpen: PropTypes.func.isRequired,
 };

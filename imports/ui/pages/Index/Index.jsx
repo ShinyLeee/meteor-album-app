@@ -102,8 +102,6 @@ export default class IndexPage extends PureComponent {
         <NavHeader
           User={this.props.User}
           location={this.state.location}
-          noteNum={this.props.noteNum}
-          snackBarOpen={this.props.snackBarOpen}
           primary
         />
         { !this.props.dataIsReady && (<Loading />) }
@@ -147,7 +145,5 @@ IndexPage.propTypes = {
   limit: PropTypes.number.isRequired,
   dataIsReady: PropTypes.bool.isRequired,
   users: PropTypes.array.isRequired,
-  noteNum: PropTypes.number.isRequired,
   initialImages: PropTypes.array.isRequired,
-  snackBarOpen: PropTypes.func.isRequired,
 };

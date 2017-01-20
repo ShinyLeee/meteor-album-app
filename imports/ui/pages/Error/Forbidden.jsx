@@ -2,15 +2,12 @@ import { Meteor } from 'meteor/meteor';
 import React, { PropTypes } from 'react';
 import { Link } from 'react-router';
 
-import errorHOC from './errorHOC';
 import NavHeader from '../../components/NavHeader/NavHeader.jsx';
 
-const Forbidden = ({ User, location, sourceDomain, noteNum, snackBarOpen }) => (
+const Forbidden = ({ User, location, sourceDomain }) => (
   <div className="container">
     <NavHeader
       User={User}
-      noteNum={noteNum}
-      snackBarOpen={snackBarOpen}
       primary
     />
     <div className="content">
@@ -50,8 +47,6 @@ Forbidden.propTypes = {
   User: PropTypes.object,
   location: PropTypes.object,
   sourceDomain: PropTypes.string.isRequired,
-  noteNum: PropTypes.number.isRequired,
-  snackBarOpen: PropTypes.func.isRequired,
 };
 
-export default errorHOC(Forbidden);
+export default Forbidden;

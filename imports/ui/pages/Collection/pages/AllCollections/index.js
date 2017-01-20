@@ -3,7 +3,6 @@ import { createContainer } from 'meteor/react-meteor-data';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Collections } from '/imports/api/collections/collection.js';
-import { Notes } from '/imports/api/notes/note.js';
 
 import { snackBarOpen } from '/imports/ui/redux/actions/index.js';
 import AllCollectionsPage from './AllCollections.jsx';
@@ -20,12 +19,10 @@ const MeteorContainer = createContainer(({ params }) => {
 
   const userHandler = Meteor.subscribe('Users.all');
   const collHandler = Meteor.subscribe('Collections.inUser', username);
-  const noteHandler = Meteor.subscribe('Notes.own');
-  const dataIsReady = userHandler.ready() && collHandler.ready() && noteHandler.ready();
+  const dataIsReady = userHandler.ready() && collHandler.ready();
 
   let colls;
   const curUser = Meteor.users.findOne({ username }) || preCurUser;
-  const noteNum = Notes.find({ isRead: { $ne: true } }).count();
 
   if (!isGuest) {
     colls = Collections.find({}, { sort: { createdAt: -1 } }).fetch();
@@ -38,7 +35,6 @@ const MeteorContainer = createContainer(({ params }) => {
     isGuest,
     curUser,
     colls,
-    noteNum,
   };
 }, AllCollectionsPage);
 

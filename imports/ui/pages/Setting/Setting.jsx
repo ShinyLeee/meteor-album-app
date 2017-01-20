@@ -429,8 +429,6 @@ export default class SettingPage extends Component {
             <NavHeader
               User={this.props.User}
               location={this.state.location}
-              noteNum={this.props.noteNum}
-              snackBarOpen={this.props.snackBarOpen}
               primary
             />) }
         <div className="content">
@@ -468,6 +466,5 @@ SettingPage.propTypes = {
   uploadURL: PropTypes.string.isRequired,
   // Below Pass from Redux
   uptoken: PropTypes.string.isRequired,
-  noteNum: PropTypes.number.isRequired,
   snackBarOpen: PropTypes.func.isRequired,
 };

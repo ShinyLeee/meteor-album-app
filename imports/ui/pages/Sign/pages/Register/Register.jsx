@@ -60,10 +60,7 @@ class RegisterPage extends Component {
   render() {
     return (
       <div className="container">
-        <NavHeader
-          snackBarOpen={this.props.snackBarOpen}
-          primary
-        />
+        <NavHeader primary />
         <div className="content__register">
           <div className="register__logo">Gallery +</div>
           <div className="register__form">

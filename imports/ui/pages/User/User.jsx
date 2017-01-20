@@ -207,7 +207,6 @@ export default class UserPage extends Component {
             </div>
           )
         }
-
       </div>
     );
   }
@@ -230,8 +229,6 @@ export default class UserPage extends Component {
             <NavHeader
               User={this.props.User}
               location={this.state.location}
-              noteNum={this.props.noteNum}
-              snackBarOpen={this.props.snackBarOpen}
               primary
             />)
         }
@@ -260,7 +257,6 @@ UserPage.propTypes = {
   unOrderedImages: PropTypes.array.isRequired,
   likedCount: PropTypes.number.isRequired,
   collectionCount: PropTypes.number.isRequired,
-  noteNum: PropTypes.number.isRequired,
   // Below Pass from Redux
   snackBarOpen: PropTypes.func.isRequired,
 };
