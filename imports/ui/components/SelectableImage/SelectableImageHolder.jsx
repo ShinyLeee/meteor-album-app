@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import React, { PureComponent, PropTypes } from 'react';
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 
 import SelectableImageBackground from './SelectableImageBackground.jsx';
 
@@ -55,16 +56,24 @@ export default class SelectableImageHolder extends PureComponent {
     };
     return (
       <div
-        className="GridList__Tile"
+        className="GridLayout__Image"
         style={{ backgroundColor: isEditing ? '#eee' : '#fff' }}
         onTouchTap={this.handleSelect}
       >
         <SelectableImageBackground isEditing={isEditing} isSelect={this.state.isSelect} />
-        <img
-          src={imageSource}
-          alt={image.name}
-          style={imageStyle}
-        />
+        <ReactCSSTransitionGroup
+          transitionName="fade"
+          transitionAppear
+          transitionAppearTimeout={500}
+          transitionEnter={false}
+          transitionLeave={false}
+        >
+          <img
+            src={imageSource}
+            alt={image.name}
+            style={imageStyle}
+          />
+        </ReactCSSTransitionGroup>
       </div>
     );
   }

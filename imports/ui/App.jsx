@@ -11,9 +11,17 @@ import Loading from './components/Loader/Loading.jsx';
 import NavHeader from './components/NavHeader/NavHeader.jsx';
 import ConnectedUploader from './components/Uploader/index.js';
 
-class App extends Component {
+export class App extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      transitionName: 'fastIn',
+    };
+  }
 
   componentDidMount() {
+    // store uptoken when User already login
     if (this.props.User) {
       Meteor.call('Qiniu.getUptoken', (err, res) => {
         if (err) {
@@ -26,6 +34,16 @@ class App extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
+    const prevIndex = this.props.children.props.route.index;
+    const nextIndex = nextProps.children.props.route.index;
+
+    let transitionName;
+    const indexGap = nextIndex - prevIndex;
+    if (indexGap > 0) transitionName = 'slideToLeft';
+    else transitionName = indexGap < 0 ? 'slideToRight' : 'fastIn';
+    this.setState({ transitionName });
+
+    // store uptoken after User login
     if (!this.props.User && nextProps.User) {
       Meteor.call('Qiniu.getUptoken', (err, res) => {
         if (err) {
@@ -55,9 +73,9 @@ class App extends Component {
       <div>
         <SnackBar />
         <ReactCSSTransitionGroup
-          transitionName="pageSlider"
-          transitionEnterTimeout={600}
-          transitionLeaveTimeout={600}
+          transitionName={this.state.transitionName}
+          transitionEnterTimeout={this.state.transitionName === 'fastIn' ? 200 : 375}
+          transitionLeaveTimeout={this.state.transitionName === 'fastIn' ? 200 : 375}
         >
           {
             // this.cloneChildren()
@@ -82,7 +100,6 @@ class App extends Component {
 App.displayName = 'RootApp';
 
 App.defaultProps = {
-  User: {},
   userIsReady: false,
 };
 

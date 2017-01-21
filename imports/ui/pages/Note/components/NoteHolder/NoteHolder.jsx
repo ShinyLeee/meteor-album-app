@@ -1,9 +1,9 @@
+import { Meteor } from 'meteor/meteor';
 import React, { PropTypes } from 'react';
 import { browserHistory } from 'react-router';
 import TimeAgo from 'react-timeago';
 import CNStrings from 'react-timeago/lib/language-strings/zh-CN';
 import buildFormatter from 'react-timeago/lib/formatters/buildFormatter';
-import pure from 'recompose/pure';
 import { Card, CardHeader, CardActions, CardText } from 'material-ui/Card';
 import IconButton from 'material-ui/IconButton';
 import ReplyIcon from 'material-ui/svg-icons/content/reply';
@@ -38,7 +38,7 @@ const NoteHolder = ({ isRead, sender, note, onReadNote }) => (
       <CardHeader
         title={note.title}
         subtitle={<TimeAgo date={note.sendAt} formatter={formatter} />}
-        avatar={sender.profile.avatar}
+        avatar={Meteor.users.findOne({ username: sender }).profile.avatar}
         actAsExpander
         showExpandableButton
       />
@@ -84,9 +84,9 @@ NoteHolder.defaultProps = {
 
 NoteHolder.propTypes = {
   isRead: PropTypes.bool.isRequired,
-  sender: PropTypes.object.isRequired,
+  sender: PropTypes.string.isRequired,
   note: PropTypes.object.isRequired,
   onReadNote: PropTypes.func, // Not required bc AllNotePage do not need read notes
 };
 
-export default pure(NoteHolder);
+export default NoteHolder;

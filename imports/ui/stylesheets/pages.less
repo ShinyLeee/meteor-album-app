@@ -162,18 +162,8 @@
   }
 }
 
-/* route /note */
-.content__note {
-  padding: 5px 6px;
-  background-color: #ededed;
-  min-height: 495px;
-  & .component__noteHolder {
-    margin-bottom: 10px;
-  }
-}
-
-/* route /note/:username/all */
-.content__allNotes {
+/* route /note, /note/:username/all */
+.content__note, .content__allNotes {
   padding: 5px 6px;
   background-color: #ededed;
   min-height: 495px;
@@ -252,7 +242,7 @@
       }
     }
   }
-  .GridList__Tile {
+  .GridLayout__Image {
     background-color: #eee;
     transform: translate3d(0px, 0px, 0px);
     overflow: hidden;

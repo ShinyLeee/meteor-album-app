@@ -102,7 +102,7 @@ export default class NotePage extends Component {
     this.setState({ isProcessing: true });
     readAllNotes.call({ receiver: this.props.User.username }, (err) => {
       if (err) {
-        this.props.snackBarOpen('发生位置错误');
+        this.props.snackBarOpen('发生未知错误');
         throw new Meteor.Error(err);
       }
       this.setState({ isProcessing: false, notes: [] });
@@ -119,14 +119,14 @@ export default class NotePage extends Component {
           offsetToBottom={100}
         >
           {
-            this.state.notes.map((note) => this.props.otherUsers.map((user) => note.sender === user.username &&
-            (
+            this.state.notes.map((note, i) => (
               <NoteHolder
-                sender={user}
+                key={i}
+                sender={note.sender}
                 note={note}
                 onReadNote={(e) => this.handleReadNote(e, note._id)}
               />
-            )))
+            ))
           }
         </Infinity>
       </div>
@@ -134,11 +134,10 @@ export default class NotePage extends Component {
   }
 
   render() {
-    const { User, dataIsReady } = this.props;
     return (
       <div className="container">
         <NavHeader
-          User={User}
+          User={this.props.User}
           title="未读消息"
           onTitleTouchTap={() => scrollTo(0, 1500)}
           iconElementLeft={
@@ -158,14 +157,14 @@ export default class NotePage extends Component {
               />
               <MenuItem
                 primaryText="查看所有信息"
-                onTouchTap={() => browserHistory.push(`/note/${User.username}/all`)}
+                onTouchTap={() => browserHistory.push(`/note/${this.props.User.username}/all`)}
               />
             </IconMenu>
           }
         />
         <div className="content">
           { this.state.isProcessing && (<Loading />) }
-          { dataIsReady
+          { this.props.dataIsReady
             ? this.renderContent()
             : (<Loading />) }
         </div>
@@ -179,10 +178,9 @@ NotePage.displayName = 'NotePage';
 
 NotePage.propTypes = {
   User: PropTypes.object,
+  // Below Pass from Database
   dataIsReady: PropTypes.bool.isRequired,
-  // Below Pass from database
   limit: PropTypes.number.isRequired,
-  otherUsers: PropTypes.array.isRequired,
   initialNotes: PropTypes.array.isRequired,
   // Below Pass from Redux
   snackBarOpen: PropTypes.func.isRequired,

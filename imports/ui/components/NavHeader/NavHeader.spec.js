@@ -16,11 +16,6 @@ if (Meteor.isClient) {
   const expect = chai.expect;
 
   describe('NavHeader', () => {
-    it('should render Drawer with primary prop', function () {
-      const wrapper = shallow(<NavHeader primary />);
-      expect(wrapper.find(Drawer)).to.have.length(1);
-    });
-
     it('should not render Drawer with loading prop or without primary prop', function () {
       const loadingWrapper = shallow(<NavHeader loadinng />);
       const primaryWrapper = shallow(<NavHeader />);

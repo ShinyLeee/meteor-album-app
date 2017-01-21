@@ -1,4 +1,5 @@
 import React, { PureComponent, PropTypes } from 'react';
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import { _ } from 'meteor/underscore';
 
 import SelectableImageBackground from '../SelectableImage/SelectableImageBackground.jsx';
@@ -69,7 +70,15 @@ export default class JustifiedImageHolder extends PureComponent {
         onTouchTap={this.handleSelect}
       >
         <SelectableImageBackground isEditing={isEditing} isSelect={this.state.isSelect} />
-        <img src={imageSrc} alt={image.name} style={imageStyle} />
+        <ReactCSSTransitionGroup
+          transitionName="fade"
+          transitionAppear
+          transitionAppearTimeout={500}
+          transitionEnter={false}
+          transitionLeave={false}
+        >
+          <img src={imageSrc} alt={image.name} style={imageStyle} />
+        </ReactCSSTransitionGroup>
       </div>
     );
   }

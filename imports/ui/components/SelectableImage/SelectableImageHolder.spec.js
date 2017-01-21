@@ -59,7 +59,7 @@ if (Meteor.isClient) {
       const { actions, component } = setup();
       const props = component.instance().props;
 
-      const toggleBtn = component.find('.GridList__Tile');
+      const toggleBtn = component.find('.GridLayout__Image');
       expect(toggleBtn).to.have.length(1);
 
       toggleBtn.simulate('touchTap');

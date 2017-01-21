@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import PC from '/imports/ui/App_PC.jsx';
-import App from '/imports/ui/App.jsx';
+import AppContainer from '/imports/ui/App.jsx';
 import Login from '/imports/ui/pages/Sign/pages/Login/Login.jsx';
 import Register from '/imports/ui/pages/Sign/pages/Register/Register.jsx';
 import Index from '/imports/ui/pages/Index/index.js';
@@ -36,24 +36,24 @@ const Root = () => {
     <Provider store={store}>
       <MuiThemeProvider>
         <Router onUpdate={() => window.scrollTo(0, 0)} history={browserHistory}>
-          <Route path="/" component={App}>
-            <IndexRoute component={Index} />
+          <Route path="/" component={AppContainer}>
+            <IndexRoute index={1} component={Index} />
             <Redirect from="explore" to="/" />
-            <Route path="user/:username" component={User} onEnter={isAllowVisitHome} />
-            <Route path="user/:username/collection" component={AllCollections} onEnter={isAllowVisitColl} />
-            <Route path="user/:username/collection/:cname" component={Colletion} onEnter={isAllowVisitColl} />
-            <Route path="memory" component={Construction} onEnter={isLogin} />
-            <Route path="recycle" component={Recycle} onEnter={isLogin} />
-            <Route path="setting" component={Setting} onEnter={isLogin} />
-            <Route path="note/:username" component={Note} onEnter={isPermission} />
-            <Route path="note/:username/all" component={AllNotes} onEnter={isPermission} />
-            <Route path="sendNote" component={SendNote} onEnter={isLogin} />
-            <Route path="login" component={Login} onEnter={isLogout} />
-            <Route path="register" component={Register} onEnter={isLogout} />
-            <Route path="403" component={Forbidden} />
-            <Route path="404" component={NotFound} />
-            <Route path="500" component={InternalError} />
-            <Route path="*" component={NotFound} />
+            <Route index={1} path="user/:username" component={User} onEnter={isAllowVisitHome} />
+            <Route index={1} path="user/:username/collection" component={AllCollections} onEnter={isAllowVisitColl} />
+            <Route index={2} path="user/:username/collection/:cname" component={Colletion} onEnter={isAllowVisitColl} />
+            <Route index={1} path="memory" component={Construction} onEnter={isLogin} />
+            <Route index={1} path="recycle" component={Recycle} onEnter={isLogin} />
+            <Route index={1} path="setting" component={Setting} onEnter={isLogin} />
+            <Route index={2} path="note/:username" component={Note} onEnter={isPermission} />
+            <Route index={3} path="note/:username/all" component={AllNotes} onEnter={isPermission} />
+            <Route index={2} path="sendNote" component={SendNote} onEnter={isLogin} />
+            <Route index={1} path="login" component={Login} onEnter={isLogout} />
+            <Route index={1} path="register" component={Register} onEnter={isLogout} />
+            <Route index={1} path="403" component={Forbidden} />
+            <Route index={1} path="404" component={NotFound} />
+            <Route index={1} path="500" component={InternalError} />
+            <Route index={1} path="*" component={NotFound} />
           </Route>
         </Router>
       </MuiThemeProvider>

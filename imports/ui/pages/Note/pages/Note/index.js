@@ -16,16 +16,15 @@ const MeteorContainer = createContainer(({ params }) => {
   const noteHandler = Meteor.subscribe('Notes.own', username);
   const dataIsReady = userHandler.ready() && noteHandler.ready();
 
-  const otherUsers = Meteor.users.find({}).fetch();
   const initialNotes = Notes.find(
-    { isRead: { $ne: true } },
-    { sort: { sendAt: -1 }, limit }).fetch();
+    { receiver: username, isRead: { $ne: true } },
+    { sort: { sendAt: -1 }, limit }
+  ).fetch();
 
   return {
     dataIsReady,
-    otherUsers,
-    initialNotes,
     limit,
+    initialNotes,
   };
 }, NotePage);
 
