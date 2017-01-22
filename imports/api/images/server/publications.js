@@ -5,13 +5,13 @@ import { Images } from '../image.js';
 import { Collections } from '../../collections/collection.js';
 
 Meteor.publish('Images.all', function images() {
-  return Images.find({ deletedAt: null });
+  return Images.find({ private: false, deletedAt: null });
 });
 
 Meteor.publish('Images.own', function ownImages() {
-  const username = Meteor.users.findOne(this.userId).username;
+  const user = Meteor.users.findOne(this.userId);
   return Images.find({
-    user: username,
+    user: user && user.username,
     deletedAt: null,
   });
 });
@@ -23,9 +23,9 @@ Meteor.publish('Images.liked', function likedImages() {
 });
 
 Meteor.publish('Images.recycle', function inRecycleImages() {
-  const username = Meteor.users.findOne(this.userId).username;
+  const user = Meteor.users.findOne(this.userId);
   return Images.find({
-    user: username,
+    user: user && user.username,
     deletedAt: { $ne: null },
   });
 });

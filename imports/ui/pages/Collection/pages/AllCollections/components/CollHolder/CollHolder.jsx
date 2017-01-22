@@ -7,11 +7,11 @@ const CollHolder = ({ User, coll, clientWidth }) => {
   const collHolderStyle = coll.cover.indexOf('VF_ac') > 0
                           ? {
                             backgroundSize: 'inherit',
-                            backgroundImage: `url(${coll.cover})`,
+                            backgroundImage: `url("${coll.cover}")`,
                           }
                           : {
                             backgroundSize: 'cover',
-                            backgroundImage: `url(${fastSrc})`,
+                            backgroundImage: `url("${fastSrc}")`,
                           };
   return (
     <div

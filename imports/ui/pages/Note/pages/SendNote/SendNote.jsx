@@ -158,7 +158,7 @@ export default class SendNotePage extends Component {
       />,
     ];
     return (
-      <div className="container note-container">
+      <div className="container">
         <NavHeader
           title="发送信息"
           style={{ backgroundColor: blue500 }}
@@ -185,8 +185,8 @@ export default class SendNotePage extends Component {
 }
 
 SendNotePage.propTypes = {
-  User: PropTypes.object,
-  // Below Pass from database
+  User: PropTypes.object.isRequired,
+  // Below Pass from Database
   userIsReady: PropTypes.bool.isRequired,
   initialReceiver: PropTypes.object,
   otherUsers: PropTypes.array.isRequired,

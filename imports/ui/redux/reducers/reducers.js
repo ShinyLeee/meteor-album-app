@@ -10,12 +10,12 @@ export const uptoken = (state = '', action) => {
   return state;
 };
 
-export const zoomer = (state = null, action) => {
+export const zoomer = (state = { open: false, image: null }, action) => {
   switch (action.type) {
     case 'ZOOMER_OPEN':
-      return Object.assign({ image: action.image }, { open: true });
+      return Object.assign({ open: true }, { image: action.image });
     case 'ZOOMER_CLOSE':
-      return null;
+      return { open: false, image: null };
     default:
       return state;
   }

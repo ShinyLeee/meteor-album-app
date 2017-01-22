@@ -33,24 +33,26 @@ if (Meteor.isServer) {
         curUser = Factory.create('user');
 
         // Create 2 collection belong to current user
-        _.times(2, () => Factory.create('collection', { user: curUser.username }));
+        Factory.create('collection', { user: curUser.username });
+        Factory.create('collection', { user: curUser.username, private: true });
 
-        // Create 1 collection belong to another user
+        // Create 2 collection belong to another user but one is private
         Factory.create('collection', { user: 'tester' });
+        Factory.create('collection', { user: 'tester', private: true });
       });
 
       describe('Collections.all', () => {
-        it('should send all collection documents', (done) => {
+        it('should send all public collection documents', (done) => {
           const collector = new PublicationCollector();
           collector.collect('Collections.all', (collections) => {
-            expect(collections.collections).to.have.length(3);
+            expect(collections.collections).to.have.length(2);
             done();
           });
         });
       });
 
       describe('Collections.own', () => {
-        it('should only send current user\'s collection documents', (done) => {
+        it('should only send current user\'s all collection documents', (done) => {
           const collector = new PublicationCollector({ userId: curUser._id });
           collector.collect('Collections.own', (collections) => {
             expect(collections.collections).to.have.length(2);
@@ -60,7 +62,7 @@ if (Meteor.isServer) {
       });
 
       describe('Collection.inUser', () => {
-        it('should send specific user\'s collection documents', (done) => {
+        it('should send specific user\'s public collection documents', (done) => {
           const collector = new PublicationCollector();
           collector.collect('Collections.inUser', 'tester', (collections) => {
             expect(collections.collections).to.have.length(1);
@@ -70,7 +72,7 @@ if (Meteor.isServer) {
       });
 
       describe('Collection.collNames', () => {
-        it('should only send current user\'s collections documents', (done) => {
+        it('should only send current user\'s all collections documents', (done) => {
           const collector = new PublicationCollector({ userId: curUser._id });
           collector.collect('Collections.collNames', (collections) => {
             expect(collections.collections).to.have.length(2);
@@ -193,6 +195,37 @@ if (Meteor.isServer) {
           };
           lockCollection._execute(methodInvocation, newArgs);
           expect(Collections.findOne(curColl._id).private).to.be.false;
+        });
+
+        it('should also update Images\' private field after method call', () => {
+          _.times(2, () => Factory.create('image', { user: curUser.username, collection: curColl.name }));
+          expect(Images.find({
+            user: curUser.username,
+            collection: curColl.name,
+            private: false,
+          }).count()).to.equal(2);
+
+          const methodInvocation = { userId: curUser._id };
+          const args = {
+            username: curUser.username,
+            collId: curColl._id,
+            collName: curColl.name,
+            privateStatus: curColl.private,
+          };
+
+          lockCollection._execute(methodInvocation, args);
+          const publicImageNum = Images.find({
+            user: curUser.username,
+            collection: curColl.name,
+            private: false,
+          }).count();
+          const privateImageNum = Images.find({
+            user: curUser.username,
+            collection: curColl.name,
+            private: true,
+          }).count();
+          expect(publicImageNum).to.equal(0);
+          expect(privateImageNum).to.equal(2);
         });
       });
 

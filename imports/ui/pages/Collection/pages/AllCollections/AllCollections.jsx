@@ -1,11 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import React, { Component, PropTypes } from 'react';
-import { browserHistory } from 'react-router';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
-import IconButton from 'material-ui/IconButton';
 import TextField from 'material-ui/TextField';
-import ArrowBackIcon from 'material-ui/svg-icons/navigation/arrow-back';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import AddIcon from 'material-ui/svg-icons/content/add';
 import { insertCollection } from '/imports/api/collections/methods.js';
@@ -117,29 +114,15 @@ export default class AllCollectionPage extends Component {
       <FlatButton
         label="新建"
         onTouchTap={this.handleAddCollection}
-        disabled={!this.state.newColName}
+        disabled={!this.state.newCollName}
         primary
       />,
     ];
     return (
       <div className="container">
         { this.props.isGuest
-          ? (
-            <NavHeader
-              User={this.props.User}
-              title="相册"
-              iconElementLeft={
-                <IconButton onTouchTap={() => browserHistory.goBack()}>
-                  <ArrowBackIcon />
-                </IconButton>
-              }
-            />)
-          : (
-            <NavHeader
-              User={this.props.User}
-              location={this.state.location}
-              primary
-            />)
+          ? (<NavHeader title={`${this.props.curUser.username}的相册`} secondary />)
+          : (<NavHeader User={this.props.User} location={this.state.location} primary />)
         }
         <div className="content">
           { !this.props.dataIsReady && (<Loading />) }
@@ -159,22 +142,20 @@ export default class AllCollectionPage extends Component {
             )
           }
           { this.props.dataIsReady && this.renderContent() }
-          <div className="dialog">
-            <Dialog
-              title="新建相册"
-              actions={actions}
-              open={this.state.open}
-              onRequestClose={this.handleCloseDialog}
-              modal
-            >
-              <TextField
-                hintText="相册名"
-                onChange={this.handleChangeCollName}
-                errorText={this.state.errorText}
-                fullWidth
-              />
-            </Dialog>
-          </div>
+          <Dialog
+            title="新建相册"
+            actions={actions}
+            open={this.state.open}
+            onRequestClose={this.handleCloseDialog}
+            modal
+          >
+            <TextField
+              hintText="相册名"
+              onChange={this.handleChangeCollName}
+              errorText={this.state.errorText}
+              fullWidth
+            />
+          </Dialog>
         </div>
         { !this.props.isGuest && (
           <div className="component__FloatBtn">
@@ -195,7 +176,7 @@ AllCollectionPage.displayName = 'AllCollectionPage';
 
 AllCollectionPage.propTypes = {
   User: PropTypes.object,
-  // Below Pass from database
+  // Below Pass from Database
   dataIsReady: PropTypes.bool.isRequired,
   isGuest: PropTypes.bool.isRequired,
   curUser: PropTypes.object.isRequired,

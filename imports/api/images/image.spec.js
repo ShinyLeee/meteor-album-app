@@ -50,12 +50,15 @@ if (Meteor.isServer) {
         // Create a image has been removed to recycle
         Factory.create('image', { user: user.username, collection: collOne.name, deletedAt: new Date() });
 
+        // Create a image which is private
+        Factory.create('image', { user: 'tester', collection: 'test-coll', private: true });
+
         // Create a image belong to another user and another collection
         Factory.create('image', { user: 'tester', collection: 'test-coll', liker: [user._id] });
       });
 
       describe('Images.all', () => {
-        it('should send all image documents that deletedAt field null', (done) => {
+        it('should send all image documents that deletedAt field null and private false', (done) => {
           const collector = new PublicationCollector();
           collector.collect('Images.all', (collections) => {
             expect(collections.images).to.have.length(4);
@@ -207,7 +210,7 @@ if (Meteor.isServer) {
       describe('shiftImages', () => {
         it('should only can shift if you are logged in', () => {
           assert.throws(() => {
-            shiftImages._execute({}, { selectImages: [imgId], dest: collOne._id });
+            shiftImages._execute({}, { selectImages: [imgId], dest: collOne.name, destId: collOne._id });
           }, Meteor.Error, /api.images.shift.notLoggedIn/);
         });
 
@@ -219,14 +222,25 @@ if (Meteor.isServer) {
 
           shiftImages._execute(
             { userId: user._id },
-            { selectImages: [imgId, newImg._id], dest: anotherColl.name }
+            { selectImages: [imgId, newImg._id], dest: anotherColl.name, destId: anotherColl._id }
           );
 
-          expect(Images.find({ collection: collOne.name }).count())
-          .to.equal(2, 'source collection should minus');
+          expect(Images.find({ collection: collOne.name }).count()).to.equal(2, 'source collection should minus');
+          expect(Images.find({ collection: anotherColl.name }).count()).to.equal(2, 'dest collection should add');
+        });
 
-          expect(Images.find({ collection: anotherColl.name }).count())
-          .to.equal(2, 'dest collection should add');
+        it('should update image private field based on target collection', () => {
+          const anotherColl = Factory.create('collection', { user: user.username, private: true });
+          expect(Images.findOne(imgId).collection).to.equal(collOne.name);
+          expect(Images.findOne(imgId).private).to.be.false;
+
+          shiftImages._execute(
+            { userId: user._id },
+            { selectImages: [imgId], dest: anotherColl.name, destId: anotherColl._id }
+          );
+
+          expect(Images.findOne(imgId).collection).to.equal(anotherColl.name);
+          expect(Images.findOne(imgId).private).to.be.true;
         });
       });
 

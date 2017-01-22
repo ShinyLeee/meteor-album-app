@@ -137,14 +137,8 @@ export default class NotePage extends Component {
     return (
       <div className="container">
         <NavHeader
-          User={this.props.User}
           title="未读消息"
-          onTitleTouchTap={() => scrollTo(0, 1500)}
-          iconElementLeft={
-            <IconButton onTouchTap={() => browserHistory.goBack()}>
-              <ArrowBackIcon />
-            </IconButton>
-          }
+          secondary
           iconElementRight={
             <IconMenu
               iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
@@ -177,7 +171,7 @@ export default class NotePage extends Component {
 NotePage.displayName = 'NotePage';
 
 NotePage.propTypes = {
-  User: PropTypes.object,
+  User: PropTypes.object.isRequired,
   // Below Pass from Database
   dataIsReady: PropTypes.bool.isRequired,
   limit: PropTypes.number.isRequired,

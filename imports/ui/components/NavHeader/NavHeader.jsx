@@ -3,12 +3,14 @@ import AppBar from 'material-ui/AppBar';
 
 import LoadingNavHeader from './components/LoadingNavHeader/LoadingNavHeader.jsx';
 import ConnectedPrimaryNavHeader from './components/PrimaryNavHeader/index.js';
+import SecondaryNavHeader from './components/SecondaryNavHeader/SecondaryNavHeader.jsx';
 import styles from './NavHeader.style.js';
 
 const NavHeader = (props) => {
   const {
     loading,
     primary,
+    secondary,
     User,
     location,
     title,
@@ -22,6 +24,7 @@ const NavHeader = (props) => {
 
   if (loading) return (<LoadingNavHeader />);
   if (primary) return (<ConnectedPrimaryNavHeader User={User} location={location} />);
+  if (secondary) return (<SecondaryNavHeader title={title} iconElementRight={iconElementRight} />);
   return (
     <div className="component__NavHeader">
       <AppBar
@@ -43,6 +46,7 @@ NavHeader.displayName = 'NavHeader';
 NavHeader.defaultProps = {
   loading: false,
   primary: false,
+  secondary: false,
 };
 
 NavHeader.propTypes = {
@@ -54,6 +58,13 @@ NavHeader.propTypes = {
    * If true, render a common NavHeader,
    */
   primary: PropTypes.bool.isRequired,
+  /**
+   * primary:
+   *
+   * If true, render a specific NavHeader,
+   * include specific iconElementLeft
+   */
+  secondary: PropTypes.bool.isRequired,
   /**
    * Below:
    *

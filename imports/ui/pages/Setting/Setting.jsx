@@ -234,7 +234,7 @@ export default class SettingPage extends Component {
         <div className="setting__header">
           <div
             className="setting__cover"
-            style={{ backgroundImage: `url(${this.state.cover})` }}
+            style={{ backgroundImage: `url("${this.state.cover}")` }}
           >
             <div className="setting__background" />
             <div className="setting__uploader" onTouchTap={() => this.coverInput.click()} >
@@ -461,7 +461,7 @@ SettingPage.defaultProps = {
 };
 
 SettingPage.propTypes = {
-  User: PropTypes.object,
+  User: PropTypes.object.isRequired,
   domain: PropTypes.string.isRequired,
   uploadURL: PropTypes.string.isRequired,
   // Below Pass from Redux

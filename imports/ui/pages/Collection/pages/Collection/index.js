@@ -24,7 +24,9 @@ const MeteorContainer = createContainer(({ params }) => {
   if (User && User.username === username) isGuest = false;
   else isGuest = true;
 
-  const collHandler = Meteor.subscribe('Collections.inUser', username);
+  const collHandler = isGuest
+                      ? Meteor.subscribe('Collections.inUser', username)
+                      : Meteor.subscribe('Collections.own');
   const imageHandler = Meteor.subscribe('Images.inCollection', { username, cname });
   const dataIsReady = collHandler.ready() && imageHandler.ready();
 

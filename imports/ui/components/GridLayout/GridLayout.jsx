@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 import pure from 'recompose/pure';
 
 const GridLayout = ({ columns, gap, children }) => (
-  <div style={{ margin: `${-gap / 2}px` }}>
+  <div className="component__GridLayout" style={{ margin: `${-gap / 2}px` }}>
     {
       React.Children.map(children, (curChild) => {
         const childStyle = Object.assign({}, {

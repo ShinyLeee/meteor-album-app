@@ -235,8 +235,8 @@ export default class RecyclePage extends Component {
 RecyclePage.displayName = 'RecyclePage';
 
 RecyclePage.propTypes = {
-  User: PropTypes.object,
-  // Below Pass from database
+  User: PropTypes.object.isRequired,
+  // Below Pass from Database
   dataIsReady: PropTypes.bool.isRequired,
   images: PropTypes.array.isRequired,
   // Below Pass From Redux

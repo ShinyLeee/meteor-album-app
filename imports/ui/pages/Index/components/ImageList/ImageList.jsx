@@ -2,21 +2,15 @@ import { Meteor } from 'meteor/meteor';
 import React, { Component, PropTypes } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { makeCancelable } from '/imports/utils/utils.js';
 import { likeImage, unlikeImage } from '/imports/api/images/methods.js';
 
 import { zoomerOpen, snackBarOpen } from '/imports/ui/redux/actions/index.js';
 import ImageHolder from '/imports/ui/components/ImageHolder/ImageHolder.jsx';
 
-const domain = Meteor.settings.public.domain;
-
 class ImageList extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {
-      zoomer: false,
-    };
     this.handleOpenPrompt = this.handleOpenPrompt.bind(this);
     this.handleAddLiker = this.handleAddLiker.bind(this);
     this.handleRemoveLiker = this.handleRemoveLiker.bind(this);
@@ -69,24 +63,12 @@ class ImageList extends Component {
   }
 
   handleZoomImage(image) {
-    const zoomImage = new Promise((resolve) => {
-      this.setState({ zoomer: true }, resolve);
-    });
-
-    this.zoomPromise = makeCancelable(zoomImage);
-    this.zoomPromise
-      .promise
-      .then(() => {
-        this.props.zoomerOpen(image);
-      })
-      .then(() => {
-        document.body.style.overflow = 'hidden';
-      })
-      .catch((err) => console.log(err)); // eslint-disable-line
+    this.props.zoomerOpen(image);
+    document.body.style.overflow = 'hidden';
   }
 
   render() {
-    const { User, clientWidth, images } = this.props;
+    const { User, domain, clientWidth, images } = this.props;
     return (
       <div className="component__ImageList">
         {
@@ -118,8 +100,14 @@ class ImageList extends Component {
 
 ImageList.displayName = 'ImageList';
 
+ImageList.defaultProps = {
+  domain: Meteor.settings.public.domain,
+  clientWidth: document.body.clientWidth,
+};
+
 ImageList.propTypes = {
   User: PropTypes.object,
+  domain: PropTypes.string.isRequired,
   clientWidth: PropTypes.number.isRequired,
   images: PropTypes.array.isRequired,
   onLikeOrUnlikeAction: PropTypes.func.isRequired,

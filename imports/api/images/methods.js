@@ -5,7 +5,9 @@ import { CallPromiseMixin } from 'meteor/didericis:callpromise-mixin';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import moment from 'moment';
+
 import { Images } from './image.js';
+import { Collections } from '../collections/collection.js';
 
 export const insertImage = new ValidatedMethod({
   name: 'images.insert',
@@ -72,13 +74,17 @@ export const recoveryImages = new ValidatedMethod({
   },
 });
 
+
+// only shiftImages method require destId
+// for update Images' private status based on dest collection
 export const shiftImages = new ValidatedMethod({
   name: 'images.shift',
   validate: new SimpleSchema({
     selectImages: { type: [String], label: '被选择图片Id', regEx: SimpleSchema.RegEx.Id },
     dest: { type: String, label: '目标相册名', max: 20 },
+    destId: { type: String, label: '目标相册Id', regEx: SimpleSchema.RegEx.Id },
   }).validator({ clean: true, filter: false }),
-  run({ selectImages, dest }) {
+  run({ selectImages, dest, destId }) {
     if (!this.userId) {
       throw new Meteor.Error('api.images.shift.notLoggedIn');
     }
@@ -86,9 +92,11 @@ export const shiftImages = new ValidatedMethod({
 
     if (!count) return;
 
+    const destPrivateStatus = Collections.findOne(destId).private;
+
     Images.update(
       { _id: { $in: selectImages } },
-      { $set: { collection: dest } },
+      { $set: { collection: dest, private: destPrivateStatus } },
       { multi: true }
     );
   },

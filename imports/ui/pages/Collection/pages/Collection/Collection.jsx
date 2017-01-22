@@ -9,7 +9,6 @@ import IconButton from 'material-ui/IconButton';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import { RadioButton, RadioButtonGroup } from 'material-ui/RadioButton';
-import ArrowBackIcon from 'material-ui/svg-icons/navigation/arrow-back';
 import AddPhotoIcon from 'material-ui/svg-icons/image/add-to-photos';
 import LockInIcon from 'material-ui/svg-icons/action/lock-outline';
 import LockOutIcon from 'material-ui/svg-icons/action/lock-open';
@@ -25,7 +24,6 @@ import {
   lockCollection,
   mutateCollectionCover,
 } from '/imports/api/collections/methods.js';
-import scrollTo from '/imports/utils/scrollTo.js';
 
 import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
 import Justified from '/imports/ui/components/JustifiedLayout/Justified.jsx';
@@ -129,11 +127,10 @@ export default class CollectionPage extends Component {
   }
 
   handleShiftPhoto(cb) {
-    const { selectImages, curColl } = this.props;
     const destColl = JSON.parse(this.state.destColl);
 
-    const keys = _.map(selectImages, (image) => {
-      const srcKey = `${image.user}/${curColl.name}/${image.name}.${image.type}`;
+    const keys = _.map(this.props.selectImages, (image) => {
+      const srcKey = `${image.user}/${this.props.curColl.name}/${image.name}.${image.type}`;
       const destKey = `${image.user}/${destColl.name}/${image.name}.${image.type}`;
       return {
         src: srcKey,
@@ -150,7 +147,7 @@ export default class CollectionPage extends Component {
       // Only shift images which are moved success in Qiniu
       let moveStatus = [];
       let sucMsg = '转移照片成功';
-      let sucMovedImgIds = _.map(selectImages, (image) => image._id);
+      let sucMovedImgIds = _.map(this.props.selectImages, (image) => image._id);
 
       for (let i = 0; i < rets.length; i++) {
         const status = rets[i].code;
@@ -169,6 +166,7 @@ export default class CollectionPage extends Component {
       shiftImages.call({
         selectImages: sucMovedImgIds,
         dest: destColl.name,
+        destId: destColl._id,
       }, (err) => {
         if (err) {
           cb(err, '转移照片失败');
@@ -245,7 +243,7 @@ export default class CollectionPage extends Component {
         radios.push(
           <RadioButton
             key={i}
-            value={JSON.stringify({ id: collId, name: collName })}
+            value={JSON.stringify({ _id: collId, name: collName })}
             label={collName}
             style={{ marginTop: '16px' }}
           />
@@ -314,30 +312,8 @@ export default class CollectionPage extends Component {
 
   renderNavHeader() {
     return this.props.isGuest
-    ? (
-      <NavHeader
-        User={this.props.User}
-        title="相册"
-        iconElementLeft={
-          <IconButton onTouchTap={() => browserHistory.goBack()}>
-            <ArrowBackIcon />
-          </IconButton>
-        }
-      />
-    )
-    : (
-      <NavHeader
-        User={this.props.User}
-        title="相册"
-        onTitleTouchTap={() => scrollTo(0, 1500)}
-        iconElementLeft={
-          <IconButton onTouchTap={() => browserHistory.goBack()}>
-            <ArrowBackIcon />
-          </IconButton>
-        }
-        iconElementRight={this.renderIconRight()}
-      />
-    );
+    ? (<NavHeader title={this.props.curColl.name} secondary />)
+    : (<NavHeader title="我的相册" iconElementRight={this.renderIconRight()} secondary />);
   }
 
   renderEditingNavHeader() {
@@ -352,17 +328,17 @@ export default class CollectionPage extends Component {
           <div>
             <IconButton
               iconStyle={{ color: '#fff' }}
-              onTouchTap={() => { this.openAlert('ShiftPhoto'); }}
+              onTouchTap={() => this.openAlert('ShiftPhoto')}
             ><ShiftIcon />
             </IconButton>
             <IconButton
               iconStyle={{ color: '#fff' }}
-              onTouchTap={() => { this.openAlert('SetCover'); }}
+              onTouchTap={() => this.openAlert('SetCover')}
             ><SetCoverIcon />
             </IconButton>
             <IconButton
               iconStyle={{ color: '#fff' }}
-              onTouchTap={() => { this.openAlert('RemovePhoto'); }}
+              onTouchTap={() => this.openAlert('RemovePhoto')}
             ><RemoveIcon />
             </IconButton>
           </div>

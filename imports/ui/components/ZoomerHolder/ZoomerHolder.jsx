@@ -8,7 +8,6 @@ import IconButton from 'material-ui/IconButton';
 import CameraIcon from 'material-ui/svg-icons/image/camera-alt';
 import HeartIcon from 'material-ui/svg-icons/action/favorite';
 import AddIcon from 'material-ui/svg-icons/content/add';
-import DownloadIcon from 'material-ui/svg-icons/file/file-download';
 import InfoIcon from 'material-ui/svg-icons/action/info';
 import TimelineIcon from 'material-ui/svg-icons/action/timeline';
 
@@ -19,7 +18,20 @@ class ZoomerHolder extends Component {
   constructor(props) {
     super(props);
     this.handleCloseZoomer = this.handleCloseZoomer.bind(this);
-    this.handlePrompt = this.handlePrompt.bind(this);
+    this.handleOpenPrompt = this.handleOpenPrompt.bind(this);
+  }
+
+  componentDidMount() {
+    // in mobile we need do more to disable scroll
+    document.body.addEventListener('touchmove', this.disableMobileScroll);
+  }
+
+  componentWillUnmount() {
+    document.body.removeEventListener('touchmove', this.disableMobileScroll);
+  }
+
+  disableMobileScroll(e) {
+    e.preventDefault(e);
   }
 
   handleCloseZoomer() {
@@ -27,57 +39,41 @@ class ZoomerHolder extends Component {
     this.props.zoomerClose();
   }
 
-  handlePrompt() {
+  handleOpenPrompt() {
     this.props.snackBarOpen('功能开发中');
   }
 
   render() {
-    const { open, image, clientWidth } = this.props;
-    if (!open) {
-      return <div />;
-    }
+    const { image } = this.props;
+
     const url = `${this.props.domain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
-    const src = `${url}?imageView2/2/w/${clientWidth * 2}`;
-    const styles = {
-      zoomer: {
-        width: open ? '100%' : 0,
-        height: open ? '100%' : 0,
-        zIndex: open ? 1200 : 0,
-      },
-      imageHolder: {
-        backgroundColor: '#68655B',
-        backgroundImage: `url(${src})`,
-        backgroundSize: 'cover',
-        backgroundPosition: '50%',
-      },
-      iconButton: {
-        color: '#fff',
-      },
+    const src = `${url}?imageView2/2/w/${this.props.clientWidth * 2}`;
+    const imageHolderStyle = {
+      backgroundImage: `url("${src}")`, // double quote for special character see: https://www.w3.org/TR/CSS2/syndata.html#value-def-uri
     };
     return (
-      <div className="component__ZoomerHolder" style={styles.zoomer}>
-        <div
-          className="ZoomerHolder__image"
-          style={styles.imageHolder}
-          onTouchTap={this.handleCloseZoomer}
-        >
+      <div className="component__ZoomerHolder">
+        <div className="ZoomerHolder__image" style={imageHolderStyle}>
           <div className="ZoomerHolder__background" />
         </div>
         <div className="ZoomerHolder__toolbox">
           <div className="ZoomerHolder__logo">
-            <IconButton iconStyle={styles.iconButton}>
-              <CameraIcon />
+            <IconButton
+              iconStyle={{ width: '32px', height: '32px', color: '#fff' }}
+              onTouchTap={this.handleCloseZoomer}
+            ><CameraIcon />
             </IconButton>
           </div>
           <div className="ZoomerHolder__action">
-            <IconButton iconStyle={styles.iconButton} onTouchTap={this.handlePrompt}>
-              <HeartIcon />
+            <IconButton
+              iconStyle={{ color: '#fff' }}
+              onTouchTap={this.handleOpenPrompt}
+            ><HeartIcon />
             </IconButton>
-            <IconButton iconStyle={styles.iconButton} onTouchTap={this.handlePrompt}>
-              <AddIcon />
-            </IconButton>
-            <IconButton iconStyle={styles.iconButton} onTouchTap={this.handlePrompt}>
-              <DownloadIcon />
+            <IconButton
+              iconStyle={{ color: '#fff' }}
+              onTouchTap={this.handleOpenPrompt}
+            ><AddIcon />
             </IconButton>
           </div>
         </div>
@@ -98,11 +94,15 @@ class ZoomerHolder extends Component {
             </div>
           </div>
           <div className="ZoomerHolder__action">
-            <IconButton iconStyle={styles.iconButton} onTouchTap={this.handlePrompt}>
-              <TimelineIcon />
+            <IconButton
+              iconStyle={{ color: '#fff' }}
+              onTouchTap={this.handleOpenPrompt}
+            ><TimelineIcon />
             </IconButton>
-            <IconButton iconStyle={styles.iconButton} onTouchTap={this.handlePrompt}>
-              <InfoIcon />
+            <IconButton
+              iconStyle={{ color: '#fff' }}
+              onTouchTap={this.handleOpenPrompt}
+            ><InfoIcon />
             </IconButton>
           </div>
         </div>
@@ -111,30 +111,23 @@ class ZoomerHolder extends Component {
   }
 }
 
+ZoomerHolder.displayName = 'ZoomerHolder';
+
 ZoomerHolder.defaultProps = {
   domain: Meteor.settings.public.domain,
+  clientWidth: document.body.clientWidth,
 };
 
 ZoomerHolder.propTypes = {
   domain: PropTypes.string.isRequired,
   clientWidth: PropTypes.number.isRequired,
+  image: PropTypes.object.isRequired,
   // Below Pass from Redux
-  open: PropTypes.bool.isRequired,
-  image: PropTypes.object,
   snackBarOpen: PropTypes.func.isRequired,
   zoomerClose: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = (state) => {
-  const zoomer = state.zoomer;
-  if (zoomer) {
-    return {
-      open: zoomer.open,
-      image: zoomer.image,
-    };
-  }
-  return { open: false };
-};
+const mapStateToProps = (state) => state;
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   snackBarOpen,

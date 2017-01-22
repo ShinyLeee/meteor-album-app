@@ -46,7 +46,7 @@ export default class PrimaryNavHeader extends Component {
 
   get coverSrc() {
     const defaultCover = `url(${this.props.sourceDomain}/GalleryPlus/Default/default-cover.jpg)`;
-    return this.props.User ? `url(${this.props.User.profile.cover})` : defaultCover;
+    return this.props.User ? `url("${this.props.User.profile.cover}")` : defaultCover;
   }
 
   get homeLink() {

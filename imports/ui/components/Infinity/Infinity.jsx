@@ -44,8 +44,8 @@ Infinity.displayName = 'Infinity';
 Infinity.defaultProps = {
   isLoading: false,
   offsetToBottom: 0,
-  className: 'react-Infinity-holder',
-  loadSpinnerClassName: 'react-Infinity-spinner',
+  className: 'component__Infinity',
+  loadSpinnerClassName: 'Infinity__spinner',
   beforeInfinityLoad: (<div className="text-center"><CircularProgress /></div>),
   onInfinityLoad: () => {},
 };

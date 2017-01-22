@@ -4,12 +4,16 @@ import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import { Collections } from '../collection.js';
 
 Meteor.publish('Collections.all', function all() {
-  return Collections.find({});
+  return Collections.find({
+    private: false,
+  });
 });
 
 Meteor.publish('Collections.own', function ownCollections() {
-  const user = Meteor.users.findOne(this.userId).username;
-  return Collections.find({ user });
+  const user = Meteor.users.findOne(this.userId);
+  return Collections.find({
+    user: user && user.username,
+  });
 });
 
 Meteor.publish('Collections.inUser', function targetUserCollections(user) {
@@ -17,14 +21,15 @@ Meteor.publish('Collections.inUser', function targetUserCollections(user) {
     user: { type: String, label: '用户名', max: 10 },
   }).validator({ clean: true, filter: false });
   return Collections.find({
+    private: false,
     user,
   });
 });
 
 Meteor.publish('Collections.collNames', function collNames() {
-  const user = Meteor.users.findOne(this.userId).username;
+  const user = Meteor.users.findOne(this.userId);
   return Collections.find(
-    { user },
+    { user: user && user.username },
     { fields: { name: 1 } }
   );
 });

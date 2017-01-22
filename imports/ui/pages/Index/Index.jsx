@@ -1,5 +1,6 @@
-import React, { PureComponent, PropTypes } from 'react';
 import { Meteor } from 'meteor/meteor';
+import React, { PureComponent, PropTypes } from 'react';
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import { Images } from '/imports/api/images/image.js';
 import { makeCancelable } from '/imports/utils/utils.js';
 
@@ -48,7 +49,7 @@ export default class IndexPage extends PureComponent {
     const loadPromise = new Promise((resolve) => {
       Meteor.defer(() => {
         const newImages = Images.find(
-          { private: { $ne: true } },
+          { private: false },
           { sort: { createdAt: -1 }, limit, skip }
         ).fetch();
         const curImages = [...images, ...newImages];
@@ -70,7 +71,7 @@ export default class IndexPage extends PureComponent {
   handleRefreshImages() {
     // after like or unlike a image, we need to refresh the data
     const trueImages = Images.find(
-      { private: { $ne: true } },
+      { private: false },
       { sort: { createdAt: -1 }, limit: this.state.images.length }).fetch();
     this.setState({ images: trueImages });
   }
@@ -90,7 +91,6 @@ export default class IndexPage extends PureComponent {
       <ImageList
         User={this.props.User}
         images={images}
-        clientWidth={this.props.clientWidth}
         onLikeOrUnlikeAction={this.handleRefreshImages}
       />
     );
@@ -114,13 +114,19 @@ export default class IndexPage extends PureComponent {
           />
           { this.props.dataIsReady && (
             <div className="content__index">
+              <ReactCSSTransitionGroup
+                transitionName="zoomer"
+                transitionEnterTimeout={300}
+                transitionLeaveTimeout={300}
+              >
+                { this.props.zoomerOpen && <ZoomerHolder key={this.props.zoomerImage._id} image={this.props.zoomerImage} /> }
+              </ReactCSSTransitionGroup>
               <Infinity
                 isLoading={this.state.isLoading}
                 onInfinityLoad={this.handleLoadImages}
                 offsetToBottom={100}
               >
                 { this.renderImageList() }
-                <ZoomerHolder clientWidth={this.props.clientWidth} />
               </Infinity>
             </div>
             )
@@ -134,16 +140,14 @@ export default class IndexPage extends PureComponent {
 
 IndexPage.displayName = 'IndexPage';
 
-IndexPage.defaultProps = {
-  clientWidth: document.body.clientWidth, // for ImageList and ZoomerHolder
-};
-
 IndexPage.propTypes = {
-  User: PropTypes.object,
-  clientWidth: PropTypes.number.isRequired,
-  // Below Pass from database
+  User: PropTypes.object, // only required in only Owner page, etc.. Setting/Recycle/Note
+  // Below Pass from Database
   limit: PropTypes.number.isRequired,
   dataIsReady: PropTypes.bool.isRequired,
   users: PropTypes.array.isRequired,
   initialImages: PropTypes.array.isRequired,
+  // Below Pass from Redux
+  zoomerOpen: PropTypes.bool.isRequired,
+  zoomerImage: PropTypes.object, // zoomerImage only required when zoomerOpen is true
 };

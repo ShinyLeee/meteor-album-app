@@ -6,8 +6,6 @@ import Popover from 'material-ui/Popover';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 import RaisedButton from 'material-ui/RaisedButton';
-import IconButton from 'material-ui/IconButton';
-import ArrowBackIcon from 'material-ui/svg-icons/navigation/arrow-back';
 import MessageIcon from 'material-ui/svg-icons/communication/message';
 import SettingsIcon from 'material-ui/svg-icons/action/settings';
 import ExitToAppIcon from 'material-ui/svg-icons/action/exit-to-app';
@@ -108,7 +106,7 @@ export default class UserPage extends Component {
         <div className="user__main">
           <div
             className="main__cover"
-            style={{ backgroundImage: `url(${curUser.profile.cover})` }}
+            style={{ backgroundImage: `url("${curUser.profile.cover}")` }}
           >
             <div className="main__background" />
           </div>
@@ -215,22 +213,8 @@ export default class UserPage extends Component {
     return (
       <div className="container">
         { this.props.isGuest
-          ? (
-            <NavHeader
-              User={this.props.User}
-              title="相册"
-              iconElementLeft={
-                <IconButton onTouchTap={() => browserHistory.goBack()}>
-                  <ArrowBackIcon />
-                </IconButton>
-              }
-            />)
-          : (
-            <NavHeader
-              User={this.props.User}
-              location={this.state.location}
-              primary
-            />)
+          ? (<NavHeader title={`${this.props.curUser.username}的主页`} secondary />)
+          : (<NavHeader User={this.props.User} location={this.state.location} primary />)
         }
         <div className="content">
           { this.props.dataIsReady

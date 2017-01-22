@@ -1,11 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import React, { Component, PropTypes } from 'react';
-import { browserHistory } from 'react-router';
-import IconButton from 'material-ui/IconButton';
-import ArrowBackIcon from 'material-ui/svg-icons/navigation/arrow-back';
 import { blue500 } from 'material-ui/styles/colors';
 import { Notes } from '/imports/api/notes/note.js';
-import scrollTo from '/imports/utils/scrollTo.js';
 import { makeCancelable } from '/imports/utils/utils.js';
 
 import Infinity from '/imports/ui/components/Infinity/Infinity.jsx';
@@ -95,17 +91,7 @@ export default class AllNotesPage extends Component {
   render() {
     return (
       <div className="container">
-        <NavHeader
-          User={this.props.User}
-          title="全部消息"
-          style={{ backgroundColor: blue500 }}
-          onTitleTouchTap={() => scrollTo(0, 1500)}
-          iconElementLeft={
-            <IconButton onTouchTap={() => browserHistory.goBack()}>
-              <ArrowBackIcon />
-            </IconButton>
-          }
-        />
+        <NavHeader title="全部消息" style={{ backgroundColor: blue500 }} secondary />
         <div className="content">
           {
             this.props.dataIsReady
@@ -122,7 +108,7 @@ export default class AllNotesPage extends Component {
 AllNotesPage.displayName = 'AllNotesPage';
 
 AllNotesPage.propTypes = {
-  User: PropTypes.object,
+  User: PropTypes.object.isRequired,
   // Below Pass from Database
   dataIsReady: PropTypes.bool.isRequired,
   limit: PropTypes.number.isRequired,

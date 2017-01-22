@@ -65,6 +65,23 @@
   transition: opacity 600ms ease-in;
 }
 
+.zoomer-enter {
+  transform: translate3d(0, 100%, 0);
+}
+
+.zoomer-enter.zoomer-enter-active {
+  transform: translate3d(0, 0, 0);
+  transition: transform 300ms;
+}
+
+.zoomer-leave {
+  transform: translate3d(0, 0, 0);
+}
+
+.zoomer-leave.zoomer-leave-active {
+  transform: translate3d(0, 100%, 0);
+  transition: transform 300ms;
+}
 
 @-webkit-keyframes bell-shake {
   0% { transform: rotateZ(0deg); transform-origin: 50% 0%; }

@@ -19,7 +19,9 @@ const MeteorContainer = createContainer(({ params }) => {
 
   const userHandler = Meteor.subscribe('Users.all');
   const imageHandler = Meteor.subscribe('Images.all');
-  const collectionHandler = Meteor.subscribe('Collections.inUser', username);
+  const collHandler = isGuest
+                      ? Meteor.subscribe('Collections.inUser', username)
+                      : Meteor.subscribe('Collections.own');
 
   let dataIsReady = false;
   let unOrderedImages = [];
@@ -29,7 +31,7 @@ const MeteorContainer = createContainer(({ params }) => {
   const curUser = Meteor.users.findOne({ username }) || {};
 
   if (userIsReady) {
-    dataIsReady = imageHandler.ready() && collectionHandler.ready();
+    dataIsReady = imageHandler.ready() && collHandler.ready();
     collectionCount = Collections.find().count();
     likedCount = Images.find({ liker: { $in: [curUser._id] } }).count();
     unOrderedImages = Images.find(

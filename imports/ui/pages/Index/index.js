@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
+import { connect } from 'react-redux';
 import { Images } from '/imports/api/images/image.js';
 
 import IndexPage from './Index.jsx';
 
-export default createContainer(() => {
+const MeteorContainer = createContainer(() => {
   // Define How many pictures render in the first time
   const limit = 5;
 
@@ -14,7 +15,7 @@ export default createContainer(() => {
 
   const users = Meteor.users.find().fetch();
   const initialImages = Images.find(
-    { private: { $ne: true } },
+    { private: false },
     { sort: { createdAt: -1 }, limit }
   ).fetch();
 
@@ -25,3 +26,11 @@ export default createContainer(() => {
     initialImages,
   };
 }, IndexPage);
+
+const mapStateToProps = (state) => ({
+  zoomerOpen: state.zoomer.open,
+  zoomerImage: state.zoomer.image,
+});
+
+export default connect(mapStateToProps)(MeteorContainer);
+

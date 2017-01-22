@@ -18,7 +18,9 @@ const MeteorContainer = createContainer(({ params }) => {
   else isGuest = true;
 
   const userHandler = Meteor.subscribe('Users.all');
-  const collHandler = Meteor.subscribe('Collections.inUser', username);
+  const collHandler = isGuest
+                      ? Meteor.subscribe('Collections.inUser', username)
+                      : Meteor.subscribe('Collections.own');
   const dataIsReady = userHandler.ready() && collHandler.ready();
 
   let colls;

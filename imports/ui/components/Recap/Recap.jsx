@@ -1,5 +1,4 @@
 import React, { PropTypes } from 'react';
-import pure from 'recompose/pure';
 import IconButton from 'material-ui/IconButton';
 
 import { Github, Wechat, Twitter, Instagram, Website } from '../SubMaterialUI/SvgIcons.jsx';
@@ -64,4 +63,4 @@ Recap.propTypes = {
   showIcon: PropTypes.bool.isRequired,
 };
 
-export default pure(Recap);
+export default Recap;
