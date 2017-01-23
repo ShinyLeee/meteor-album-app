@@ -53,7 +53,7 @@ const ImageHolder = ({ image, src, isLiked, onMediaClick, onLikeClick, onUnlikeC
         <IconButton onTouchTap={onCommentClick}>
           <CommentIcon />
         </IconButton>
-        <IconButton onTouchTap={onReplyClick} iconStyle={styles.flipReplyStyle}>
+        <IconButton style={{ float: 'right' }} onTouchTap={onReplyClick} iconStyle={styles.flipReplyStyle}>
           <ReplyIcon />
         </IconButton>
       </CardActions>
@@ -64,7 +64,7 @@ const ImageHolder = ({ image, src, isLiked, onMediaClick, onLikeClick, onUnlikeC
 ImageHolder.displayName = 'ImageHolder';
 
 ImageHolder.defaultProps = {
-  like: false,
+  isLiked: false,
 };
 
 ImageHolder.propTypes = {

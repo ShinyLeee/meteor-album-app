@@ -1,24 +1,26 @@
 import { Meteor } from 'meteor/meteor';
 import React, { Component, PropTypes } from 'react';
 import { bindActionCreators } from 'redux';
-import { browserHistory } from 'react-router';
 import { connect } from 'react-redux';
 import moment from 'moment';
-import IconButton from 'material-ui/IconButton';
-import CameraIcon from 'material-ui/svg-icons/image/camera-alt';
-import HeartIcon from 'material-ui/svg-icons/action/favorite';
-import AddIcon from 'material-ui/svg-icons/content/add';
-import InfoIcon from 'material-ui/svg-icons/action/info';
-import TimelineIcon from 'material-ui/svg-icons/action/timeline';
+import CircularProgress from 'material-ui/CircularProgress';
+import Dialog from 'material-ui/Dialog';
 
 import { zoomerClose, snackBarOpen } from '../../redux/actions/index.js';
+import ZoomerInner from './components/ZoomerInner/ZoomerInner.jsx';
 
 class ZoomerHolder extends Component {
 
   constructor(props) {
     super(props);
+    this.state = {
+      dialog: false,
+      isLoading: false,
+      exif: {},
+    };
     this.handleCloseZoomer = this.handleCloseZoomer.bind(this);
     this.handleOpenPrompt = this.handleOpenPrompt.bind(this);
+    this.handleGetExif = this.handleGetExif.bind(this);
   }
 
   componentDidMount() {
@@ -28,6 +30,11 @@ class ZoomerHolder extends Component {
 
   componentWillUnmount() {
     document.body.removeEventListener('touchmove', this.disableMobileScroll);
+  }
+
+  get imgSrc() {
+    const { domain, image } = this.props;
+    return `${domain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
   }
 
   disableMobileScroll(e) {
@@ -43,69 +50,100 @@ class ZoomerHolder extends Component {
     this.props.snackBarOpen('功能开发中');
   }
 
+  handleGetExif() {
+    if (this.props.image.type !== 'jpg') {
+      this.props.snackBarOpen('只有JPG图片存有EXIF信息');
+      return;
+    }
+    if (Object.keys(this.state.exif).length !== 0) {
+      this.setState({ dialog: true });
+      return;
+    }
+    this.setState({ dialog: true, isLoading: true });
+    const imgSrc = this.imgSrc;
+    $.ajax({
+      method: 'get',
+      url: `${imgSrc}?exif`,
+    })
+    .done((res) => {
+      // console.log(res);
+      this.setState({ exif: res, isLoading: false });
+    })
+    .fail((err) => {
+      this.setState({ isLoading: false });
+      this.props.snackBarOpen(`获取EXIF信息失败, ${err.responseJSON.error}`);
+      console.log(err); // eslint-disable-line no-console
+      throw new Meteor.Error(err);
+    });
+  }
+
   render() {
     const { image } = this.props;
+    const { exif } = this.state;
 
-    const url = `${this.props.domain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
-    const src = `${url}?imageView2/2/w/${this.props.clientWidth * 2}`;
-    const imageHolderStyle = {
-      backgroundImage: `url("${src}")`, // double quote for special character see: https://www.w3.org/TR/CSS2/syndata.html#value-def-uri
-    };
+    const imgSrc = this.imgSrc;
+    const slimSrc = `${imgSrc}?imageView2/2/w/${this.props.clientWidth * 2}`;
+    // double quote for special character see: https://www.w3.org/TR/CSS2/syndata.html#value-def-uri
+    const imageHolderStyle = { backgroundImage: `url("${slimSrc}")` };
     return (
       <div className="component__ZoomerHolder">
-        <div className="ZoomerHolder__image" style={imageHolderStyle}>
-          <div className="ZoomerHolder__background" />
-        </div>
-        <div className="ZoomerHolder__toolbox">
-          <div className="ZoomerHolder__logo">
-            <IconButton
-              iconStyle={{ width: '32px', height: '32px', color: '#fff' }}
-              onTouchTap={this.handleCloseZoomer}
-            ><CameraIcon />
-            </IconButton>
-          </div>
-          <div className="ZoomerHolder__action">
-            <IconButton
-              iconStyle={{ color: '#fff' }}
-              onTouchTap={this.handleOpenPrompt}
-            ><HeartIcon />
-            </IconButton>
-            <IconButton
-              iconStyle={{ color: '#fff' }}
-              onTouchTap={this.handleOpenPrompt}
-            ><AddIcon />
-            </IconButton>
-          </div>
-        </div>
-        <div className="ZoomerHolder__info">
-          <div className="ZoomerHolder__profile">
-            <img
-              src={image.avatar}
-              role="presentation"
-              onTouchTap={() => browserHistory.push(`/user/${image.user}`)}
-            />
-            <div className="ZoomerHolder__detail">
-              <span className="ZoomerHolder__title">
-                {image.user}
-              </span>
-              <span className="ZoomerHolder__subtitle">
-                {moment(image.createdAt).format('YYYY-MM-DD HH:mm')}
-              </span>
+        <ZoomerInner
+          image={image}
+          imageHolderStyle={imageHolderStyle}
+          onLogoClick={this.handleCloseZoomer}
+          onExifActionClick={this.handleGetExif}
+        />
+        <Dialog
+          className="ZoomerHolder__dialog"
+          open={this.state.dialog}
+          onRequestClose={() => this.setState({ dialog: false })}
+          autoScrollBodyContent
+        >
+          { this.state.isLoading
+            ? (
+              <div className="ZoomerHolder__loader">
+                <CircularProgress
+                  color="#3F51B5"
+                  size={30}
+                  thickness={2.5}
+                />
+                <span>加载中</span>
+              </div>
+            )
+          : (
+            <div className="ZoomerHolder__exif">
+              <div className="exif__info">
+                <span>制造厂商：</span>{(exif.Make && exif.Make.val) || '--'}
+              </div>
+              <div className="exif__info">
+                <span>相机型号：</span>{(exif.Model && exif.Model.val) || '--'}
+              </div>
+              <div className="exif__info">
+                <span>处理软件：</span>{(exif.Software && exif.Software.val) || '--'}
+              </div>
+              <div className="exif__info">
+                <span>曝光时间：</span>{(exif.ExposureTime && exif.ExposureTime.val) || '--'}
+              </div>
+              <div className="exif__info">
+                <span>镜头焦距：</span>{(exif.FocalLength && exif.FocalLength.val) || '--'}
+              </div>
+              <div className="exif__info">
+                <span>拍摄时间：</span>{(exif.DateTimeOriginal && exif.DateTimeOriginal.val) || '--'}
+              </div>
+              <div className="exif__info">
+                <span>修改时间：</span>{(exif.DateTime && exif.DateTime.val) || '--'}
+              </div>
+              <div className="exif__info">
+                <span>上传时间：</span>{moment(this.props.image.createdAt).format('YYYY:MM:DD HH:mm:ss')}
+              </div>
+              <div className="exif__info">
+                <span>图像尺寸：</span>
+                {`${(exif.PixelXDimension && exif.PixelXDimension.val) || '-'} × ${(exif.PixelYDimension && exif.PixelYDimension.val) || '-'}`}
+              </div>
             </div>
-          </div>
-          <div className="ZoomerHolder__action">
-            <IconButton
-              iconStyle={{ color: '#fff' }}
-              onTouchTap={this.handleOpenPrompt}
-            ><TimelineIcon />
-            </IconButton>
-            <IconButton
-              iconStyle={{ color: '#fff' }}
-              onTouchTap={this.handleOpenPrompt}
-            ><InfoIcon />
-            </IconButton>
-          </div>
-        </div>
+            )
+          }
+        </Dialog>
       </div>
     );
   }
