@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { likeImage, unlikeImage } from '/imports/api/images/methods.js';
 
 import { zoomerOpen, snackBarOpen } from '/imports/ui/redux/actions/index.js';
-import ImageHolder from '/imports/ui/components/ImageHolder/ImageHolder.jsx';
+import ImageHolder from '../ImageHolder/ImageHolder.jsx';
 
 class ImageList extends Component {
 
@@ -30,7 +30,7 @@ class ImageList extends Component {
 
   handleAddLiker(image) {
     const imageId = image._id;
-    const liker = this.props.User._id;
+    const liker = this.props.User.username;
 
     likeImage.call({
       imageId,
@@ -45,7 +45,7 @@ class ImageList extends Component {
 
   handleRemoveLiker(image) {
     const imageId = image._id;
-    const unliker = this.props.User._id;
+    const unliker = this.props.User.username;
 
     unlikeImage.call({
       imageId,
@@ -76,13 +76,13 @@ class ImageList extends Component {
             const url = `${domain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
             const src = `${url}?imageView2/2/w/${clientWidth * 2}`;
             const likers = image.liker;
-            const curUser = User && User._id;
+            const curUser = User && User.username;
             const isLiked = likers.indexOf(curUser) > -1;
             return (
               <ImageHolder
                 key={i}
                 image={image}
-                src={src}
+                imageSrc={src}
                 isLiked={isLiked}
                 onLikeClick={() => this.handleAddLiker(image)}
                 onUnlikeClick={() => this.handleRemoveLiker(image)}

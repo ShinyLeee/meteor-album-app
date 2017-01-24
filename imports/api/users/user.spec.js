@@ -23,17 +23,17 @@ if (Meteor.isServer) {
     });
 
     describe('publication', () => {
-      let userId;
+      let curUser;
       before(() => {
         Users.remove({});
 
-        userId = Factory.create('user')._id;
+        curUser = Factory.create('user');
         _.times(3, () => Factory.create('user'));
       });
 
       describe('Users.all', () => {
         it('should send all user documents', (done) => {
-          const collector = new PublicationCollector({ userId });
+          const collector = new PublicationCollector({ userId: curUser._id });
           collector.collect('Users.all', (collections) => {
             expect(collections.users).to.have.length(4);
             done();
@@ -41,7 +41,7 @@ if (Meteor.isServer) {
         });
 
         it('should only reveal username and profile fields to client', (done) => {
-          const collector = new PublicationCollector({ userId });
+          const collector = new PublicationCollector({ userId: curUser._id });
           collector.collect('Users.all', (collections) => {
             expect(collections.users[0]).to.have.all.keys(['_id', 'username', 'profile']);
             done();
@@ -51,20 +51,20 @@ if (Meteor.isServer) {
     });
 
     describe('methods', () => {
-      let userId;
+      let curUser;
 
       beforeEach(() => {
         // Clear
         Users.remove({});
 
         // Create a user in that list
-        userId = Factory.create('user')._id;
+        curUser = Factory.create('user');
       });
 
       describe('createUser', () => {
         it('should only can create if you are not logged in', () => {
           // Set up method context and arguments
-          const methodInvocation = { userId };
+          const methodInvocation = { userId: curUser._id };
           const args = { username: 'test', password: 'test' };
 
           assert.throws(() => {
@@ -85,8 +85,8 @@ if (Meteor.isServer) {
 
         it('should update profile after method call', () => {
           // Set up method context and arguments
-          const methodInvocation = { userId };
-          const prevProfile = Users.findOne(userId).profile;
+          const methodInvocation = { userId: curUser._id };
+          const prevProfile = Users.findOne(curUser._id).profile;
           const args = {
             nickname: 'test',
             intro: 'intro after update',
@@ -97,7 +97,7 @@ if (Meteor.isServer) {
 
           updateProfile._execute(methodInvocation, args);
 
-          const currProfile = Users.findOne(userId).profile;
+          const currProfile = Users.findOne(curUser._id).profile;
           // profile has other properties, for instance: [followers]
           const expectedProfile = Object.assign({}, prevProfile, args);
           expect(currProfile).to.be.eql(expectedProfile);
@@ -106,56 +106,56 @@ if (Meteor.isServer) {
 
       describe('followUser', () => {
         it('should only work if you are logged in and the target is not yourself', () => {
-          const args = { target: userId };
+          const args = { targetId: curUser._id };
 
           assert.throws(() => {
             followUser._execute({}, args);
           }, Meteor.Error, /api.users.followUser.notLoggedIn/);
 
           assert.throws(() => {
-            followUser._execute({ userId }, args);
+            followUser._execute({ userId: curUser._id }, args);
           }, Meteor.Error, /api.users.followUser.targetDenied/);
         });
 
         it('should add profile.followers after method call', () => {
           // create a target User
-          const target = Factory.create('user')._id;
+          const targetId = Factory.create('user')._id;
 
-          const methodInvocation = { userId };
-          const args = { target };
+          const methodInvocation = { userId: curUser._id };
+          const args = { targetId };
 
           followUser._execute(methodInvocation, args);
 
-          const targetUserFollowers = Users.findOne(target).profile.followers;
-          expect(targetUserFollowers).to.include(userId);
+          const targetUserFollowers = Users.findOne(targetId).profile.followers;
+          expect(targetUserFollowers).to.include(curUser.username);
         });
       });
 
       describe('unFollowUser', () => {
         it('should only work if you are logged in and the target is not yourself', () => {
-          const args = { target: userId };
+          const args = { targetId: curUser._id };
 
           assert.throws(() => {
             unFollowUser._execute({}, args);
           }, Meteor.Error, /api.users.unFollowUser.notLoggedIn/);
 
           assert.throws(() => {
-            unFollowUser._execute({ userId }, args);
+            unFollowUser._execute({ userId: curUser._id }, args);
           }, Meteor.Error, /api.users.unFollowUser.targetDenied/);
         });
 
         it('should add profile.followers after method call', () => {
           // we need create a User that profile has followers [userId]
-          const profile = Object.assign({}, defaultUserProfile, { followers: [userId] });
-          const target = Factory.create('user', { profile })._id;
+          const profile = Object.assign({}, defaultUserProfile, { followers: [curUser.username] });
+          const targetId = Factory.create('user', { profile })._id;
 
-          const methodInvocation = { userId };
-          const args = { target };
+          const methodInvocation = { userId: curUser._id };
+          const args = { targetId };
 
           unFollowUser._execute(methodInvocation, args);
 
-          const targetUserFollowers = Users.findOne(target).profile.followers;
-          expect(targetUserFollowers).to.not.include(userId);
+          const targetUserFollowers = Users.findOne(targetId).profile.followers;
+          expect(targetUserFollowers).to.not.include(curUser.username);
         });
       });
     });

@@ -5,10 +5,8 @@ import IconMenu from 'material-ui/IconMenu';
 import IconButton from 'material-ui/IconButton';
 import MenuItem from 'material-ui/MenuItem';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
-import ArrowBackIcon from 'material-ui/svg-icons/navigation/arrow-back';
 import { Notes } from '/imports/api/notes/note.js';
 import { readNote, readAllNotes } from '/imports/api/notes/methods.js';
-import scrollTo from '/imports/utils/scrollTo.js';
 import { makeCancelable } from '/imports/utils/utils.js';
 
 import Infinity from '/imports/ui/components/Infinity/Infinity.jsx';
@@ -150,8 +148,12 @@ export default class NotePage extends Component {
                 onTouchTap={this.handleReadAll}
               />
               <MenuItem
-                primaryText="查看所有信息"
-                onTouchTap={() => browserHistory.push(`/note/${this.props.User.username}/all`)}
+                primaryText="我发出的所有信息"
+                onTouchTap={() => browserHistory.push(`/note/${this.props.User.username}/sent`)}
+              />
+              <MenuItem
+                primaryText="我收到的所有信息"
+                onTouchTap={() => browserHistory.push(`/note/${this.props.User.username}/received`)}
               />
             </IconMenu>
           }

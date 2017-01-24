@@ -1,13 +1,18 @@
 /* eslint-disable prefer-arrow-callback, meteor/audit-argument-checks */
 import { Meteor } from 'meteor/meteor';
-import { SimpleSchema } from 'meteor/aldeed:simple-schema';
+// import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import { Notes } from '../note.js';
 
-Meteor.publish('Notes.own', function ownNotes(username) {
-  new SimpleSchema({
-    username: { type: String, label: '用户名', max: 20 },
-  }).validator({ clean: true, filter: false });
+Meteor.publish('Notes.receiver', function receiverNotes() {
+  const user = Meteor.users.findOne(this.userId);
   return Notes.find({
-    receiver: username,
+    receiver: user && user.username,
+  });
+});
+
+Meteor.publish('Notes.sender', function senderNotes() {
+  const user = Meteor.users.findOne(this.userId);
+  return Notes.find({
+    sender: user && user.username,
   });
 });

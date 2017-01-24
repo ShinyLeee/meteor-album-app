@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
 import { Notes } from '/imports/api/notes/note.js';
 
-import AllNotesPage from './AllNotes.jsx';
+import AllSentNotes from './AllSentNotes.jsx';
 
 export default createContainer(({ params }) => {
   const { username } = params;
@@ -10,17 +10,17 @@ export default createContainer(({ params }) => {
   const limit = 5;
 
   const userHandler = Meteor.subscribe('Users.others');
-  const noteHandler = Meteor.subscribe('Notes.receiver');
+  const noteHandler = Meteor.subscribe('Notes.sender');
   const dataIsReady = userHandler.ready() && noteHandler.ready();
 
-  const initialAllNotes = Notes.find(
-    { receiver: username },
+  const initialAllSentNotes = Notes.find(
+    { sender: username },
     { sort: { sendAt: -1 }, limit }
 ).fetch();
 
   return {
     dataIsReady,
     limit,
-    initialAllNotes,
+    initialAllSentNotes,
   };
-}, AllNotesPage);
+}, AllSentNotes);

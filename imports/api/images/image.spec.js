@@ -29,7 +29,7 @@ if (Meteor.isServer) {
     });
 
     describe('publication', () => {
-      let user;
+      let curUser;
       let collOne;
       let collTwo;
       before(() => {
@@ -37,24 +37,27 @@ if (Meteor.isServer) {
         Collections.remove({});
         Images.remove({});
         // Total create 1 USER 2 COLLECTION 5 IMAGES
-        user = Factory.create('user');
-        collOne = Factory.create('collection', { user: user.username });
-        collTwo = Factory.create('collection', { user: user.username });
+        curUser = Factory.create('user');
+        collOne = Factory.create('collection', { user: curUser.username });
+        collTwo = Factory.create('collection', { user: curUser.username });
 
         // Create 2 images belong to user and collOne
-        _.times(2, () => Factory.create('image', { user: user.username, collection: collOne.name }));
+        _.times(2, () => Factory.create('image', { user: curUser.username, collection: collOne.name }));
 
         // Create 1 image belong to user but collTwo
-        _.times(1, () => Factory.create('image', { user: user.username, collection: collTwo.name }));
+        Factory.create('image', { user: curUser.username, collection: collTwo.name });
 
         // Create a image has been removed to recycle
-        Factory.create('image', { user: user.username, collection: collOne.name, deletedAt: new Date() });
+        Factory.create('image', { user: curUser.username, collection: collOne.name, deletedAt: new Date() });
+
+        // Create a image liked by self but now is private
+        Factory.create('image', { user: curUser.username, collection: collOne.name, liker: [curUser.username], private: true });
 
         // Create a image which is private
         Factory.create('image', { user: 'tester', collection: 'test-coll', private: true });
 
         // Create a image belong to another user and another collection
-        Factory.create('image', { user: 'tester', collection: 'test-coll', liker: [user._id] });
+        Factory.create('image', { user: 'tester', collection: 'test-coll', liker: [curUser.username] });
       });
 
       describe('Images.all', () => {
@@ -68,20 +71,30 @@ if (Meteor.isServer) {
       });
 
       describe('Images.own', () => {
-        it('should only send current user\'s image documents and deletedAt field null', (done) => {
-          const collector = new PublicationCollector({ userId: user._id });
+        it('should only all image documents owned by self and deletedAt field null', (done) => {
+          const collector = new PublicationCollector({ userId: curUser._id });
           collector.collect('Images.own', (collections) => {
-            expect(collections.images).to.have.length(3);
+            expect(collections.images).to.have.length(4);
             done();
           });
         });
       });
 
       describe('Images.liked', () => {
-        it('should send current user liked image documents', (done) => {
-          const collector = new PublicationCollector({ userId: user._id });
+        it('should send own liked image documents without username parameter', (done) => {
+          const collector = new PublicationCollector({ userId: curUser._id });
           collector.collect('Images.liked', (collections) => {
             expect(collections.images).to.have.length(1);
+            expect(collections.images[0].liker).to.include(curUser.username);
+            done();
+          });
+        });
+
+        it('should send current user liked image documents with username parameter', (done) => {
+          const collector = new PublicationCollector({ userId: Random.id() });
+          collector.collect('Images.liked', curUser.username, (collections) => {
+            expect(collections.images).to.have.length(1);
+            expect(collections.images[0].liker).to.include(curUser.username);
             done();
           });
         });
@@ -89,7 +102,7 @@ if (Meteor.isServer) {
 
       describe('Images.recycle', () => {
         it('should only send current user\'s deleted image documents', (done) => {
-          const collector = new PublicationCollector({ userId: user._id });
+          const collector = new PublicationCollector({ userId: curUser._id });
           collector.collect('Images.recycle', (collections) => {
             expect(collections.images).to.have.length(1);
             done();
@@ -103,7 +116,7 @@ if (Meteor.isServer) {
       //     const collector = new PublicationCollector();
       //     collector.collect(
       //       'Images.inCollection',
-      //       { username: user.username, cname: collOne.name },
+      //       { username: curUser.username, cname: collOne.name },
       //       (collections) => {
       //         assert.equal(collections.collections.length, 1);
       //         assert.equal(collections.images.length, 2);
@@ -115,7 +128,7 @@ if (Meteor.isServer) {
     });
 
     describe('methods', () => {
-      let user;
+      let curUser;
       let collOne;
       let imgId;
 
@@ -125,16 +138,16 @@ if (Meteor.isServer) {
         Collections.remove({});
         Images.remove({});
 
-        user = Factory.create('user');
-        collOne = Factory.create('collection', { user: user.username });
-        imgId = Factory.create('image', { user: user.username, collection: collOne.name })._id;
-        _.times(2, () => Factory.create('image', { user: user.username, collection: collOne.name }));
+        curUser = Factory.create('user');
+        collOne = Factory.create('collection', { user: curUser.username });
+        imgId = Factory.create('image', { user: curUser.username, collection: collOne.name })._id;
+        _.times(2, () => Factory.create('image', { user: curUser.username, collection: collOne.name }));
       });
 
       describe('insertImage', () => {
         it('should only can insert image if you are logged in', () => {
           assert.throws(() => {
-            const newImg = Factory.tree('image', { user: user.username, collection: collOne.name });
+            const newImg = Factory.tree('image', { user: curUser.username, collection: collOne.name });
             insertImage._execute({}, newImg);
           }, Meteor.Error, /api.images.insert.notLoggedIn/);
         });
@@ -142,17 +155,17 @@ if (Meteor.isServer) {
         it('should only can insert image by yourself', () => {
           const newImg = Factory.tree('image', { user: 'tester', collection: 'test-coll' });
           assert.throws(() => {
-            insertImage._execute({ userId: user._id }, newImg);
+            insertImage._execute({ userId: curUser._id }, newImg);
           }, Meteor.Error, /api.images.insert.accessDenied/);
         });
 
         it('should insert image after method call', () => {
           // generate a image object without _id
-          const newImg = Factory.tree('image', { user: user.username, collection: collOne.name });
+          const newImg = Factory.tree('image', { user: curUser.username, collection: collOne.name });
 
           expect(Images.find().count()).to.equal(3); // expect have 3 pre created Image
 
-          insertImage._execute({ userId: user._id }, newImg);
+          insertImage._execute({ userId: curUser._id }, newImg);
           expect(Images.find().count()).to.equal(4); // after execute method, expect have 4 Images
           expect(Images.findOne({ user: newImg.user, collection: newImg.collection })).to.be.ok;
         });
@@ -168,7 +181,7 @@ if (Meteor.isServer) {
         it('should remove images after method call', () => {
           expect(Images.find().count()).to.equal(3);
 
-          removeImages._execute({ userId: user._id }, { selectImages: [imgId] });
+          removeImages._execute({ userId: curUser._id }, { selectImages: [imgId] });
           expect(Images.find().count()).to.equal(2);
         });
       });
@@ -184,25 +197,25 @@ if (Meteor.isServer) {
         });
 
         it('should update deletedAt property after removeImagesToRecycle method call', () => {
-          const newImg = Factory.create('image', { user: user.username, collection: collOne.name });
+          const newImg = Factory.create('image', { user: curUser.username, collection: collOne.name });
           expect(Images.find().count()).to.equal(4);
 
-          removeImagesToRecycle._execute({ userId: user._id }, { selectImages: [imgId, newImg._id] });
+          removeImagesToRecycle._execute({ userId: curUser._id }, { selectImages: [imgId, newImg._id] });
           expect(Images.find({ deletedAt: { $ne: null } }).count()).to.equal(2);
         });
 
         it('should update deletedAt null after recoveryImages method call', () => {
           const newImg = Factory.create(
             'image',
-            { user: user.username, collection: collOne.name, deletedAt: new Date() }
+            { user: curUser.username, collection: collOne.name, deletedAt: new Date() }
           );
           const newImg2 = Factory.create(
             'image',
-            { user: user.username, collection: collOne.name, deletedAt: new Date() }
+            { user: curUser.username, collection: collOne.name, deletedAt: new Date() }
           );
           expect(Images.find({ deletedAt: { $ne: null } }).count()).to.equal(2);
 
-          recoveryImages._execute({ userId: user._id }, { selectImages: [newImg._id, newImg2._id] });
+          recoveryImages._execute({ userId: curUser._id }, { selectImages: [newImg._id, newImg2._id] });
           expect(Images.find({ deletedAt: { $ne: null } }).count()).to.equal(0);
         });
       });
@@ -215,13 +228,13 @@ if (Meteor.isServer) {
         });
 
         it('should update image collection property after method call', () => {
-          const newImg = Factory.create('image', { user: user.username, collection: collOne.name });
-          const anotherColl = Factory.create('collection', { user: user.username });
+          const newImg = Factory.create('image', { user: curUser.username, collection: collOne.name });
+          const anotherColl = Factory.create('collection', { user: curUser.username });
           expect(Images.find({ collection: collOne.name }).count()).to.equal(4);
           expect(Images.find({ collection: anotherColl.name }).count()).to.equal(0);
 
           shiftImages._execute(
-            { userId: user._id },
+            { userId: curUser._id },
             { selectImages: [imgId, newImg._id], dest: anotherColl.name, destId: anotherColl._id }
           );
 
@@ -230,12 +243,12 @@ if (Meteor.isServer) {
         });
 
         it('should update image private field based on target collection', () => {
-          const anotherColl = Factory.create('collection', { user: user.username, private: true });
+          const anotherColl = Factory.create('collection', { user: curUser.username, private: true });
           expect(Images.findOne(imgId).collection).to.equal(collOne.name);
           expect(Images.findOne(imgId).private).to.be.false;
 
           shiftImages._execute(
-            { userId: user._id },
+            { userId: curUser._id },
             { selectImages: [imgId], dest: anotherColl.name, destId: anotherColl._id }
           );
 
@@ -247,10 +260,10 @@ if (Meteor.isServer) {
       describe('likeImage / unlikeImage', () => {
         it('should only can like or unlike image if you are logged in', () => {
           assert.throws(() => {
-            likeImage._execute({}, { imageId: imgId, liker: user._id });
+            likeImage._execute({}, { imageId: imgId, liker: curUser.username });
           }, Meteor.Error, /api.images.like.notLoggedIn/);
           assert.throws(() => {
-            unlikeImage._execute({}, { imageId: imgId, unliker: user._id });
+            unlikeImage._execute({}, { imageId: imgId, unliker: curUser.username });
           }, Meteor.Error, /api.images.unlike.notLoggedIn/);
         });
 
@@ -260,17 +273,17 @@ if (Meteor.isServer) {
           expect(Images.findOne(imgId).liker).to.include(anotherUid, 'should add liker id after likeImage');
 
           // allow like self image
-          likeImage._execute({ userId: user._id }, { imageId: imgId, liker: user._id });
-          expect(Images.findOne(imgId).liker).to.include(user._id, 'should support like self image');
+          likeImage._execute({ userId: curUser.username }, { imageId: imgId, liker: curUser.username });
+          expect(Images.findOne(imgId).liker).to.include(curUser.username, 'should support like self image');
 
-          likeImage._execute({ userId: user._id }, { imageId: imgId, liker: user._id });
+          likeImage._execute({ userId: curUser.username }, { imageId: imgId, liker: curUser.username });
           expect(Images.findOne(imgId).liker).to.have.lengthOf(2, 'only allow one user liked once');
 
           unlikeImage._execute({ userId: anotherUid }, { imageId: imgId, unliker: anotherUid });
           expect(Images.findOne(imgId).liker).to.not.include(anotherUid, 'should remove like id after unlikeImage');
 
-          unlikeImage._execute({ userId: anotherUid }, { imageId: imgId, unliker: user._id });
-          expect(Images.findOne(imgId).liker).to.not.include(user._id);
+          unlikeImage._execute({ userId: anotherUid }, { imageId: imgId, unliker: curUser.username });
+          expect(Images.findOne(imgId).liker).to.not.include(curUser.username);
         });
       });
     });

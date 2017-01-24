@@ -13,7 +13,6 @@ const MeteorContainer = createContainer(() => {
   const imageHandler = Meteor.subscribe('Images.all');
   const dataIsReady = userHandler.ready() && imageHandler.ready();
 
-  const users = Meteor.users.find().fetch();
   const initialImages = Images.find(
     { private: false },
     { sort: { createdAt: -1 }, limit }
@@ -22,7 +21,6 @@ const MeteorContainer = createContainer(() => {
   return {
     limit,
     dataIsReady,
-    users,
     initialImages,
   };
 }, IndexPage);

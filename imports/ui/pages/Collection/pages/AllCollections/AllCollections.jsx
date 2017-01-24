@@ -178,7 +178,7 @@ AllCollectionPage.propTypes = {
   User: PropTypes.object,
   // Below Pass from Database
   dataIsReady: PropTypes.bool.isRequired,
-  isGuest: PropTypes.bool.isRequired,
+  isGuest: PropTypes.bool.isRequired, // based on isGuest render different content
   curUser: PropTypes.object.isRequired,
   colls: PropTypes.array.isRequired,
   // Below Pass from Redux

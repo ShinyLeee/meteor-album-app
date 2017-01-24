@@ -123,6 +123,32 @@
   }
 }
 
+/* route /user/:username/likes */
+.content__userLiked {
+  background-color: #ededed;
+  & .component__ImageHolder {
+    margin-bottom: 20px;
+  }
+}
+
+.content__userFans {
+  & > .userFans__search {
+    padding: 8px 12px;
+    text-align: center;
+    & > input {
+      width: 100%;
+      height: 24px;
+      background-color: #eee;
+      font-size: 14px;
+      text-align: center;
+      border: none;
+    }
+  }
+  & > .userFans__list {
+    & > .userFans__emptyItem{ text-align: center; }
+  }
+}
+
 /* route /setting */
 .content__setting {
   .setting__cover {
@@ -163,8 +189,8 @@
   }
 }
 
-/* route /note, /note/:username/all */
-.content__note, .content__allNotes {
+/* route /note, /note/:username/received, /note/:username/sent */
+.content__note, .content__allNotes, .content__allSentNotes {
   padding: 5px 6px;
   background-color: #ededed;
   min-height: 495px;

@@ -33,7 +33,7 @@ const MeteorContainer = createContainer(({ params }) => {
   if (userIsReady) {
     dataIsReady = imageHandler.ready() && collHandler.ready();
     collectionCount = Collections.find().count();
-    likedCount = Images.find({ liker: { $in: [curUser._id] } }).count();
+    likedCount = Images.find({ liker: { $in: [curUser.username] } }).count();
     unOrderedImages = Images.find(
       { user: curUser.username },
       { limit: 10 }

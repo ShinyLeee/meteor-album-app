@@ -57,32 +57,36 @@ export const updateProfile = new ValidatedMethod({
 export const followUser = new ValidatedMethod({
   name: 'users.followUser',
   validate: new SimpleSchema({
-    target: { type: String, label: '被关注者', regEx: SimpleSchema.RegEx.Id },
+    targetId: { type: String, label: '被关注者Id', regEx: SimpleSchema.RegEx.Id },
   }).validator({ clean: true, filter: false }),
-  run({ target }) {
+  run({ targetId }) {
     if (!this.userId) {
       throw new Meteor.Error('api.users.followUser.notLoggedIn');
     }
-    if (this.userId === target) {
+    // can not manipulate own profile.followers field
+    if (this.userId === targetId) {
       throw new Meteor.Error('api.users.followUser.targetDenied');
     }
-    return Users.update(target, { $addToSet: { 'profile.followers': this.userId } });
+    const starter = Users.findOne(this.userId).username;
+    Users.update(targetId, { $addToSet: { 'profile.followers': starter } });
   },
 });
 
 export const unFollowUser = new ValidatedMethod({
   name: 'users.unFollowUser',
   validate: new SimpleSchema({
-    target: { type: String, label: '被取消关注者', regEx: SimpleSchema.RegEx.Id },
+    targetId: { type: String, label: '被取消关注者Id', regEx: SimpleSchema.RegEx.Id },
   }).validator({ clean: true, filter: false }),
-  run({ target }) {
+  run({ targetId }) {
     if (!this.userId) {
       throw new Meteor.Error('api.users.unFollowUser.notLoggedIn');
     }
-    if (this.userId === target) {
+    // can not manipulate own profile.followers field
+    if (this.userId === targetId) {
       throw new Meteor.Error('api.users.unFollowUser.targetDenied');
     }
-    return Users.update(target, { $pull: { 'profile.followers': this.userId } });
+    const starter = Users.findOne(this.userId).username;
+    Users.update(targetId, { $pull: { 'profile.followers': starter } });
   },
 });
 

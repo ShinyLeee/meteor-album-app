@@ -36,14 +36,24 @@ if (Meteor.isServer) {
         _.times(2, () => Factory.create('note', { receiver: curUser.username }));
 
         // Create 1 note send to another user
-        Factory.create('note', { receiver: 'tester' });
+        Factory.create('note', { sender: curUser.username, receiver: 'tester' });
       });
 
-      describe('Notes.own', () => {
-        it('should only send current user\'s notes documents', (done) => {
-          const collector = new PublicationCollector();
-          collector.collect('Notes.own', curUser.username, (collections) => {
+      describe('Notes.receiver', () => {
+        it('should only send current user as receiver\'s notes documents', (done) => {
+          const collector = new PublicationCollector({ userId: curUser._id });
+          collector.collect('Notes.receiver', (collections) => {
             expect(collections.notes).to.have.length(2);
+            done();
+          });
+        });
+      });
+
+      describe('Notes.sender', () => {
+        it('should only send current user as sender\'s notes documents', (done) => {
+          const collector = new PublicationCollector({ userId: curUser._id });
+          collector.collect('Notes.sender', (collections) => {
+            expect(collections.notes).to.have.length(1);
             done();
           });
         });

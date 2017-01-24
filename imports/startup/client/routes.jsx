@@ -10,11 +10,14 @@ import Login from '/imports/ui/pages/Sign/pages/Login/Login.jsx';
 import Register from '/imports/ui/pages/Sign/pages/Register/Register.jsx';
 import Index from '/imports/ui/pages/Index/index.js';
 import User from '/imports/ui/pages/User/index.js';
+import UserLikes from '/imports/ui/pages/User/pages/UserLikes/index.js';
+import UserFans from '/imports/ui/pages/User/pages/UserFans/index.js';
 import AllCollections from '/imports/ui/pages/Collection/pages/AllCollections/index.js';
 import Colletion from '/imports/ui/pages/Collection/pages/Collection/index.js';
 import Recycle from '/imports/ui/pages/Recycle/index.js';
 import Setting from '/imports/ui/pages/Setting/index.js';
 import Note from '/imports/ui/pages/Note/pages/Note/index.js';
+import AllSentNotes from '/imports/ui/pages/Note/pages/AllSentNotes/index.js';
 import AllNotes from '/imports/ui/pages/Note/pages/AllNotes/index.js';
 import SendNote from '/imports/ui/pages/Note/pages/SendNote/index.js';
 import Construction from '/imports/ui/pages/Error/Construction.jsx';
@@ -40,13 +43,16 @@ const Root = () => {
             <IndexRoute index={1} component={Index} />
             <Redirect from="explore" to="/" />
             <Route index={1} path="user/:username" component={User} onEnter={isAllowVisitHome} />
+            <Route index={2} path="user/:username/likes" component={UserLikes} onEnter={isAllowVisitHome} />
+            <Route index={2} path="user/:username/fans" component={UserFans} onEnter={isAllowVisitHome} />
             <Route index={1} path="user/:username/collection" component={AllCollections} onEnter={isAllowVisitColl} />
             <Route index={2} path="user/:username/collection/:cname" component={Colletion} onEnter={isAllowVisitColl} />
             <Route index={1} path="memory" component={Construction} onEnter={isLogin} />
             <Route index={1} path="recycle" component={Recycle} onEnter={isLogin} />
             <Route index={1} path="setting" component={Setting} onEnter={isLogin} />
             <Route index={2} path="note/:username" component={Note} onEnter={isPermission} />
-            <Route index={3} path="note/:username/all" component={AllNotes} onEnter={isPermission} />
+            <Route index={3} path="note/:username/sent" component={AllSentNotes} onEnter={isPermission} />
+            <Route index={3} path="note/:username/received" component={AllNotes} onEnter={isPermission} />
             <Route index={2} path="sendNote" component={SendNote} onEnter={isLogin} />
             <Route index={1} path="login" component={Login} onEnter={isLogout} />
             <Route index={1} path="register" component={Register} onEnter={isLogout} />

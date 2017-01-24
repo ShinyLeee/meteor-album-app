@@ -13,7 +13,7 @@ const MeteorContainer = createContainer(({ params }) => {
   const limit = 5;
 
   const userHandler = Meteor.subscribe('Users.others');
-  const noteHandler = Meteor.subscribe('Notes.own', username);
+  const noteHandler = Meteor.subscribe('Notes.receiver');
   const dataIsReady = userHandler.ready() && noteHandler.ready();
 
   const initialNotes = Notes.find(

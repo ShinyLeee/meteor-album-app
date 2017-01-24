@@ -29,7 +29,7 @@ export default class UserPage extends Component {
   }
 
   get isFollowed() {
-    return !!this.props.User && this.props.curUser.profile.followers.indexOf(this.props.User._id) >= 0;
+    return !!this.props.User && this.props.curUser.profile.followers.indexOf(this.props.User.username) >= 0;
   }
 
   get sendNoteLink() {
@@ -57,20 +57,26 @@ export default class UserPage extends Component {
   }
 
   handleFollow() {
-    if (!this.props.User) return this.props.snackBarOpen('您还尚未登录');
-    return followUser.call({ target: this.props.curUser._id }, (err, res) => {
+    if (!this.props.User) {
+      this.props.snackBarOpen('您还尚未登录');
+    }
+    followUser.call({
+      targetId: this.props.curUser._id,
+    }, (err) => {
       if (err) throw new Meteor.Error(err.reason);
       this.props.snackBarOpen('关注成功');
-      return res;
     });
   }
 
   handleUnFollow() {
-    if (!this.props.User) return this.props.snackBarOpen('您还尚未登录');
-    return unFollowUser.call({ target: this.props.curUser._id }, (err, res) => {
+    if (!this.props.User) {
+      this.props.snackBarOpen('您还尚未登录');
+    }
+    unFollowUser.call({
+      targetId: this.props.curUser._id,
+    }, (err) => {
       if (err) throw new Meteor.Error(err.reason);
       this.props.snackBarOpen('取消关注成功');
-      return res;
     });
   }
 
@@ -178,7 +184,10 @@ export default class UserPage extends Component {
         </div>
         { /* COUNTER SECTION */ }
         <div className="user__counter">
-          <div className="counter counter__likes">
+          <div
+            className="counter counter__likes"
+            onTouchTap={() => browserHistory.push(`/user/${curUser.username}/likes`)}
+          >
             <span>{likedCount}</span>
             <span>喜欢</span>
           </div>
@@ -189,9 +198,12 @@ export default class UserPage extends Component {
             <span>{collectionCount}</span>
             <span>相册</span>
           </div>
-          <div className="counter counter__follwer">
+          <div
+            className="counter counter__follwer"
+            onTouchEnd={() => browserHistory.push(`/user/${curUser.username}/fans`)}
+          >
             <span>{curUser.profile.followers.length}</span>
-            <span>粉丝</span>
+            <span>关注者</span>
           </div>
         </div>
         { /* RANK SECTION */ }

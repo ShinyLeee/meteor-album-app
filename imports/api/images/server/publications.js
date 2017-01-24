@@ -1,11 +1,14 @@
-/* eslint-disable prefer-arrow-callback */
+/* eslint-disable prefer-arrow-callback, meteor/audit-argument-checks */
 import { Meteor } from 'meteor/meteor';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import { Images } from '../image.js';
 import { Collections } from '../../collections/collection.js';
 
 Meteor.publish('Images.all', function images() {
-  return Images.find({ private: false, deletedAt: null });
+  return Images.find({
+    private: false,
+    deletedAt: null,
+  });
 });
 
 Meteor.publish('Images.own', function ownImages() {
@@ -16,9 +19,20 @@ Meteor.publish('Images.own', function ownImages() {
   });
 });
 
-Meteor.publish('Images.liked', function likedImages() {
+Meteor.publish('Images.liked', function likedImages(username) {
+  new SimpleSchema({
+    username: { type: String, label: '用户名', max: 20, optional: true },
+  }).validator({ clean: true, filter: false });
+  if (username) {
+    return Images.find({
+      private: false,
+      liker: { $in: [username] },
+    });
+  }
+  const user = Meteor.users.findOne(this.userId);
   return Images.find({
-    liker: { $in: [this.userId] },
+    private: false,
+    liker: { $in: [user.username] },
   });
 });
 
@@ -40,6 +54,7 @@ Meteor.publishComposite('Images.inCollection', function inCollection({ username,
       return Collections.find({
         name: cname,
         user: username,
+        private: false,
       });
     },
     children: [{

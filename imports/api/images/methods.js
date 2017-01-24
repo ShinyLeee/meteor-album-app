@@ -106,7 +106,7 @@ export const likeImage = new ValidatedMethod({
   name: 'images.like',
   validate: new SimpleSchema({
     imageId: { type: String, regEx: SimpleSchema.RegEx.Id },
-    liker: { type: String, regEx: SimpleSchema.RegEx.Id },
+    liker: { type: String, label: '用户名', max: 20 },
   }).validator({ clean: true, filter: false }),
   run({ imageId, liker }) {
     if (!this.userId) {
@@ -120,7 +120,7 @@ export const unlikeImage = new ValidatedMethod({
   name: 'images.unlike',
   validate: new SimpleSchema({
     imageId: { type: String, regEx: SimpleSchema.RegEx.Id },
-    unliker: { type: String, regEx: SimpleSchema.RegEx.Id },
+    unliker: { type: String, label: '用户名', max: 20 },
   }).validator({ clean: true, filter: false }),
   run({ imageId, unliker }) {
     if (!this.userId) {

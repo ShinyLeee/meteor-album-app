@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Migrations } from 'meteor/percolate:migrations';
-import { Users } from '/imports/api/users/user';
-import { Notes } from '/imports/api/notes/note';
-import { Images } from '/imports/api/images/image';
-import { Collections } from '/imports/api/collections/collection';
+import { Users } from '/imports/api/users/user.js';
+import { Notes } from '/imports/api/notes/note.js';
+import { Images } from '/imports/api/images/image.js';
+import { Collections } from '/imports/api/collections/collection.js';
 
 Migrations.config({
   // Log job run details to console
@@ -21,15 +21,42 @@ Migrations.config({
 
 Migrations.add({
   version: 1,
-  name: `Refactoring IMAGES & COLLECTIONS & NOTES collection,
-  unset uid field in IMAGES & COLLECTIONS collection,
-  change sender and receiver field's value from uid to username.
+  name: `Refactoring USER & IMAGES & COLLECTIONS & NOTES collection,
+  change profile.followers field value from uid to username in USER,
+  change liker field value from uid to username in IMAGE,
+  unset uid field in IMAGES & COLLECTIONS,  
+  change sender and receiver field's value from uid to username in NOTE.
   `,
   up: () => {
     // Get access to the raw MongoDB node collection that the Meteor server collection wraps
+    const usersBulk = Users.rawCollection().initializeUnorderedBulkOp();
     const notesBulk = Notes.rawCollection().initializeUnorderedBulkOp();
     const imagesBulk = Images.rawCollection().initializeUnorderedBulkOp();
     const collectionsBulk = Collections.rawCollection().initializeUnorderedBulkOp();
+
+    // Change all profile.followers value from uid to username
+    Users.find().forEach((user) => {
+      const uid = user._id;
+      const followers = user.profile.followers;
+      if (followers.length === 0) return;
+      followers.forEach((followerId, i) => {
+        const followerName = Users.findOne(followerId).username;
+        followers[i] = followerName;
+      });
+      usersBulk.find({ _id: uid }).updateOne({ $set: { 'profile.followers': followers } });
+    });
+
+    // Change all liker field value from uid to username
+    Images.find().forEach((image) => {
+      const imageId = image._id;
+      const likers = image.liker;
+      if (likers.length === 0) return;
+      likers.forEach((likerId, i) => {
+        const username = Users.findOne(likerId).username;
+        likers[i] = username;
+      });
+      imagesBulk.find({ _id: imageId }).updateOne({ $set: { liker: likers } });
+    });
 
     // Unset all uid field in Collections & Images collection
     imagesBulk.find({}).update({ $unset: { uid: 1 } });
@@ -44,18 +71,43 @@ Migrations.add({
     });
 
     // We need to wrap the async function to get a synchronous API that migrations expects
+    const executeUsers = Meteor.wrapAsync(usersBulk.execute, usersBulk);
     const executeNotes = Meteor.wrapAsync(notesBulk.execute, notesBulk);
     const executeImages = Meteor.wrapAsync(imagesBulk.execute, imagesBulk);
     const executeCollections = Meteor.wrapAsync(collectionsBulk.execute, collectionsBulk);
 
+    executeUsers();
     executeNotes();
     executeImages();
     executeCollections();
   },
   down: () => {
+    const usersBulk = Users.rawCollection().initializeUnorderedBulkOp();
     const notesBulk = Notes.rawCollection().initializeUnorderedBulkOp();
     const imagesBulk = Images.rawCollection().initializeUnorderedBulkOp();
     const collectionsBulk = Collections.rawCollection().initializeUnorderedBulkOp();
+
+    Users.find().forEach((user) => {
+      const uid = user._id;
+      const followers = user.profile.followers;
+      if (followers.length === 0) return;
+      followers.forEach((followerName, i) => {
+        const followerId = Users.findOne({ username: followerName })._id;
+        followers[i] = followerId;
+      });
+      usersBulk.find({ _id: uid }).updateOne({ $set: { 'profile.followers': followers } });
+    });
+
+    Images.find().forEach((image) => {
+      const imageId = image._id;
+      const likers = image.liker;
+      if (likers.length === 0) return;
+      likers.forEach((likerName, i) => {
+        const uid = Users.findOne({ username: likerName })._id;
+        likers[i] = uid;
+      });
+      imagesBulk.find({ _id: imageId }).updateOne({ $set: { liker: likers } });
+    });
 
     Users.find().forEach((user) => {
       const uid = user._id;
@@ -66,10 +118,12 @@ Migrations.add({
       collectionsBulk.find({ user: username }).update({ $set: { uid } });
     });
 
+    const executeUsers = Meteor.wrapAsync(usersBulk.execute, usersBulk);
     const executeNotes = Meteor.wrapAsync(notesBulk.execute, notesBulk);
     const executeImages = Meteor.wrapAsync(imagesBulk.execute, imagesBulk);
     const executeCollections = Meteor.wrapAsync(collectionsBulk.execute, collectionsBulk);
 
+    executeUsers();
     executeNotes();
     executeImages();
     executeCollections();
