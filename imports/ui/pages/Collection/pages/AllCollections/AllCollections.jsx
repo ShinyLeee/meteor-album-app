@@ -135,7 +135,7 @@ export default class AllCollectionPage extends Component {
             )
             : this.props.colls.length > 0 && (
               <Recap
-                title="Collections"
+                title="我的相册"
                 detailFir="所有创建相册都在这里"
                 detailSec="可以点击右下角的按钮添加相册"
               />

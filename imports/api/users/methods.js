@@ -44,7 +44,7 @@ export const updateProfile = new ValidatedMethod({
     const User = Meteor.users.findOne(this.userId);
     let newProfile = {
       nickname,
-      intro,
+      intro: intro || '',
       cover,
       avatar,
       settings,

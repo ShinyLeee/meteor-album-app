@@ -8,8 +8,7 @@ import { snackBarOpen } from '/imports/ui/redux/actions/index.js';
 import PrimaryNavHeader from './PrimaryNavHeader.jsx';
 
 const MeteorContainer = createContainer(() => {
-  const username = Meteor.user() && Meteor.user().username;
-  Meteor.subscribe('Notes.own', username);
+  Meteor.subscribe('Notes.receiver');
   const noteNum = Notes.find({ isRead: false }).count();
 
   return {

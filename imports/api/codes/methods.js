@@ -10,7 +10,7 @@ export const checkCode = new ValidatedMethod({
   name: 'codes.check',
   mixins: [CallPromiseMixin],
   validate: new SimpleSchema({
-    codeNo: { type: Number },
+    codeNo: { type: String, label: '激活码' },
   }).validator({ clean: true, filter: false }),
   run({ codeNo }) {
     if (this.userId) {
@@ -25,7 +25,7 @@ export const useCode = new ValidatedMethod({
   name: 'codes.use',
   mixins: [CallPromiseMixin],
   validate: new SimpleSchema({
-    codeNo: { type: Number },
+    codeNo: { type: String, label: '激活码' },
   }).validator({ clean: true, filter: false }),
   run({ codeNo }) {
     if (this.userId) {

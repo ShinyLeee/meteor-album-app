@@ -4,6 +4,7 @@ import { defaultUserProfile } from '../user.js';
 Accounts.onCreateUser((options, user) => {
   let curUser = user;
   curUser.profile = defaultUserProfile;
+  curUser.profile.nickname = user.username; // make nickname pre set
   curUser.createdAt = new Date();
   curUser = Object.assign({}, curUser);
   return curUser;

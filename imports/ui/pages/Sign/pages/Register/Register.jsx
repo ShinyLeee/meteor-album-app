@@ -23,7 +23,7 @@ class RegisterPage extends Component {
     const username = this.usrField.input.value;
     const password = this.pwdField.input.value;
     const password2 = this.pwd2Field.input.value;
-    const code = parseInt(this.codeField.input.value, 10);
+    const code = this.codeField.input.value;
 
     if (!password || !password2) {
       this.props.snackBarOpen('请输入密码');
@@ -84,7 +84,7 @@ class RegisterPage extends Component {
             <TextField
               hintText="邀请码"
               ref={(ref) => { this.codeField = ref; }}
-              type="number"
+              type="text"
               fullWidth
             /><br />
           </div>
