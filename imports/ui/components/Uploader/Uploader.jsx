@@ -172,7 +172,6 @@ export default class Uploader extends PureComponent {
   }
 
   finishUpload(err) {
-    const { current } = this.state;
     if (err) {
       this.setState(initialState);
       this.props.uploaderStop();
@@ -183,9 +182,9 @@ export default class Uploader extends PureComponent {
       throw new Meteor.Error(err);
     }
 
-    this.setState(initialState);
     this.props.uploaderStop();
-    this.props.snackBarOpen(`成功上传${current}个文件`);
+    this.props.snackBarOpen(`成功上传${this.state.total}个文件`);
+    this.setState(initialState);
     if (this.props.afterUpload) {
       this.props.afterUpload(null);
     }
@@ -204,32 +203,18 @@ export default class Uploader extends PureComponent {
   }
 
   render() {
-    const {
-      open,
-      destination,
-      multiple,
-    } = this.props;
-
-    const {
-      pace,
-      total,
-      current,
-      uploading,
-      thumbnail,
-    } = this.state;
-
-    if (open && uploading) {
+    if (this.props.open && this.state.uploading) {
       return (
         <div>
           <div className="component__Uploader">
             <div className="Uploader__container">
-              <div className="Uploader__thumbnails" style={{ backgroundImage: `url(${thumbnail})` }} />
+              <div className="Uploader__thumbnails" style={{ backgroundImage: `url(${this.state.thumbnail})` }} />
               <div className="Uploader__details">
                 <span>正在上传至</span>
-                <h4>{ destination.split('/')[1] }</h4>
-                <span>第{current}张, 共{total}张</span>
+                <h4>{ this.props.destination.split('/')[1] }</h4>
+                <span>第{this.state.current}张, 共{this.state.total}张</span>
                 <a className="Uploader__stop" ref={(ref) => { this.stopButton = ref; }}>停止</a>
-                <div className="Uploader__pace" style={{ width: pace }} />
+                <div className="Uploader__pace" style={{ width: this.state.pace }} />
               </div>
             </div>
           </div>
@@ -244,13 +229,15 @@ export default class Uploader extends PureComponent {
           style={{ display: 'none' }}
           onChange={this.handleImageChange}
           ref={(ref) => { this.filesInput = ref; }}
-          multiple={multiple}
+          multiple={this.props.multiple}
           accept="image/*"
         />
       </div>
     );
   }
 }
+
+Uploader.displayName = 'Uploader';
 
 Uploader.defaultProps = {
   open: false,

@@ -28,11 +28,14 @@ export const isLogout = (nextState, replace, done) => {
   });
 };
 
-export const isPermission = (nextState, replace, done) => {
+
+// 当前浏览站点是否属于自己
+// 如果不是则返回404页面
+export const isOwner = (nextState, replace, done) => {
   const { params } = nextState;
-  Meteor.callPromise('Auth.isPermission', { username: params.username })
-  .then((isPermit) => {
-    if (!isPermit) replace({ pathname: '/404' });
+  Meteor.callPromise('Auth.isOwner', { username: params.username })
+  .then((isOwn) => {
+    if (!isOwn) replace({ pathname: '/404' });
     done();
   })
   .catch((err) => {
@@ -42,7 +45,7 @@ export const isPermission = (nextState, replace, done) => {
   });
 };
 
-// Check is this user permit other visit home page TODO FIX USER NOT FOUND ERROR
+// 检查当前用户是否允许他人访问其主页
 export const isAllowVisitHome = (nextState, replace, done) => {
   const { params } = nextState;
   Meteor.callPromise('Auth.isAllowVisitHome', { username: params.username })
@@ -57,10 +60,11 @@ export const isAllowVisitHome = (nextState, replace, done) => {
   });
 };
 
-// Check is this user permit other visit this specific collection
+// 检查当前用户是否允许他人访问其相册，如果不允许泽访问403页面
+// 如果存在:cname参数，则另检查当前访问的相册是否加密，如果加密则返回404页面
 export const isAllowVisitColl = (nextState, replace, done) => {
   const { params } = nextState;
-  Meteor.callPromise('Auth.isAllowVisitColl', { username: params.username })
+  Meteor.callPromise('Auth.isAllowVisitColl', { username: params.username, cname: params.cname })
   .then((allowVisitColl) => {
     if (!allowVisitColl) replace({ pathname: '/403', state: { message: '该用户不允许他人访问其相册' } });
     done();

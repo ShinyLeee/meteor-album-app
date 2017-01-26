@@ -129,8 +129,3 @@ Migrations.add({
     executeCollections();
   },
 });
-
-
-Meteor.startup(() => {
-  Migrations.migrateTo('latest');
-});

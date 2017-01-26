@@ -169,6 +169,19 @@ if (Meteor.isServer) {
           expect(Images.find().count()).to.equal(4); // after execute method, expect have 4 Images
           expect(Images.findOne({ user: newImg.user, collection: newImg.collection })).to.be.ok;
         });
+
+        it('should set private field based on target collection', () => {
+          const anotherColl = Factory.create('collection', { user: curUser.username, private: true });
+          const newImg = Factory.tree('image', { user: curUser.username, collection: collOne.name });
+          const newImg2 = Factory.tree('image', { user: curUser.username, collection: anotherColl.name });
+
+          const methodInvocation = { userId: curUser._id };
+          insertImage._execute(methodInvocation, newImg);
+          insertImage._execute(methodInvocation, newImg2);
+
+          expect(Images.findOne({ collection: collOne.name }).private).to.be.false;
+          expect(Images.findOne({ collection: anotherColl.name }).private).to.be.true;
+        });
       });
 
       describe('removeImages', () => {
@@ -218,12 +231,33 @@ if (Meteor.isServer) {
           recoveryImages._execute({ userId: curUser._id }, { selectImages: [newImg._id, newImg2._id] });
           expect(Images.find({ deletedAt: { $ne: null } }).count()).to.equal(0);
         });
+
+        it('[recoveryImages] should set private field based on target collection ', () => {
+          const anotherColl = Factory.create('collection', { user: curUser.username, private: true });
+          const newImg = Factory.create(
+            'image',
+            { user: curUser.username, collection: collOne.name, deletedAt: new Date() }
+          );
+          const newImg2 = Factory.create(
+            'image',
+            { user: curUser.username, collection: anotherColl.name, deletedAt: new Date() }
+          );
+          expect(Images.findOne(newImg._id).private).to.be.false;
+          expect(Images.findOne(newImg2._id).private).to.be.false;
+
+          const methodInvocation = { userId: curUser._id };
+          recoveryImages._execute(methodInvocation, { selectImages: [newImg._id] });
+          recoveryImages._execute(methodInvocation, { selectImages: [newImg2._id] });
+
+          expect(Images.findOne(newImg._id).private).to.be.false;
+          expect(Images.findOne(newImg2._id).private).to.be.true;
+        });
       });
 
       describe('shiftImages', () => {
         it('should only can shift if you are logged in', () => {
           assert.throws(() => {
-            shiftImages._execute({}, { selectImages: [imgId], dest: collOne.name, destId: collOne._id });
+            shiftImages._execute({}, { selectImages: [imgId], dest: collOne.name, destPrivateStat: false });
           }, Meteor.Error, /api.images.shift.notLoggedIn/);
         });
 
@@ -235,21 +269,21 @@ if (Meteor.isServer) {
 
           shiftImages._execute(
             { userId: curUser._id },
-            { selectImages: [imgId, newImg._id], dest: anotherColl.name, destId: anotherColl._id }
+            { selectImages: [imgId, newImg._id], dest: anotherColl.name, destPrivateStat: false }
           );
 
           expect(Images.find({ collection: collOne.name }).count()).to.equal(2, 'source collection should minus');
           expect(Images.find({ collection: anotherColl.name }).count()).to.equal(2, 'dest collection should add');
         });
 
-        it('should update image private field based on target collection', () => {
+        it('should set image private field based on target collection', () => {
           const anotherColl = Factory.create('collection', { user: curUser.username, private: true });
           expect(Images.findOne(imgId).collection).to.equal(collOne.name);
           expect(Images.findOne(imgId).private).to.be.false;
 
           shiftImages._execute(
             { userId: curUser._id },
-            { selectImages: [imgId], dest: anotherColl.name, destId: anotherColl._id }
+            { selectImages: [imgId], dest: anotherColl.name, destPrivateStat: true }
           );
 
           expect(Images.findOne(imgId).collection).to.equal(anotherColl.name);

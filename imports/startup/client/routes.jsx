@@ -28,7 +28,7 @@ import NotFound from '/imports/ui/pages/Error/NotFound.jsx';
 import { platform } from '/imports/utils/utils.js';
 import reducers from '/imports/ui/redux/reducers';
 
-import { isLogin, isLogout, isPermission, isAllowVisitHome, isAllowVisitColl } from './policies.js';
+import { isLogin, isLogout, isOwner, isAllowVisitHome, isAllowVisitColl } from './policies.js';
 
 const store = createStore(reducers);
 
@@ -50,9 +50,9 @@ const Root = () => {
             <Route index={1} path="memory" component={Construction} onEnter={isLogin} />
             <Route index={1} path="recycle" component={Recycle} onEnter={isLogin} />
             <Route index={1} path="setting" component={Setting} onEnter={isLogin} />
-            <Route index={2} path="note/:username" component={Note} onEnter={isPermission} />
-            <Route index={3} path="note/:username/sent" component={AllSentNotes} onEnter={isPermission} />
-            <Route index={3} path="note/:username/received" component={AllNotes} onEnter={isPermission} />
+            <Route index={2} path="note/:username" component={Note} onEnter={isOwner} />
+            <Route index={3} path="note/:username/sent" component={AllSentNotes} onEnter={isOwner} />
+            <Route index={3} path="note/:username/received" component={AllNotes} onEnter={isOwner} />
             <Route index={2} path="sendNote" component={SendNote} onEnter={isLogin} />
             <Route index={1} path="login" component={Login} onEnter={isLogout} />
             <Route index={1} path="register" component={Register} onEnter={isLogout} />

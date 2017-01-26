@@ -69,10 +69,11 @@ export default class UserLikesPage extends PureComponent {
 
   handleRefreshImages() {
     // after like or unlike a image, we need to refresh the data
-    const trueImages = Images.find(
+    const refreshedImages = Images.find(
       { private: false },
-      { sort: { createdAt: -1 }, limit: this.state.images.length }).fetch();
-    this.setState({ images: trueImages });
+      { sort: { createdAt: -1 }, limit: this.state.images.length }
+    ).fetch();
+    this.setState({ images: refreshedImages });
   }
 
   renderContent() {

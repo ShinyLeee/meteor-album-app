@@ -31,18 +31,18 @@ const MeteorContainer = createContainer(({ params }) => {
   const dataIsReady = collHandler.ready() && imageHandler.ready();
 
   // curColl is currentCollection use for lock/remove etc.
-  const curColl = Collections.findOne({ name: cname }) || {};
+  const curColl = Collections.findOne({ name: cname });
   const collExists = dataIsReady && !!curColl;
   // otherColls use for shift photos
   const otherColls = Collections.find(
     { name: { $ne: cname } },
-    { fields: { name: 1 } }
+    { fields: { name: 1, private: 1 } }
   ).fetch();
 
   return {
     dataIsReady,
     isGuest,
-    curColl,
+    curColl: curColl || {},
     otherColls,
     images: collExists ? curColl.images().fetch() : [],
   };

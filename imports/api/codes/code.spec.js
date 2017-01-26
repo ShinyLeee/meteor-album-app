@@ -11,7 +11,7 @@ if (Meteor.isServer) {
     describe('factory', () => {
       it('should builds correctly from factory', () => {
         const codes = Factory.create('code');
-        assert.typeOf(codes.no, 'number');
+        assert.typeOf(codes.no, 'string');
         assert.typeOf(codes.isUsed, 'boolean');
         assert.typeOf(codes.createdAt, 'date');
       });

@@ -122,6 +122,17 @@ if (Meteor.isServer) {
           insertCollection._execute(methodInvocation, args);
           expect(Collections.find({ user: curUser.username }).count()).to.equal(2);
         });
+
+        it('should set private field based on User\'s profile.settings.allowVisitColl field', () => {
+          const anotherUser = Factory.create('user');
+          Users.update({ username: anotherUser.username }, { $set: { 'profile.settings.allowVisitColl': false } });
+
+          const methodInvocation = { userId: anotherUser._id };
+          const args = Factory.tree('collection', { user: anotherUser.username });
+
+          insertCollection._execute(methodInvocation, args);
+          expect(Collections.findOne({ name: args.name, user: anotherUser.username }).private).to.be.true;
+        });
       });
 
       describe('removeCollection', () => {
@@ -168,7 +179,7 @@ if (Meteor.isServer) {
             username: curUser.username,
             collId: curColl._id,
             collName: curColl.name,
-            privateStatus: curColl.private,
+            privateStat: curColl.private,
           };
           assert.throws(() => {
             lockCollection._execute(methodInvocation, args);
@@ -181,7 +192,7 @@ if (Meteor.isServer) {
             username: curUser.username,
             collId: curColl._id,
             collName: curColl.name,
-            privateStatus: curColl.private,
+            privateStat: curColl.private,
           };
           lockCollection._execute(methodInvocation, args);
           expect(Collections.findOne(curColl._id).private).to.be.true;
@@ -191,7 +202,7 @@ if (Meteor.isServer) {
             username: curUser.username,
             collId: coll._id,
             collName: coll.name,
-            privateStatus: coll.private,
+            privateStat: coll.private,
           };
           lockCollection._execute(methodInvocation, newArgs);
           expect(Collections.findOne(curColl._id).private).to.be.false;
@@ -210,7 +221,7 @@ if (Meteor.isServer) {
             username: curUser.username,
             collId: curColl._id,
             collName: curColl.name,
-            privateStatus: curColl.private,
+            privateStat: curColl.private,
           };
 
           lockCollection._execute(methodInvocation, args);

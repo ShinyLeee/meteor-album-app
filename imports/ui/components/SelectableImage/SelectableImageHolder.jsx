@@ -65,7 +65,7 @@ export default class SelectableImageHolder extends PureComponent {
           transitionName="fade"
           transitionAppear
           transitionAppearTimeout={500}
-          transitionEnter={false}
+          transitionEnterTimeout={500}
           transitionLeave={false}
         >
           <img

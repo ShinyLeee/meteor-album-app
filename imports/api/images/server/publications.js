@@ -51,10 +51,10 @@ Meteor.publishComposite('Images.inCollection', function inCollection({ username,
   }).validator({ clean: true, filter: false });
   return {
     find() {
+      // not restrict private field because this publication only for Owner
       return Collections.find({
         name: cname,
         user: username,
-        private: false,
       });
     },
     children: [{

@@ -75,7 +75,7 @@ export default class CollectionPage extends Component {
       username: User.username,
       collId: curColl._id,
       collName: curColl.name,
-      privateStatus: curColl.private,
+      privateStat: curColl.private,
     }, (err) => {
       if (err) {
         cb(err, `${msg}相册失败`);
@@ -166,7 +166,7 @@ export default class CollectionPage extends Component {
       shiftImages.call({
         selectImages: sucMovedImgIds,
         dest: destColl.name,
-        destId: destColl._id,
+        destPrivateStat: destColl.private,
       }, (err) => {
         if (err) {
           cb(err, '转移照片失败');
@@ -207,7 +207,7 @@ export default class CollectionPage extends Component {
   }
 
   /**
-   * setState base on action
+   * setState based on action
    * @param {String} action - One of / ShiftPhoto / RemovePhoto / SetCover / RemoveCollection
    */
   openAlert(action) {
@@ -238,12 +238,12 @@ export default class CollectionPage extends Component {
     if (action === 'ShiftPhoto') {
       const radios = [];
       for (let i = 0; i < otherColls.length; i++) {
-        const collId = otherColls[i]._id;
         const collName = otherColls[i].name;
+        const collStat = otherColls[i].private;
         radios.push(
           <RadioButton
             key={i}
-            value={JSON.stringify({ _id: collId, name: collName })}
+            value={JSON.stringify({ name: collName, private: collStat })}
             label={collName}
             style={{ marginTop: '16px' }}
           />
@@ -271,15 +271,14 @@ export default class CollectionPage extends Component {
     this.setState(curState);
 
     const actionCallback = (err, msg, isEditing) => {
+      if (isEditing) this.props.disableSelectAll();
+      this.setState({ isProcessing: false, processMsg: '' });
       this.props.snackBarOpen(msg);
       if (err) {
         console.log(err); // eslint-disable-line no-console
         throw new Meteor.Error(err);
       }
-      if (isEditing) this.props.disableSelectAll();
-      this.setState({ isProcessing: false, processMsg: '' });
     };
-
     this[`handle${action}`](actionCallback);
   }
 

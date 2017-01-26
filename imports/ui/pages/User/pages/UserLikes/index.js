@@ -20,7 +20,7 @@ const MeteorContainer = createContainer(({ params }) => {
   else isGuest = true;
   const userHandler = Meteor.subscribe('Users.all');
   const imageHandler = isGuest
-                       ? Meteor.subscribe('Images.liked', { username })
+                       ? Meteor.subscribe('Images.liked', username)
                        : Meteor.subscribe('Images.liked');
   const dataIsReady = userHandler.ready() && imageHandler.ready();
 

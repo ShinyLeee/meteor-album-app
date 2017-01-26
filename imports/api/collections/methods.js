@@ -40,6 +40,7 @@ export const removeCollection = new ValidatedMethod({
       throw new Meteor.Error('api.collections.remove.notLoggedIn');
     }
     Collections.remove(collId);
+    // remove collection will also remove its Images forever
     Images.remove({ user: username, collection: collName });
   },
 });
@@ -50,19 +51,19 @@ export const lockCollection = new ValidatedMethod({
     username: { type: String, label: '用户名', max: 20 },
     collId: { type: String, label: '相册Id', regEx: SimpleSchema.RegEx.Id },
     collName: { type: String, label: '相册名', max: 20 },
-    privateStatus: { type: Boolean, label: '当前相册状态' },
+    privateStat: { type: Boolean, label: '当前相册状态' },
   }).validator({ clean: true, filter: false }),
-  run({ username, collId, collName, privateStatus }) {
+  run({ username, collId, collName, privateStat }) {
     if (!this.userId) {
       throw new Meteor.Error('api.collections.lock.notLoggedIn');
     }
     Collections.update(
       collId,
-      { $set: { private: !privateStatus } }
+      { $set: { private: !privateStat } }
     );
     Images.update(
       { user: username, collection: collName },
-      { $set: { private: !privateStatus } },
+      { $set: { private: !privateStat } },
       { multi: true }
     );
   },

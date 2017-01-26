@@ -16,11 +16,15 @@ export const insertImage = new ValidatedMethod({
     if (!this.userId) {
       throw new Meteor.Error('api.images.insert.notLoggedIn');
     }
-    const username = Meteor.users.findOne(this.userId).username;
-    if (username !== image.user) {
+    if (Meteor.users.findOne(this.userId).username !== image.user) {
       throw new Meteor.Error('api.images.insert.accessDenied');
     }
-    return Images.insert(image);
+
+    // TODO get dest collection private status only ONCE
+    const newImage = image;
+    const dest = Collections.findOne({ name: image.collection, user: image.user });
+    newImage.private = dest && dest.private;
+    return Images.insert(newImage);
   },
 });
 
@@ -57,6 +61,7 @@ export const removeImagesToRecycle = new ValidatedMethod({
   },
 });
 
+// 恢复的照片必须根据其恢复相册的加密状态来设置
 export const recoveryImages = new ValidatedMethod({
   name: 'images.recovery',
   validate: new SimpleSchema({
@@ -66,37 +71,41 @@ export const recoveryImages = new ValidatedMethod({
     if (!this.userId) {
       throw new Meteor.Error('api.images.recovery.notLoggedIn');
     }
-    Images.update(
-      { _id: { $in: selectImages } },
-      { $set: { deletedAt: null } },
-      { multi: true }
-    );
+
+    const username = Meteor.users.findOne(this.userId).username;
+
+    _.each(selectImages, (imageId) => {
+      const destName = Images.findOne(imageId).collection;
+      const dest = Collections.findOne({ name: destName, user: username });
+      const destPrivateStat = dest && dest.private;
+      Images.update(
+        { _id: imageId },
+        { $set: { deletedAt: null, private: destPrivateStat } }
+      );
+    });
   },
 });
 
 
-// only shiftImages method require destId
+// required destPrivateStat
 // for update Images' private status based on dest collection
 export const shiftImages = new ValidatedMethod({
   name: 'images.shift',
   validate: new SimpleSchema({
     selectImages: { type: [String], label: '被选择图片Id', regEx: SimpleSchema.RegEx.Id },
     dest: { type: String, label: '目标相册名', max: 20 },
-    destId: { type: String, label: '目标相册Id', regEx: SimpleSchema.RegEx.Id },
+    destPrivateStat: { type: Boolean, label: '目标相册加密状态' },
   }).validator({ clean: true, filter: false }),
-  run({ selectImages, dest, destId }) {
+  run({ selectImages, dest, destPrivateStat }) {
     if (!this.userId) {
       throw new Meteor.Error('api.images.shift.notLoggedIn');
     }
-    const count = selectImages.length;
 
-    if (!count) return;
-
-    const destPrivateStatus = Collections.findOne(destId).private;
+    if (selectImages.length === 0) return;
 
     Images.update(
       { _id: { $in: selectImages } },
-      { $set: { collection: dest, private: destPrivateStatus } },
+      { $set: { collection: dest, private: destPrivateStat } },
       { multi: true }
     );
   },

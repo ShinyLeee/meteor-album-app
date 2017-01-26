@@ -21,8 +21,8 @@ Meteor.publish('Collections.inUser', function targetUserCollections(user) {
     user: { type: String, label: '用户名', max: 10 },
   }).validator({ clean: true, filter: false });
   return Collections.find({
-    private: false,
     user,
+    private: false,
   });
 });
 
