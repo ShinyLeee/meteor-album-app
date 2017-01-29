@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import React, { PropTypes } from 'react';
 import { browserHistory } from 'react-router';
 import TimeAgo from 'react-timeago';
@@ -29,21 +28,18 @@ const styles = {
   },
 };
 
-const NoteHolder = ({ isRead, sender, note, onReadNote }) => (
-  <div className="component__noteHolder">
-    <Card
-      key={note._id}
-      initiallyExpanded
-    >
+const NoteHolder = ({ isRead, avatar, note, onReadBtnClick }) => (
+  <div className="component__NoteHolder">
+    <Card initiallyExpanded>
       <CardHeader
         title={note.title}
         subtitle={<TimeAgo date={note.sendAt} formatter={formatter} />}
-        avatar={Meteor.users.findOne({ username: sender }).profile.avatar}
+        avatar={avatar}
         actAsExpander
         showExpandableButton
       />
       <CardText expandable>
-        <div className="noteHolder__markdown">
+        <div className="NoteHolder__content">
           {note.content}
         </div>
       </CardText>
@@ -52,21 +48,15 @@ const NoteHolder = ({ isRead, sender, note, onReadNote }) => (
         && (
           <CardActions style={{ height: '58px' }}>
             <IconButton
-              tooltip="回复"
-              tooltipPosition="top-center"
               iconStyle={styles.flipReplyStyle}
               style={styles.replyStyle}
-              onTouchTap={() => browserHistory.push(`/sendNote/?receiver=${sender.username}`)}
-              touch
+              onTouchTap={() => browserHistory.push(`/sendNote/?receiver=${note.receiver}`)}
             ><ReplyIcon />
             </IconButton>
             <IconButton
-              tooltip="标记已读"
-              tooltipPosition="top-center"
               style={styles.checkboxStyle}
               iconStyle={{ color: '#999' }}
-              onTouchTap={onReadNote}
-              touch
+              onTouchTap={onReadBtnClick}
             ><CheckBoxIcon />
             </IconButton>
           </CardActions>
@@ -84,9 +74,9 @@ NoteHolder.defaultProps = {
 
 NoteHolder.propTypes = {
   isRead: PropTypes.bool.isRequired,
-  sender: PropTypes.string.isRequired,
+  avatar: PropTypes.string.isRequired,
   note: PropTypes.object.isRequired,
-  onReadNote: PropTypes.func, // Not required bc AllNotePage do not need read notes
+  onReadBtnClick: PropTypes.func, // Not required bc AllNotePage do not need read notes
 };
 
 export default NoteHolder;

@@ -26,7 +26,7 @@ Users.schema = new SimpleSchema({
   emails: { type: [Object], optional: true },
   'emails.$.address': { type: String, regEx: SimpleSchema.RegEx.Email },
   'emails.$.verified': { type: Boolean },
-  profile: { type: Object, optional: true, blackbox: true },
+  profile: { type: Object, blackbox: true },
   createdAt: { type: Date, denyUpdate: true },
 });
 

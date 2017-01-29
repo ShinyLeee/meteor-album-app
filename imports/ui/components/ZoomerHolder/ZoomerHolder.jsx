@@ -82,9 +82,10 @@ class ZoomerHolder extends Component {
     const { exif } = this.state;
 
     const imgSrc = this.imgSrc;
-    const slimSrc = `${imgSrc}?imageView2/2/w/${this.props.clientWidth * 2}`;
+    const slimSrc1 = `${imgSrc}?imageView2/2/w/${this.props.clientWidth * 2}`;
+    const slimSrc2 = `${imgSrc}?imageView2/1/w/${this.props.clientWidth * 2}`;
     // double quote for special character see: https://www.w3.org/TR/CSS2/syndata.html#value-def-uri
-    const imageHolderStyle = { backgroundImage: `url("${slimSrc}")` };
+    const imageHolderStyle = { backgroundImage: `url("${slimSrc2}"),url("${slimSrc1}")` };
     return (
       <div className="component__ZoomerHolder">
         <ZoomerInner

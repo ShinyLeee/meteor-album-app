@@ -74,14 +74,17 @@ export default class AllNotesPage extends Component {
           offsetToBottom={100}
         >
           {
-            this.state.notes.map((note, i) => (
-              <NoteHolder
-                key={i}
-                sender={note.sender}
-                note={note}
-                isRead
-              />
-            ))
+            this.state.notes.map((note, i) => {
+              const senderObj = Meteor.users.findOne({ username: note.sender });
+              return (
+                <NoteHolder
+                  key={i}
+                  avatar={senderObj && senderObj.profile.avatar}
+                  note={note}
+                  isRead
+                />
+              );
+            })
           }
         </Infinity>
       </div>

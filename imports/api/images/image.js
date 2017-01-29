@@ -26,7 +26,7 @@ Images.schema = new SimpleSchema({
   private: { type: Boolean, defaultValue: false, optional: true },
   shootAt: { type: Date, label: '拍摄日期' },
   createdAt: { type: Date, denyUpdate: true },
-  updatedAt: { type: Date, optional: true },
+  updatedAt: { type: Date },
   deletedAt: { type: Date, defaultValue: null, optional: true },
 });
 
@@ -58,5 +58,6 @@ if (Meteor.isTest) {
     ratio: () => Math.round(getRandomArbitrary(0.5, 2) * 10) / 10,
     shootAt: () => new Date(),
     createdAt: () => new Date(),
+    updatedAt: () => new Date(),
   });
 }

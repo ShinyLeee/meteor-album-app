@@ -73,14 +73,22 @@ class ImageList extends Component {
       <div className="component__ImageList">
         {
           images.map((image, i) => {
+            // get avatar src
+            const user = Meteor.users.findOne({ username: image.user });
+            const avatar = user && user.profile.avatar;
+
+            // get image src
             const url = `${domain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
             const src = `${url}?imageView2/2/w/${clientWidth * 2}`;
-            const likers = image.liker;
+
+            // whether current user liked this image
             const curUser = User && User.username;
-            const isLiked = likers.indexOf(curUser) > -1;
+            const isLiked = image.liker.indexOf(curUser) > -1;
             return (
               <ImageHolder
                 key={i}
+                User={User}
+                avatar={avatar}
                 image={image}
                 imageSrc={src}
                 isLiked={isLiked}

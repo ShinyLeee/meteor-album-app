@@ -117,14 +117,17 @@ export default class NotePage extends Component {
           offsetToBottom={100}
         >
           {
-            this.state.notes.map((note, i) => (
-              <NoteHolder
-                key={i}
-                sender={note.sender}
-                note={note}
-                onReadNote={(e) => this.handleReadNote(e, note._id)}
-              />
-            ))
+            this.state.notes.map((note, i) => {
+              const senderObj = Meteor.users.findOne({ username: note.sender });
+              return (
+                <NoteHolder
+                  key={i}
+                  avatar={senderObj.profile.avatar}
+                  note={note}
+                  onReadBtnClick={(e) => this.handleReadNote(e, note._id)}
+                />
+              );
+            })
           }
         </Infinity>
       </div>

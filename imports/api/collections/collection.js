@@ -22,7 +22,7 @@ Collections.schema = new SimpleSchema({
   cover: { type: String, label: '封面图片' },
   private: { type: Boolean, defaultValue: false, optional: true },
   createdAt: { type: Date, denyUpdate: true },
-  updatedAt: { type: Date, optional: true },
+  updatedAt: { type: Date },
 });
 
 Collections.attachSchema(Collections.schema);
@@ -40,7 +40,7 @@ Collections.helpers({
   },
   images() {
     return Images.find(
-      { user: this.user, collection: this.name },
+      { user: this.user, collection: this.name, deletedAt: null },
       { sort: { createdAt: -1 } }
     );
   },
@@ -56,5 +56,6 @@ if (Meteor.isTest) {
     user: () => limitStrLength(faker.internet.userName(), 20),
     cover: () => `/img/pattern/VF_ac${getRandomInt(1, 28)}.jpg`,
     createdAt: () => new Date(),
+    updatedAt: () => new Date(),
   });
 }

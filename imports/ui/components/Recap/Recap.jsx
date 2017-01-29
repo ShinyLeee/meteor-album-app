@@ -17,11 +17,7 @@ const Recap = ({ title, detailFir, detailSec, showIcon }) => (
         >
           <Github color="#999" hoverColor="#222" />
         </IconButton>
-        <IconButton
-          href="https://twitter.com/shinylee007"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        <IconButton href="#">
           <Wechat color="#999" hoverColor="#222" />
         </IconButton>
         <IconButton

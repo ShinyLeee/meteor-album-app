@@ -21,6 +21,7 @@ if (Meteor.isServer) {
         assert.typeOf(collection.cover, 'string', 'cover field must be a url');
         assert.typeOf(collection.private, 'boolean');
         assert.typeOf(collection.createdAt, 'date');
+        assert.typeOf(collection.updatedAt, 'date');
       });
     });
 

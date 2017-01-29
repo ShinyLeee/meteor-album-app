@@ -25,6 +25,7 @@ if (Meteor.isServer) {
         assert.typeOf(image.ratio, 'number');
         assert.typeOf(image.shootAt, 'date');
         assert.typeOf(image.createdAt, 'date');
+        assert.typeOf(image.updatedAt, 'date');
       });
     });
 
@@ -119,7 +120,7 @@ if (Meteor.isServer) {
       //       { username: curUser.username, cname: collOne.name },
       //       (collections) => {
       //         assert.equal(collections.collections.length, 1);
-      //         assert.equal(collections.images.length, 2);
+      //         assert.equal(collections.images.length, 3);
       //         done();
       //       }
       //     );

@@ -107,3 +107,40 @@
   right: 16px;
   bottom: 16px;
 }
+
+/* CommentList */
+.component__CommentList {
+  & > .CommentList__comments {
+    max-height: 275px;
+    overflow-y: scroll;
+    & > div:first-child {
+      border-top: 1px solid #ebebeb;
+    }
+    & .CommentList__header > time {
+      float: right;
+      color: #666;
+      font-size: 12px;
+      word-wrap: break-word;
+    }
+    & a {
+      color: #2962ff;
+    }
+  }
+  & > .CommentList__publish {
+    position: relative;
+    padding: 12px 16px 8px;
+    border-top: 1px solid #ebebeb;
+    & > .CommentList__textfield {
+      & > img {
+        position: absolute;
+        vertical-align: middle;
+      }
+      & > .CommentList__input {
+        left: 56px;
+      }
+    }
+    & > .CommentList__toolbox {
+      text-align: right;
+    }
+  }
+}
