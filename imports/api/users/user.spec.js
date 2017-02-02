@@ -48,7 +48,28 @@ if (Meteor.isServer) {
           });
         });
       });
+
+      describe('Users.others', () => {
+        it('should send user documents except own', (done) => {
+          const collector = new PublicationCollector({ userId: curUser._id });
+          collector.collect('Users.others', (collections) => {
+            expect(collections.users).to.have.length(3);
+            done();
+          });
+        });
+      });
+
+      describe('Users.limit', () => {
+        it('should send specific number user documents', (done) => {
+          const collector = new PublicationCollector();
+          collector.collect('Users.limit', 2, (collections) => {
+            expect(collections.users).to.have.length(2);
+            done();
+          });
+        });
+      });
     });
+
 
     describe('methods', () => {
       let curUser;

@@ -1,4 +1,8 @@
+import { Meteor } from 'meteor/meteor';
+import { createContainer } from 'meteor/react-meteor-data';
+import { bindActionCreators } from 'redux';
 import React, { Component, PropTypes } from 'react';
+import { connect } from 'react-redux';
 import { browserHistory } from 'react-router';
 import TimeAgo from 'react-timeago';
 import CNStrings from 'react-timeago/lib/language-strings/zh-CN';
@@ -9,35 +13,21 @@ import { Card, CardHeader, CardActions, CardMedia } from 'material-ui/Card';
 import IconButton from 'material-ui/IconButton';
 import HeartIcon from 'material-ui/svg-icons/action/favorite';
 import EmptyHeartIcon from 'material-ui/svg-icons/action/favorite-border';
-import ReplyIcon from 'material-ui/svg-icons/content/reply';
 import CommentIcon from 'material-ui/svg-icons/communication/chat-bubble-outline';
 
+import { Comments } from '/imports/api/comments/comment.js';
+import { snackBarOpen } from '/imports/ui/redux/actions/index.js';
 import CommentList from './components/CommentList.jsx';
 
 const formatter = buildFormatter(CNStrings);
 
-const styles = {
-  flipReplyStyle: {
-    MozTransform: 'scaleX(-1)',
-    WebkitTransform: 'scaleX(-1)',
-    OTransform: 'scaleX(-1)',
-    transform: 'scaleX(-1)',
-  },
-};
-
-export default class ImageHolder extends Component {
+class ImageHolder extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
       isCommentSectionOpen: false,
     };
-    this.handleCommentClick = this.handleCommentClick.bind(this);
-  }
-
-  handleCommentClick(e) {
-    e.preventDefault();
-    this.setState({ isCommentSectionOpen: !this.state.isCommentSectionOpen });
   }
 
   render() {
@@ -50,7 +40,7 @@ export default class ImageHolder extends Component {
       onLikeClick,
       onUnlikeClick,
       onMediaClick,
-      onReplyClick,
+      comments,
     } = this.props;
 
     return (
@@ -75,18 +65,32 @@ export default class ImageHolder extends Component {
               </LazyLoad>
             </CardMedia>
           </ReactCSSTransitionGroup>
-          <CardActions>
-            { isLiked
-              ? (<IconButton onTouchTap={onUnlikeClick} iconStyle={{ color: '#f15151' }}><HeartIcon /></IconButton>)
-              : (<IconButton onTouchTap={onLikeClick}><EmptyHeartIcon /></IconButton>) }
-            <IconButton onTouchTap={this.handleCommentClick}>
-              <CommentIcon />
-            </IconButton>
-            <IconButton style={{ float: 'right' }} onTouchTap={onReplyClick} iconStyle={styles.flipReplyStyle}>
-              <ReplyIcon />
-            </IconButton>
+          <CardActions className="ImageHolder__actions">
+            <div className="ImageHolder__like">
+              {
+                isLiked
+                ? (<IconButton onTouchTap={onUnlikeClick} iconStyle={{ color: '#f15151' }}><HeartIcon /></IconButton>)
+                : (<IconButton onTouchTap={onLikeClick}><EmptyHeartIcon /></IconButton>)
+              }
+              { image.liker.length > 0 && <span>{image.liker.length}</span> }
+            </div>
+            <div className="ImageHolder__comment">
+              <IconButton onTouchTap={() => this.setState({ isCommentSectionOpen: !this.state.isCommentSectionOpen })}>
+                <CommentIcon />
+              </IconButton>
+              { comments.length > 0 && <span>{comments.length}</span> }
+            </div>
           </CardActions>
-          { this.state.isCommentSectionOpen && <CommentList User={User} discId={image._id} /> }
+          {
+            this.state.isCommentSectionOpen && (
+              <CommentList
+                User={User}
+                discId={image._id}
+                comments={comments}
+                snackBarOpen={this.props.snackBarOpen}
+              />
+            )
+          }
         </Card>
       </div>
     );
@@ -97,6 +101,7 @@ ImageHolder.displayName = 'ImageHolder';
 
 ImageHolder.defaultProps = {
   isLiked: false,
+  comments: [],
 };
 
 ImageHolder.propTypes = {
@@ -108,6 +113,28 @@ ImageHolder.propTypes = {
   onLikeClick: PropTypes.func,
   onUnlikeClick: PropTypes.func,
   onMediaClick: PropTypes.func,
-  onCommentClick: PropTypes.func,
-  onReplyClick: PropTypes.func,
+  // Below Pass from Database and Redux
+  comments: PropTypes.array.isRequired,
+  snackBarOpen: PropTypes.func.isRequired,
 };
+
+const MeteorContainer = createContainer(({ image }) => {
+  // discussion_id from comment
+  const discId = image._id;
+
+  Meteor.subscribe('Comments.inImage', discId);
+  const comments = Comments.find(
+    { discussion_id: discId, type: 'image' },
+    { sort: { createdAt: -1 } }
+  ).fetch();
+
+  return {
+    comments,
+  };
+}, ImageHolder);
+
+const mapStateToProps = (state) => state;
+
+const mapDispatchToProps = (dispatch) => bindActionCreators({ snackBarOpen }, dispatch);
+
+export default connect(mapStateToProps, mapDispatchToProps)(MeteorContainer);

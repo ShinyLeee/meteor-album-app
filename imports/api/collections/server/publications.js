@@ -33,3 +33,12 @@ Meteor.publish('Collections.collNames', function collNames() {
     { fields: { name: 1 } }
   );
 });
+
+Meteor.publish('Collections.limit', function limit(num) {
+  new SimpleSchema({
+    num: { type: Number, label: '限制数量' },
+  }).validator({ clean: true, filter: false });
+  return Collections.find(
+    { private: false },
+    { limit: num });
+});

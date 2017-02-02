@@ -21,8 +21,8 @@ import DeleteIcon from 'material-ui/svg-icons/action/delete';
 import SettingsIcon from 'material-ui/svg-icons/action/settings';
 import ArrowDropdownIcon from 'material-ui/svg-icons/navigation/arrow-drop-down';
 import { purple500 } from 'material-ui/styles/colors';
-import scrollTo from '/imports/utils/scrollTo.js';
 
+import scrollTo from '/imports/utils/scrollTo.js';
 import styles from '../../NavHeader.style.js';
 
 export default class PrimaryNavHeader extends Component {
@@ -36,7 +36,6 @@ export default class PrimaryNavHeader extends Component {
     this.handlePrimaryTitleTouchTap = this.handlePrimaryTitleTouchTap.bind(this);
     this.handleOpenActionPop = this.handleOpenActionPop.bind(this);
     this.handleLogout = this.handleLogout.bind(this);
-    this.handlePrompt = this.handlePrompt.bind(this);
   }
 
   get avatarSrc() {
@@ -81,10 +80,6 @@ export default class PrimaryNavHeader extends Component {
     });
   }
 
-  handlePrompt() {
-    this.props.snackBarOpen('功能开发中');
-  }
-
   renderIconRight() {
     const bellStyle = this.props.noteNum > 0 ? 'bell-shake' : '';
     if (Meteor.loggingIn() || this.props.User) {
@@ -93,7 +88,7 @@ export default class PrimaryNavHeader extends Component {
           <IconButton
             style={styles.AppBarIcon}
             iconStyle={styles.AppBarIconSvg}
-            onTouchTap={this.handlePrompt}
+            onTouchTap={() => browserHistory.push('/search')}
           ><SearchIcon />
           </IconButton>
           <Badge

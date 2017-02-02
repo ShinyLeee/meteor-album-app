@@ -1,8 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { createContainer } from 'meteor/react-meteor-data';
-import { bindActionCreators } from 'redux';
 import { browserHistory } from 'react-router';
-import { connect } from 'react-redux';
 import React, { Component, PropTypes } from 'react';
 import ReactMarkdown from 'react-markdown';
 import TimeAgo from 'react-timeago';
@@ -16,13 +13,11 @@ import MenuItem from 'material-ui/MenuItem';
 import TextField from 'material-ui/TextField';
 import { List, ListItem } from 'material-ui/List';
 
-import { Comments } from '/imports/api/comments/comment.js';
-import { snackBarOpen } from '/imports/ui/redux/actions/index.js';
 import { insertComment, removeComment } from '/imports/api/comments/methods.js';
 
 const formatter = buildFormatter(CNStrings);
 
-class CommentList extends Component {
+export default class CommentList extends Component {
 
   constructor(props) {
     super(props);
@@ -180,7 +175,6 @@ CommentList.displayName = 'CommentList';
 
 CommentList.defaultProps = {
   sourceDomain: Meteor.settings.public.sourceDomain,
-  comments: [],
 };
 
 CommentList.propTypes = {
@@ -188,28 +182,5 @@ CommentList.propTypes = {
   sourceDomain: PropTypes.string.isRequired,
   discId: PropTypes.string.isRequired,
   comments: PropTypes.array.isRequired,
-  onCommentClick: PropTypes.func,
   snackBarOpen: PropTypes.func.isRequired,
 };
-
-
-const MeteorContainer = createContainer(({ discId }) => {
-  const commHandler = Meteor.subscribe('Comments.inImage', discId);
-  const dataIsReady = commHandler.ready();
-
-  const comments = Comments.find(
-    { discussion_id: discId, type: 'image' },
-    { sort: { createdAt: -1 } }
-  ).fetch();
-
-  return {
-    dataIsReady,
-    comments,
-  };
-}, CommentList);
-
-const mapStateToProps = (state) => state;
-
-const mapDispatchToProps = (dispatch) => bindActionCreators({ snackBarOpen }, dispatch);
-
-export default connect(mapStateToProps, mapDispatchToProps)(MeteorContainer);

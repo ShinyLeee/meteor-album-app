@@ -321,6 +321,108 @@
   }
 }
 
+/* route /search */
+.content__search {
+  background-color: #eee;
+  overflow-x: hidden;
+  & > .search__query {
+    margin-top: 24px;
+    text-indent: 18px;
+  }
+  & .search__empty {
+    text-indent: 18px;
+  }
+}
+
+.search__collection {
+  position: relative;
+  top: 28px;
+  margin-bottom: 28px;
+  & > .collection__header {
+    margin-bottom: 8px;
+    & > span {
+      margin: 0 18px;
+      color: #666;
+      font-size: 16px;
+      font-weight: 500;
+    }
+    & > a {
+      float: right;
+      margin-right: 18px;
+      font-size: 14px;
+      color: #2962ff;
+    }
+  }
+  & > .collection__content {
+    position: relative;
+    display: inline-block;
+    width: ~"calc(50% - 2px)";
+    margin-top: 4px;
+    margin-left: 4px;
+    cursor: pointer;
+    &:nth-child(even) { margin-left: 0; }
+    & > .collection__cover {
+      width: 100%;
+      & > img { width: 100%; height: 100%; }
+    }
+    & > .collection__info {
+      position: relative;
+      top: -18px;
+      left: 12px;
+      & > .collection__avatar {
+        display: inline-block;
+        width: 26px;
+        height: 26px;
+        & > img { width: 100%; height: 100%; border-radius: 50%; }
+      }
+      & > .collection__name { margin-top: 4px; }
+      & > .collection__username {
+        font-size: 12px;
+        color: #666;
+      }
+    }
+  }
+}
+
+.search__user {
+  position: relative;
+  top: 28px;
+  margin-bottom: 28px;
+  & > .user__header {
+    margin-bottom: 8px;
+    & > span {
+      margin: 0 18px;
+      color: #666;
+      font-size: 16px;
+      font-weight: 500;
+    }
+    & > a {
+      float: right;
+      margin-right: 18px;
+      font-size: 14px;
+      color: #2962ff;
+    }
+  }
+  & > .user__container { padding: 16px 0; }
+  & > .user__container > .user__content {
+    position: relative;
+    display: inline-block;
+    width: 25%;
+    text-align: center;
+    cursor: pointer;
+    & > .user__avatar {
+      display: inline-block;
+      width: 48px;
+      height: 48px;
+      & > img { width: 100%; height: 100%; border-radius: 50%; }
+    }
+    & > .user__info {
+      font-size: 14px;
+      color: #222;
+    }
+  }
+}
+
 /* route /403 /404 /500 /Construction */
 .content__error {
   display: flex;
@@ -341,6 +443,6 @@
   & > .error__info {
     font-size: 12px;
     color: #666;
-    & a { color: blue; }
+    & a { color: #2962ff; }
   }
 }

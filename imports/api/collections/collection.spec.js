@@ -89,6 +89,16 @@ if (Meteor.isServer) {
           });
         });
       });
+
+      describe('Collections.limit', () => {
+        it('should only send specific number collections documents', (done) => {
+          const collector = new PublicationCollector();
+          collector.collect('Collections.limit', 2, (collections) => {
+            expect(collections.collections).to.have.length(2);
+            done();
+          });
+        });
+      });
     });
 
     describe('methods', () => {

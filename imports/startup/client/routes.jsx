@@ -20,6 +20,8 @@ import Note from '/imports/ui/pages/Note/pages/Note/index.js';
 import AllSentNotes from '/imports/ui/pages/Note/pages/AllSentNotes/index.js';
 import AllNotes from '/imports/ui/pages/Note/pages/AllNotes/index.js';
 import SendNote from '/imports/ui/pages/Note/pages/SendNote/index.js';
+import Search from '/imports/ui/pages/Search/pages/Search/index.js';
+import SearchResults from '/imports/ui/pages/Search/pages/Results/index.js';
 import Construction from '/imports/ui/pages/Error/Construction.jsx';
 import Forbidden from '/imports/ui/pages/Error/Forbidden.jsx';
 import InternalError from '/imports/ui/pages/Error/InternalError.jsx';
@@ -54,6 +56,8 @@ const Root = () => {
             <Route index={3} path="note/:username/sent" component={AllSentNotes} onEnter={isOwner} />
             <Route index={3} path="note/:username/received" component={AllNotes} onEnter={isOwner} />
             <Route index={2} path="sendNote" component={SendNote} onEnter={isLogin} />
+            <Route index={2} path="search" component={Search} />
+            <Route index={3} path="search/:query" component={SearchResults} />
             <Route index={1} path="login" component={Login} onEnter={isLogout} />
             <Route index={1} path="register" component={Register} onEnter={isLogout} />
             <Route index={1} path="403" component={Forbidden} />

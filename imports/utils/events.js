@@ -1,4 +1,3 @@
-
 export const once = (el, type, callback) => {
   const typeArray = type ? type.split(' ') : [];
   const recursiveFunction = (event) => {

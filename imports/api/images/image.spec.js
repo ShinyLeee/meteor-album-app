@@ -111,21 +111,24 @@ if (Meteor.isServer) {
         });
       });
 
-      // not support yet, see https://github.com/johanbrook/meteor-publication-collector/issues/11
-      // describe('Images.inCollection', () => {
-      //   it('should send all images for specific collection', (done) => {
-      //     const collector = new PublicationCollector();
-      //     collector.collect(
-      //       'Images.inCollection',
-      //       { username: curUser.username, cname: collOne.name },
-      //       (collections) => {
-      //         assert.equal(collections.collections.length, 1);
-      //         assert.equal(collections.images.length, 3);
-      //         done();
-      //       }
-      //     );
-      //   });
-      // });
+      describe('Images.inCollection', () => {
+        let isCalled = false;
+        it('should send all images for specific collection', (done) => {
+          const collector = new PublicationCollector();
+          collector.collect(
+            'Images.inCollection',
+            { username: curUser.username, cname: collOne.name },
+            (collections) => {
+              if (!isCalled) {
+                isCalled = true;
+                assert.equal(collections.collections.length, 1);
+                assert.equal(collections.images.length, 3);
+                done();
+              }
+            }
+          );
+        });
+      });
     });
 
     describe('methods', () => {

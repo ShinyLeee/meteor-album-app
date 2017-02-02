@@ -11,10 +11,8 @@ class ImageList extends Component {
 
   constructor(props) {
     super(props);
-    this.handleOpenPrompt = this.handleOpenPrompt.bind(this);
     this.handleAddLiker = this.handleAddLiker.bind(this);
     this.handleRemoveLiker = this.handleRemoveLiker.bind(this);
-    this.handleForbidden = this.handleForbidden.bind(this);
     this.handleZoomImage = this.handleZoomImage.bind(this);
   }
 
@@ -24,42 +22,39 @@ class ImageList extends Component {
     }
   }
 
-  handleOpenPrompt() {
-    this.props.snackBarOpen('功能开发中');
-  }
-
   handleAddLiker(image) {
-    const imageId = image._id;
-    const liker = this.props.User.username;
+    const { User } = this.props;
+
+    if (!User) {
+      this.props.snackBarOpen('您还尚未登录');
+      return;
+    }
 
     likeImage.call({
-      imageId,
-      liker,
+      imageId: image._id,
+      liker: User.username,
     }, (err) => {
       if (err) {
         this.props.snackBarOpen(err.message);
+        return;
       }
       this.props.onLikeOrUnlikeAction();
     });
   }
 
   handleRemoveLiker(image) {
-    const imageId = image._id;
-    const unliker = this.props.User.username;
+    const { User } = this.props;
 
     unlikeImage.call({
-      imageId,
-      unliker,
+      imageId: image._id,
+      unliker: User.username,
     }, (err) => {
       if (err) {
         this.props.snackBarOpen(err.message);
+        return;
       }
       this.props.onLikeOrUnlikeAction();
     });
-  }
-
-  handleForbidden() {
-    this.props.snackBarOpen('您还未登录');
   }
 
   handleZoomImage(image) {
@@ -95,8 +90,6 @@ class ImageList extends Component {
                 onLikeClick={() => this.handleAddLiker(image)}
                 onUnlikeClick={() => this.handleRemoveLiker(image)}
                 onMediaClick={() => this.handleZoomImage(image)}
-                onCommentClick={this.handleOpenPrompt}
-                onReplyClick={this.handleOpenPrompt}
               />
             );
           })
