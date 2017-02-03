@@ -15,7 +15,8 @@ import UserFans from '/imports/ui/pages/User/pages/UserFans/index.js';
 import AllCollections from '/imports/ui/pages/Collection/pages/AllCollections/index.js';
 import Colletion from '/imports/ui/pages/Collection/pages/Collection/index.js';
 import Recycle from '/imports/ui/pages/Recycle/index.js';
-import Setting from '/imports/ui/pages/Setting/index.js';
+import Setting from '/imports/ui/pages/Setting/pages/Setting/index.js';
+import SettingEmails from '/imports/ui/pages/Setting/pages/Emails/index.js';
 import Note from '/imports/ui/pages/Note/pages/Note/index.js';
 import AllSentNotes from '/imports/ui/pages/Note/pages/AllSentNotes/index.js';
 import AllNotes from '/imports/ui/pages/Note/pages/AllNotes/index.js';
@@ -52,6 +53,7 @@ const Root = () => {
             <Route index={1} path="memory" component={Construction} onEnter={isLogin} />
             <Route index={1} path="recycle" component={Recycle} onEnter={isLogin} />
             <Route index={1} path="setting" component={Setting} onEnter={isLogin} />
+            <Route index={2} path="setting/emails" component={SettingEmails} onEnter={isLogin} />
             <Route index={2} path="note/:username" component={Note} onEnter={isOwner} />
             <Route index={3} path="note/:username/sent" component={AllSentNotes} onEnter={isOwner} />
             <Route index={3} path="note/:username/received" component={AllNotes} onEnter={isOwner} />

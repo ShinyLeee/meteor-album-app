@@ -80,9 +80,9 @@ if (Meteor.isServer) {
   });
 
   const QINIU_METHODS = [
-    'getUptoken',
-    'move',
-    'remove',
+    'Qiniu.getUptoken',
+    'Qiniu.move',
+    'Qiniu.remove',
   ];
 
   // Only allow 2 operations per connection per 5 second

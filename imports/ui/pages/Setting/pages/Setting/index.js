@@ -1,7 +1,7 @@
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
-import { snackBarOpen } from '../../redux/actions/index.js';
+import { snackBarOpen } from '/imports/ui/redux/actions/index.js';
 import SettingPage from './Setting.jsx';
 
 const mapStateToProps = (state) => ({

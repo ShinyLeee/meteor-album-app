@@ -75,11 +75,11 @@ if (Meteor.isServer) {
   });
 
   const AUTH_METHODS = [
-    'isLogin',
-    'isAdmin',
-    'isPermission',
-    'isAllowVisitHome',
-    'isAllowVisitColl',
+    'Auth.isLogin',
+    'Auth.isAdmin',
+    'Auth.isPermission',
+    'Auth.isAllowVisitHome',
+    'Auth.isAllowVisitColl',
   ];
 
   // Only allow 1 user operations per connection per second

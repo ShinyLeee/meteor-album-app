@@ -24,14 +24,17 @@ export class App extends Component {
   }
 
   componentDidMount() {
+    const { User } = this.props;
     // store uptoken when User already login
-    if (this.props.User) {
-      Meteor.call('Qiniu.getUptoken', (err, res) => {
-        if (err) {
-          throw new Meteor.Error(err);
-        }
+    if (User) {
+      Meteor.callPromise('Qiniu.getUptoken')
+      .then((res) => {
         console.log('%c Meteor finish getUptoken', 'color: blue'); // eslint-disable-line no-console
         this.props.storeUptoken(res.uptoken);
+      })
+      .catch((err) => {
+        console.log(err); // eslint-disable-line no-console
+        throw new Meteor.Error(err);
       });
     }
   }
@@ -46,14 +49,18 @@ export class App extends Component {
     else transitionName = indexGap < 0 ? 'slideToRight' : 'fastIn';
     this.setState({ transitionName });
 
+    const { User } = this.props;
+
     // store uptoken after User login
-    if (!this.props.User && nextProps.User) {
-      Meteor.call('Qiniu.getUptoken', (err, res) => {
-        if (err) {
-          throw new Meteor.Error(err);
-        }
+    if (!User && nextProps.User) {
+      Meteor.callPromise('Qiniu.getUptoken')
+      .then((res) => {
         console.log('%c Meteor finish getUptoken', 'color: blue'); // eslint-disable-line no-console
         this.props.storeUptoken(res.uptoken);
+      })
+      .catch((err) => {
+        console.log(err); // eslint-disable-line no-console
+        throw new Meteor.Error(err);
       });
     }
     if (this.props.User && !nextProps.User) {

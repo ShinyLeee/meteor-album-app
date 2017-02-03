@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import React, { Component, PropTypes } from 'react';
+import { browserHistory } from 'react-router';
 import { List, ListItem } from 'material-ui/List';
 import TextField from 'material-ui/TextField';
 import Subheader from 'material-ui/Subheader';
@@ -20,9 +21,9 @@ import EmailIcon from 'material-ui/svg-icons/communication/email';
 import { blue500 } from 'material-ui/styles/colors';
 import { updateProfile } from '/imports/api/users/methods.js';
 
-import NavHeader from '../../components/NavHeader/NavHeader.jsx';
-import Loader from '../../components/Loader/Loader.jsx';
-import styles from './Setting.style.js';
+import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
+import Loader from '/imports/ui/components/Loader/Loader.jsx';
+import styles from '../../Setting.style.js';
 
 let initialSettings;
 
@@ -50,7 +51,6 @@ export default class SettingPage extends Component {
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleSetCover = this.handleSetCover.bind(this);
     this.handleSetAvatar = this.handleSetAvatar.bind(this);
-    this.handleOnTimeout = this.handleOnTimeout.bind(this);
   }
 
   handleDiscard() {
@@ -203,10 +203,6 @@ export default class SettingPage extends Component {
     }
   }
 
-  handleOnTimeout() {
-    this.props.snackBarOpen('上传超时，请重试');
-  }
-
   renderEditingNavHeader() {
     return (
       <NavHeader
@@ -331,22 +327,16 @@ export default class SettingPage extends Component {
           </List>
           <Divider />
           <List className="setting__security"> { /* Security Setting */ }
-            <Subheader>账户安全(暂未开放)</Subheader>
+            <Subheader>账户安全</Subheader>
+            <ListItem
+              primaryText="我的邮箱"
+              secondaryText="查看当前邮箱信息"
+              disableKeyboardFocus
+              onTouchTap={() => browserHistory.push('/setting/emails')}
+            />
             <ListItem
               primaryText="更改密码"
               secondaryText="通过电子邮箱更换密码"
-              disableKeyboardFocus
-              disabled
-            />
-            <ListItem
-              primaryText="账号信息"
-              secondaryText="查看当前账号详细信息"
-              disableKeyboardFocus
-              disabled
-            />
-            <ListItem
-              primaryText="WeChat"
-              secondaryText="关联微信账号"
               disableKeyboardFocus
               disabled
             />
@@ -435,7 +425,7 @@ export default class SettingPage extends Component {
           <Loader
             open={this.state.isProcessing}
             message={this.state.processMsg}
-            onTimeout={this.handleOnTimeout}
+            onTimeout={() => this.props.snackBarOpen('上传超时，请重试')}
           />
           { this.props.User && this.renderContent() }
           <Dialog

@@ -1,4 +1,5 @@
 
+import '/imports/api/api/accounts.js';
 import '/imports/api/api/auth.js';
 import '/imports/api/api/qiniu.js';
 

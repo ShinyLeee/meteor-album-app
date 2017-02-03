@@ -1,5 +1,6 @@
 import React, { PropTypes } from 'react';
 import { browserHistory } from 'react-router';
+import ReactMarkdown from 'react-markdown';
 import TimeAgo from 'react-timeago';
 import CNStrings from 'react-timeago/lib/language-strings/zh-CN';
 import buildFormatter from 'react-timeago/lib/formatters/buildFormatter';
@@ -39,9 +40,10 @@ const NoteHolder = ({ isRead, avatar, note, onReadBtnClick }) => (
         showExpandableButton
       />
       <CardText expandable>
-        <div className="NoteHolder__content">
-          {note.content}
-        </div>
+        <ReactMarkdown
+          className="NoteHolder__content"
+          source={note.content}
+        />
       </CardText>
       {
         !isRead

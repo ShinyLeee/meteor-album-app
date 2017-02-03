@@ -8,6 +8,11 @@ import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 
 import { Users } from './user.js';
 
+/**
+ * Validator Options
+ * Clean: Intended to be called prior to validation to avoid any avoidable validation errors.
+ * Filter: Filter out properties not found in the schema? True by default.
+ */
 export const createUser = new ValidatedMethod({
   name: 'users.createUser',
   mixins: [CallPromiseMixin],
@@ -22,11 +27,7 @@ export const createUser = new ValidatedMethod({
     Accounts.createUser({ username, password });
   },
 });
-/**
- * Validator Options
- * Clean: Intended to be called prior to validation to avoid any avoidable validation errors.
- * Filter: Filter out properties not found in the schema? True by default.
- */
+
 export const updateProfile = new ValidatedMethod({
   name: 'users.updateProfile',
   validate: new SimpleSchema({
