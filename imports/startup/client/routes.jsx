@@ -17,12 +17,15 @@ import Colletion from '/imports/ui/pages/Collection/pages/Collection/index.js';
 import Recycle from '/imports/ui/pages/Recycle/index.js';
 import Setting from '/imports/ui/pages/Setting/pages/Setting/index.js';
 import SettingEmails from '/imports/ui/pages/Setting/pages/Emails/index.js';
+import SettingPassword from '/imports/ui/pages/Setting/pages/Password/index.js';
 import Note from '/imports/ui/pages/Note/pages/Note/index.js';
 import AllSentNotes from '/imports/ui/pages/Note/pages/AllSentNotes/index.js';
 import AllNotes from '/imports/ui/pages/Note/pages/AllNotes/index.js';
 import SendNote from '/imports/ui/pages/Note/pages/SendNote/index.js';
 import Search from '/imports/ui/pages/Search/pages/Search/index.js';
 import SearchResults from '/imports/ui/pages/Search/pages/Results/index.js';
+import VerifyEmail from '/imports/ui/pages/Account/pages/VerifyEmail/VerifyEmail.jsx';
+import ResetPassword from '/imports/ui/pages/Account/pages/ResetPassword/index.js';
 import Construction from '/imports/ui/pages/Error/Construction.jsx';
 import Forbidden from '/imports/ui/pages/Error/Forbidden.jsx';
 import InternalError from '/imports/ui/pages/Error/InternalError.jsx';
@@ -54,12 +57,15 @@ const Root = () => {
             <Route index={1} path="recycle" component={Recycle} onEnter={isLogin} />
             <Route index={1} path="setting" component={Setting} onEnter={isLogin} />
             <Route index={2} path="setting/emails" component={SettingEmails} onEnter={isLogin} />
+            <Route index={2} path="setting/password" component={SettingPassword} onEnter={isLogin} />
             <Route index={2} path="note/:username" component={Note} onEnter={isOwner} />
             <Route index={3} path="note/:username/sent" component={AllSentNotes} onEnter={isOwner} />
             <Route index={3} path="note/:username/received" component={AllNotes} onEnter={isOwner} />
             <Route index={2} path="sendNote" component={SendNote} onEnter={isLogin} />
             <Route index={2} path="search" component={Search} />
             <Route index={3} path="search/:query" component={SearchResults} />
+            <Route index={1} path="accounts/verifyEmail" component={VerifyEmail} / >
+            <Route index={1} path="accounts/resetPassword" component={ResetPassword} onEnter={isLogout} / >
             <Route index={1} path="login" component={Login} onEnter={isLogout} />
             <Route index={1} path="register" component={Register} onEnter={isLogout} />
             <Route index={1} path="403" component={Forbidden} />

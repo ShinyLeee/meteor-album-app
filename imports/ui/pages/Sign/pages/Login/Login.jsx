@@ -1,9 +1,14 @@
 import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
 import React, { Component, PropTypes } from 'react';
 import { browserHistory } from 'react-router';
+import CircularProgress from 'material-ui/CircularProgress';
+import Dialog from 'material-ui/Dialog';
+import FlatButton from 'material-ui/FlatButton';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 
+import { validateEmail } from '/imports/utils/utils.js';
 import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
 import signHOC from '../../components/signHOC.js';
 import styles from '../../sign.style.js';
@@ -12,7 +17,13 @@ class LoginPage extends Component {
 
   constructor(props) {
     super(props);
+    this.state = {
+      isProcessing: false,
+      resetDialog: false,
+      email: '',
+    };
     this.handleLogin = this.handleLogin.bind(this);
+    this.handleSentResetEmail = this.handleSentResetEmail.bind(this);
   }
 
   handleLogin() {
@@ -22,14 +33,42 @@ class LoginPage extends Component {
     this.usrInput.blur();
     this.pwdInput.blur();
 
-    Meteor.loginWithPassword(usr, pwd, (err) => {
-      if (err) {
-        this.props.snackBarOpen(err.message);
-        console.log(err); // eslint-disable-line no-console
-        throw new Meteor.Error(err);
-      }
-      browserHistory.push('/');
-      this.props.snackBarOpen('登录成功');
+    const loginWithPassword = Meteor.wrapPromise(Meteor.loginWithPassword);
+
+    loginWithPassword(usr, pwd)
+    .then(() => {
+      browserHistory.replace('/');
+      this.props.snackBarOpen('登陆成功');
+    })
+    .catch((err) => {
+      this.props.snackBarOpen(err.reason || '登录失败');
+      console.log(err); // eslint-disable-line no-console
+      throw new Meteor.Error(err);
+    });
+  }
+
+  handleSentResetEmail() {
+    const { email } = this.state;
+
+    if (!validateEmail(email)) {
+      this.props.snackBarOpen('请输入正确的邮箱地址');
+      return;
+    }
+
+    this.setState({ isProcessing: true });
+
+    const forgotPassword = Meteor.wrapPromise(Accounts.forgotPassword);
+
+    forgotPassword({ email })
+    .then(() => {
+      this.setState({ isProcessing: false, resetDialog: false, email: '' });
+      this.props.snackBarOpen('发送重置密码邮件成功');
+    })
+    .catch((err) => {
+      this.setState({ isProcessing: false, resetDialog: false, email: '' });
+      this.props.snackBarOpen(err.reason || '发送重置密码邮件失败');
+      console.log(err); // eslint-disable-line no-console
+      throw new Meteor.Error(err);
     });
   }
 
@@ -68,7 +107,53 @@ class LoginPage extends Component {
               onTouchTap={() => browserHistory.push('/register')}
               fullWidth
             />
+            <p onTouchTap={() => this.setState({ resetDialog: true })}>忘记密码？</p>
           </div>
+          <Dialog
+            title="重置密码"
+            titleStyle={{ border: 'none' }}
+            actions={[
+              <FlatButton
+                label="取消"
+                onTouchTap={() => this.setState({ resetDialog: false })}
+                disabled={this.state.isProcessing}
+                primary
+              />,
+              <FlatButton
+                label="确认发送"
+                onTouchTap={this.handleSentResetEmail}
+                disabled={this.state.isProcessing}
+                primary
+              />,
+            ]}
+            actionsContainerStyle={{ border: 'none' }}
+            open={this.state.resetDialog}
+            modal
+          >
+            {
+              this.state.isProcessing
+              ? (
+                <div style={{ textAlign: 'center' }}>
+                  <CircularProgress
+                    color="#3F51B5"
+                    size={30}
+                    thickness={2.5}
+                    style={{ verticalAlign: 'bottom' }}
+                  />
+                  <span style={{ marginLeft: '24px' }}>发送邮件中...</span>
+                </div>
+              )
+              : (
+                <TextField
+                  name="email"
+                  hintText="邮箱地址"
+                  value={this.state.email}
+                  onChange={(e) => this.setState({ email: e.target.value })}
+                  fullWidth
+                />
+              )
+            }
+          </Dialog>
         </div>
       </div>
     );

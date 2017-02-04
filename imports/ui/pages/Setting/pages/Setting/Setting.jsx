@@ -331,14 +331,14 @@ export default class SettingPage extends Component {
             <ListItem
               primaryText="我的邮箱"
               secondaryText="查看当前邮箱信息"
-              disableKeyboardFocus
               onTouchTap={() => browserHistory.push('/setting/emails')}
+              disableKeyboardFocus
             />
             <ListItem
               primaryText="更改密码"
-              secondaryText="通过电子邮箱更换密码"
+              secondaryText="通过当前密码或电子邮箱更换密码"
+              onTouchTap={() => browserHistory.push('/setting/password')}
               disableKeyboardFocus
-              disabled
             />
           </List>
           <Divider />
@@ -445,16 +445,18 @@ export default class SettingPage extends Component {
 
 }
 
+SettingPage.displayName = 'SettingPage';
+
 SettingPage.defaultProps = {
   domain: Meteor.settings.public.domain,
   uploadURL: window.location.protocol === 'https:' ? 'https://up.qbox.me/' : 'http://upload.qiniu.com',
 };
 
 SettingPage.propTypes = {
-  User: PropTypes.object.isRequired,
+  User: PropTypes.object, // User and snackBarOpen not required bc logout
   domain: PropTypes.string.isRequired,
   uploadURL: PropTypes.string.isRequired,
   // Below Pass from Redux
   uptoken: PropTypes.string.isRequired,
-  snackBarOpen: PropTypes.func.isRequired,
+  snackBarOpen: PropTypes.func,
 };

@@ -24,7 +24,7 @@ const NavHeader = (props) => {
 
   if (loading) return (<LoadingNavHeader />);
   if (primary) return (<ConnectedPrimaryNavHeader User={User} location={location} />);
-  if (secondary) return (<SecondaryNavHeader title={title} iconElementRight={iconElementRight} />);
+  if (secondary) return (<SecondaryNavHeader title={title} iconElementRight={iconElementRight} style={style} />);
   return (
     <div className="component__NavHeader">
       <AppBar

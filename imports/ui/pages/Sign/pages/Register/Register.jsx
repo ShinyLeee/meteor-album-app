@@ -46,9 +46,12 @@ class RegisterPage extends Component {
     })
     .then(() => useCode.callPromise({ codeNo: code }))
     .then(() => {
-      Meteor.loginWithPassword(username, password);
+      const loginWithPassword = Meteor.wrapPromise(Meteor.loginWithPassword);
+      return loginWithPassword(username, password);
+    })
+    .then(() => {
       browserHistory.replace('/');
-      this.props.snackBarOpen('注册成功');
+      this.props.snackBarOpen('登陆成功');
     })
     .catch((err) => {
       this.props.snackBarOpen(err.reason);

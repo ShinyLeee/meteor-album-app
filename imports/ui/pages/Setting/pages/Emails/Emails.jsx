@@ -3,6 +3,7 @@ import React, { Component, PropTypes } from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
 import Subheader from 'material-ui/Subheader';
 import TextField from 'material-ui/TextField';
+import { blue500 } from 'material-ui/styles/colors';
 
 import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
 import Loader from '/imports/ui/components/Loader/Loader.jsx';
@@ -20,6 +21,7 @@ export default class EmailsPage extends Component {
     this.handleEmailValueChange = this.handleEmailValueChange.bind(this);
     this.handleSentVerifyEmail = this.handleSentVerifyEmail.bind(this);
     this.handleEmailChange = this.handleEmailChange.bind(this);
+    this.handleTimeout = this.handleTimeout.bind(this);
   }
 
   handleEmailValueChange(e) {
@@ -61,6 +63,11 @@ export default class EmailsPage extends Component {
       console.log(err); // eslint-disable-line no-console
       throw new Meteor.Error(err);
     });
+  }
+
+  handleTimeout() {
+    this.setState({ isProcessing: false, processMsg: '' });
+    this.props.snackBarOpen('发送邮件失败');
   }
 
   renderContent() {
@@ -138,13 +145,14 @@ export default class EmailsPage extends Component {
       <div className="container">
         <NavHeader
           title="我的邮箱"
+          style={{ backgroundColor: blue500 }}
           secondary
         />
         <div className="content">
           <Loader
             open={this.state.isProcessing}
             message={this.state.processMsg}
-            onTimeout={() => this.props.snackBarOpen('发送邮件失败')}
+            onTimeout={this.handleTimeout}
           />
           { this.props.User && this.renderContent() }
         </div>
@@ -153,6 +161,8 @@ export default class EmailsPage extends Component {
   }
 
 }
+
+EmailsPage.displayName = 'EmailsPage';
 
 EmailsPage.propTypes = {
   User: PropTypes.object.isRequired,

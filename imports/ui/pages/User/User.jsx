@@ -51,7 +51,6 @@ export default class UserPage extends Component {
         this.props.snackBarOpen('发生未知错误');
         throw new Meteor.Error(err);
       }
-      browserHistory.replace('/login');
       this.props.snackBarOpen('登出成功');
     });
   }

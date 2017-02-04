@@ -41,6 +41,10 @@
       vertical-align: middle;
       width: 47%;
     }
+    & > p {
+      font-size: 14px;
+      text-align: center;
+    }
   }
 }
 
@@ -350,7 +354,7 @@
       float: right;
       margin-right: 18px;
       font-size: 14px;
-      color: #2962ff;
+      color: @color-link;
     }
   }
   & > .collection__content {
@@ -400,7 +404,7 @@
       float: right;
       margin-right: 18px;
       font-size: 14px;
-      color: #2962ff;
+      color: @color-link;
     }
   }
   & > .user__container { padding: 16px 0; }
@@ -419,6 +423,18 @@
     & > .user__info {
       font-size: 14px;
       color: #222;
+    }
+  }
+}
+
+.content__verifyEmail {
+  text-align: center;
+  & > h2 { color: #222; }
+  & > p {
+    font-size: 14px;
+    color: #666;
+    & > a {
+      color: @color-link;
     }
   }
 }
@@ -443,6 +459,6 @@
   & > .error__info {
     font-size: 12px;
     color: #666;
-    & a { color: #2962ff; }
+    & a { color: @color-link; }
   }
 }

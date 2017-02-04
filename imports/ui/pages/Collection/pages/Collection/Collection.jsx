@@ -203,6 +203,7 @@ export default class CollectionPage extends Component {
   }
 
   handleOnTimeout() {
+    this.setState({ isProcessing: false, processMsg: '' });
     this.props.snackBarOpen('上传超时，请重试');
   }
 

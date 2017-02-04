@@ -112,19 +112,15 @@ if (Meteor.isServer) {
       });
 
       describe('Images.inCollection', () => {
-        let isCalled = false;
         it('should send all images for specific collection', (done) => {
           const collector = new PublicationCollector();
           collector.collect(
             'Images.inCollection',
             { username: curUser.username, cname: collOne.name },
             (collections) => {
-              if (!isCalled) {
-                isCalled = true;
-                assert.equal(collections.collections.length, 1);
-                assert.equal(collections.images.length, 3);
-                done();
-              }
+              assert.equal(collections.collections.length, 1);
+              assert.equal(collections.images.length, 3);
+              done();
             }
           );
         });

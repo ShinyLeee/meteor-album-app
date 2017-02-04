@@ -90,5 +90,5 @@ if (Meteor.isServer) {
 
     // Rate limit per connection ID
     connectionId() { return true; },
-  }, 2, 5000);
+  }, 1, 1000);
 }
