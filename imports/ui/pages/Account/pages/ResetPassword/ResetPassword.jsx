@@ -3,8 +3,12 @@ import { Accounts } from 'meteor/accounts-base';
 import React, { Component, PropTypes } from 'react';
 import { browserHistory } from 'react-router';
 import AppBar from 'material-ui/AppBar';
+import Dialog from 'material-ui/Dialog';
+import FlatButton from 'material-ui/FlatButton';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
+import IconButton from 'material-ui/IconButton';
+import ArrowBackIcon from 'material-ui/svg-icons/navigation/arrow-back';
 import { blue500 } from 'material-ui/styles/colors';
 
 export default class ResetPasswordPage extends Component {
@@ -12,6 +16,7 @@ export default class ResetPasswordPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      isAlertOpen: false,
       isProcessing: false,
       processMsg: '',
       newPwd: '',
@@ -66,6 +71,7 @@ export default class ResetPasswordPage extends Component {
           style={{ position: 'fixed', top: 0, backgroundColor: blue500 }}
           title="修改密码"
           titleStyle={{ fontSize: '20px' }}
+          iconElementLeft={<IconButton onTouchTap={() => this.setState({ isAlertOpen: true })}><ArrowBackIcon /></IconButton>}
         />
         <div className="content">
           <div className="content__resetPassword">
@@ -99,6 +105,23 @@ export default class ResetPasswordPage extends Component {
                 onTouchTap={this.handleResetPassword}
               />
             </div>
+            <Dialog
+              actions={[
+                <FlatButton
+                  label="取消"
+                  onTouchTap={() => this.setState({ isAlertOpen: false })}
+                  primary
+                />,
+                <FlatButton
+                  label="确认"
+                  onTouchTap={() => browserHistory.replace('/')}
+                  primary
+                />,
+              ]}
+              open={this.state.isAlertOpen}
+              onRequestClose={() => this.setState({ isAlertOpen: false })}
+            >是否确认离开此页面？
+            </Dialog>
           </div>
         </div>
       </div>

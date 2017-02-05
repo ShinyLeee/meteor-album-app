@@ -282,7 +282,7 @@ export default class SettingPage extends Component {
             >
               <TextField
                 style={styles.textFieldStyle}
-                floatingLabelText="邮箱"
+                floatingLabelText="主邮箱"
                 value={(User.emails && User.emails[0].address) || '暂无邮箱'}
                 fullWidth
                 disabled

@@ -1,8 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { Accounts } from 'meteor/accounts-base';
 import { _ } from 'meteor/underscore';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
-import { CallPromiseMixin } from 'meteor/didericis:callpromise-mixin';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 
@@ -13,21 +11,6 @@ import { Users } from './user.js';
  * Clean: Intended to be called prior to validation to avoid any avoidable validation errors.
  * Filter: Filter out properties not found in the schema? True by default.
  */
-export const createUser = new ValidatedMethod({
-  name: 'users.createUser',
-  mixins: [CallPromiseMixin],
-  validate: new SimpleSchema({
-    username: { type: String, label: '用户名', max: 20 },
-    password: { type: String },
-  }).validator({ clean: true, filter: false }),
-  run({ username, password }) {
-    if (this.userId) {
-      throw new Meteor.Error('api.users.createUser.hasLoggedIn');
-    }
-    Accounts.createUser({ username, password });
-  },
-});
-
 export const updateProfile = new ValidatedMethod({
   name: 'users.updateProfile',
   validate: new SimpleSchema({
@@ -93,7 +76,6 @@ export const unFollowUser = new ValidatedMethod({
 
 // Get list of all method names on Users
 const USERS_METHODS = _.pluck([
-  createUser,
   updateProfile,
   followUser,
   unFollowUser,

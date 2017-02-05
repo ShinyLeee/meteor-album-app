@@ -8,12 +8,13 @@ Accounts.onLogout(() => {
 Accounts.onEmailVerificationLink((token) => {
   Accounts.verifyEmail(token, (err) => {
     if (err) {
-      browserHistory.replace({
+      console.log(err); // eslint-disable-line no-console
+      return browserHistory.replace({
         pathname: `/${err.error || 500}`,
         state: { message: err.reason || '服务器内部错误' },
       });
     }
-    browserHistory.replace('/accounts/verifyEmail');
+    return browserHistory.replace('/accounts/verifyEmail');
   });
 });
 

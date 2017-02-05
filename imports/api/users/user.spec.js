@@ -3,7 +3,7 @@ import { Factory } from 'meteor/dburles:factory';
 import { _ } from 'meteor/underscore';
 import { PublicationCollector } from 'meteor/johanbrook:publication-collector';
 import { assert, expect } from 'meteor/practicalmeteor:chai';
-import { createUser, updateProfile, followUser, unFollowUser } from './methods.js';
+import { updateProfile, followUser, unFollowUser } from './methods.js';
 import { Users, defaultUserProfile } from './user.js';
 
 const sourceDomain = Meteor.settings.public.sourceDomain;
@@ -80,18 +80,6 @@ if (Meteor.isServer) {
 
         // Create a user in that list
         curUser = Factory.create('user');
-      });
-
-      describe('createUser', () => {
-        it('should only can create if you are not logged in', () => {
-          // Set up method context and arguments
-          const methodInvocation = { userId: curUser._id };
-          const args = { username: 'test', password: 'test' };
-
-          assert.throws(() => {
-            createUser._execute(methodInvocation, args);
-          }, Meteor.Error, /api.users.createUser.hasLoggedIn/);
-        });
       });
 
       describe('updateProfile', () => {

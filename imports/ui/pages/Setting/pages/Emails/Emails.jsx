@@ -2,12 +2,17 @@ import { Meteor } from 'meteor/meteor';
 import React, { Component, PropTypes } from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
 import Subheader from 'material-ui/Subheader';
+import Divider from 'material-ui/Divider';
+import IconMenu from 'material-ui/IconMenu';
+import MenuItem from 'material-ui/MenuItem';
+import { List, ListItem } from 'material-ui/List';
+import IconButton from 'material-ui/IconButton';
+import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import TextField from 'material-ui/TextField';
-import { blue500 } from 'material-ui/styles/colors';
+import { blue500, grey400 } from 'material-ui/styles/colors';
 
 import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
 import Loader from '/imports/ui/components/Loader/Loader.jsx';
-import Label from '/imports/ui/components/Label/Label.jsx';
 
 export default class EmailsPage extends Component {
 
@@ -20,8 +25,8 @@ export default class EmailsPage extends Component {
     };
     this.handleEmailValueChange = this.handleEmailValueChange.bind(this);
     this.handleSentVerifyEmail = this.handleSentVerifyEmail.bind(this);
-    this.handleEmailChange = this.handleEmailChange.bind(this);
-    this.handleTimeout = this.handleTimeout.bind(this);
+    this.handleAddEmail = this.handleAddEmail.bind(this);
+    this.handleLoaderTimeout = this.handleLoaderTimeout.bind(this);
   }
 
   handleEmailValueChange(e) {
@@ -44,8 +49,28 @@ export default class EmailsPage extends Component {
       throw new Meteor.Error(err);
     });
   }
+    /**
+     * Return the new gloabl counter and group state, when select or cancel one photo
+     * @param {object}  e - onTouchTap event Object
+     * @param {string} email - the email address in Menu item wait for remove
+     */
+  handleRemoveEmail(e, email) {
+    e.preventDefault();
+    this.setState({ isProcessing: true, processMsg: '解除绑定邮箱中' });
+    Meteor.callPromise('Accounts.removeEmail', { email })
+    .then(() => {
+      this.setState({ isProcessing: false, processMsg: '' });
+      this.props.snackBarOpen('解除绑定邮箱成功');
+    })
+    .catch((err) => {
+      this.setState({ isProcessing: false, processMsg: '' });
+      this.props.snackBarOpen(err.reason || '解除邮箱绑定失败');
+      console.log(err); // eslint-disable-line no-console
+      throw new Meteor.Error(err);
+    });
+  }
 
-  handleEmailChange(e) {
+  handleAddEmail(e) {
     e.preventDefault();
     if (!this.state.email) {
       this.props.snackBarOpen('请输入新邮箱地址');
@@ -65,79 +90,43 @@ export default class EmailsPage extends Component {
     });
   }
 
-  handleTimeout() {
+  handleLoaderTimeout() {
     this.setState({ isProcessing: false, processMsg: '' });
     this.props.snackBarOpen('发送邮件失败');
   }
 
-  renderContent() {
+  renderEmailList() {
     const { User } = this.props;
 
-    let labelType = 'default';
-    let emailStatus;
-
-    if (!User.emails) {
-      labelType = 'warning';
-      emailStatus = '尚未绑定邮箱';
-    } else if (!User.emails[0].verified) {
-      labelType = 'primary';
-      emailStatus = '等待验证中';
-    } else if (User.emails[0].verified) {
-      labelType = 'success';
-      emailStatus = '验证通过';
+    if (!User.emails || User.emails.length === 0) {
+      return (
+        <ListItem
+          primaryText="暂无邮箱"
+          secondaryText="请即刻通过下方区域添加邮箱"
+          disabled
+        />);
     }
+    return User.emails.map((email, i) => {
+      let emailStatus;
 
-    return (
-      <div className="content__settingEmails">
-        <div className="settingEmails__holder">
-          <div className="settingEmails__current">
-            <Subheader>
-              <span>当前邮箱</span>
-              <Label text={emailStatus} type={labelType} />
-            </Subheader>
-            <TextField
-              name="curEmail"
-              style={{ padding: '0 16px' }}
-              defaultValue={(User.emails && User.emails[0].address) || '您还尚未绑定邮箱'}
-              underlineShow={false}
-              disabled
-            />
-          </div>
-          <div className="settingEmails__info" style={{ margin: '18px 24px 0 0', textAlign: 'right' }}>
-            {
-              emailStatus === '等待验证中' && (
-                <RaisedButton
-                  label="重新发送"
-                  onTouchTap={this.handleSentVerifyEmail}
-                  primary
-                />
-              )
-            }
-          </div>
-          <div className="settingEmails__new">
-            <Subheader>更换邮箱</Subheader>
-            <TextField
-              name="newEmail"
-              style={{ padding: '0 16px' }}
-              hintText="邮箱地址"
-              value={this.state.email}
-              onChange={this.handleEmailValueChange}
-            />
-          </div>
-          <p
-            className="settingEmails__info"
-            style={{ padding: '0 16px', fontSize: '12px' }}
-          >邮箱地址用于登陆以及修改密码等安全性操作，如若尚未绑定邮箱或仍未完成验证，请即刻完成邮箱绑定或验证，以保护账号安全。
-          </p>
-          <div
-            className="settingEmails__actions"
-            style={{ margin: '18px 24px 0 0', textAlign: 'right' }}
-          >
-            <RaisedButton label="下一步" onTouchTap={this.handleEmailChange} />
-          </div>
-        </div>
-      </div>
-    );
+      if (email.verified) emailStatus = '验证通过';
+      else emailStatus = '等待验证中';
+
+      return (
+        <ListItem
+          key={i}
+          primaryText={email.address}
+          secondaryText={emailStatus}
+          rightIconButton={
+            <IconMenu iconButtonElement={<IconButton><MoreVertIcon color={grey400} /></IconButton>}>
+              { !email.verified && <MenuItem onTouchTap={this.handleSentVerifyEmail}>重新发送验证邮件</MenuItem> }
+              <MenuItem onTouchTap={(e) => this.handleRemoveEmail(e, email.address)}>解除绑定</MenuItem>
+            </IconMenu>
+          }
+          disabled
+        />
+      );
+    });
   }
 
   render() {
@@ -152,9 +141,40 @@ export default class EmailsPage extends Component {
           <Loader
             open={this.state.isProcessing}
             message={this.state.processMsg}
-            onTimeout={this.handleTimeout}
+            onTimeout={this.handleLoaderTimeout}
           />
-          { this.props.User && this.renderContent() }
+          <div className="content__settingEmails">
+            <div className="settingEmails__holder">
+              <List className="settingEmails__current">
+                <Subheader>
+                  <span>邮箱列表</span>
+                </Subheader>
+                { this.renderEmailList() }
+              </List>
+              <Divider />
+              <div className="settingEmails__new">
+                <Subheader>添加邮箱</Subheader>
+                <TextField
+                  name="newEmail"
+                  style={{ padding: '0 16px' }}
+                  hintText="邮箱地址"
+                  value={this.state.email}
+                  onChange={this.handleEmailValueChange}
+                />
+              </div>
+              <p
+                className="settingEmails__info"
+                style={{ padding: '0 16px', fontSize: '12px' }}
+              >邮箱用于登陆及修改密码等安全性操作，如若尚未绑定邮箱或仍未完成验证，请即刻完成邮箱绑定或验证，以保护账号安全。
+              </p>
+              <div
+                className="settingEmails__actions"
+                style={{ margin: '18px 24px 0 0', textAlign: 'right' }}
+              >
+                <RaisedButton label="下一步" onTouchTap={this.handleAddEmail} />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
