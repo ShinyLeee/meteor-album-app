@@ -8,6 +8,7 @@ import Infinity from '/imports/ui/components/Infinity/Infinity.jsx';
 import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
 import EmptyHolder from '/imports/ui/components/EmptyHolder/EmptyHolder.jsx';
 import Loading from '/imports/ui/components/Loader/Loading.jsx';
+import BibleDialog from '/imports/ui/components/BibleDialog/BibleDialog.jsx';
 import NoteHolder from '../../components/NoteHolder/NoteHolder.jsx';
 
 export default class AllSentNotesPage extends Component {
@@ -65,7 +66,9 @@ export default class AllSentNotesPage extends Component {
   }
 
   renderContent() {
-    if (this.state.notes.length === 0) return (<EmptyHolder mainInfo="您还未发送过消息" />);
+    const { bibleDialogOpen, bible } = this.props;
+    const { notes } = this.state;
+    if (notes.length === 0) return (<EmptyHolder mainInfo="您还未发送过消息" />);
     return (
       <div className="content__allSentNotes">
         <Infinity
@@ -74,7 +77,7 @@ export default class AllSentNotesPage extends Component {
           offsetToBottom={100}
         >
           {
-            this.state.notes.map((note, i) => {
+            notes.map((note, i) => {
               const receiverObj = Meteor.users.findOne({ username: note.receiver });
               return (
                 <NoteHolder
@@ -87,6 +90,10 @@ export default class AllSentNotesPage extends Component {
             })
           }
         </Infinity>
+        <BibleDialog
+          open={bibleDialogOpen}
+          bible={bible}
+        />
       </div>
     );
   }
@@ -112,8 +119,10 @@ AllSentNotesPage.displayName = 'AllSentNotesPage';
 
 AllSentNotesPage.propTypes = {
   User: PropTypes.object.isRequired,
-  // Below Pass from Database
+  // Below Pass from Database and Redux
   dataIsReady: PropTypes.bool.isRequired,
   limit: PropTypes.number.isRequired,
   initialAllSentNotes: PropTypes.array.isRequired,
+  bibleDialogOpen: PropTypes.bool.isRequired,
+  bible: PropTypes.object, // only required when bibleDialogOpen true
 };

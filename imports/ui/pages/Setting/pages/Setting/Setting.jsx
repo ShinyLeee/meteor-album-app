@@ -51,6 +51,7 @@ export default class SettingPage extends Component {
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleSetCover = this.handleSetCover.bind(this);
     this.handleSetAvatar = this.handleSetAvatar.bind(this);
+    this.handleLoaderTimeout = this.handleLoaderTimeout.bind(this);
   }
 
   handleDiscard() {
@@ -201,6 +202,11 @@ export default class SettingPage extends Component {
         throw new Meteor.Error(err);
       });
     }
+  }
+
+  handleLoaderTimeout() {
+    this.setState({ isProcessing: false, processMsg: '' });
+    this.props.snackBarOpen('上传超时');
   }
 
   renderEditingNavHeader() {
@@ -425,7 +431,7 @@ export default class SettingPage extends Component {
           <Loader
             open={this.state.isProcessing}
             message={this.state.processMsg}
-            onTimeout={() => this.props.snackBarOpen('上传超时，请重试')}
+            onTimeout={this.handleLoaderTimeout}
           />
           { this.props.User && this.renderContent() }
           <Dialog

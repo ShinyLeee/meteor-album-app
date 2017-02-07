@@ -19,7 +19,6 @@ class ZoomerHolder extends Component {
       exif: {},
     };
     this.handleCloseZoomer = this.handleCloseZoomer.bind(this);
-    this.handleOpenPrompt = this.handleOpenPrompt.bind(this);
     this.handleGetExif = this.handleGetExif.bind(this);
   }
 
@@ -44,10 +43,6 @@ class ZoomerHolder extends Component {
   handleCloseZoomer() {
     document.body.style.overflow = '';
     this.props.zoomerClose();
-  }
-
-  handleOpenPrompt() {
-    this.props.snackBarOpen('功能开发中');
   }
 
   handleGetExif() {

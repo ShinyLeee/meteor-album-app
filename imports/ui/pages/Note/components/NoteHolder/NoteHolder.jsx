@@ -1,6 +1,5 @@
 import React, { PropTypes } from 'react';
 import { browserHistory } from 'react-router';
-import ReactMarkdown from 'react-markdown';
 import TimeAgo from 'react-timeago';
 import CNStrings from 'react-timeago/lib/language-strings/zh-CN';
 import buildFormatter from 'react-timeago/lib/formatters/buildFormatter';
@@ -8,6 +7,8 @@ import { Card, CardHeader, CardActions, CardText } from 'material-ui/Card';
 import IconButton from 'material-ui/IconButton';
 import ReplyIcon from 'material-ui/svg-icons/content/reply';
 import CheckBoxIcon from 'material-ui/svg-icons/toggle/check-box';
+
+import QuillContent from '/imports/ui/components/Quill/QuillContent.jsx';
 
 const formatter = buildFormatter(CNStrings);
 
@@ -39,11 +40,11 @@ const NoteHolder = ({ isRead, avatar, note, onReadBtnClick }) => (
         actAsExpander
         showExpandableButton
       />
-      <CardText expandable>
-        <ReactMarkdown
-          className="NoteHolder__content"
-          source={note.content}
-        />
+      <CardText
+        style={{ padding: 0 }}
+        expandable
+      >
+        <QuillContent content={note.content} />
       </CardText>
       {
         !isRead

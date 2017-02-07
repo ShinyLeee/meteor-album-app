@@ -17,7 +17,7 @@ export const Notes = new NotesCollection('notes');
 
 Notes.schema = new SimpleSchema({
   title: { type: String, label: '标题', max: 20, optional: true },
-  content: { type: String, label: '内容', max: 256 },
+  content: { type: String, label: '内容' },
   sender: { type: String, label: '发送者', max: 20 },
   receiver: { type: String, label: '接收者', max: 20 },
   isRead: { type: Boolean, defaultValue: false, optional: true },

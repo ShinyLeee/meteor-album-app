@@ -18,6 +18,19 @@ export const zoomerClose = () => ({
   type: types.ZOOMER_CLOSE,
 });
 
+export const dialogFetch = () => ({
+  type: types.DIALOG_FETCH,
+});
+
+export const dialogOpen = (bible) => ({
+  type: types.DIALOG_OPEN,
+  bible,
+});
+
+export const dialogClose = () => ({
+  type: types.DIALOG_CLOSE,
+});
+
 export const uploaderStart = (uploader) => ({
   type: types.UPLOADER_START,
   uploader,

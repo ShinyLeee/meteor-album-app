@@ -15,6 +15,7 @@ import { blue500 } from 'material-ui/styles/colors';
 import { insertNote } from '/imports/api/notes/methods.js';
 
 import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
+import QuillEditor from '/imports/ui/components/Quill/QuillEditor.jsx';
 import DatePickerCN from '/imports/ui/components/SubMaterialUI/DatePickerCN.jsx';
 import Loading from '/imports/ui/components/Loader/Loading.jsx';
 import styles from './SendNote.style.js';
@@ -30,10 +31,8 @@ export default class SendNotePage extends Component {
       title: '',
       content: '',
     };
-    this.handleBack = this.handleBack.bind(this);
-    this.handleSent = this.handleSent.bind(this);
-    this.handleChangeReceiver = this.handleChangeReceiver.bind(this);
-    this.handleChangeContent = this.handleChangeContent.bind(this);
+    this.handleGoBack = this.handleGoBack.bind(this);
+    this.handleSentNote = this.handleSentNote.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -42,7 +41,17 @@ export default class SendNotePage extends Component {
     }
   }
 
-  handleBack() {
+  get quillModulesConfig() {
+    return {
+      toolbar: [
+        [{ header: [1, 2, false] }],
+        ['bold', 'italic', { align: [false, 'center', 'right'] }],
+        ['link', 'image'],
+      ],
+    };
+  }
+
+  handleGoBack() {
     if (this.state.content) {
       this.setState({ isAlertOpen: true });
       return;
@@ -50,7 +59,7 @@ export default class SendNotePage extends Component {
     browserHistory.goBack();
   }
 
-  handleSent() {
+  handleSentNote() {
     if (!this.state.receiver) {
       this.props.snackBarOpen('请选择接受用户');
       return;
@@ -72,18 +81,6 @@ export default class SendNotePage extends Component {
     });
   }
 
-  handleChangeReceiver(receiver) {
-    this.setState({ receiver });
-  }
-
-  handleChangeContent(e) {
-    const contentValue = e.target.value;
-    if (contentValue.length > 256) {
-      this.props.snackBarOpen('文本内容不能超过256个字符');
-    }
-    this.setState({ content: contentValue });
-  }
-
   renderContent() {
     return (
       <div className="content__sendNote">
@@ -95,7 +92,7 @@ export default class SendNotePage extends Component {
           filter={AutoComplete.caseInsensitiveFilter}
           underlineShow={false}
           style={styles.noteTextField}
-          onNewRequest={this.handleChangeReceiver}
+          onNewRequest={(receiver) => this.setState({ receiver })}
           fullWidth
         >
           { this.state.receiver && (
@@ -130,14 +127,10 @@ export default class SendNotePage extends Component {
           onChange={(e) => this.setState({ title: e.target.value })}
           fullWidth
         /><Divider />
-        <TextField
-          hintText="内容"
-          underlineShow={false}
-          style={styles.noteTextField}
-          value={this.state.content}
-          onChange={(e) => this.handleChangeContent(e)}
-          fullWidth
-          multiLine
+        <QuillEditor
+          placeholder="内容"
+          modules={this.quillModulesConfig}
+          onChange={(content) => this.setState({ content })}
         />
       </div>
     );
@@ -162,8 +155,8 @@ export default class SendNotePage extends Component {
         <NavHeader
           title="发送信息"
           style={{ backgroundColor: blue500 }}
-          iconElementLeft={<IconButton onTouchTap={this.handleBack}><ArrowBackIcon /></IconButton>}
-          iconElementRight={<IconButton onTouchTap={this.handleSent}><SendIcon /></IconButton>}
+          iconElementLeft={<IconButton onTouchTap={this.handleGoBack}><ArrowBackIcon /></IconButton>}
+          iconElementRight={<IconButton onTouchTap={this.handleSentNote}><SendIcon /></IconButton>}
         />
         <div className="content">
           { this.props.userIsReady

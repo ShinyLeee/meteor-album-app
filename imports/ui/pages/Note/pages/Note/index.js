@@ -28,7 +28,10 @@ const MeteorContainer = createContainer(({ params }) => {
   };
 }, NotePage);
 
-const mapStateToProps = (state) => state;
+const mapStateToProps = (state) => ({
+  bibleDialogOpen: state.dialog.open,
+  bible: state.dialog.bible,
+});
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({ snackBarOpen }, dispatch);
 

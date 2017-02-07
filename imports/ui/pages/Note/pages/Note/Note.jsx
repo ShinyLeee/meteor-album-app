@@ -13,6 +13,7 @@ import Infinity from '/imports/ui/components/Infinity/Infinity.jsx';
 import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
 import EmptyHolder from '/imports/ui/components/EmptyHolder/EmptyHolder.jsx';
 import Loading from '/imports/ui/components/Loader/Loading.jsx';
+import BibleDialog from '/imports/ui/components/BibleDialog/BibleDialog.jsx';
 import NoteHolder from '../../components/NoteHolder/NoteHolder.jsx';
 
 export default class NotePage extends Component {
@@ -108,7 +109,9 @@ export default class NotePage extends Component {
   }
 
   renderContent() {
-    if (this.state.notes.length === 0) return (<EmptyHolder mainInfo="您还未收到消息" />);
+    const { bibleDialogOpen, bible } = this.props;
+    const { notes } = this.state;
+    if (notes.length === 0) return (<EmptyHolder mainInfo="您还未收到消息" />);
     return (
       <div className="content__note">
         <Infinity
@@ -117,7 +120,7 @@ export default class NotePage extends Component {
           offsetToBottom={100}
         >
           {
-            this.state.notes.map((note, i) => {
+            notes.map((note, i) => {
               const senderObj = Meteor.users.findOne({ username: note.sender });
               return (
                 <NoteHolder
@@ -130,6 +133,10 @@ export default class NotePage extends Component {
             })
           }
         </Infinity>
+        <BibleDialog
+          open={bibleDialogOpen}
+          bible={bible}
+        />
       </div>
     );
   }
@@ -177,10 +184,11 @@ NotePage.displayName = 'NotePage';
 
 NotePage.propTypes = {
   User: PropTypes.object.isRequired,
-  // Below Pass from Database
+  // Below Pass from Database and Redux
   dataIsReady: PropTypes.bool.isRequired,
   limit: PropTypes.number.isRequired,
   initialNotes: PropTypes.array.isRequired,
-  // Below Pass from Redux
+  bibleDialogOpen: PropTypes.bool.isRequired,
+  bible: PropTypes.object, // only required when bibleDialogOpen true
   snackBarOpen: PropTypes.func.isRequired,
 };

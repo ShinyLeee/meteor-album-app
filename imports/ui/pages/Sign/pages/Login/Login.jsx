@@ -10,6 +10,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 
 import { validateEmail } from '/imports/utils/utils.js';
 import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
+import Loader from '/imports/ui/components/Loader/Loader.jsx';
 import signHOC from '../../components/signHOC.js';
 import styles from '../../sign.style.js';
 
@@ -19,16 +20,20 @@ class LoginPage extends Component {
     super(props);
     this.state = {
       isProcessing: false,
+      processMsg: '',
       resetDialog: false,
       email: '',
     };
     this.handleLogin = this.handleLogin.bind(this);
     this.handleSentResetEmail = this.handleSentResetEmail.bind(this);
+    this.handleLoaderTimeout = this.handleLoaderTimeout.bind(this);
   }
 
   handleLogin() {
     const usr = this.usrInput.input.value;
     const pwd = this.pwdInput.input.value;
+
+    this.setState({ isProcessing: true, processMsg: '登陆中...' });
 
     this.usrInput.blur();
     this.pwdInput.blur();
@@ -37,10 +42,12 @@ class LoginPage extends Component {
 
     loginWithPassword(usr, pwd)
     .then(() => {
+      this.setState({ isProcessing: false, processMsg: '' });
       browserHistory.replace('/');
       this.props.snackBarOpen('登陆成功');
     })
     .catch((err) => {
+      this.setState({ isProcessing: false, processMsg: '' });
       this.props.snackBarOpen(err.reason || '登录失败');
       console.log(err); // eslint-disable-line no-console
       throw new Meteor.Error(err);
@@ -72,11 +79,21 @@ class LoginPage extends Component {
     });
   }
 
+  handleLoaderTimeout() {
+    this.setState({ isProcessing: false, processMsg: '' });
+    this.props.snackBarOpen('发送邮件失败');
+  }
+
   render() {
     return (
       <div className="container">
         <NavHeader primary />
         <div className="content">
+          <Loader
+            open={this.state.isProcessing}
+            message={this.state.processMsg}
+            onTimeout={this.handleLoaderTimeout}
+          />
           <div className="content__login">
             <div className="login__logo">Gallery +</div>
             <div className="login__form">

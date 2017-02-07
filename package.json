@@ -21,6 +21,7 @@
     "moment": "^2.15.1",
     "node-uuid": "^1.4.7",
     "qiniu": "^6.1.13",
+    "quill": "^1.2.0",
     "react": "^15.4.0",
     "react-addons-css-transition-group": "^15.4.0",
     "react-addons-pure-render-mixin": "^15.4.1",

@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
+import { connect } from 'react-redux';
 import { Notes } from '/imports/api/notes/note.js';
 
 import AllSentNotes from './AllSentNotes.jsx';
 
-export default createContainer(({ params }) => {
+const MeteorContainer = createContainer(({ params }) => {
   const { username } = params;
   // Define How many notes render in the first time
   const limit = 5;
@@ -24,3 +25,10 @@ export default createContainer(({ params }) => {
     initialAllSentNotes,
   };
 }, AllSentNotes);
+
+const mapStateToProps = (state) => ({
+  bibleDialogOpen: state.dialog.open,
+  bible: state.dialog.bible,
+});
+
+export default connect(mapStateToProps)(MeteorContainer);

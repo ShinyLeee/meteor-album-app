@@ -82,7 +82,7 @@ if (Meteor.isServer) {
     'Auth.isAllowVisitColl',
   ];
 
-  // Only allow 1 user operations per connection per second
+  // Only allow 2 user operations per connection per second
   DDPRateLimiter.addRule({
     name(name) {
       return _.contains(AUTH_METHODS, name);
@@ -90,5 +90,5 @@ if (Meteor.isServer) {
 
     // Rate limit per connection ID
     connectionId() { return true; },
-  }, 1, 1000);
+  }, 2, 1000);
 }

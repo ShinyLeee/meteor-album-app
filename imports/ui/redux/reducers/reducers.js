@@ -21,6 +21,19 @@ export const zoomer = (state = { open: false, image: null }, action) => {
   }
 };
 
+export const dialog = (state = { open: false, bible: null }, action) => {
+  switch (action.type) {
+    case 'DIALOG_FETCH':
+      return Object.assign({ open: true, bible: null });
+    case 'DIALOG_OPEN':
+      return Object.assign({ open: true }, { bible: action.bible });
+    case 'DIALOG_CLOSE':
+      return { open: false, bible: null };
+    default:
+      return state;
+  }
+};
+
 export const uploader = (state = null, action) => {
   switch (action.type) {
     case 'UPLOADER_START':
