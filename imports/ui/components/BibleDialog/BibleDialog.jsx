@@ -19,7 +19,7 @@ const BibleDialog = ({ open, bible, bibleDialogClose }) => (
       ? (<div dangerouslySetInnerHTML={{ __html: bible && bible.verses }} />)
       : (
         <div className="text-center">
-          <CircularProgress style={{ verticalAlign: 'bottom' }} />
+          <CircularProgress color="#3F51B5" style={{ verticalAlign: 'bottom' }} />
           <span style={{ marginLeft: '32px', lineHeight: '40px', color: '#222' }}>获取中...</span>
         </div>
       )

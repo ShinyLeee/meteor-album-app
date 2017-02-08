@@ -3,7 +3,7 @@ import { _ } from 'meteor/underscore';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
-
+import { CallPromiseMixin } from 'meteor/didericis:callpromise-mixin';
 import { Users } from './user.js';
 
 /**
@@ -13,6 +13,7 @@ import { Users } from './user.js';
  */
 export const updateProfile = new ValidatedMethod({
   name: 'users.updateProfile',
+  mixins: [CallPromiseMixin],
   validate: new SimpleSchema({
     nickname: { type: String, label: '昵称', max: 10, optional: true },
     intro: { type: String, label: '个人简介', max: 20, optional: true },
@@ -40,6 +41,7 @@ export const updateProfile = new ValidatedMethod({
 
 export const followUser = new ValidatedMethod({
   name: 'users.followUser',
+  mixins: [CallPromiseMixin],
   validate: new SimpleSchema({
     targetId: { type: String, label: '被关注者Id', regEx: SimpleSchema.RegEx.Id },
   }).validator({ clean: true, filter: false }),
@@ -58,6 +60,7 @@ export const followUser = new ValidatedMethod({
 
 export const unFollowUser = new ValidatedMethod({
   name: 'users.unFollowUser',
+  mixins: [CallPromiseMixin],
   validate: new SimpleSchema({
     targetId: { type: String, label: '被取消关注者Id', regEx: SimpleSchema.RegEx.Id },
   }).validator({ clean: true, filter: false }),

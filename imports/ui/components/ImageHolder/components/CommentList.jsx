@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { browserHistory } from 'react-router';
 import React, { Component, PropTypes } from 'react';
-import ReactMarkdown from 'react-markdown';
+import { browserHistory } from 'react-router';
 import TimeAgo from 'react-timeago';
 import CNStrings from 'react-timeago/lib/language-strings/zh-CN';
 import buildFormatter from 'react-timeago/lib/formatters/buildFormatter';
@@ -60,7 +59,7 @@ export default class CommentList extends Component {
       return;
     }
 
-    // 如果匹配到comment内容是以回复@开头，:结尾的则转换为markdown格式的anchor标签，链接为被回复用户的主页
+    // 如果匹配到comment内容是以回复@开头，:结尾的则转换为anchor标签，链接为被回复用户的主页
     const replyRegex = /^回复@(.+):(.*)/;
     const ret = content.match(replyRegex);
     if (ret) {
@@ -69,7 +68,7 @@ export default class CommentList extends Component {
         this.props.snackBarOpen('评论内容不能为空');
         return;
       }
-      content = `回复[@${ret[1]}](/user/${ret[1]}):${ret[2]}`;
+      content = `回复<a href="/user/${ret[1]}">@${ret[1]}</a>:${ret[2]}`;
     }
 
     const newComment = {
@@ -80,23 +79,27 @@ export default class CommentList extends Component {
       createdAt: new Date(),
     };
 
-    insertComment.call(newComment, (err) => {
-      if (err) {
-        this.props.snackBarOpen(err.reason);
-        return;
-      }
+    insertComment.callPromise(newComment)
+    .then(() => {
       this.setState({ pid: '', comment: '' });
+    })
+    .catch((err) => {
+      console.log(err); // eslint-disable-line no-console
+      this.props.snackBarOpen('评论失败');
+      throw new Meteor.Error(err);
     });
   }
 
   handleRemoveComment(e, comment) {
     e.preventDefault();
-    removeComment.call({ commentId: comment._id }, (err) => {
-      if (err) {
-        this.props.snackBarOpen(err.reason);
-        return;
-      }
+    removeComment.callPromise({ commentId: comment._id })
+    .then(() => {
       this.props.snackBarOpen('删除评论成功');
+    })
+    .catch((err) => {
+      console.log(err); // eslint-disable-line no-console
+      this.props.snackBarOpen('删除评论失败');
+      throw new Meteor.Error(err);
     });
   }
 
@@ -114,7 +117,7 @@ export default class CommentList extends Component {
                 <TimeAgo date={comment.createdAt} formatter={formatter} />
               </div>
             }
-            secondaryText={<ReactMarkdown source={comment.content} />}
+            secondaryText={<div dangerouslySetInnerHTML={{ __html: comment.content }} />}
             secondaryTextLines={2}
             onTouchTap={(e) => this.handleCommentClick(e, comment)}
           />

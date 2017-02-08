@@ -80,14 +80,16 @@ export default class RecyclePage extends Component {
   handleRecoveryImgs() {
     this.setState({ isProcessing: true });
     const selectImagesIds = this.props.selectImages.map((image) => image._id);
-    recoveryImages.call({ selectImages: selectImagesIds }, (err) => {
-      if (err) {
-        this.props.snackBarOpen('恢复相片失败');
-        throw new Meteor.Error(err);
-      }
+    recoveryImages.callPromise({ selectImages: selectImagesIds })
+    .then(() => {
       this.props.snackBarOpen('恢复相片成功');
       this.props.disableSelectAll();
       this.setState({ isProcessing: false, recoveryAlert: false });
+    })
+    .catch((err) => {
+      console.log(err); // eslint-disable-line no-console
+      this.props.snackBarOpen('恢复相片失败');
+      throw new Meteor.Error(err);
     });
   }
 

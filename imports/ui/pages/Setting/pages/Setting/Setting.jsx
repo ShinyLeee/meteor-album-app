@@ -78,7 +78,7 @@ export default class SettingPage extends Component {
   }
 
   handleSubmit() {
-    updateProfile.call({
+    updateProfile.callPromise({
       nickname: this.state.nickname,
       intro: this.state.intro,
       cover: this.state.cover,
@@ -89,14 +89,15 @@ export default class SettingPage extends Component {
         allowNoti: this.state.allowNoti,
         allowMsg: this.state.allowMsg,
       },
-    }, (err) => {
-      if (err) {
-        this.props.snackBarOpen('设置保存失败');
-        console.log(err); // eslint-disable-line no-console
-        throw new Meteor.Error(err);
-      }
+    })
+    .then(() => {
       this.props.snackBarOpen('设置保存成功');
       this.setState({ isEditing: false });
+    })
+    .catch((err) => {
+      this.props.snackBarOpen('设置保存失败');
+      console.log(err); // eslint-disable-line no-console
+      throw new Meteor.Error(err);
     });
   }
 
@@ -209,35 +210,12 @@ export default class SettingPage extends Component {
     this.props.snackBarOpen('上传超时');
   }
 
-  renderEditingNavHeader() {
-    return (
-      <NavHeader
-        User={this.props.User}
-        title={this.state.isProcessing ? '上传图片中' : '修改设置中'}
-        style={{ backgroundColor: blue500 }}
-        iconElementLeft={
-          <IconButton onTouchTap={() => this.setState({ isAlertOpen: true })}>
-            <ArrowBackIcon />
-          </IconButton>
-        }
-        iconElementRight={
-          <IconButton onTouchTap={this.handleSubmit}>
-            <DoneIcon />
-          </IconButton>
-        }
-      />
-    );
-  }
-
   renderContent() {
     const { User } = this.props;
     return (
       <div className="content__setting">
         <div className="setting__header">
-          <div
-            className="setting__cover"
-            style={{ backgroundImage: `url("${this.state.cover}")` }}
-          >
+          <div className="setting__cover" style={{ backgroundImage: `url("${this.state.cover}")` }}>
             <div className="setting__background" />
             <div className="setting__uploader" onTouchTap={() => this.coverInput.click()} >
               <CameraIcon style={styles.cameraIconStyle} />
@@ -259,8 +237,8 @@ export default class SettingPage extends Component {
                 onChange={this.handleSetAvatar}
               />
             </div>
-            <h2>{User.username}</h2>
           </div>
+          <h2 className="setting__username">{User.username}</h2>
         </div>
         <Divider />
         <div className="setting__content">
@@ -404,6 +382,7 @@ export default class SettingPage extends Component {
   }
 
   render() {
+    const { User } = this.props;
     const actions = [
       <FlatButton
         label="取消"
@@ -419,21 +398,40 @@ export default class SettingPage extends Component {
     ];
     return (
       <div className="container">
-        { this.state.isEditing
-          ? this.renderEditingNavHeader()
+        {
+          this.state.isEditing
+          ? (
+            <NavHeader
+              User={User}
+              title={this.state.isProcessing ? '上传图片中' : '修改设置中'}
+              style={{ backgroundColor: blue500 }}
+              iconElementLeft={
+                <IconButton onTouchTap={() => this.setState({ isAlertOpen: true })}>
+                  <ArrowBackIcon />
+                </IconButton>
+              }
+              iconElementRight={
+                <IconButton onTouchTap={this.handleSubmit}>
+                  <DoneIcon />
+                </IconButton>
+              }
+            />
+          )
           : (
             <NavHeader
-              User={this.props.User}
+              User={User}
               location={this.state.location}
               primary
-            />) }
+            />
+          )
+        }
         <div className="content">
           <Loader
             open={this.state.isProcessing}
             message={this.state.processMsg}
             onTimeout={this.handleLoaderTimeout}
           />
-          { this.props.User && this.renderContent() }
+          { User && this.renderContent() }
           <Dialog
             title="提示"
             titleStyle={{ border: 'none' }}

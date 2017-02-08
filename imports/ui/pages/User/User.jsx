@@ -46,36 +46,47 @@ export default class UserPage extends Component {
   }
 
   handleLogout() {
-    Meteor.logout((err) => {
-      if (err) {
-        this.props.snackBarOpen('发生未知错误');
-        throw new Meteor.Error(err);
-      }
+    const logoutPromise = Meteor.wrapPromise(Meteor.logout);
+    logoutPromise()
+    .then(() => {
       this.props.snackBarOpen('登出成功');
+    })
+    .catch((err) => {
+      console.log(err); // eslint-disable-line no-console
+      this.props.snackBarOpen(err.reason || '发生未知错误');
+      throw new Meteor.Error(err);
     });
   }
 
   handleFollow() {
     if (!this.props.User) {
       this.props.snackBarOpen('您还尚未登录');
+      return;
     }
-    followUser.call({
-      targetId: this.props.curUser._id,
-    }, (err) => {
-      if (err) throw new Meteor.Error(err.reason);
+    followUser.callPromise({ targetId: this.props.curUser._id })
+    .then(() => {
       this.props.snackBarOpen('关注成功');
+    })
+    .catch((err) => {
+      console.log(err); // eslint-disable-line no-console
+      this.props.snackBarOpen('关注失败');
+      throw new Meteor.Error(err);
     });
   }
 
   handleUnFollow() {
     if (!this.props.User) {
       this.props.snackBarOpen('您还尚未登录');
+      return;
     }
-    unFollowUser.call({
-      targetId: this.props.curUser._id,
-    }, (err) => {
-      if (err) throw new Meteor.Error(err.reason);
+    unFollowUser.callPromise({ targetId: this.props.curUser._id })
+    .then(() => {
       this.props.snackBarOpen('取消关注成功');
+    })
+    .catch((err) => {
+      console.log(err); // eslint-disable-line no-console
+      this.props.snackBarOpen('取消关注失败');
+      throw new Meteor.Error(err);
     });
   }
 

@@ -1,16 +1,16 @@
+import moment from 'moment';
 import { Meteor } from 'meteor/meteor';
 import { _ } from 'meteor/underscore';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
-import { CallPromiseMixin } from 'meteor/didericis:callpromise-mixin';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
-import moment from 'moment';
-
+import { CallPromiseMixin } from 'meteor/didericis:callpromise-mixin';
 import { Images } from './image.js';
 import { Collections } from '../collections/collection.js';
 
 export const insertImage = new ValidatedMethod({
   name: 'images.insert',
+  mixins: [CallPromiseMixin],
   validate: Images.simpleSchema().validator({ clean: true, filter: false }),
   run(image) {
     if (!this.userId) {
@@ -44,6 +44,7 @@ export const removeImages = new ValidatedMethod({
 
 export const removeImagesToRecycle = new ValidatedMethod({
   name: 'images.removeToRecycle',
+  mixins: [CallPromiseMixin],
   validate: new SimpleSchema({
     selectImages: { type: [String], label: '被选择图片Id', regEx: SimpleSchema.RegEx.Id },
   }).validator({ clean: true, filter: false }),
@@ -64,6 +65,7 @@ export const removeImagesToRecycle = new ValidatedMethod({
 // 恢复的照片必须根据其恢复相册的加密状态来设置
 export const recoveryImages = new ValidatedMethod({
   name: 'images.recovery',
+  mixins: [CallPromiseMixin],
   validate: new SimpleSchema({
     selectImages: { type: [String], label: '被选择图片Id', regEx: SimpleSchema.RegEx.Id },
   }).validator({ clean: true, filter: false }),
@@ -91,6 +93,7 @@ export const recoveryImages = new ValidatedMethod({
 // for update Images' private status based on dest collection
 export const shiftImages = new ValidatedMethod({
   name: 'images.shift',
+  mixins: [CallPromiseMixin],
   validate: new SimpleSchema({
     selectImages: { type: [String], label: '被选择图片Id', regEx: SimpleSchema.RegEx.Id },
     dest: { type: String, label: '目标相册名', max: 20 },
@@ -113,6 +116,7 @@ export const shiftImages = new ValidatedMethod({
 
 export const likeImage = new ValidatedMethod({
   name: 'images.like',
+  mixins: [CallPromiseMixin],
   validate: new SimpleSchema({
     imageId: { type: String, regEx: SimpleSchema.RegEx.Id },
     liker: { type: String, label: '用户名', max: 20 },
@@ -127,6 +131,7 @@ export const likeImage = new ValidatedMethod({
 
 export const unlikeImage = new ValidatedMethod({
   name: 'images.unlike',
+  mixins: [CallPromiseMixin],
   validate: new SimpleSchema({
     imageId: { type: String, regEx: SimpleSchema.RegEx.Id },
     unliker: { type: String, label: '用户名', max: 20 },

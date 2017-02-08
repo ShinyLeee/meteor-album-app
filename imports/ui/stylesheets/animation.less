@@ -55,6 +55,24 @@
   transition: transform 375ms;
 }
 
+.slideDown-enter {
+  max-height : 0;
+}
+
+.slideDown-enter.slideDown-enter-active {
+  max-height: 500px;
+  transition : max-height 375ms;
+}
+
+.slideDown-leave {
+  max-height: 500px;
+}
+
+.slideDown-leave.slideDown-leave-active {
+  max-height: 0;
+  transition : max-height 375ms;
+}
+
 // for fade in image
 .fade-appear {
   opacity: 0.01;

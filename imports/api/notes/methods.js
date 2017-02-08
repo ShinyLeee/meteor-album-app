@@ -3,6 +3,7 @@ import { _ } from 'meteor/underscore';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
+import { CallPromiseMixin } from 'meteor/didericis:callpromise-mixin';
 import { Notes } from './note.js';
 
 /**
@@ -12,6 +13,7 @@ import { Notes } from './note.js';
  */
 export const insertNote = new ValidatedMethod({
   name: 'notes.insert',
+  mixins: [CallPromiseMixin],
   validate: Notes.simpleSchema().validator({ clean: true, filter: false }),
   run(note) {
     if (!this.userId) {
@@ -23,6 +25,7 @@ export const insertNote = new ValidatedMethod({
 
 export const readAllNotes = new ValidatedMethod({
   name: 'notes.readAll',
+  mixins: [CallPromiseMixin],
   validate: new SimpleSchema({
     receiver: { type: String, label: '接受者', max: 20 },
   }).validator({ clean: true, filter: false }),
@@ -40,6 +43,7 @@ export const readAllNotes = new ValidatedMethod({
 
 export const readNote = new ValidatedMethod({
   name: 'notes.read',
+  mixins: [CallPromiseMixin],
   validate: new SimpleSchema({
     noteId: { type: String, regEx: SimpleSchema.RegEx.Id },
   }).validator({ clean: true, filter: false }),

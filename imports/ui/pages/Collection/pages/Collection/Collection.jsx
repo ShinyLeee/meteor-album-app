@@ -71,32 +71,34 @@ export default class CollectionPage extends Component {
   handleLockCollection(cb) {
     const { User, curColl } = this.props;
     const msg = curColl.private ? '公开' : '加密';
-    lockCollection.call({
+    lockCollection.callPromise({
       username: User.username,
       collId: curColl._id,
       collName: curColl.name,
       privateStat: curColl.private,
-    }, (err) => {
-      if (err) {
-        cb(err, `${msg}相册失败`);
-      }
+    })
+    .then(() => {
       cb(null, `${msg}相册成功`);
+    })
+    .catch((err) => {
+      cb(err, `${msg}相册失败`);
     });
   }
 
   handleRemoveCollection(cb) {
     const { User, images, curColl } = this.props;
     if (images.length === 0) {
-      return removeCollection.call({
+      return removeCollection.callPromise({
         username: User.username,
         collId: curColl._id,
         collName: curColl.name,
-      }, (err) => {
-        if (err) {
-          cb(err, '删除相册失败');
-        }
+      })
+      .then(() => {
         browserHistory.replace(`/user/${User.username}/collection`);
         this.props.snackBarOpen('删除相册成功');
+      })
+      .catch((err) => {
+        cb(err, '删除相册失败');
       });
     }
 
@@ -108,21 +110,18 @@ export default class CollectionPage extends Component {
       return key;
     });
 
-    return Meteor.call('Qiniu.remove', { keys }, (error) => {
-      if (error) {
-        cb(error, '删除相册失败');
-      }
-      return removeCollection.call({
-        username: User.username,
-        collId: curColl._id,
-        colName: curColl.name,
-      }, (err) => {
-        if (err) {
-          cb(err, '删除相册失败');
-        }
-        browserHistory.replace(`/user/${User.username}/collection`);
-        this.props.snackBarOpen('删除相册成功');
-      });
+    return Meteor.callPromise('Qiniu.remove', { keys })
+    .then(() => removeCollection.callPromise({
+      username: User.username,
+      collId: curColl._id,
+      colName: curColl.name,
+    }))
+    .then(() => {
+      browserHistory.replace(`/user/${User.username}/collection`);
+      this.props.snackBarOpen('删除相册成功');
+    })
+    .catch((err) => {
+      cb(err, '删除相册失败');
     });
   }
 
@@ -180,25 +179,27 @@ export default class CollectionPage extends Component {
     const { domain, selectImages, curColl } = this.props;
     const curImg = selectImages[0];
     const cover = `${domain}/${curImg.user}/${curImg.collection}/${curImg.name}.${curImg.type}`;
-    mutateCollectionCover.call({
+    mutateCollectionCover.callPromise({
       collId: curColl._id,
       cover,
-    }, (err) => {
-      if (err) {
-        cb(err, '更换封面失败');
-      }
+    })
+    .then(() => {
       cb(null, '更换封面成功', true);
+    })
+    .catch((err) => {
+      cb(err, '更换封面失败');
     });
   }
 
   handleRemovePhoto(cb) {
     const { selectImages } = this.props;
     const selectImagesIds = _.map(selectImages, (image) => image._id);
-    removeImagesToRecycle.call({ selectImages: selectImagesIds }, (err) => {
-      if (err) {
-        cb(err, '删除失败');
-      }
-      cb(err, '删除成功', true);
+    removeImagesToRecycle.callPromise({ selectImages: selectImagesIds })
+    .then(() => {
+      cb(null, '删除成功', true);
+    })
+    .catch((err) => {
+      cb(err, '删除失败');
     });
   }
 

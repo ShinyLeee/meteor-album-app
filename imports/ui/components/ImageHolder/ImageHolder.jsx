@@ -9,6 +9,7 @@ import CNStrings from 'react-timeago/lib/language-strings/zh-CN';
 import buildFormatter from 'react-timeago/lib/formatters/buildFormatter';
 import LazyLoad from 'react-lazyload';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
+import Avatar from 'material-ui/Avatar';
 import { Card, CardHeader, CardActions, CardMedia } from 'material-ui/Card';
 import IconButton from 'material-ui/IconButton';
 import HeartIcon from 'material-ui/svg-icons/action/favorite';
@@ -49,8 +50,7 @@ class ImageHolder extends Component {
           <CardHeader
             title={image.user}
             subtitle={<TimeAgo date={image.createdAt} formatter={formatter} />}
-            avatar={avatar}
-            onTouchTap={() => browserHistory.push(`/user/${image.user}`)}
+            avatar={<Avatar src={avatar} onTouchTap={() => browserHistory.push(`/user/${image.user}`)} />}
           />
           <ReactCSSTransitionGroup
             transitionName="fade"
@@ -81,16 +81,23 @@ class ImageHolder extends Component {
               { comments.length > 0 && <span>{comments.length}</span> }
             </div>
           </CardActions>
-          {
-            this.state.isCommentSectionOpen && (
-              <CommentList
-                User={User}
-                discId={image._id}
-                comments={comments}
-                snackBarOpen={this.props.snackBarOpen}
-              />
-            )
-          }
+          <ReactCSSTransitionGroup
+            transitionName="slideDown"
+            transitionEnterTimeout={375}
+            transitionLeaveTimeout={375}
+          >
+            {
+              this.state.isCommentSectionOpen && (
+                <CommentList
+                  key={image._id}
+                  User={User}
+                  discId={image._id}
+                  comments={comments}
+                  snackBarOpen={this.props.snackBarOpen}
+                />
+              )
+            }
+          </ReactCSSTransitionGroup>
         </Card>
       </div>
     );

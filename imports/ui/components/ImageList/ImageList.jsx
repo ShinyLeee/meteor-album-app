@@ -29,31 +29,34 @@ class ImageList extends Component {
       this.props.snackBarOpen('您还尚未登录');
       return;
     }
-
-    likeImage.call({
+    likeImage.callPromise({
       imageId: image._id,
       liker: User.username,
-    }, (err) => {
-      if (err) {
-        this.props.snackBarOpen(err.message);
-        return;
-      }
+    })
+    .then(() => {
       this.props.onLikeOrUnlikeAction();
+    })
+    .catch((err) => {
+      console.log(err); // eslint-disable-line no-console
+      this.props.snackBarOpen(err.reason || '发生未知错误');
+      throw new Meteor.Error(err);
     });
   }
 
   handleRemoveLiker(image) {
     const { User } = this.props;
 
-    unlikeImage.call({
+    unlikeImage.callPromise({
       imageId: image._id,
       unliker: User.username,
-    }, (err) => {
-      if (err) {
-        this.props.snackBarOpen(err.message);
-        return;
-      }
+    })
+    .then(() => {
       this.props.onLikeOrUnlikeAction();
+    })
+    .catch((err) => {
+      console.log(err); // eslint-disable-line no-console
+      this.props.snackBarOpen(err.reason || '发生未知错误');
+      throw new Meteor.Error(err);
     });
   }
 

@@ -65,18 +65,20 @@ export default class AllCollectionPage extends Component {
       return;
     }
     this.handleCloseDialog();
-    insertCollection.call({
+    insertCollection.callPromise({
       name: this.state.newCollName,
       user: this.props.User.username,
       cover: `/img/pattern/VF_ac${getRandomInt(1, 28)}.jpg`,
       createdAt: new Date(),
       updatedAt: new Date(),
-    }, (err) => {
-      if (err) {
-        this.props.snackBarOpen('新建相册失败');
-        throw new Meteor.Error(err);
-      }
+    })
+    .then(() => {
       this.props.snackBarOpen('新建相册成功');
+    })
+    .catch((err) => {
+      console.log(err); // eslint-disable-line no-console
+      this.props.snackBarOpen('新建相册失败');
+      throw new Meteor.Error(err);
     });
   }
 

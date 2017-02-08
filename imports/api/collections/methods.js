@@ -3,7 +3,7 @@ import { _ } from 'meteor/underscore';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
-
+import { CallPromiseMixin } from 'meteor/didericis:callpromise-mixin';
 import { Images } from '../images/image.js';
 import { Collections } from './collection.js';
 
@@ -16,6 +16,7 @@ import { Collections } from './collection.js';
 
 export const insertCollection = new ValidatedMethod({
   name: 'collections.insert',
+  mixins: [CallPromiseMixin],
   validate: Collections.simpleSchema().validator({ clean: true, filter: false }),
   run(collection) {
     if (!this.userId) {
@@ -30,6 +31,7 @@ export const insertCollection = new ValidatedMethod({
 
 export const removeCollection = new ValidatedMethod({
   name: 'collections.remove',
+  mixins: [CallPromiseMixin],
   validate: new SimpleSchema({
     username: { type: String, label: '用户名', max: 20 },
     collId: { type: String, label: '相册Id', regEx: SimpleSchema.RegEx.Id },
@@ -47,6 +49,7 @@ export const removeCollection = new ValidatedMethod({
 
 export const lockCollection = new ValidatedMethod({
   name: 'collections.lock',
+  mixins: [CallPromiseMixin],
   validate: new SimpleSchema({
     username: { type: String, label: '用户名', max: 20 },
     collId: { type: String, label: '相册Id', regEx: SimpleSchema.RegEx.Id },
@@ -71,6 +74,7 @@ export const lockCollection = new ValidatedMethod({
 
 export const mutateCollectionCover = new ValidatedMethod({
   name: 'collections.mutateCover',
+  mixins: [CallPromiseMixin],
   validate: new SimpleSchema({
     collId: { type: String, label: '相册Id', regEx: SimpleSchema.RegEx.Id },
     cover: { type: String, label: '封面图片' },

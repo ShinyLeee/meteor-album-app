@@ -39,15 +39,16 @@ export default class UserFansPage extends PureComponent {
     e.preventDefault();
     if (!this.props.User) {
       this.props.snackBarOpen('您还尚未登录');
+      return;
     }
-    followUser.call({
-      targetId: fanObject._id,
-    }, (err) => {
-      if (err) {
-        this.props.snackBarOpen('关注失败');
-        throw new Meteor.Error(err);
-      }
+    followUser.callPromise({ targetId: fanObject._id })
+    .then(() => {
       this.props.snackBarOpen('关注成功');
+    })
+    .catch((err) => {
+      console.log(err); // eslint-disable-line no-console
+      this.props.snackBarOpen('关注失败');
+      throw new Meteor.Error(err);
     });
   }
 
@@ -56,14 +57,14 @@ export default class UserFansPage extends PureComponent {
     if (!this.props.User) {
       this.props.snackBarOpen('您还尚未登录');
     }
-    unFollowUser.call({
-      targetId: fanObject._id,
-    }, (err) => {
-      if (err) {
-        this.props.snackBarOpen('取消关注失败');
-        throw new Meteor.Error(err);
-      }
+    unFollowUser.callPromise({ targetId: fanObject._id })
+    .then(() => {
       this.props.snackBarOpen('取消关注成功');
+    })
+    .catch((err) => {
+      console.log(err); // eslint-disable-line no-console
+      this.props.snackBarOpen('取消关注失败');
+      throw new Meteor.Error(err);
     });
   }
 

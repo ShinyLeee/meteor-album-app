@@ -80,16 +80,18 @@ export default class NotePage extends Component {
    */
   handleReadNote(e, id) {
     e.preventDefault();
-    readNote.call({ noteId: id }, (err) => {
-      if (err) {
-        this.props.snackBarOpen('发生未知错误');
-        throw new Meteor.Error(err);
-      }
+    readNote.callPromise({ noteId: id })
+    .then(() => {
       const trueNotes = Notes.find(
         { isRead: { $ne: true } },
         { sort: { sendAt: -1 }, limit: this.state.notes.length - 1 }
       ).fetch();
       this.setState({ notes: trueNotes });
+    })
+    .catch((err) => {
+      console.log(err); // eslint-disable-line no-console
+      this.props.snackBarOpen(err.reason || '发生未知错误');
+      throw new Meteor.Error(err);
     });
   }
 
@@ -99,12 +101,14 @@ export default class NotePage extends Component {
       return;
     }
     this.setState({ isProcessing: true });
-    readAllNotes.call({ receiver: this.props.User.username }, (err) => {
-      if (err) {
-        this.props.snackBarOpen('发生未知错误');
-        throw new Meteor.Error(err);
-      }
+    readAllNotes.callPromise({ receiver: this.props.User.username })
+    .then(() => {
       this.setState({ isProcessing: false, notes: [] });
+    })
+    .catch((err) => {
+      console.log(err); // eslint-disable-line no-console
+      this.props.snackBarOpen(err.reason || '发生未知错误');
+      throw new Meteor.Error(err);
     });
   }
 
