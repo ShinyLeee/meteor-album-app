@@ -88,11 +88,7 @@ export default class CollectionPage extends Component {
   handleRemoveCollection(cb) {
     const { User, images, curColl } = this.props;
     if (images.length === 0) {
-      return removeCollection.callPromise({
-        username: User.username,
-        collId: curColl._id,
-        collName: curColl.name,
-      })
+      return removeCollection.callPromise({ collId: curColl._id })
       .then(() => {
         browserHistory.replace(`/user/${User.username}/collection`);
         this.props.snackBarOpen('删除相册成功');
@@ -111,11 +107,7 @@ export default class CollectionPage extends Component {
     });
 
     return Meteor.callPromise('Qiniu.remove', { keys })
-    .then(() => removeCollection.callPromise({
-      username: User.username,
-      collId: curColl._id,
-      colName: curColl.name,
-    }))
+    .then(() => removeCollection.callPromise({ collId: curColl._id }))
     .then(() => {
       browserHistory.replace(`/user/${User.username}/collection`);
       this.props.snackBarOpen('删除相册成功');

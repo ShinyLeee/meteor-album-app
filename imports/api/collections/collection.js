@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
-import { Images } from '../images/image';
+import { Images } from '../images/image.js';
 
 class CollectionCollection extends Mongo.Collection {
   insert(collection, cb) {
@@ -9,6 +9,16 @@ class CollectionCollection extends Mongo.Collection {
     return result;
   }
   remove(selector, cb) {
+    // when selector is not an empty Object
+    // remove collection will also remove its image
+    if (Object.keys(selector).length !== 0) {
+      const removeColl = this.findOne(selector);
+      Images.find(
+        { user: removeColl.user, collection: removeColl.name },
+        { fields: { _id: 1 } }
+      ).forEach((image) => Images.remove(image._id));
+    }
+
     const result = super.remove(selector, cb);
     return result;
   }

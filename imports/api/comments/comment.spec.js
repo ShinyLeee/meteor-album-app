@@ -101,7 +101,7 @@ if (Meteor.isServer) {
           }, Meteor.Error, /api.comments.remove.notLoggedIn/);
         });
 
-        it('should remove collection after method call', () => {
+        it('should remove comment after method call', () => {
           const methodInvocation = { userId: curUser._id };
           const args = { commentId: curComment._id };
 

@@ -33,17 +33,13 @@ export const removeCollection = new ValidatedMethod({
   name: 'collections.remove',
   mixins: [CallPromiseMixin],
   validate: new SimpleSchema({
-    username: { type: String, label: '用户名', max: 20 },
     collId: { type: String, label: '相册Id', regEx: SimpleSchema.RegEx.Id },
-    collName: { type: String, label: '相册名', max: 20 },
   }).validator({ clean: true, filter: false }),
-  run({ username, collId, collName }) {
+  run({ collId }) {
     if (!this.userId) {
       throw new Meteor.Error('api.collections.remove.notLoggedIn');
     }
     Collections.remove(collId);
-    // remove collection will also remove its Images forever
-    Images.remove({ user: username, collection: collName });
   },
 });
 

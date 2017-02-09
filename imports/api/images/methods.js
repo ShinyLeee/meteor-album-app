@@ -38,7 +38,7 @@ export const removeImages = new ValidatedMethod({
     if (!this.userId) {
       throw new Meteor.Error('api.images.remove.notLoggedIn');
     }
-    Images.remove({ _id: { $in: selectImages } });
+    _.each(selectImages, (imgId) => Images.remove(imgId));
   },
 });
 

@@ -41,7 +41,6 @@ if (Meteor.isTest) {
   Factory.define('comment', Comments, {
     user: () => limitStrLength(faker.internet.userName(), 20),
     discussion_id: () => Random.id(),
-    parent_id: () => Random.id(),
     content: () => limitStrLength(faker.lorem.sentence(), 20),
     createdAt: () => new Date(),
   });

@@ -6,11 +6,18 @@ import { PublicationCollector } from 'meteor/johanbrook:publication-collector';
 import { assert, expect } from 'meteor/practicalmeteor:chai';
 import { Random } from 'meteor/random';
 import {
-  insertImage, removeImages, removeImagesToRecycle, recoveryImages, shiftImages, likeImage, unlikeImage,
+  insertImage,
+  removeImages,
+  removeImagesToRecycle,
+  recoveryImages,
+  shiftImages,
+  likeImage,
+  unlikeImage,
 } from './methods.js';
 import { Users } from '../users/user.js';
 import { Collections } from '../collections/collection.js';
 import { Images } from './image.js';
+import { Comments } from '../comments/comment.js';
 
 if (Meteor.isServer) {
   import './server/publications.js';
@@ -137,11 +144,13 @@ if (Meteor.isServer) {
         Users.remove({});
         Collections.remove({});
         Images.remove({});
+        Comments.remove({});
 
         curUser = Factory.create('user');
         collOne = Factory.create('collection', { user: curUser.username });
         imgId = Factory.create('image', { user: curUser.username, collection: collOne.name })._id;
         _.times(2, () => Factory.create('image', { user: curUser.username, collection: collOne.name }));
+        _.times(2, () => Factory.create('comment', { discussion_id: imgId }));
       });
 
       describe('insertImage', () => {
@@ -197,6 +206,13 @@ if (Meteor.isServer) {
           removeImages._execute({ userId: curUser._id }, { selectImages: [imgId] });
           expect(Images.find().count()).to.equal(2);
         });
+
+        it('should also remove its comments after method call', () => {
+          expect(Comments.find({ discussion_id: imgId }).count()).to.equal(2);
+
+          removeImages._execute({ userId: curUser._id }, { selectImages: [imgId] });
+          expect(Comments.find({ discussion_id: imgId }).count()).to.equal(0);
+        });
       });
 
       describe('removeImagesToRecycle / recoveryImages', () => {
@@ -209,7 +225,7 @@ if (Meteor.isServer) {
           }, Meteor.Error, /api.images.recovery.notLoggedIn/);
         });
 
-        it('should update deletedAt property after removeImagesToRecycle method call', () => {
+        it('[removeImagesToRecycle] should update deletedAt property after method call', () => {
           const newImg = Factory.create('image', { user: curUser.username, collection: collOne.name });
           expect(Images.find().count()).to.equal(4);
 
@@ -217,7 +233,7 @@ if (Meteor.isServer) {
           expect(Images.find({ deletedAt: { $ne: null } }).count()).to.equal(2);
         });
 
-        it('should update deletedAt null after recoveryImages method call', () => {
+        it('[recoveryImages] should update deletedAt null after method call', () => {
           const newImg = Factory.create(
             'image',
             { user: curUser.username, collection: collOne.name, deletedAt: new Date() }

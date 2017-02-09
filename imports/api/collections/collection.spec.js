@@ -8,6 +8,7 @@ import { insertCollection, removeCollection, lockCollection, mutateCollectionCov
 import { Users } from '../users/user.js';
 import { Images } from '../images/image.js';
 import { Collections } from './collection.js';
+import { Comments } from '../comments/comment.js';
 
 if (Meteor.isServer) {
   import './server/publications.js';
@@ -155,11 +156,7 @@ if (Meteor.isServer) {
 
         it('should remove collection after method call', () => {
           const methodInvocation = { userId: curUser._id };
-          const args = {
-            username: curUser.username,
-            collId: curColl._id,
-            collName: curColl.name,
-          };
+          const args = { collId: curColl._id };
 
           expect(Collections.find({ user: curUser.username }).count()).to.equal(1);
 
@@ -167,19 +164,26 @@ if (Meteor.isServer) {
           expect(Collections.find({ user: curUser.username }).count()).to.equal(0);
         });
 
-        it('should also remove images which belong to the collection after method call', () => {
+        it('should also remove its images after method call', () => {
           _.times(2, () => Factory.create('image', { user: curUser.username, collection: curColl.name }));
           expect(Images.find({ user: curUser.username, collection: curColl.name }).count()).to.equal(2);
 
           const methodInvocation = { userId: curUser._id };
-          const args = {
-            username: curUser.username,
-            collId: curColl._id,
-            collName: curColl.name,
-          };
+          const args = { collId: curColl._id };
 
           removeCollection._execute(methodInvocation, args);
           expect(Images.find({ user: curUser.username, collection: curColl.name }).count()).to.equal(0);
+        });
+
+        it('should also remove its images\'s comments after method call', () => {
+          const img = Factory.create('image', { user: curUser.username, collection: curColl.name });
+          Factory.create('comment', { discussion_id: img._id });
+          expect(Images.find({ user: curUser.username, collection: curColl.name }).count()).to.equal(1);
+          expect(Comments.find({ discussion_id: img._id }).count()).to.equal(1);
+
+          removeCollection._execute({ userId: curUser._id }, { collId: curColl._id });
+          expect(Images.find({ user: curUser.username, collection: curColl.name }).count()).to.equal(0);
+          expect(Comments.find({ discussion_id: img._id }).count()).to.equal(0);
         });
       });
 

@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
+import { Comments } from '../comments/comment.js';
 
 class ImagesCollection extends Mongo.Collection {
   insert(image, cb) {
@@ -8,6 +9,11 @@ class ImagesCollection extends Mongo.Collection {
     return result;
   }
   remove(selector, cb) {
+    // when selector is not an empty Object
+    // remove image will also remove its comments
+    if (Object.keys(selector).length !== 0) {
+      Comments.remove({ discussion_id: selector });
+    }
     const result = super.remove(selector, cb);
     return result;
   }
