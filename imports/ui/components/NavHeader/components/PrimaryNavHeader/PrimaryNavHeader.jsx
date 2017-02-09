@@ -16,7 +16,7 @@ import NotificationIcon from 'material-ui/svg-icons/social/notifications';
 import UserIcon from 'material-ui/svg-icons/action/account-circle';
 import ExploreIcon from 'material-ui/svg-icons/action/explore';
 import CameraIcon from 'material-ui/svg-icons/image/camera';
-import MemeoryIcon from 'material-ui/svg-icons/action/theaters';
+import DiaryIcon from 'material-ui/svg-icons/action/book';
 import DeleteIcon from 'material-ui/svg-icons/action/delete';
 import SettingsIcon from 'material-ui/svg-icons/action/settings';
 import ArrowDropdownIcon from 'material-ui/svg-icons/navigation/arrow-drop-down';
@@ -195,7 +195,7 @@ export default class PrimaryNavHeader extends Component {
             />
             <MenuItem
               leftIcon={<UserIcon color={location === 'user' ? purple500 : ''} />}
-              primaryText="我的主页"
+              primaryText="主页"
               onTouchTap={() => browserHistory.push(this.homeLink)}
               style={{ color: location === 'user' ? purple500 : '#000' }}
             />
@@ -206,10 +206,10 @@ export default class PrimaryNavHeader extends Component {
               style={{ color: location === 'collection' ? purple500 : '#000' }}
             />
             <MenuItem
-              leftIcon={<MemeoryIcon color={location === 'memory' ? purple500 : ''} />}
-              primaryText="回忆"
-              onTouchTap={() => browserHistory.push('/memory')}
-              style={{ color: location === 'memory' ? purple500 : '#000' }}
+              leftIcon={<DiaryIcon color={location === 'diary' ? purple500 : ''} />}
+              primaryText="日记"
+              onTouchTap={() => browserHistory.push('/diary')}
+              style={{ color: location === 'diary' ? purple500 : '#000' }}
             />
           </Menu>
           <Divider />

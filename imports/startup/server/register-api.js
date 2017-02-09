@@ -13,6 +13,9 @@ import '/imports/api/collections/methods.js';
 import '/imports/api/comments/server/publications.js';
 import '/imports/api/comments/methods.js';
 
+import '/imports/api/diarys/server/publications.js';
+import '/imports/api/diarys/methods.js';
+
 import '/imports/api/images/server/publications.js';
 import '/imports/api/images/methods.js';
 

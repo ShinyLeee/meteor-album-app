@@ -241,7 +241,7 @@ export default class SendNotePage extends Component {
 }
 
 SendNotePage.propTypes = {
-  User: PropTypes.object.isRequired,
+  User: PropTypes.object,
   // Below Pass from Database
   userIsReady: PropTypes.bool.isRequired,
   initialReceiver: PropTypes.object,

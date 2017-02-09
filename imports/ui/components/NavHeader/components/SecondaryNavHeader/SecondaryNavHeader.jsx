@@ -25,7 +25,7 @@ const SecondaryNavHeader = ({ title, iconElementRight, style }) => (
 SecondaryNavHeader.displayName = 'SecondaryNavHeader';
 
 SecondaryNavHeader.propTypes = {
-  title: PropTypes.string.isRequired,
+  title: PropTypes.string,
   iconElementRight: PropTypes.element,
   style: PropTypes.object,
 };

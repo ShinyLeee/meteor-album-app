@@ -152,6 +152,67 @@
   }
 }
 
+/* route /diary */
+.content__diary {
+  margin-top: -64px;
+  & > .diary__header {
+    position: relative;
+    min-height: 260px;
+    padding-top: 64px;
+    background-image: url(http://source.yehuihui.cn/GalleryPlus/Default/default-diary.jpg);
+    background-size: cover;
+    text-align: center;
+    & > .diary__background {
+      position: absolute;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      background: -webkit-linear-gradient(top, rgba(0, 0, 0, 0.3), transparent 30%, transparent 70%, rgba(0, 0, 0, 0.3));
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0.3) 0, transparent 30%, transparent 70%, rgba(0, 0, 0, 0.3));
+    }
+    & > .diary__year {
+      & > h1 {
+        display: inline-block;
+        width: 65%;
+        font-size: 56px;
+        color: #fff;
+      }
+    }
+    & > .diary__month {
+      position: absolute;
+      width: 100%;
+      bottom: 8px;
+      color: #fff;
+      & > div {
+        display: inline-block;
+        width: 100 / 12%;
+      }
+    }
+  }
+  & > .diary__body {
+    padding: 8px 0;
+    & > .diary__item {
+      padding: 0 24px;
+      border-bottom: 1px solid #ebebeb;
+      & > .diary__content {
+        height: 72px;
+        color: #666;
+        // overflow show ellipsis --> use for multiple line
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 3;
+        overflow: hidden;
+      }
+      & > .diary__footer {
+        font-size: 15px;
+        font-weight: 400;
+        color: #888;
+      }
+    }
+  }
+}
+
 /* route /setting */
 .content__setting {
   .setting__cover {

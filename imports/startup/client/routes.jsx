@@ -14,6 +14,8 @@ import UserLikes from '/imports/ui/pages/User/pages/UserLikes/index.js';
 import UserFans from '/imports/ui/pages/User/pages/UserFans/index.js';
 import AllCollections from '/imports/ui/pages/Collection/pages/AllCollections/index.js';
 import Colletion from '/imports/ui/pages/Collection/pages/Collection/index.js';
+import Diary from '/imports/ui/pages/Diary/pages/Diary/index.js';
+import WriteDiary from '/imports/ui/pages/Diary/pages/Write/index.js';
 import Recycle from '/imports/ui/pages/Recycle/index.js';
 import Setting from '/imports/ui/pages/Setting/pages/Setting/index.js';
 import SettingEmails from '/imports/ui/pages/Setting/pages/Emails/index.js';
@@ -53,8 +55,9 @@ const Root = () => {
             <Route index={2} path="user/:username/fans" component={UserFans} onEnter={isAllowVisitHome} />
             <Route index={1} path="user/:username/collection" component={AllCollections} onEnter={isAllowVisitColl} />
             <Route index={2} path="user/:username/collection/:cname" component={Colletion} onEnter={isAllowVisitColl} />
-            <Route index={1} path="memory" component={Construction} onEnter={isLogin} />
-            <Route index={1} path="recycle" component={Recycle} onEnter={isLogin} />
+            <Route index={2} path="diary" component={Diary} onEnter={isLogin} />
+            <Route index={3} path="diary/write" component={WriteDiary} onEnter={isLogin} />
+            <Route index={2} path="recycle" component={Recycle} onEnter={isLogin} />
             <Route index={1} path="setting" component={Setting} onEnter={isLogin} />
             <Route index={2} path="setting/emails" component={SettingEmails} onEnter={isLogin} />
             <Route index={2} path="setting/password" component={SettingPassword} onEnter={isLogin} />
@@ -68,6 +71,7 @@ const Root = () => {
             <Route index={1} path="accounts/resetPassword" component={ResetPassword} onEnter={isLogout} / >
             <Route index={1} path="login" component={Login} onEnter={isLogout} />
             <Route index={1} path="register" component={Register} onEnter={isLogout} />
+            <Route index={1} path="memory" component={Construction} onEnter={isLogin} />
             <Route index={1} path="403" component={Forbidden} />
             <Route index={1} path="404" component={NotFound} />
             <Route index={1} path="500" component={InternalError} />
