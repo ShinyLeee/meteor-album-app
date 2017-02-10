@@ -1,10 +1,14 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
 import LinearProgress from 'material-ui/LinearProgress';
 
-const Loading = () => (
-  <div className="component__Loading">
+const Loading = ({ style }) => (
+  <div className="component__Loading" style={style}>
     <LinearProgress mode="indeterminate" />
   </div>
 );
+
+Loading.propTypes = {
+  style: PropTypes.object,
+};
 
 export default Loading;

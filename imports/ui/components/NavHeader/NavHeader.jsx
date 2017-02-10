@@ -14,7 +14,9 @@ const NavHeader = (props) => {
     User,
     location,
     title,
+    titleStyle,
     style,
+    iconColor,
     showMenuIconButton,
     onTitleTouchTap,
     iconElementLeft,
@@ -24,12 +26,21 @@ const NavHeader = (props) => {
 
   if (loading) return (<LoadingNavHeader />);
   if (primary) return (<ConnectedPrimaryNavHeader User={User} location={location} />);
-  if (secondary) return (<SecondaryNavHeader title={title} iconElementRight={iconElementRight} style={style} />);
+  if (secondary) {
+    return (
+      <SecondaryNavHeader
+        title={title}
+        titleStyle={titleStyle}
+        iconElementRight={iconElementRight}
+        style={style}
+        iconColor={iconColor}
+      />);
+  }
   return (
     <div className="component__NavHeader">
       <AppBar
         style={Object.assign({}, styles.AppBar, style)}
-        titleStyle={styles.AppBarTitle}
+        titleStyle={Object.assign({}, styles.AppBarTitle, titleStyle)}
         title={title}
         showMenuIconButton={showMenuIconButton}
         onTitleTouchTap={onTitleTouchTap}
@@ -74,7 +85,9 @@ NavHeader.propTypes = {
    */
   location: PropTypes.string,
   title: PropTypes.string,
+  titleStyle: PropTypes.object,
   style: PropTypes.object,
+  iconColor: PropTypes.string, // only SecondaryNavHeader use it
   showMenuIconButton: PropTypes.bool,
   onTitleTouchTap: PropTypes.func,
   iconElementLeft: PropTypes.element,

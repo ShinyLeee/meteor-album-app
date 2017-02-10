@@ -18,7 +18,6 @@ export default class SearchPage extends Component {
 
   handleSearchSubmit(e) {
     e.preventDefault();
-    console.log(this.state.searchText);
     browserHistory.push(`/search/${this.state.searchText}`);
   }
 

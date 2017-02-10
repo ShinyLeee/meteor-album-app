@@ -37,9 +37,24 @@ export const updateDiary = new ValidatedMethod({
   },
 });
 
+export const removeDiary = new ValidatedMethod({
+  name: 'diarys.remove',
+  mixins: [CallPromiseMixin],
+  validate: new SimpleSchema({
+    diaryId: { type: String, regEx: SimpleSchema.RegEx.Id },
+  }).validator({ clean: true, filter: false }),
+  run({ diaryId }) {
+    if (!this.userId) {
+      throw new Meteor.Error('api.diarys.remove.notLoggedIn');
+    }
+    Diarys.remove(diaryId);
+  },
+});
+
 const DIARYS_METHODS = _.pluck([
   insertDiary,
   updateDiary,
+  removeDiary,
 ], 'name');
 
 if (Meteor.isServer) {

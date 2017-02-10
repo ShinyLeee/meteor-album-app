@@ -80,7 +80,7 @@
 
 .fade-appear.fade-appear-active {
   opacity: 1;
-  transition: opacity 500ms ease-in;
+  transition: opacity 375ms ease-in;
 }
 
 .fade-enter {
@@ -89,7 +89,16 @@
 
 .fade-enter.fade-enter-active {
   opacity: 1;
-  transition: opacity 500ms ease-in;
+  transition: opacity 375ms ease-in;
+}
+
+.zoomer-appear {
+  transform: translate3d(0, 100%, 0);
+}
+
+.zoomer-appear.zoomer-appear-active {
+  transform: translate3d(0, 0, 0);
+  transition: transform 300ms;
 }
 
 .zoomer-enter {

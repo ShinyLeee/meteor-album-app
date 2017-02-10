@@ -73,12 +73,12 @@ class ZoomerHolder extends Component {
   }
 
   render() {
-    const { image } = this.props;
+    const { image, clientWidth } = this.props;
     const { exif } = this.state;
 
     const imgSrc = this.imgSrc;
-    const slimSrc1 = `${imgSrc}?imageView2/2/w/${this.props.clientWidth * 2}`;
-    const slimSrc2 = `${imgSrc}?imageView2/1/w/${this.props.clientWidth * 2}`;
+    const slimSrc1 = `${imgSrc}?imageView2/2/w/${clientWidth * 2}`;
+    const slimSrc2 = `${imgSrc}?imageView2/1/w/${clientWidth * 2}`;
     // double quote for special character see: https://www.w3.org/TR/CSS2/syndata.html#value-def-uri
     const imageHolderStyle = { backgroundImage: `url("${slimSrc2}"),url("${slimSrc1}")` };
     return (
@@ -130,7 +130,7 @@ class ZoomerHolder extends Component {
                 <span>修改时间：</span>{(exif.DateTime && exif.DateTime.val) || '--'}
               </div>
               <div className="exif__info">
-                <span>上传时间：</span>{moment(this.props.image.createdAt).format('YYYY:MM:DD HH:mm:ss')}
+                <span>上传时间：</span>{moment(image.createdAt).format('YYYY:MM:DD HH:mm:ss')}
               </div>
               <div className="exif__info">
                 <span>图像尺寸：</span>

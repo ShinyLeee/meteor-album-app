@@ -1,3 +1,4 @@
+import moment from 'moment';
 import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
 import { bindActionCreators } from 'redux';
@@ -15,11 +16,12 @@ const MeteorContainer = createContainer(({ User, location }) => {
   let end;
 
   if (Object.keys(query).length === 0) {
-    start = new Date();
-    start.setHours(0, 0, 0, 0);
-
-    end = new Date();
-    end.setHours(23, 59, 59, 999);
+    start = moment().startOf('month').toDate();
+    end = moment().endOf('month').toDate();
+  } else {
+    const date = moment(`${query.year}-${query.month || 1}`, 'YYYY-MM');
+    start = date.startOf('month').toDate();
+    end = date.endOf('month').toDate();
   }
 
   const diaryHandler = Meteor.subscribe('Diarys.own');
@@ -36,6 +38,7 @@ const MeteorContainer = createContainer(({ User, location }) => {
   return {
     dataIsReady,
     diarys,
+    date: start,
   };
 }, DiaryPage);
 

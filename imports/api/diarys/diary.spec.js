@@ -4,7 +4,7 @@ import { Factory } from 'meteor/dburles:factory';
 import { _ } from 'meteor/underscore';
 import { PublicationCollector } from 'meteor/johanbrook:publication-collector';
 import { assert, expect } from 'meteor/practicalmeteor:chai';
-import { insertDiary, updateDiary } from './methods.js';
+import { insertDiary, updateDiary, removeDiary } from './methods.js';
 import { Users } from '../users/user.js';
 import { Diarys } from './diary.js';
 
@@ -109,6 +109,27 @@ if (Meteor.isServer) {
           expect(updatedDiary.title).to.equal(newTitle);
           expect(updatedDiary.content).to.equal(newContent);
           expect(updatedDiary.updatedAt).to.not.equal(curDiary.updatedAt);
+        });
+      });
+
+      describe('removeDiary', () => {
+        it('should only can remove if you are logged in', () => {
+          const args = {
+            diaryId: curDiary._id,
+          };
+          assert.throws(() => {
+            removeDiary._execute({}, args);
+          }, Meteor.Error, /api.diarys.remove.notLoggedIn/);
+        });
+
+        it('should remove diary document after method call', () => {
+          const methodInvocation = { userId: curUser._id };
+          const args = { diaryId: curDiary._id };
+
+          expect(Diarys.find({ _id: curDiary._id }).count()).to.equal(1);
+          removeDiary._execute(methodInvocation, args);
+
+          expect(Diarys.findOne({ _id: curDiary._id })).to.be.undefined;
         });
       });
     });

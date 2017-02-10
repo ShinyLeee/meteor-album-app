@@ -159,9 +159,18 @@
     position: relative;
     min-height: 260px;
     padding-top: 64px;
-    background-image: url(http://source.yehuihui.cn/GalleryPlus/Default/default-diary.jpg);
     background-size: cover;
     text-align: center;
+    &:before {
+      position: absolute;
+      content: " ";
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.1);
+      z-index: 0;
+    }
     & > .diary__background {
       position: absolute;
       top: 0;
@@ -172,6 +181,7 @@
       background: linear-gradient(180deg, rgba(0, 0, 0, 0.3) 0, transparent 30%, transparent 70%, rgba(0, 0, 0, 0.3));
     }
     & > .diary__year {
+      position: relative;
       & > h1 {
         display: inline-block;
         width: 65%;
@@ -182,19 +192,40 @@
     & > .diary__month {
       position: absolute;
       width: 100%;
-      bottom: 8px;
+      bottom: 6px;
       color: #fff;
-      & > div {
+      & > span {
+        position: relative;
         display: inline-block;
         width: 100 / 12%;
+        color: #f1f1f1;
+        vertical-align: middle;
+      }
+      & > span.diary__month_select {
+        font-size: 24px;
+        color: #fff;
+        &:before {
+          position: absolute;
+          display: block;
+          content: " ";
+          left: 0;
+          bottom: -6px;
+          width: 100%;
+          height: 4px;
+          background-color: rgb(33, 150, 243);
+        }
       }
     }
   }
   & > .diary__body {
     padding: 8px 0;
-    & > .diary__item {
+    & .diary__item {
       padding: 0 24px;
       border-bottom: 1px solid #ebebeb;
+      & > .diary__title {
+        position: relative;
+        & > h3 { display: inline-block; }
+      }
       & > .diary__content {
         height: 72px;
         color: #666;
@@ -205,9 +236,11 @@
         overflow: hidden;
       }
       & > .diary__footer {
-        font-size: 15px;
-        font-weight: 400;
-        color: #888;
+        & > .diary__time {
+          letter-spacing: .5px;
+          font-size: 13px;
+          color: #999;
+        }
       }
     }
   }
