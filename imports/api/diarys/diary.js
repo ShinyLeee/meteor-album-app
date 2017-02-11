@@ -17,8 +17,9 @@ export const Diarys = new DiarysCollection('diarys');
 
 Diarys.schema = new SimpleSchema({
   user: { type: String, max: 20, denyUpdate: true },
-  title: { type: String, label: '标题', max: 20 },
-  content: { type: String, label: '内容' },
+  title: { type: String, label: '标题', max: 20, denyUpdate: true },
+  outline: { type: String, label: '内容大纲', max: 80 },
+  content: { type: Object, label: '富文本内容[Delta格式]', blackbox: true },
   createdAt: { type: Date, denyUpdate: true },
   updatedAt: { type: Date },
 });
@@ -32,6 +33,12 @@ Diarys.deny({
   remove() { return true; },
 });
 
+const deltaObj = {
+  ops: [
+    { insert: 'Test' },
+  ],
+};
+
 if (Meteor.isTest) {
   import faker from 'faker';
   import { Factory } from 'meteor/dburles:factory';
@@ -40,7 +47,8 @@ if (Meteor.isTest) {
   Factory.define('diary', Diarys, {
     user: () => limitStrLength(faker.internet.userName(), 20),
     title: () => limitStrLength(faker.hacker.noun(), 20),
-    content: () => faker.lorem.sentence(),
+    outline: () => faker.hacker.noun(),
+    content: deltaObj,
     createdAt: () => new Date(),
     updatedAt: () => new Date(),
   });

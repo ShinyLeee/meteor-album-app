@@ -34,6 +34,17 @@ export const dialog = (state = { open: false, bible: null }, action) => {
   }
 };
 
+export const diary = (state = { open: false, diary: null }, action) => {
+  switch (action.type) {
+    case 'DIARY_OPEN':
+      return Object.assign({ open: true }, { diary: action.diary });
+    case 'DIARY_CLOSE':
+      return { open: false, diary: null };
+    default:
+      return state;
+  }
+};
+
 export const uploader = (state = null, action) => {
   switch (action.type) {
     case 'UPLOADER_START':

@@ -31,6 +31,15 @@ export const dialogClose = () => ({
   type: types.DIALOG_CLOSE,
 });
 
+export const diaryOpen = (diary) => ({
+  type: types.DIARY_OPEN,
+  diary,
+});
+
+export const diaryClose = () => ({
+  type: types.DIARY_CLOSE,
+});
+
 export const uploaderStart = (uploader) => ({
   type: types.UPLOADER_START,
   uploader,

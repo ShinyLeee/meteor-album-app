@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Diarys } from '/imports/api/diarys/diary.js';
 
-import { snackBarOpen } from '/imports/ui/redux/actions/index.js';
+import { diaryOpen, snackBarOpen } from '/imports/ui/redux/actions/index.js';
 import DiaryPage from './Diary.jsx';
 
 const MeteorContainer = createContainer(({ User, location }) => {
@@ -44,6 +44,9 @@ const MeteorContainer = createContainer(({ User, location }) => {
 
 const mapStateToProps = (state) => state;
 
-const mapDispatchToProps = (dispatch) => bindActionCreators({ snackBarOpen }, dispatch);
+const mapDispatchToProps = (dispatch) => bindActionCreators({
+  diaryOpen,
+  snackBarOpen,
+}, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(MeteorContainer);

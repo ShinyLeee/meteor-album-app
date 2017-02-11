@@ -17,7 +17,8 @@ if (Meteor.isServer) {
         const diary = Factory.create('diary');
         assert.typeOf(diary.user, 'string', 'user field must unique username');
         assert.typeOf(diary.title, 'string');
-        assert.typeOf(diary.content, 'string');
+        assert.typeOf(diary.outline, 'string');
+        assert.typeOf(diary.content, 'object'); // must be a Delta instance
         assert.typeOf(diary.createdAt, 'date');
         assert.typeOf(diary.updatedAt, 'date');
       });
@@ -85,7 +86,7 @@ if (Meteor.isServer) {
         it('should only can update if you are logged in', () => {
           const args = {
             diaryId: curDiary._id,
-            title: curDiary.title,
+            outline: curDiary.outline,
             content: curDiary.content,
           };
           assert.throws(() => {
@@ -95,19 +96,19 @@ if (Meteor.isServer) {
 
         it('should update diary document after method call', () => {
           const methodInvocation = { userId: curUser._id };
-          const newTitle = 'update-title';
-          const newContent = 'update-content';
+          const newOutline = 'After Update';
+          const newContent = { ops: [{ insert: 'Update' }] };
           const args = {
             diaryId: curDiary._id,
-            title: newTitle,
+            outline: newOutline,
             content: newContent,
           };
 
           updateDiary._execute(methodInvocation, args);
 
           const updatedDiary = Diarys.findOne({ _id: curDiary._id });
-          expect(updatedDiary.title).to.equal(newTitle);
-          expect(updatedDiary.content).to.equal(newContent);
+          expect(updatedDiary.outline).to.equal(newOutline);
+          expect(updatedDiary.content).to.eql(newContent);
           expect(updatedDiary.updatedAt).to.not.equal(curDiary.updatedAt);
         });
       });

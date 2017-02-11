@@ -14,11 +14,23 @@ class QuillContent extends Component {
 
   componentDidMount() {
     this.anchors = this.content.querySelectorAll('a');
-    this.anchors.forEach((a) => a.addEventListener('click', this.anchorClick, false));
+    this.anchors.forEach((a) => {
+      const href = a.href;
+      const regex = /^https:\/\/getbible.net\/json\?/;
+      if (href.search(regex) !== -1) {
+        a.addEventListener('click', this.anchorClick, false);
+      }
+    });
   }
 
   componentWillUnmount() {
-    this.anchors.forEach((a) => a.removeEventListener('click', this.anchorClick, false));
+    this.anchors.forEach((a) => {
+      const href = a.href;
+      const regex = /^https:\/\/getbible.net\/json\?/;
+      if (href.search(regex) !== -1) {
+        a.removeEventListener('click', this.anchorClick, false);
+      }
+    });
   }
 
   anchorClick(e) {

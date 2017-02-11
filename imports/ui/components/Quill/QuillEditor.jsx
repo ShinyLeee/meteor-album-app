@@ -1,7 +1,7 @@
-import React, { PureComponent, PropTypes } from 'react';
+import React, { Component, PropTypes } from 'react';
 import Quill from 'quill';
 
-export default class QuillHolder extends PureComponent {
+export default class QuillEditor extends Component {
 
   constructor(props) {
     super(props);
@@ -9,11 +9,17 @@ export default class QuillHolder extends PureComponent {
   }
 
   componentDidMount() {
+    this.initEditor();
+  }
+
+  initEditor() {
     const {
       readOnly,
       placeholder,
       theme,
       modules,
+      contentType,
+      content,
       onChange,
     } = this.props;
 
@@ -24,9 +30,15 @@ export default class QuillHolder extends PureComponent {
       modules,
     });
 
-    this.Quill.on('text-change', () => {
-      if (onChange) onChange(this.Quill.root.innerHTML);
-    });
+    if (content) this.Quill.setContents(content, 'user');
+
+    if (onChange) {
+      this.Quill.on('text-change', () => {
+        const outlineText = this.Quill.getText(0, 80);
+        if (contentType === 'html') onChange(outlineText, this.Quill.root.innerHTML);
+        else if (contentType === 'delta') onChange(outlineText, this.Quill.getContents());
+      });
+    }
   }
 
   render() {
@@ -43,20 +55,23 @@ export default class QuillHolder extends PureComponent {
   }
 }
 
-QuillHolder.displayName = 'QuillHolder';
+QuillEditor.displayName = 'QuillEditor';
 
-QuillHolder.defaultProps = {
-  className: 'component__Quill',
+QuillEditor.defaultProps = {
+  className: 'component__QuillEditor',
   readOnly: false,
   theme: 'snow',
-  modules: { toolbar: true },
+  modules: { toolbar: false },
+  contentType: 'html',
 };
 
-QuillHolder.propTypes = {
+QuillEditor.propTypes = {
   className: PropTypes.string.isRequired,
   readOnly: PropTypes.bool.isRequired,
   placeholder: PropTypes.string,
   theme: PropTypes.oneOf(['snow', 'bubble']).isRequired,
   modules: PropTypes.object.isRequired,
+  contentType: PropTypes.oneOf(['html', 'delta']).isRequired,
+  content: PropTypes.object,
   onChange: PropTypes.func,
 };

@@ -23,16 +23,16 @@ export const updateDiary = new ValidatedMethod({
   mixins: [CallPromiseMixin],
   validate: new SimpleSchema({
     diaryId: { type: String, regEx: SimpleSchema.RegEx.Id },
-    title: { type: String, label: '标题', max: 20 },
-    content: { type: String, label: '内容' },
+    outline: { type: String, label: '内容大纲' },
+    content: { type: Object, label: '富文本内容[Delta格式]', blackbox: true },
   }).validator({ clean: true, filter: false }),
-  run({ diaryId, title, content }) {
+  run({ diaryId, outline, content }) {
     if (!this.userId) {
       throw new Meteor.Error('api.diarys.update.notLoggedIn');
     }
     Diarys.update(
       { _id: diaryId },
-      { $set: { title, content, updatedAt: new Date() } }
+      { $set: { outline, content, updatedAt: new Date() } }
     );
   },
 });

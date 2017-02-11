@@ -21,6 +21,7 @@ export default class WriteDiaryPage extends Component {
     this.state = {
       isAlertOpen: false,
       title: '',
+      outline: '',
       content: '',
     };
     this.handleGoBack = this.handleGoBack.bind(this);
@@ -50,7 +51,7 @@ export default class WriteDiaryPage extends Component {
 
   handleInsertDiary() {
     const { User } = this.props;
-    const { title, content } = this.state;
+    const { title, outline, content } = this.state;
     if (!title || !content) {
       this.props.snackBarOpen('请输入必填项');
       return;
@@ -58,6 +59,7 @@ export default class WriteDiaryPage extends Component {
     insertDiary.callPromise({
       user: User.username,
       title,
+      outline,
       content,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -109,7 +111,8 @@ export default class WriteDiaryPage extends Component {
             <QuillEditor
               placeholder="内容"
               modules={this.quillModulesConfig}
-              onChange={(content) => this.setState({ content })}
+              contentType="delta"
+              onChange={(outline, content) => this.setState({ outline, content })}
             />
           </div>
         </div>

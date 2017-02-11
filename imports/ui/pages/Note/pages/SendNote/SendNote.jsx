@@ -193,7 +193,7 @@ export default class SendNotePage extends Component {
         <QuillEditor
           placeholder="内容"
           modules={this.quillModulesConfig}
-          onChange={(content) => this.setState({ content })}
+          onChange={(outline, content) => this.setState({ content })}
         />
       </div>
     );
