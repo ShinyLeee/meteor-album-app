@@ -18,12 +18,15 @@ import { updateDiary, removeDiary } from '/imports/api/diarys/methods.js';
 import { diaryOpen, diaryClose, snackBarOpen } from '/imports/ui/redux/actions/index.js';
 import QuillShower from '/imports/ui/components/Quill/QuillShower.jsx';
 import QuillEditor from '/imports/ui/components/Quill/QuillEditor.jsx';
+import Loader from '/imports/ui/components/Loader/Loader.jsx';
 
 class DiaryHolder extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
+      isProcessing: false,
+      processMsg: '',
       isEditing: false,
       isAlertOpen: false,
       updatedOutline: '',
@@ -91,14 +94,16 @@ class DiaryHolder extends Component {
   handleRemoveDiary() {
     const { diary } = this.props;
 
+    this.setState({ isProcessing: true, processMsg: '删除日记中' });
+
     removeDiary.callPromise({ diaryId: diary._id })
     .then(() => {
-      this.setState({ isAlertOpen: false });
+      this.setState({ isProcessing: false, processMsg: '', isAlertOpen: false });
       this.props.diaryClose();
       this.props.snackBarOpen('删除成功');
     })
     .catch((err) => {
-      this.setState({ isAlertOpen: false });
+      this.setState({ isProcessing: false, processMsg: '', isAlertOpen: false });
       console.log(err); // eslint-disable-line no-console
       this.props.snackBarOpen(err.reason || '删除失败');
       throw new Meteor.Error(err);
@@ -109,17 +114,20 @@ class DiaryHolder extends Component {
     const { diary } = this.props;
     const { updatedOutline, updatedContent } = this.state;
 
+    this.setState({ isProcessing: true, processMsg: '更新日记中' });
+
     updateDiary.callPromise({
       diaryId: diary._id,
       outline: updatedOutline,
       content: updatedContent,
     })
     .then(() => {
-      this.setState({ isEditing: false, updatedOutline: '', updatedContent: '' });
+      this.setState({ isProcessing: false, processMsg: '', isEditing: false, updatedOutline: '', updatedContent: '' });
       this.props.diaryOpen(Diarys.findOne(diary._id));
       this.props.snackBarOpen('修改成功');
     })
     .catch((err) => {
+      this.setState({ isProcessing: false, processMsg: '' });
       console.log(err); // eslint-disable-line no-console
       this.props.snackBarOpen(err.reason || '修改失败');
       throw new Meteor.Error(err);
@@ -194,6 +202,10 @@ class DiaryHolder extends Component {
                   </span>
                 </div>
               </div>
+              <Loader
+                open={this.state.isProcessing}
+                message={this.state.processMsg}
+              />
               <Dialog
                 title="提示"
                 titleStyle={{ border: 'none' }}
@@ -222,6 +234,8 @@ class DiaryHolder extends Component {
     );
   }
 }
+
+DiaryHolder.displayName = 'DiaryHolder';
 
 DiaryHolder.defaultProps = {
   clientHeight: document.body.clientHeight,

@@ -9,14 +9,14 @@ import SendNotePage from './SendNote.jsx';
 const MeteorContainer = createContainer(({ location }) => {
   const { receiver } = location.query;
   const userHandler = Meteor.subscribe('Users.all');
-  const userIsReady = userHandler.ready();
+  const dataIsReady = userHandler.ready();
 
   const uid = Meteor.userId();
   const initialReceiver = receiver && Meteor.users.findOne({ username: receiver });
   const otherUsers = Meteor.users.find({ _id: { $ne: uid } }).fetch();
 
   return {
-    userIsReady,
+    dataIsReady,
     initialReceiver,
     otherUsers,
   };

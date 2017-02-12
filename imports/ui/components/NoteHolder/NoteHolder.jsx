@@ -7,7 +7,6 @@ import { Card, CardHeader, CardActions, CardText } from 'material-ui/Card';
 import IconButton from 'material-ui/IconButton';
 import ReplyIcon from 'material-ui/svg-icons/content/reply';
 import CheckBoxIcon from 'material-ui/svg-icons/toggle/check-box';
-
 import QuillContent from '/imports/ui/components/Quill/QuillContent.jsx';
 
 const formatter = buildFormatter(CNStrings);

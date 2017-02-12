@@ -11,6 +11,8 @@ const Label = ({ text, type, onLabelClick }) => (
   </div>
 );
 
+Label.displayName = 'Label';
+
 Label.defaultProps = {
   text: 'Label',
   type: 'default',

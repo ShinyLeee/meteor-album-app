@@ -246,8 +246,9 @@ export default class UserPage extends Component {
       </div>
     );
   }
-
 }
+
+UserPage.displayName = 'UserPage';
 
 UserPage.defaultProps = {
   domain: Meteor.settings.public.domain,

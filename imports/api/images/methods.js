@@ -144,6 +144,17 @@ export const unlikeImage = new ValidatedMethod({
   },
 });
 
+export const incView = new ValidatedMethod({
+  name: 'images.inc',
+  mixins: [CallPromiseMixin],
+  validate: new SimpleSchema({
+    imageId: { type: String, regEx: SimpleSchema.RegEx.Id },
+  }).validator({ clean: true, filter: false }),
+  run({ imageId }) {
+    Images.update(imageId, { $inc: { view: 1 } });
+  },
+});
+
 // Get list of all method names on Images
 const IMAGES_METHODS = _.pluck([
   // insertImage, // allow call this method within 1 second
@@ -153,6 +164,7 @@ const IMAGES_METHODS = _.pluck([
   shiftImages,
   likeImage,
   unlikeImage,
+  incView,
 ], 'name');
 
 if (Meteor.isServer) {

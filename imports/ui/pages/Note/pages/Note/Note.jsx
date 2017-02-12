@@ -14,7 +14,7 @@ import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
 import EmptyHolder from '/imports/ui/components/EmptyHolder/EmptyHolder.jsx';
 import Loading from '/imports/ui/components/Loader/Loading.jsx';
 import BibleDialog from '/imports/ui/components/BibleDialog/BibleDialog.jsx';
-import NoteHolder from '../../components/NoteHolder/NoteHolder.jsx';
+import NoteHolder from '/imports/ui/components/NoteHolder/NoteHolder.jsx';
 
 export default class NotePage extends Component {
 

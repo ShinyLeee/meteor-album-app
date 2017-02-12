@@ -7,6 +7,8 @@ const Loading = ({ style }) => (
   </div>
 );
 
+Loading.displayName = 'Loading';
+
 Loading.propTypes = {
   style: PropTypes.object,
 };

@@ -24,7 +24,6 @@ import {
   lockCollection,
   mutateCollectionCover,
 } from '/imports/api/collections/methods.js';
-
 import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
 import Justified from '/imports/ui/components/JustifiedLayout/Justified.jsx';
 import Loader from '/imports/ui/components/Loader/Loader.jsx';
@@ -35,9 +34,9 @@ export default class CollectionPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isLoading: false,
-      isEditing: false,
       isProcessing: false,
+      processMsg: '',
+      isEditing: false,
       isAlertOpen: false,
       alertTitle: '',
       alertContent: '',
@@ -276,37 +275,39 @@ export default class CollectionPage extends Component {
     this[`handle${action}`](actionCallback);
   }
 
-  renderIconRight() {
-    return (
-      <div>
-        <IconButton iconStyle={{ color: '#fff' }} onTouchTap={this.handleOpenUploader}>
-          <AddPhotoIcon />
-        </IconButton>
-        <IconButton iconStyle={{ color: '#fff' }} onTouchTap={() => this.openAlert('LockCollection')}>
-          { this.props.curColl && this.props.curColl.private ? (<LockOutIcon />) : (<LockInIcon />) }
-        </IconButton>
-        <IconMenu
-          iconButtonElement={<IconButton iconStyle={{ color: '#fff' }}><MoreVertIcon /></IconButton>}
-          anchorOrigin={{ horizontal: 'left', vertical: 'top' }}
-          targetOrigin={{ horizontal: 'left', vertical: 'top' }}
-        >
-          <MenuItem
-            primaryText="编辑相册"
-            onTouchTap={() => this.setState({ isEditing: true })}
-          />
-          <MenuItem
-            primaryText="删除相册"
-            onTouchTap={() => this.openAlert('RemoveCollection')}
-          />
-        </IconMenu>
-      </div>
-    );
-  }
-
   renderNavHeader() {
-    return this.props.isGuest
-    ? (<NavHeader title={this.props.curColl.name} secondary />)
-    : (<NavHeader title="我的相册" iconElementRight={this.renderIconRight()} secondary />);
+    const { isGuest, curColl } = this.props;
+    return isGuest
+    ? (<NavHeader title={curColl.name} secondary />)
+    : (
+      <NavHeader
+        title="我的相册"
+        iconElementRight={
+          <div>
+            <IconButton iconStyle={{ color: '#fff' }} onTouchTap={this.handleOpenUploader}>
+              <AddPhotoIcon />
+            </IconButton>
+            <IconButton iconStyle={{ color: '#fff' }} onTouchTap={() => this.openAlert('LockCollection')}>
+              { curColl && curColl.private ? (<LockOutIcon />) : (<LockInIcon />) }
+            </IconButton>
+            <IconMenu
+              iconButtonElement={<IconButton iconStyle={{ color: '#fff' }}><MoreVertIcon /></IconButton>}
+              anchorOrigin={{ horizontal: 'left', vertical: 'top' }}
+              targetOrigin={{ horizontal: 'left', vertical: 'top' }}
+            >
+              <MenuItem
+                primaryText="编辑相册"
+                onTouchTap={() => this.setState({ isEditing: true })}
+              />
+              <MenuItem
+                primaryText="删除相册"
+                onTouchTap={() => this.openAlert('RemoveCollection')}
+              />
+            </IconMenu>
+          </div>
+        }
+        secondary
+      />);
   }
 
   renderEditingNavHeader() {
@@ -341,32 +342,44 @@ export default class CollectionPage extends Component {
   }
 
   renderContent() {
+    const {
+      domain,
+      images,
+      curColl,
+      group,
+      counter,
+      selectCounter,
+      selectGroupCounter,
+      enableSelectAll,
+      disableSelectAll,
+    } = this.props;
+
     let duration;
-    const imgLen = this.props.images.length;
+    const imgLen = images.length;
     if (imgLen === 0) duration = '暂无相片';
-    else if (imgLen === 1) duration = moment(this.props.images[0].shootAt).format('YYYY年MM月DD日');
+    else if (imgLen === 1) duration = moment(images[0].shootAt).format('YYYY年MM月DD日');
     else if (imgLen > 1) {
-      const start = moment(this.props.images[imgLen - 1].shootAt).format('YYYY年MM月DD日');
-      const end = moment(this.props.images[0].shootAt).format('YYYY年MM月DD日');
+      const start = moment(images[imgLen - 1].shootAt).format('YYYY年MM月DD日');
+      const end = moment(images[0].shootAt).format('YYYY年MM月DD日');
       duration = `${start} - ${end}`;
     }
     return (
       <div className="content__collPics">
         <div className="collPics__header">
-          <div className="collPics__name">{this.props.curColl.name}</div>
+          <div className="collPics__name">{curColl.name}</div>
           <div className="collPics__duration">{duration}</div>
         </div>
         { imgLen > 0 && (
           <Justified
-            domain={this.props.domain}
+            domain={domain}
             isEditing={this.state.isEditing}
-            images={this.props.images}
-            group={this.props.group}
-            counter={this.props.counter}
-            selectCounter={this.props.selectCounter}
-            selectGroupCounter={this.props.selectGroupCounter}
-            enableSelectAll={this.props.enableSelectAll}
-            disableSelectAll={this.props.disableSelectAll}
+            images={images}
+            group={group}
+            counter={counter}
+            selectCounter={selectCounter}
+            selectGroupCounter={selectGroupCounter}
+            enableSelectAll={enableSelectAll}
+            disableSelectAll={disableSelectAll}
           />
         ) }
       </div>

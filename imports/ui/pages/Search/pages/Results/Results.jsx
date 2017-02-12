@@ -5,8 +5,9 @@ import Paper from 'material-ui/Paper';
 
 import SearchBar from '/imports/ui/components/NavHeader/components/SearchBar/SearchBar.jsx';
 import Loading from '/imports/ui/components/Loader/Loading.jsx';
+import NoteHolder from '/imports/ui/components/NoteHolder/NoteHolder.jsx';
 
-export default class ResultsPage extends Component {
+export default class SearchResultsPage extends Component {
 
   constructor(props) {
     super(props);
@@ -18,7 +19,7 @@ export default class ResultsPage extends Component {
 
   handleSearchSubmit(e) {
     e.preventDefault();
-    browserHistory.push(`/search/${this.state.searchText}`);
+    browserHistory.replace(`/search/${this.state.searchText}`);
   }
 
   renderCollResults() {
@@ -72,12 +73,34 @@ export default class ResultsPage extends Component {
     );
   }
 
+  renderNoteResults() {
+    const { notes, params: { query } } = this.props;
+    if (notes.length === 0) return <p className="search__empty">未找到符合“{query}”的结果</p>;
+    return (
+      <div className="note__container">
+        {
+          notes.map((note, i) => {
+            const receiverObj = Meteor.users.findOne({ username: note.receiver });
+            return (
+              <NoteHolder
+                key={i}
+                avatar={receiverObj && receiverObj.profile.avatar}
+                note={note}
+                isRead
+              />
+            );
+          })
+        }
+      </div>
+    );
+  }
+
   render() {
     const { params: { query } } = this.props;
     return (
       <div className="container deep">
         <SearchBar
-          onLeftIconTouchTap={() => browserHistory.goBack()}
+          onLeftIconTouchTap={() => browserHistory.replace('/search')}
           onChange={(e) => this.setState({ searchText: e.target.value })}
           onSubmit={this.handleSearchSubmit}
         />
@@ -98,6 +121,12 @@ export default class ResultsPage extends Component {
                   </div>
                   { this.renderUserResults() }
                 </div>
+                <div className="search__note">
+                  <div className="note__header">
+                    <span>信息</span>
+                  </div>
+                  { this.renderNoteResults() }
+                </div>
               </div>
             )
             : (<Loading />) }
@@ -107,19 +136,21 @@ export default class ResultsPage extends Component {
   }
 }
 
-ResultsPage.displayName = 'ResultsPage';
+SearchResultsPage.displayName = 'SearchResultsPage';
 
-ResultsPage.defaultProps = {
+SearchResultsPage.defaultProps = {
   dataIsReady: false,
   users: [],
   collections: [],
+  notes: [],
 };
 
-ResultsPage.propTypes = {
+SearchResultsPage.propTypes = {
   User: PropTypes.object.isRequired,
   params: PropTypes.object.isRequired,
   // Below Pass from Database
   dataIsReady: PropTypes.bool.isRequired,
   users: PropTypes.array.isRequired,
   collections: PropTypes.array.isRequired,
+  notes: PropTypes.array.isRequired,
 };

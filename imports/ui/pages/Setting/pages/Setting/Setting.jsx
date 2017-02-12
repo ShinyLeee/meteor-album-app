@@ -34,8 +34,9 @@ export default class SettingPage extends Component {
     const initialUser = props.User;
     this.state = {
       location: 'setting',
-      isEditing: false,
       isProcessing: false,
+      processMsg: '',
+      isEditing: false,
       isAlertOpen: false,
       cover: initialUser.profile.cover,
       avatar: initialUser.profile.avatar,

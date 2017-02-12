@@ -13,6 +13,7 @@ import {
   shiftImages,
   likeImage,
   unlikeImage,
+  incView,
 } from './methods.js';
 import { Users } from '../users/user.js';
 import { Collections } from '../collections/collection.js';
@@ -334,6 +335,16 @@ if (Meteor.isServer) {
 
           unlikeImage._execute({ userId: anotherUid }, { imageId: imgId, unliker: curUser.username });
           expect(Images.findOne(imgId).liker).to.not.include(curUser.username);
+        });
+      });
+
+      describe('incView', () => {
+        it('should incre image view field after method call', () => {
+          incView._execute({ userId: curUser._id }, { imageId: imgId });
+          expect(Images.findOne(imgId).view).to.equal(1);
+
+          incView._execute({}, { imageId: imgId });
+          expect(Images.findOne(imgId).view).to.equal(2);
         });
       });
     });

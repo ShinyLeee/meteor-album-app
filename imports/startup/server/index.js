@@ -4,9 +4,6 @@ import './fixtures.js';
 // This define config of email
 import './email-config.js';
 
-// This defines routes only for RESTful API
-// import './routes.js';
-
 // Set up some rate limiting and other important security settings.
 import './security.js';
 

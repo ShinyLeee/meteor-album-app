@@ -10,15 +10,17 @@ import ArrowBackIcon from 'material-ui/svg-icons/navigation/arrow-back';
 import DoneIcon from 'material-ui/svg-icons/action/done';
 import { blue500 } from 'material-ui/styles/colors';
 import { insertDiary } from '/imports/api/diarys/methods.js';
-
 import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
 import QuillEditor from '/imports/ui/components/Quill/QuillEditor.jsx';
+import Loader from '/imports/ui/components/Loader/Loader.jsx';
 
 export default class WriteDiaryPage extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
+      isProcessing: false,
+      processMsg: '',
       isAlertOpen: false,
       title: '',
       outline: '',
@@ -56,6 +58,7 @@ export default class WriteDiaryPage extends Component {
       this.props.snackBarOpen('请输入必填项');
       return;
     }
+    this.setState({ isProcessing: true, processMsg: '添加日记中' });
     insertDiary.callPromise({
       user: User.username,
       title,
@@ -65,10 +68,12 @@ export default class WriteDiaryPage extends Component {
       updatedAt: new Date(),
     })
     .then(() => {
+      // because go to another component so we do not need set inital state
       browserHistory.replace('/diary');
       this.props.snackBarOpen('添加日记成功');
     })
     .catch((err) => {
+      this.setState({ isProcessing: false, processMsg: '' });
       console.log(err); // eslint-disable-line no-console
       this.props.snackBarOpen(err.reason || '添加日记失败');
       throw new Meteor.Error(err);
@@ -98,6 +103,10 @@ export default class WriteDiaryPage extends Component {
           iconElementRight={<IconButton onTouchTap={this.handleInsertDiary}><DoneIcon /></IconButton>}
         />
         <div className="content">
+          <Loader
+            open={this.state.isProcessing}
+            message={this.state.processMsg}
+          />
           <div className="content__writeDiary">
             <TextField
               hintText="标题"
@@ -129,6 +138,8 @@ export default class WriteDiaryPage extends Component {
     );
   }
 }
+
+WriteDiaryPage.displayName = 'WriteDiaryPage';
 
 WriteDiaryPage.propTypes = {
   User: PropTypes.object,

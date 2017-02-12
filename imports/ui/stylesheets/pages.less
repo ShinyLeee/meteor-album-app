@@ -295,9 +295,6 @@
   padding: 5px 6px;
   background-color: #ededed;
   min-height: 495px;
-  & .component__NoteHolder {
-    margin-bottom: 10px;
-  }
 }
 
 /* route /collection */
@@ -523,6 +520,27 @@
     & > .user__info {
       font-size: 14px;
       color: #222;
+    }
+  }
+}
+
+.search__note {
+  position: relative;
+  top: 28px;
+  margin-bottom: 28px;
+  & > .note__header {
+    margin-bottom: 8px;
+    & > span {
+      margin: 0 18px;
+      color: #666;
+      font-size: 16px;
+      font-weight: 500;
+    }
+    & > a {
+      float: right;
+      margin-right: 18px;
+      font-size: 14px;
+      color: @color-link;
     }
   }
 }

@@ -82,6 +82,8 @@ class SnackBar extends Component {
   }
 }
 
+SnackBar.displayName = 'SnackBar';
+
 SnackBar.defaultProps = {
   open: false,
   autoHideDuration: 2500,

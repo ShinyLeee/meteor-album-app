@@ -14,10 +14,10 @@ import ArrowBackIcon from 'material-ui/svg-icons/navigation/arrow-back';
 import SendIcon from 'material-ui/svg-icons/content/send';
 import { blue500 } from 'material-ui/styles/colors';
 import { insertNote } from '/imports/api/notes/methods.js';
-
 import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
 import QuillEditor from '/imports/ui/components/Quill/QuillEditor.jsx';
 import DatePickerCN from '/imports/ui/components/SubMaterialUI/DatePickerCN.jsx';
+import Loader from '/imports/ui/components/Loader/Loader.jsx';
 import Loading from '/imports/ui/components/Loader/Loading.jsx';
 import styles from './SendNote.style.js';
 
@@ -26,11 +26,13 @@ export default class SendNotePage extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      isProcessing: false,
+      processMsg: '',
       isAlertOpen: false,
       receiver: props.initialReceiver,
-      sendAt: new Date(),
       title: '',
       content: '',
+      sendAt: new Date(),
     };
     this.handleGoBack = this.handleGoBack.bind(this);
     this.handleSentNote = this.handleSentNote.bind(this);
@@ -125,6 +127,7 @@ export default class SendNotePage extends Component {
       this.props.snackBarOpen('请选择接受用户');
       return;
     }
+    this.setState({ isProcessing: true, processMsg: '发送信息中' });
     insertNote.callPromise({
       title: this.state.title,
       content: this.state.content,
@@ -134,10 +137,12 @@ export default class SendNotePage extends Component {
       createdAt: new Date(),
     })
     .then(() => {
+      // because go to another component so we do not need set inital state
       browserHistory.goBack();
       this.props.snackBarOpen('发送成功');
     })
     .catch((err) => {
+      this.setState({ isProcessing: false, processMsg: '' });
       console.log(err); // eslint-disable-line no-console
       this.props.snackBarOpen(err.reason || '发送失败');
       throw new Meteor.Error(err);
@@ -222,7 +227,11 @@ export default class SendNotePage extends Component {
           iconElementRight={<IconButton onTouchTap={this.handleSentNote}><SendIcon /></IconButton>}
         />
         <div className="content">
-          { this.props.userIsReady
+          <Loader
+            open={this.state.isProcessing}
+            message={this.state.processMsg}
+          />
+          { this.props.dataIsReady
             ? this.renderContent()
             : (<Loading />) }
         </div>
@@ -240,10 +249,12 @@ export default class SendNotePage extends Component {
   }
 }
 
+SendNotePage.displayName = 'SendNotePage';
+
 SendNotePage.propTypes = {
   User: PropTypes.object,
   // Below Pass from Database
-  userIsReady: PropTypes.bool.isRequired,
+  dataIsReady: PropTypes.bool.isRequired,
   initialReceiver: PropTypes.object,
   otherUsers: PropTypes.array.isRequired,
   // Below Pass from Redux

@@ -16,7 +16,6 @@ import AllCollections from '/imports/ui/pages/Collection/pages/AllCollections/in
 import Colletion from '/imports/ui/pages/Collection/pages/Collection/index.js';
 import Diary from '/imports/ui/pages/Diary/pages/Diary/index.js';
 import WriteDiary from '/imports/ui/pages/Diary/pages/Write/index.js';
-import EditDiary from '/imports/ui/pages/Diary/pages/Edit/index.js';
 import Recycle from '/imports/ui/pages/Recycle/index.js';
 import Setting from '/imports/ui/pages/Setting/pages/Setting/index.js';
 import SettingEmails from '/imports/ui/pages/Setting/pages/Emails/index.js';
@@ -58,7 +57,6 @@ const Root = () => {
             <Route index={2} path="user/:username/collection/:cname" component={Colletion} onEnter={isAllowVisitColl} />
             <Route index={2} path="diary" component={Diary} onEnter={isLogin} />
             <Route index={3} path="diary/write" component={WriteDiary} onEnter={isLogin} />
-            <Route index={3} path="diary/edit/:diaryId" component={EditDiary} onEnter={isLogin} />
             <Route index={2} path="recycle" component={Recycle} onEnter={isLogin} />
             <Route index={1} path="setting" component={Setting} onEnter={isLogin} />
             <Route index={2} path="setting/emails" component={SettingEmails} onEnter={isLogin} />
