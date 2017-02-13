@@ -420,9 +420,9 @@ export default class SettingPage extends Component {
           )
           : (
             <NavHeader
-              User={User}
-              location={this.state.location}
-              primary
+              title="个人设置"
+              style={{ backgroundColor: blue500 }}
+              secondary
             />
           )
         }
@@ -458,10 +458,10 @@ SettingPage.defaultProps = {
 };
 
 SettingPage.propTypes = {
-  User: PropTypes.object, // User and snackBarOpen not required bc logout
+  User: PropTypes.object, // User uptoken and snackBarOpen not required bc logout
   domain: PropTypes.string.isRequired,
   uploadURL: PropTypes.string.isRequired,
   // Below Pass from Redux
-  uptoken: PropTypes.string.isRequired,
+  uptoken: PropTypes.string,
   snackBarOpen: PropTypes.func,
 };

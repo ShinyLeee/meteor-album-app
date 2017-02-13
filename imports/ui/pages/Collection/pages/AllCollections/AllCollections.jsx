@@ -83,7 +83,8 @@ export default class AllCollectionPage extends Component {
   }
 
   renderContent() {
-    if (this.props.colls.length === 0) {
+    const { isGuest, colls } = this.props;
+    if (!isGuest && colls.length === 0) {
       return (
         <EmptyHolder
           mainInfo="你还尚未创建相册"
@@ -94,7 +95,7 @@ export default class AllCollectionPage extends Component {
     return (
       <div className="content__allCollection">
         {
-          this.props.colls.map((coll) => (
+          colls.map((coll) => (
             <CollHolder
               key={coll._id}
               User={this.props.curUser}
@@ -107,35 +108,23 @@ export default class AllCollectionPage extends Component {
   }
 
   render() {
-    const actions = [
-      <FlatButton
-        label="取消"
-        onTouchTap={this.handleCloseDialog}
-        primary
-      />,
-      <FlatButton
-        label="新建"
-        onTouchTap={this.handleAddCollection}
-        disabled={!this.state.newCollName}
-        primary
-      />,
-    ];
+    const { isGuest, curUser, dataIsReady, colls } = this.props;
     return (
       <div className="container">
-        { this.props.isGuest
-          ? (<NavHeader title={`${this.props.curUser.username}的相册`} secondary />)
-          : (<NavHeader User={this.props.User} location={this.state.location} primary />)
-        }
+        <NavHeader
+          title={isGuest ? `${curUser.username}的相册` : '我的相册'}
+          secondary
+        />
         <div className="content">
-          { !this.props.dataIsReady && (<Loading />) }
-          { this.props.isGuest
+          { !dataIsReady && (<Loading />) }
+          { isGuest
             ? (
               <Recap
-                title={this.props.curUser.username}
-                detailFir={this.props.curUser.profile.intro || '暂无简介'}
+                title={curUser.username}
+                detailFir={curUser.profile.intro || '暂无简介'}
               />
             )
-            : this.props.colls.length > 0 && (
+            : colls.length > 0 && (
               <Recap
                 title="我的相册"
                 detailFir="所有创建相册都在这里"
@@ -143,10 +132,22 @@ export default class AllCollectionPage extends Component {
               />
             )
           }
-          { this.props.dataIsReady && this.renderContent() }
+          { dataIsReady && this.renderContent() }
           <Dialog
             title="新建相册"
-            actions={actions}
+            actions={[
+              <FlatButton
+                label="取消"
+                onTouchTap={this.handleCloseDialog}
+                primary
+              />,
+              <FlatButton
+                label="新建"
+                onTouchTap={this.handleAddCollection}
+                disabled={!this.state.newCollName}
+                primary
+              />,
+            ]}
             open={this.state.open}
             onRequestClose={this.handleCloseDialog}
             modal
@@ -159,7 +160,7 @@ export default class AllCollectionPage extends Component {
             />
           </Dialog>
         </div>
-        { !this.props.isGuest && (
+        { !isGuest && (
           <div className="component__FloatBtn">
             <FloatingActionButton
               onTouchTap={() => this.setState({ open: true })}

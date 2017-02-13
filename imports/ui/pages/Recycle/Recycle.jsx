@@ -243,7 +243,7 @@ export default class RecyclePage extends Component {
 RecyclePage.displayName = 'RecyclePage';
 
 RecyclePage.propTypes = {
-  User: PropTypes.object.isRequired,
+  User: PropTypes.object,
   // Below Pass from Database
   dataIsReady: PropTypes.bool.isRequired,
   images: PropTypes.array.isRequired,

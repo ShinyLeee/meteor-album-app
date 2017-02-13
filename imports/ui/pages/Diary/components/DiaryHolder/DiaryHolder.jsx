@@ -35,7 +35,7 @@ class DiaryHolder extends Component {
     this.handleDiaryChange = this.handleDiaryChange.bind(this);
     this.handleRemoveDiary = this.handleRemoveDiary.bind(this);
     this.handleUpdateDiary = this.handleUpdateDiary.bind(this);
-    this.handleCloseDiary = this.handleCloseDiary.bind(this);
+    this.handleQuitEditing = this.handleQuitEditing.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -46,40 +46,19 @@ class DiaryHolder extends Component {
     }
   }
 
-  componentDidUpdate(prevProps) {
-    const { open, clientHeight } = this.props;
-    if (prevProps.open !== open) {
-      if (open) {
-        // 避免上一层滚动溢出
-        // 64 is AppBar height
-        const diaryRenderHeight = this.diaryBody.clientHeight + 64;
-        if (diaryRenderHeight < clientHeight) {
-          document.body.addEventListener('touchmove', this.disableMobileScroll, false);
-        }
-      } else {
-        document.body.removeEventListener('touchmove', this.disableMobileScroll, false);
-      }
-    }
-  }
-
-  componentWillUnmount() {
-    document.body.removeEventListener('touchmove', this.disableMobileScroll, false);
-  }
-
   get quillModulesConfig() {
     return {
       toolbar: {
         container: [
           [{ header: [1, 2, false] }],
-          ['bold', 'italic', { align: [false, 'center', 'right'] }],
+          ['bold', { color: [] }, { align: [false, 'center', 'right'] }],
+          ['blockquote', 'code-block'],
           ['link', 'image'],
         ],
-        handlers: {
-          image: this.imageHandler,
-        },
       },
     };
   }
+
     /**
      * @param {string} outline - plain text take from rich text
      * @param {object} content - Delta object from Quill.js
@@ -134,7 +113,7 @@ class DiaryHolder extends Component {
     });
   }
 
-  handleCloseDiary() {
+  handleQuitEditing() {
     this.setState({ isEditing: false });
     this.props.diaryClose();
   }
@@ -167,7 +146,7 @@ class DiaryHolder extends Component {
                     title={diary.title}
                     titleStyle={{ color: '#666' }}
                     style={{ backgroundColor: '#fff' }}
-                    iconElementLeft={<IconButton onTouchTap={this.handleCloseDiary}><ArrowBackIcon color="#666" /></IconButton>}
+                    iconElementLeft={<IconButton onTouchTap={this.handleQuitEditing}><ArrowBackIcon color="#666" /></IconButton>}
                     iconElementRight={
                       <IconMenu
                         iconButtonElement={<IconButton iconStyle={{ fill: '#666' }}><MoreVertIcon /></IconButton>}

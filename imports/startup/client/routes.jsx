@@ -53,14 +53,14 @@ const Root = () => {
             <Route index={1} path="user/:username" component={User} onEnter={isAllowVisitHome} />
             <Route index={2} path="user/:username/likes" component={UserLikes} onEnter={isAllowVisitHome} />
             <Route index={2} path="user/:username/fans" component={UserFans} onEnter={isAllowVisitHome} />
-            <Route index={1} path="user/:username/collection" component={AllCollections} onEnter={isAllowVisitColl} />
-            <Route index={2} path="user/:username/collection/:cname" component={Colletion} onEnter={isAllowVisitColl} />
+            <Route index={2} path="user/:username/collection" component={AllCollections} onEnter={isAllowVisitColl} />
+            <Route index={3} path="user/:username/collection/:cname" component={Colletion} onEnter={isAllowVisitColl} />
             <Route index={2} path="diary" component={Diary} onEnter={isLogin} />
             <Route index={3} path="diary/write" component={WriteDiary} onEnter={isLogin} />
             <Route index={2} path="recycle" component={Recycle} onEnter={isLogin} />
-            <Route index={1} path="setting" component={Setting} onEnter={isLogin} />
-            <Route index={2} path="setting/emails" component={SettingEmails} onEnter={isLogin} />
-            <Route index={2} path="setting/password" component={SettingPassword} onEnter={isLogin} />
+            <Route index={2} path="setting" component={Setting} onEnter={isLogin} />
+            <Route index={3} path="setting/emails" component={SettingEmails} onEnter={isLogin} />
+            <Route index={3} path="setting/password" component={SettingPassword} onEnter={isLogin} />
             <Route index={2} path="note/:username" component={Note} onEnter={isOwner} />
             <Route index={3} path="note/:username/sent" component={AllSentNotes} onEnter={isOwner} />
             <Route index={3} path="note/:username/received" component={AllNotes} onEnter={isOwner} />

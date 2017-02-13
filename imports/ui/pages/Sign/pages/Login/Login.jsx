@@ -62,17 +62,17 @@ class LoginPage extends Component {
       return;
     }
 
-    this.setState({ isProcessing: true });
+    this.setState({ isProcessing: true, processMsg: '发送邮件中' });
 
     const forgotPassword = Meteor.wrapPromise(Accounts.forgotPassword);
 
     forgotPassword({ email })
     .then(() => {
-      this.setState({ isProcessing: false, resetDialog: false, email: '' });
+      this.setState({ isProcessing: false, processMsg: '', resetDialog: false, email: '' });
       this.props.snackBarOpen('发送重置密码邮件成功');
     })
     .catch((err) => {
-      this.setState({ isProcessing: false, resetDialog: false, email: '' });
+      this.setState({ isProcessing: false, processMsg: '', resetDialog: false, email: '' });
       this.props.snackBarOpen(err.reason || '发送重置密码邮件失败');
       console.log(err); // eslint-disable-line no-console
       throw new Meteor.Error(err);
