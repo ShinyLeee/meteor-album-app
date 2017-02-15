@@ -251,7 +251,7 @@ export default class UserPage extends Component {
 UserPage.displayName = 'UserPage';
 
 UserPage.defaultProps = {
-  domain: Meteor.settings.public.domain,
+  domain: Meteor.settings.public.imageDomain,
 };
 
 UserPage.propTypes = {

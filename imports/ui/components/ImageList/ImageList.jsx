@@ -105,7 +105,7 @@ class ImageList extends Component {
 ImageList.displayName = 'ImageList';
 
 ImageList.defaultProps = {
-  domain: Meteor.settings.public.domain,
+  domain: Meteor.settings.public.imageDomain,
   clientWidth: document.body.clientWidth,
 };
 

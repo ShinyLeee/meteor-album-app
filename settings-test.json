@@ -1,13 +1,7 @@
 {
   "public": {
-    "domain": "http://images.yehuihui.cn",
-    "sourceDomain": "http://source.yehuihui.cn",
-    "preCurUser": {
-      "username": "",
-      "profile": {
-        "avatar": "",
-        "intro": ""
-      }
-    }
+    "domain": "http://www.yehuihui.cn",
+    "imageDomain": "http://images.yehuihui.cn",
+    "sourceDomain": "http://source.yehuihui.cn"
   }
 }

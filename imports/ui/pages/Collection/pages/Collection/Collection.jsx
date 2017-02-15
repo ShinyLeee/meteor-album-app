@@ -434,7 +434,7 @@ export default class CollectionPage extends Component {
 CollectionPage.displayName = 'CollectionPage';
 
 CollectionPage.defaultProps = {
-  domain: Meteor.settings.public.domain,
+  domain: Meteor.settings.public.imageDomain,
   initialAlertState: { isAlertOpen: false, alertTitle: '', alertContent: '', action: '' },
 };
 

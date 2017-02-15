@@ -200,7 +200,7 @@ class ZoomerHolder extends Component {
 ZoomerHolder.displayName = 'ZoomerHolder';
 
 ZoomerHolder.defaultProps = {
-  domain: Meteor.settings.public.domain,
+  domain: Meteor.settings.public.imageDomain,
   clientWidth: document.body.clientWidth,
 };
 

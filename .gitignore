@@ -2,6 +2,6 @@
 node_modules/
 settings-development.json
 settings-production.json
-settings-test.json
+pm2.json
 *.log
 .vscode

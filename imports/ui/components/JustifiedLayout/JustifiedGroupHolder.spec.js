@@ -18,7 +18,7 @@ if (Meteor.isClient) {
 
   const expect = chai.expect;
 
-  const domain = Meteor.settings.public.domain;
+  const imageDomain = Meteor.settings.public.imageDomain;
 
   const generateGeometry = (len) => {
     const ratios = [];
@@ -48,7 +48,7 @@ if (Meteor.isClient) {
     };
     const component = shallow(
       <JustifiedGroupHolder
-        domain={domain}
+        domain={imageDomain}
         isEditing
         day={'2016-12-31'}
         geometry={generateGeometry(4)}
@@ -62,7 +62,7 @@ if (Meteor.isClient) {
     );
     const anotherComponent = shallow(
       <JustifiedGroupHolder
-        domain={domain}
+        domain={imageDomain}
         isEditing
         day={'2016-12-30'}
         geometry={generateGeometry(2)}

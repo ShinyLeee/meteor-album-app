@@ -453,7 +453,7 @@ export default class SettingPage extends Component {
 SettingPage.displayName = 'SettingPage';
 
 SettingPage.defaultProps = {
-  domain: Meteor.settings.public.domain,
+  domain: Meteor.settings.public.imageDomain,
   uploadURL: window.location.protocol === 'https:' ? 'https://up.qbox.me/' : 'http://upload.qiniu.com',
 };
 

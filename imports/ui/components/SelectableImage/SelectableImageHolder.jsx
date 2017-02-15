@@ -83,7 +83,7 @@ SelectableImageHolder.displayName = 'SelectableImageHolder';
 
 SelectableImageHolder.defaultProps = {
   isEditing: false,
-  domain: Meteor.settings.public.domain,
+  domain: Meteor.settings.public.imageDomain,
   clientWidth: document.body.clientWidth,
 };
 

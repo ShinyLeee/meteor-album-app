@@ -2,6 +2,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
 Meteor.startup(() => {
+  const domain = Meteor.settings.public.domain;
   const smtp = {
     username: 'lshinylee@vip.qq.com',
     password: 'otbhblukwmhsbecj',
@@ -10,6 +11,15 @@ Meteor.startup(() => {
   };
 
   process.env.MAIL_URL = `smtp://${encodeURIComponent(smtp.username)}:${encodeURIComponent(smtp.password)}@${encodeURIComponent(smtp.server)}:${smtp.port}`;
+
+  // Configures "reset password account" email link
+  Accounts.urls.resetPassword = (token) => `${domain}/#/reset-password/${token}`;
+
+  // Configures "enroll account" email link
+  Accounts.urls.enrollAccount = (token) => `${domain}/#/enroll-account/${token}`;
+
+  // Configures "verify email" email link
+  Accounts.urls.verifyEmail = (token) => `${domain}/#/verify-email/${token}`;
 
   Accounts.emailTemplates.siteName = 'GalleryPlus';
   Accounts.emailTemplates.from = 'GalleryPlus <lshinylee@vip.qq.com>';

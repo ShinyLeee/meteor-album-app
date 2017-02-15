@@ -43,7 +43,7 @@ Accounts.config({
    *
    */
 
-  loginExpirationInDays: 7,
+  loginExpirationInDays: 60,
 
 
   /** [String]

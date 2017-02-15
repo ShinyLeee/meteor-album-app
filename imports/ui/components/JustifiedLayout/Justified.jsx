@@ -180,7 +180,7 @@ export default class Justified extends PureComponent {
 Justified.displayName = 'Justified';
 
 Justified.defaultProps = {
-  domain: Meteor.settings.public.domain,
+  domain: Meteor.settings.public.imageDomain,
   isEditing: false,
   containerWidth: document.body.clientWidth,
   containerPadding: 0,
