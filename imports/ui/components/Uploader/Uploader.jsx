@@ -66,12 +66,11 @@ export default class Uploader extends PureComponent {
       img.onload = () => {
         const width = img.naturalWidth || img.width;
         const height = img.naturalHeight || img.height;
-        let ratio = width / height;
-        ratio = Math.round(ratio * 100) / 100;
+        const dimension = [width, height];
 
-        // We need to store image's ratio and lastModified in local DB
+        // We need to store image's dimension and lastModified in local DB
         f.fileName = fileName;
-        f.ratio = ratio;
+        f.dimension = dimension;
         const startAjax = () => {
           $.ajax({
             xhr: () => {
@@ -158,7 +157,7 @@ export default class Uploader extends PureComponent {
       collection: this.props.destination.split('/')[1],
       name: file.fileName,
       type: file.surfix,
-      ratio: file.ratio,
+      dimension: file.dimension,
       shootAt: file.shootAt,
       createdAt: new Date(),
       updatedAt: new Date(),

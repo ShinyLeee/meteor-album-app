@@ -18,6 +18,8 @@ import ShiftIcon from 'material-ui/svg-icons/hardware/keyboard-return';
 import RemoveIcon from 'material-ui/svg-icons/action/delete';
 import SetCoverIcon from 'material-ui/svg-icons/device/wallpaper';
 import { blue500 } from 'material-ui/styles/colors';
+import '/node_modules/photoswipe/dist/photoswipe.css';
+import '/node_modules/photoswipe/dist/default-skin/default-skin.css';
 import { removeImagesToRecycle, shiftImages } from '/imports/api/images/methods.js';
 import {
   removeCollection,
@@ -28,6 +30,7 @@ import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
 import Justified from '/imports/ui/components/JustifiedLayout/Justified.jsx';
 import Loader from '/imports/ui/components/Loader/Loader.jsx';
 import Loading from '/imports/ui/components/Loader/Loading.jsx';
+import PhotoSwipe from '/imports/ui/components/PhotoSwipe/PhotoSwipe.jsx';
 
 export default class CollectionPage extends Component {
 
@@ -41,6 +44,7 @@ export default class CollectionPage extends Component {
       alertTitle: '',
       alertContent: '',
       action: '',
+      pswpItems: [],
     };
     this.handleQuitEditing = this.handleQuitEditing.bind(this);
     this.handleOpenUploader = this.handleOpenUploader.bind(this);
@@ -50,6 +54,17 @@ export default class CollectionPage extends Component {
     this.handleSetCover = this.handleSetCover.bind(this);
     this.handleRemovePhoto = this.handleRemovePhoto.bind(this);
     this.handleOnTimeout = this.handleOnTimeout.bind(this);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (!this.props.dataIsReady && nextProps.dataIsReady) {
+      const pswpItems = nextProps.images.map((image) => ({
+        src: `${nextProps.domain}/${image.user}/${image.collection}/${image.name}.${image.type}`,
+        w: image.dimension[0],
+        h: image.dimension[1],
+      }));
+      this.setState({ pswpItems });
+    }
   }
 
   handleQuitEditing(e) {
@@ -310,48 +325,11 @@ export default class CollectionPage extends Component {
       />);
   }
 
-  renderEditingNavHeader() {
-    const { User, counter } = this.props;
-    return (
-      <NavHeader
-        User={User}
-        title={counter ? `选择了${counter}张照片` : ''}
-        style={{ backgroundColor: blue500 }}
-        iconElementLeft={<IconButton onTouchTap={this.handleQuitEditing}><CloseIcon /></IconButton>}
-        iconElementRight={
-          <div>
-            <IconButton
-              iconStyle={{ color: '#fff' }}
-              onTouchTap={() => this.openAlert('ShiftPhoto')}
-            ><ShiftIcon />
-            </IconButton>
-            <IconButton
-              iconStyle={{ color: '#fff' }}
-              onTouchTap={() => this.openAlert('SetCover')}
-            ><SetCoverIcon />
-            </IconButton>
-            <IconButton
-              iconStyle={{ color: '#fff' }}
-              onTouchTap={() => this.openAlert('RemovePhoto')}
-            ><RemoveIcon />
-            </IconButton>
-          </div>
-        }
-      />
-    );
-  }
-
   renderContent() {
     const {
       domain,
       images,
       curColl,
-      group,
-      counter,
-      selectCounter,
-      selectGroupCounter,
-      enableSelectAll,
-      disableSelectAll,
     } = this.props;
 
     let duration;
@@ -374,12 +352,6 @@ export default class CollectionPage extends Component {
             domain={domain}
             isEditing={this.state.isEditing}
             images={images}
-            group={group}
-            counter={counter}
-            selectCounter={selectCounter}
-            selectGroupCounter={selectGroupCounter}
-            enableSelectAll={enableSelectAll}
-            disableSelectAll={disableSelectAll}
           />
         ) }
       </div>
@@ -387,22 +359,45 @@ export default class CollectionPage extends Component {
   }
 
   render() {
-    const actions = [
-      <FlatButton
-        label="取消"
-        onTouchTap={() => this.setState(this.props.initialAlertState)}
-        primary
-      />,
-      <FlatButton
-        label="确认"
-        onTouchTap={() => this.triggerDialogAction(this.state.action)}
-        primary
-      />,
-    ];
+    const {
+      User,
+      counter,
+      dataIsReady,
+      initialAlertState,
+      pswpOpen,
+      pswpOps,
+      photoSwipeClose,
+    } = this.props;
     return (
       <div className="container">
         { this.state.isEditing
-          ? this.renderEditingNavHeader()
+          ? (
+            <NavHeader
+              User={User}
+              title={counter ? `选择了${counter}张照片` : ''}
+              style={{ backgroundColor: blue500 }}
+              iconElementLeft={<IconButton onTouchTap={this.handleQuitEditing}><CloseIcon /></IconButton>}
+              iconElementRight={
+                <div>
+                  <IconButton
+                    iconStyle={{ color: '#fff' }}
+                    onTouchTap={() => this.openAlert('ShiftPhoto')}
+                  ><ShiftIcon />
+                  </IconButton>
+                  <IconButton
+                    iconStyle={{ color: '#fff' }}
+                    onTouchTap={() => this.openAlert('SetCover')}
+                  ><SetCoverIcon />
+                  </IconButton>
+                  <IconButton
+                    iconStyle={{ color: '#fff' }}
+                    onTouchTap={() => this.openAlert('RemovePhoto')}
+                  ><RemoveIcon />
+                  </IconButton>
+                </div>
+              }
+            />
+          )
           : this.renderNavHeader() }
         <div className="content">
           <Loader
@@ -410,16 +405,33 @@ export default class CollectionPage extends Component {
             message={this.state.processMsg}
             onTimeout={this.handleOnTimeout}
           />
-          { this.props.dataIsReady
+          { dataIsReady
             ? this.renderContent()
             : (<Loading />) }
+          <PhotoSwipe
+            open={pswpOpen}
+            items={this.state.pswpItems}
+            options={pswpOps}
+            onClose={photoSwipeClose}
+          />
           <Dialog
             title={this.state.alertTitle}
             titleStyle={{ border: 'none' }}
-            actions={actions}
+            actions={[
+              <FlatButton
+                label="取消"
+                onTouchTap={() => this.setState(initialAlertState)}
+                primary
+              />,
+              <FlatButton
+                label="确认"
+                onTouchTap={() => this.triggerDialogAction(this.state.action)}
+                primary
+              />,
+            ]}
             actionsContainerStyle={{ border: 'none' }}
             open={this.state.isAlertOpen}
-            onRequestClose={() => this.setState(this.props.initialAlertState)}
+            onRequestClose={() => this.setState(initialAlertState)}
             autoScrollBodyContent
           >
             {this.state.alertContent}
@@ -450,13 +462,12 @@ CollectionPage.propTypes = {
   images: PropTypes.array.isRequired,
   // Below Pass From Redux
   uptoken: PropTypes.string, // not required bc guest can vist this page but without uptoken
-  selectImages: PropTypes.array.isRequired,
-  group: PropTypes.object.isRequired,
   counter: PropTypes.number.isRequired,
+  pswpOpen: PropTypes.bool.isRequired,
+  pswpOps: PropTypes.object,
+  selectImages: PropTypes.array.isRequired,
+  disableSelectAll: PropTypes.func.isRequired,
+  photoSwipeClose: PropTypes.func.isRequired,
   snackBarOpen: PropTypes.func.isRequired,
   uploaderStart: PropTypes.func.isRequired,
-  selectCounter: PropTypes.func.isRequired,
-  selectGroupCounter: PropTypes.func.isRequired,
-  enableSelectAll: PropTypes.func.isRequired,
-  disableSelectAll: PropTypes.func.isRequired,
 };

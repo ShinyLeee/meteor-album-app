@@ -40,6 +40,15 @@ export const diaryClose = () => ({
   type: types.DIARY_CLOSE,
 });
 
+export const photoSwipeOpen = (options) => ({
+  type: types.PHOTOSWIPE_OPEN,
+  options,
+});
+
+export const photoSwipeClose = () => ({
+  type: types.PHOTOSWIPE_CLOSE,
+});
+
 export const uploaderStart = (uploader) => ({
   type: types.UPLOADER_START,
   uploader,

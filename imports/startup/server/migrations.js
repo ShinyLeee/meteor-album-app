@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { HTTP } from 'meteor/http';
 import { Migrations } from 'meteor/percolate:migrations';
 import { Users } from '/imports/api/users/user.js';
 import { Notes } from '/imports/api/notes/note.js';
@@ -127,5 +128,42 @@ Migrations.add({
     executeNotes();
     executeImages();
     executeCollections();
+  },
+});
+
+Migrations.add({
+  version: 2,
+  name: 'Add width & height field and unset download & ratio field in IMAGES collection',
+  up: () => {
+    const domain = Meteor.settings.public.imageDomain;
+    const imagesBulk = Images.rawCollection().initializeUnorderedBulkOp();
+    Images.find().forEach((image) => {
+      const url = encodeURI(`${domain}/${image.user}/${image.collection}/${image.name}.${image.type}?imageInfo`);
+      try {
+        const imageStat = HTTP.call('GET', url);
+        imagesBulk.find({ _id: image._id })
+        .updateOne({
+          $unset: { download: 1, ratio: 1 },
+          $set: { dimension: [imageStat.data.width, imageStat.data.height] },
+        });
+      } catch (err) {
+        console.log(err); // eslint-disable-line no-console
+        throw new Meteor.Error(err);
+      }
+    });
+    const executeImages = Meteor.wrapAsync(imagesBulk.execute, imagesBulk);
+    executeImages();
+  },
+  down: () => {
+    const imagesBulk = Images.rawCollection().initializeUnorderedBulkOp();
+    Images.find().forEach((image) => {
+      const ratio = (image.dimension[0] / image.dimension[1]);
+      imagesBulk.find({ _id: image._id }).updateOne({
+        $unset: { dimension: 1 },
+        $set: { download: 0, ratio: Math.round(ratio * 100) / 100 },
+      });
+    });
+    const executeImages = Meteor.wrapAsync(imagesBulk.execute, imagesBulk);
+    executeImages();
   },
 });

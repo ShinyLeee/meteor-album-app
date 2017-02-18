@@ -1,18 +1,19 @@
-import React, { PureComponent, PropTypes } from 'react';
-import { Meteor } from 'meteor/meteor';
 import { _ } from 'meteor/underscore';
+import React, { PureComponent, PropTypes } from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import justifiedLayout from 'justified-layout';
 import moment from 'moment';
 import IconButton from 'material-ui/IconButton';
 import ComfyIcon from 'material-ui/svg-icons/image/view-comfy';
 import CompactIcon from 'material-ui/svg-icons/image/view-compact';
-
+import { enableSelectAll, disableSelectAll } from '/imports/ui/redux/actions/index.js';
 import JustifiedGroupHolder from './JustifiedGroupHolder.jsx';
 import GridLayout from '../GridLayout/GridLayout.jsx';
 import SelectableIcon from '../SelectableImage/SelectableIcon.jsx';
 import SelectableImageHolder from '../SelectableImage/SelectableImageHolder.jsx';
 
-export default class Justified extends PureComponent {
+export class Justified extends PureComponent {
 
   constructor(props) {
     super(props);
@@ -63,28 +64,6 @@ export default class Justified extends PureComponent {
     this.props.disableSelectAll();
   }
 
-  renderToolbox() {
-    const { isEditing } = this.props;
-    return (
-      <div className="Justified__toolbox">
-        { isEditing && (
-          <div className="Justified__toolbox_left" onTouchTap={this.handleToggleSelectAll}>
-            <SelectableIcon activate={this.state.isAllSelect} />
-            <h4>选择全部</h4>
-          </div>
-        ) }
-        <div className="Justified__toolbox_right">
-          <IconButton onTouchTap={() => this.handleChangeLayout('nested')}>
-            <ComfyIcon color={this.state.layoutType === 'nested' ? '#111' : '#757575'} />
-          </IconButton>
-          <IconButton onTouchTap={() => this.handleChangeLayout('day-group')}>
-            <CompactIcon color={this.state.layoutType === 'day-group' ? '#111' : '#757575'} />
-          </IconButton>
-        </div>
-      </div>
-    );
-  }
-
   renderDayGroupLayout() {
     const {
       domain,
@@ -96,10 +75,6 @@ export default class Justified extends PureComponent {
       targetRowHeightTolerance,
       boxSpacing,
       fullWidthBreakoutRowCadence,
-      group,
-      counter,
-      selectCounter,
-      selectGroupCounter,
     } = this.props;
 
     const ratios = [];
@@ -107,7 +82,10 @@ export default class Justified extends PureComponent {
     const dayGroupImages = _.groupBy(images, (image) => moment(image.shootAt).format('YYYYMMDD'));
 
     _.map(dayGroupImages, (dayGroupImage, day) => {
-      ratios[day] = _.map(dayGroupImage, (image) => image.ratio);
+      ratios[day] = _.map(dayGroupImage, (image) => {
+        const ratio = image.dimension[0] / image.dimension[1];
+        return Math.round(ratio * 100) / 100; // toFixed will save unnecessary zero, it cause bug in justifiedLayout
+      });
       geometrys[day] = justifiedLayout(
         ratios[day],
         {
@@ -132,17 +110,13 @@ export default class Justified extends PureComponent {
           dayGroupImage={dayGroupImage}
           total={images.length}
           groupTotal={dayGroupImages[day].length}
-          group={group}
-          counter={counter}
-          selectCounter={selectCounter}
-          selectGroupCounter={selectGroupCounter}
         />
       ))
     );
   }
 
   renderNestedLayout() {
-    const { domain, isEditing, images, counter, selectCounter } = this.props;
+    const { domain, isEditing, images } = this.props;
     return (
       <GridLayout>
         {
@@ -151,10 +125,10 @@ export default class Justified extends PureComponent {
               key={i}
               domain={domain}
               isEditing={isEditing}
+              index={i}
               image={image}
               total={images.length}
-              counter={counter}
-              selectCounter={selectCounter}
+              onImageClick={this.handleImageClick}
             />
           ))
         }
@@ -163,10 +137,27 @@ export default class Justified extends PureComponent {
   }
 
   render() {
-    const containerStyle = this.state.layoutType === 'day-group' ? { top: 0 } : {};
     return (
-      <div className="Justified" style={containerStyle}>
-        { this.renderToolbox() }
+      <div
+        className="Justified"
+        style={this.state.layoutType === 'day-group' ? { top: 0 } : {}}
+      >
+        <div className="Justified__toolbox">
+          { this.props.isEditing && (
+            <div className="Justified__toolbox_left" onTouchTap={this.handleToggleSelectAll}>
+              <SelectableIcon activate={this.state.isAllSelect} />
+              <h4>选择全部</h4>
+            </div>
+          ) }
+          <div className="Justified__toolbox_right">
+            <IconButton onTouchTap={() => this.handleChangeLayout('nested')}>
+              <ComfyIcon color={this.state.layoutType === 'nested' ? '#111' : '#757575'} />
+            </IconButton>
+            <IconButton onTouchTap={() => this.handleChangeLayout('day-group')}>
+              <CompactIcon color={this.state.layoutType === 'day-group' ? '#111' : '#757575'} />
+            </IconButton>
+          </div>
+        </div>
         {
           this.state.layoutType === 'nested'
           ? this.renderNestedLayout()
@@ -180,7 +171,6 @@ export default class Justified extends PureComponent {
 Justified.displayName = 'Justified';
 
 Justified.defaultProps = {
-  domain: Meteor.settings.public.imageDomain,
   isEditing: false,
   containerWidth: document.body.clientWidth,
   containerPadding: 0,
@@ -211,10 +201,18 @@ Justified.propTypes = {
   targetRowHeightTolerance: PropTypes.number.isRequired,
   justifiedContainer: PropTypes.string,
   // Below Pass from Redux
-  group: PropTypes.object.isRequired,
   counter: PropTypes.number.isRequired,
-  selectCounter: PropTypes.func.isRequired,
-  selectGroupCounter: PropTypes.func.isRequired,
   enableSelectAll: PropTypes.func.isRequired,
   disableSelectAll: PropTypes.func.isRequired,
 };
+
+const mapStateToProps = (state) => ({
+  counter: state.selectCounter.counter,
+});
+
+const mapDispatchToProps = (dispatch) => bindActionCreators({
+  enableSelectAll,
+  disableSelectAll,
+}, dispatch);
+
+export default connect(mapStateToProps, mapDispatchToProps)(Justified);

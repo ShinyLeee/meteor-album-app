@@ -3,14 +3,11 @@ import { createContainer } from 'meteor/react-meteor-data';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Collections } from '/imports/api/collections/collection.js';
-
 import {
+  disableSelectAll,
+  photoSwipeClose,
   snackBarOpen,
   uploaderStart,
-  selectCounter,
-  selectGroupCounter,
-  enableSelectAll,
-  disableSelectAll,
 } from '/imports/ui/redux/actions/index.js';
 import CollectionPage from './Collection.jsx';
 
@@ -50,18 +47,17 @@ const MeteorContainer = createContainer(({ params }) => {
 
 const mapStateToProps = (state) => ({
   uptoken: state.uptoken,
-  selectImages: state.selectCounter.selectImages,
-  group: state.selectCounter.group,
   counter: state.selectCounter.counter,
+  selectImages: state.selectCounter.selectImages,
+  pswpOpen: state.photoSwipe.open,
+  pswpOps: state.photoSwipe.options,
 });
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
+  disableSelectAll,
+  photoSwipeClose,
   snackBarOpen,
   uploaderStart,
-  selectCounter,
-  selectGroupCounter,
-  enableSelectAll,
-  disableSelectAll,
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(MeteorContainer);

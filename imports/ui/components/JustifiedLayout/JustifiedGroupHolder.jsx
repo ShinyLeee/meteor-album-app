@@ -1,10 +1,12 @@
-import React, { PureComponent, PropTypes } from 'react';
 import { _ } from 'meteor/underscore';
-
+import React, { PureComponent, PropTypes } from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { selectGroupCounter } from '/imports/ui/redux/actions/index.js';
 import SelectableIcon from '../SelectableImage/SelectableIcon.jsx';
 import JustifiedImageHolder from './JustifiedImageHolder.jsx';
 
-export default class JustifiedGroupHolder extends PureComponent {
+export class JustifiedGroupHolder extends PureComponent {
 
   constructor(props) {
     super(props);
@@ -69,9 +71,6 @@ export default class JustifiedGroupHolder extends PureComponent {
       isEditing,
       total,
       groupTotal,
-      group,
-      counter,
-      selectCounter,
     } = this.props;
     const showDay = day.split('');
     showDay[3] += '年';
@@ -102,15 +101,13 @@ export default class JustifiedGroupHolder extends PureComponent {
               <JustifiedImageHolder
                 key={i}
                 isEditing={isEditing}
+                index={i}
                 day={day}
                 image={image}
                 imageSrc={imageSrc}
                 imageHolderStyle={imageHolderStyle}
                 total={total}
                 groupTotal={groupTotal}
-                group={group}
-                counter={counter}
-                selectCounter={selectCounter}
               />
             );
           })
@@ -133,6 +130,16 @@ JustifiedGroupHolder.propTypes = {
   // Below Pass from Redux
   group: PropTypes.object.isRequired,
   counter: PropTypes.number.isRequired,
-  selectCounter: PropTypes.func.isRequired,
   selectGroupCounter: PropTypes.func.isRequired,
 };
+
+const mapStateToProps = (state) => ({
+  group: state.selectCounter.group,
+  counter: state.selectCounter.counter,
+});
+
+const mapDispatchToProps = (dispatch) => bindActionCreators({
+  selectGroupCounter,
+}, dispatch);
+
+export default connect(mapStateToProps, mapDispatchToProps)(JustifiedGroupHolder);

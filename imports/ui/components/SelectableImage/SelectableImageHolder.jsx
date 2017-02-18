@@ -1,10 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import React, { PureComponent, PropTypes } from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
-
+import { photoSwipeOpen, selectCounter } from '/imports/ui/redux/actions/index.js';
 import SelectableImageBackground from './SelectableImageBackground.jsx';
 
-export default class SelectableImageHolder extends PureComponent {
+export class SelectableImageHolder extends PureComponent {
 
   constructor(props) {
     super(props);
@@ -27,30 +29,38 @@ export default class SelectableImageHolder extends PureComponent {
   }
 
   handleSelect() {
-    if (this.props.isEditing) {
+    const {
+      isEditing,
+      index,
+      image,
+    } = this.props;
+
+    if (isEditing) {
       if (this.state.isSelect) {
         this.props.selectCounter({
-          selectImages: [this.props.image],
+          selectImages: [image],
           group: 'nested',
           counter: -1,
         });
         this.setState({ isSelect: false });
       } else {
         this.props.selectCounter({
-          selectImages: [this.props.image],
+          selectImages: [image],
           group: 'nested',
           counter: 1,
         });
         this.setState({ isSelect: true });
       }
+    } else {
+      this.props.photoSwipeOpen({ index, history: false });
     }
   }
 
   render() {
     const { domain, isEditing, clientWidth, image } = this.props;
-    const square = Math.ceil(clientWidth / 3);
+    const retinaSquare = Math.ceil(clientWidth / 3) * 2;
     const url = `${domain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
-    const imageSource = `${url}?imageView2/1/w/${square * 2}/h/${square * 2}`;
+    const imageSource = `${url}?imageView2/1/w/${retinaSquare}/h/${retinaSquare}`;
     const imageStyle = {
       transform: this.state.isSelect && 'scale(.8)',
     };
@@ -89,11 +99,24 @@ SelectableImageHolder.defaultProps = {
 
 SelectableImageHolder.propTypes = {
   domain: PropTypes.string.isRequired,
-  isEditing: PropTypes.bool.isRequired,
   clientWidth: PropTypes.number.isRequired,
+  isEditing: PropTypes.bool.isRequired,
+  index: PropTypes.number.isRequired,
   image: PropTypes.object.isRequired,
   total: PropTypes.number.isRequired,
   // Below Pass from Redux
   counter: PropTypes.number.isRequired,
+  photoSwipeOpen: PropTypes.func.isRequired,
   selectCounter: PropTypes.func.isRequired,
 };
+
+const mapStateToProps = (state) => ({
+  counter: state.selectCounter.counter,
+});
+
+const mapDispatchToProps = (dispatch) => bindActionCreators({
+  photoSwipeOpen,
+  selectCounter,
+}, dispatch);
+
+export default connect(mapStateToProps, mapDispatchToProps)(SelectableImageHolder);

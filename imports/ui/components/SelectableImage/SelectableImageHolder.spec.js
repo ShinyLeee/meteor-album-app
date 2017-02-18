@@ -12,7 +12,7 @@ if (Meteor.isClient) {
   import { shallow } from 'enzyme';
   import { chai } from 'meteor/practicalmeteor:chai';
   import { sinon } from 'meteor/practicalmeteor:sinon';
-  import SelectableImageHolder from './SelectableImageHolder.jsx';
+  import { SelectableImageHolder } from './SelectableImageHolder.jsx';
 
   const expect = chai.expect;
 

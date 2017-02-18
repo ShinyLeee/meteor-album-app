@@ -26,10 +26,9 @@ Images.schema = new SimpleSchema({
   collection: { type: String, max: 20 },
   name: { type: String, label: '图片名' },
   type: { type: String, label: '图片类型', defaultValue: 'jpg' },
-  ratio: { type: Number, label: '图片纵横比', decimal: true },
+  dimension: { type: [Number], label: '图片长宽', maxCount: 2 },
   liker: { type: [String], defaultValue: [], optional: true },
   view: { type: Number, defaultValue: 0, optional: true },
-  download: { type: Number, defaultValue: 0, optional: true },
   private: { type: Boolean, defaultValue: false, optional: true },
   shootAt: { type: Date, label: '拍摄日期' },
   createdAt: { type: Date, denyUpdate: true },
@@ -55,14 +54,14 @@ Images.helpers({
 if (Meteor.isTest) {
   import faker from 'faker';
   import { Factory } from 'meteor/dburles:factory';
-  import { getRandomArbitrary, limitStrLength } from '/imports/utils/utils.js';
+  import { limitStrLength } from '/imports/utils/utils.js';
 
   Factory.define('image', Images, {
     user: () => limitStrLength(faker.internet.userName(), 20),
     collection: () => limitStrLength(faker.hacker.noun(), 20),
     name: () => faker.random.uuid(),
     type: () => 'jpg',
-    ratio: () => Math.round(getRandomArbitrary(0.5, 2) * 10) / 10,
+    dimension: [1280, 1280],
     shootAt: () => new Date(),
     createdAt: () => new Date(),
     updatedAt: () => new Date(),

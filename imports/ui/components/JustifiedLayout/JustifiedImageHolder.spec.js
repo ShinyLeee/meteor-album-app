@@ -12,7 +12,7 @@ if (Meteor.isClient) {
   import { shallow } from 'enzyme';
   import { chai } from 'meteor/practicalmeteor:chai';
   import { sinon } from 'meteor/practicalmeteor:sinon';
-  import JustifiedImageHolder from './JustifiedImageHolder.jsx';
+  import { JustifiedImageHolder } from './JustifiedImageHolder.jsx';
 
   const expect = chai.expect;
 

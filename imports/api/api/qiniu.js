@@ -31,9 +31,6 @@ if (Meteor.isServer) {
         throw new Meteor.Error('user.accessDenied');
       }
 
-      if (!keys) {
-        throw new Meteor.Error('Keys can\'t be empty, please check it out');
-      }
       const client = new qiniu.rs.Client();
 
       const pairs = keys.map((key) => {
@@ -60,9 +57,6 @@ if (Meteor.isServer) {
         throw new Meteor.Error('user.accessDenied');
       }
 
-      if (!keys) {
-        throw new Meteor.Error('Keys can\'t be empty, please check it out');
-      }
       const client = new qiniu.rs.Client();
 
       const pathes = keys.map((key) => {
@@ -77,6 +71,23 @@ if (Meteor.isServer) {
       return response;
     },
 
+    'Qiniu.stat': function getStat({ key }) {
+      new SimpleSchema({
+        keys: { type: [String] },
+      }).validator({ clean: true, filter: false });
+
+      if (!this.userId) {
+        throw new Meteor.Error('user.accessDenied');
+      }
+
+      const client = new qiniu.rs.Client();
+
+      const statSync = Meteor.wrapAsync(client.stat);
+      const results = statSync(bucket, key);
+
+      const response = { results };
+      return response;
+    },
   });
 
   const QINIU_METHODS = [

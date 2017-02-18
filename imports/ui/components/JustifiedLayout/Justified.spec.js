@@ -12,7 +12,7 @@ if (Meteor.isClient) {
   import { shallow } from 'enzyme';
   import { chai } from 'meteor/practicalmeteor:chai';
   import { sinon } from 'meteor/practicalmeteor:sinon';
-  import Justified from './Justified.jsx';
+  import { Justified } from './Justified.jsx';
 
   const expect = chai.expect;
   const domain = Meteor.settings.public.domain;

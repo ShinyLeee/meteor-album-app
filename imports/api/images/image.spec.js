@@ -30,7 +30,7 @@ if (Meteor.isServer) {
         assert.typeOf(image.user, 'string', 'user field must unique username');
         assert.typeOf(image.collection, 'string', 'collection field must be specific collection name');
         assert.typeOf(image.name, 'string', 'name field must be String');
-        assert.typeOf(image.ratio, 'number');
+        assert.typeOf(image.dimension, 'array');
         assert.typeOf(image.shootAt, 'date');
         assert.typeOf(image.createdAt, 'date');
         assert.typeOf(image.updatedAt, 'date');

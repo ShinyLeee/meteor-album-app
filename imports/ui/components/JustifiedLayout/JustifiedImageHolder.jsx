@@ -1,10 +1,12 @@
-import React, { PureComponent, PropTypes } from 'react';
-import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import { _ } from 'meteor/underscore';
-
+import React, { PureComponent, PropTypes } from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
+import { photoSwipeOpen, selectCounter } from '/imports/ui/redux/actions/index.js';
 import SelectableImageBackground from '../SelectableImage/SelectableImageBackground.jsx';
 
-export default class JustifiedImageHolder extends PureComponent {
+export class JustifiedImageHolder extends PureComponent {
 
   constructor(props) {
     super(props);
@@ -39,22 +41,25 @@ export default class JustifiedImageHolder extends PureComponent {
   }
 
   handleSelect() {
-    if (this.props.isEditing) {
+    const { isEditing, index, day, image } = this.props;
+    if (isEditing) {
       if (this.state.isSelect) {
         this.props.selectCounter({
-          selectImages: [this.props.image],
-          group: this.props.day,
+          selectImages: [image],
+          group: day,
           counter: -1,
         });
         this.setState({ isSelect: false });
       } else {
         this.props.selectCounter({
-          selectImages: [this.props.image],
-          group: this.props.day,
+          selectImages: [image],
+          group: day,
           counter: 1,
         });
         this.setState({ isSelect: true });
       }
+    } else {
+      this.props.photoSwipeOpen({ index, history: false });
     }
   }
 
@@ -88,6 +93,7 @@ JustifiedImageHolder.displayName = 'JustifiedImageHolder';
 
 JustifiedImageHolder.propTypes = {
   isEditing: PropTypes.bool.isRequired,
+  index: PropTypes.number.isRequired,
   day: PropTypes.string.isRequired,
   image: PropTypes.object.isRequired,
   imageSrc: PropTypes.string.isRequired,
@@ -97,5 +103,18 @@ JustifiedImageHolder.propTypes = {
   // Below Pass from Redux
   group: PropTypes.object.isRequired,
   counter: PropTypes.number.isRequired,
+  photoSwipeOpen: PropTypes.func.isRequired,
   selectCounter: PropTypes.func.isRequired,
 };
+
+const mapStateToProps = (state) => ({
+  group: state.selectCounter.group,
+  counter: state.selectCounter.counter,
+});
+
+const mapDispatchToProps = (dispatch) => bindActionCreators({
+  photoSwipeOpen,
+  selectCounter,
+}, dispatch);
+
+export default connect(mapStateToProps, mapDispatchToProps)(JustifiedImageHolder);

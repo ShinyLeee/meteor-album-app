@@ -14,7 +14,7 @@ if (Meteor.isClient) {
   import { chai } from 'meteor/practicalmeteor:chai';
   import { sinon } from 'meteor/practicalmeteor:sinon';
   import { getRandomArbitrary } from '/imports/utils/utils.js';
-  import JustifiedGroupHolder from './JustifiedGroupHolder.jsx';
+  import { JustifiedGroupHolder } from './JustifiedGroupHolder.jsx';
 
   const expect = chai.expect;
 

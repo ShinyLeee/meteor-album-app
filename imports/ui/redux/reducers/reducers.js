@@ -45,6 +45,17 @@ export const diary = (state = { open: false, diary: null }, action) => {
   }
 };
 
+export const photoSwipe = (state = { open: false, options: null }, action) => {
+  switch (action.type) {
+    case 'PHOTOSWIPE_OPEN':
+      return Object.assign({ open: true }, { options: action.options });
+    case 'PHOTOSWIPE_CLOSE':
+      return { open: false, options: null };
+    default:
+      return state;
+  }
+};
+
 export const uploader = (state = null, action) => {
   switch (action.type) {
     case 'UPLOADER_START':
