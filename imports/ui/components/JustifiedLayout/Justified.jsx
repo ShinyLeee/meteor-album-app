@@ -2,16 +2,15 @@ import { _ } from 'meteor/underscore';
 import React, { PureComponent, PropTypes } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import justifiedLayout from 'justified-layout';
 import moment from 'moment';
 import IconButton from 'material-ui/IconButton';
 import ComfyIcon from 'material-ui/svg-icons/image/view-comfy';
 import CompactIcon from 'material-ui/svg-icons/image/view-compact';
-import { enableSelectAll, disableSelectAll } from '/imports/ui/redux/actions/index.js';
-import JustifiedGroupHolder from './JustifiedGroupHolder.jsx';
+import { enableSelectAll, disableSelectAll, photoSwipeOpen } from '/imports/ui/redux/actions/index.js';
+import ConnectedJustifiedGroupHolder from './JustifiedGroupHolder.jsx';
 import GridLayout from '../GridLayout/GridLayout.jsx';
 import SelectableIcon from '../SelectableImage/SelectableIcon.jsx';
-import SelectableImageHolder from '../SelectableImage/SelectableImageHolder.jsx';
+import ConnectedSelectableImageHolder from '../SelectableImage/SelectableImageHolder.jsx';
 
 export class Justified extends PureComponent {
 
@@ -65,48 +64,14 @@ export class Justified extends PureComponent {
   }
 
   renderDayGroupLayout() {
-    const {
-      domain,
-      isEditing,
-      images,
-      containerWidth,
-      containerPadding,
-      targetRowHeight,
-      targetRowHeightTolerance,
-      boxSpacing,
-      fullWidthBreakoutRowCadence,
-    } = this.props;
-
-    const ratios = [];
-    const geometrys = [];
+    const { isEditing, images } = this.props;
     const dayGroupImages = _.groupBy(images, (image) => moment(image.shootAt).format('YYYYMMDD'));
-
-    _.map(dayGroupImages, (dayGroupImage, day) => {
-      ratios[day] = _.map(dayGroupImage, (image) => {
-        const ratio = image.dimension[0] / image.dimension[1];
-        return Math.round(ratio * 100) / 100; // toFixed will save unnecessary zero, it cause bug in justifiedLayout
-      });
-      geometrys[day] = justifiedLayout(
-        ratios[day],
-        {
-          containerWidth,
-          containerPadding,
-          targetRowHeight,
-          targetRowHeightTolerance,
-          boxSpacing,
-          fullWidthBreakoutRowCadence,
-        }
-      );
-    });
-
     return (
       _.map(dayGroupImages, (dayGroupImage, day) => (
-        <JustifiedGroupHolder
+        <ConnectedJustifiedGroupHolder
           key={day}
-          domain={domain}
           isEditing={isEditing}
           day={day}
-          geometry={geometrys[day]}
           dayGroupImage={dayGroupImage}
           total={images.length}
           groupTotal={dayGroupImages[day].length}
@@ -116,19 +81,16 @@ export class Justified extends PureComponent {
   }
 
   renderNestedLayout() {
-    const { domain, isEditing, images } = this.props;
+    const { isEditing, images } = this.props;
     return (
       <GridLayout>
         {
           images.map((image, i) => (
-            <SelectableImageHolder
+            <ConnectedSelectableImageHolder
               key={i}
-              domain={domain}
               isEditing={isEditing}
-              index={i}
               image={image}
               total={images.length}
-              onImageClick={this.handleImageClick}
             />
           ))
         }
@@ -172,38 +134,16 @@ Justified.displayName = 'Justified';
 
 Justified.defaultProps = {
   isEditing: false,
-  containerWidth: document.body.clientWidth,
-  containerPadding: 0,
-  targetRowHeight: 200,
-  targetRowHeightTolerance: 0.25,
-  boxSpacing: 4,
-  fullWidthBreakoutRowCadence: false,
 };
 
 Justified.propTypes = {
-  domain: PropTypes.string.isRequired,
   isEditing: PropTypes.bool.isRequired,
   images: PropTypes.array.isRequired,
-  /**
-   * See docs: http://flickr.github.io/justified-layout/
-   */
-  containerWidth: PropTypes.number.isRequired,
-  containerPadding: PropTypes.number.isRequired,
-  boxSpacing: PropTypes.oneOfType([
-    React.PropTypes.object,
-    React.PropTypes.number,
-  ]),
-  fullWidthBreakoutRowCadence: PropTypes.oneOfType([
-    React.PropTypes.bool,
-    React.PropTypes.number,
-  ]),
-  targetRowHeight: PropTypes.number.isRequired,
-  targetRowHeightTolerance: PropTypes.number.isRequired,
-  justifiedContainer: PropTypes.string,
   // Below Pass from Redux
   counter: PropTypes.number.isRequired,
   enableSelectAll: PropTypes.func.isRequired,
   disableSelectAll: PropTypes.func.isRequired,
+  photoSwipeOpen: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => ({
@@ -213,6 +153,7 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   enableSelectAll,
   disableSelectAll,
+  photoSwipeOpen,
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(Justified);

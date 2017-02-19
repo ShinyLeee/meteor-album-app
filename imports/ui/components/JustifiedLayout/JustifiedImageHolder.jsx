@@ -1,9 +1,10 @@
 import { _ } from 'meteor/underscore';
+import { Meteor } from 'meteor/meteor';
 import React, { PureComponent, PropTypes } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
-import { photoSwipeOpen, selectCounter } from '/imports/ui/redux/actions/index.js';
+import { selectCounter } from '/imports/ui/redux/actions/index.js';
 import SelectableImageBackground from '../SelectableImage/SelectableImageBackground.jsx';
 
 export class JustifiedImageHolder extends PureComponent {
@@ -41,7 +42,12 @@ export class JustifiedImageHolder extends PureComponent {
   }
 
   handleSelect() {
-    const { isEditing, index, day, image } = this.props;
+    const {
+      isEditing,
+      day,
+      image,
+      onImageClick,
+    } = this.props;
     if (isEditing) {
       if (this.state.isSelect) {
         this.props.selectCounter({
@@ -58,15 +64,25 @@ export class JustifiedImageHolder extends PureComponent {
         });
         this.setState({ isSelect: true });
       }
-    } else {
-      this.props.photoSwipeOpen({ index, history: false });
+    } else if (onImageClick) {
+      onImageClick();
     }
   }
 
   render() {
-    const { isEditing, image, imageSrc, imageHolderStyle } = this.props;
-    const imageStyle = {
-      transform: this.state.isSelect && 'scale(.8)',
+    const {
+      domain,
+      isEditing,
+      dimension,
+      image,
+    } = this.props;
+    const url = `${domain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
+    const imageSrc = `${url}?imageView2/1/w/${dimension.width * 2}/h/${dimension.height * 2}`;
+    const imageHolderStyle = {
+      left: `${dimension.left}px`,
+      top: `${dimension.top}px`,
+      width: `${dimension.width}px`,
+      height: `${dimension.height}px`,
     };
     return (
       <div
@@ -82,7 +98,12 @@ export class JustifiedImageHolder extends PureComponent {
           transitionEnterTimeout={500}
           transitionLeave={false}
         >
-          <img src={imageSrc} alt={image.name} style={imageStyle} />
+          <img
+            src={imageSrc}
+            alt={image.name}
+            style={{ transform: this.state.isSelect && 'scale(.8)' }}
+            ref={(node) => { this.image = node; }}
+          />
         </ReactCSSTransitionGroup>
       </div>
     );
@@ -91,19 +112,22 @@ export class JustifiedImageHolder extends PureComponent {
 
 JustifiedImageHolder.displayName = 'JustifiedImageHolder';
 
+JustifiedImageHolder.defaultProps = {
+  domain: Meteor.settings.public.imageDomain,
+};
+
 JustifiedImageHolder.propTypes = {
+  domain: PropTypes.string.isRequired,
   isEditing: PropTypes.bool.isRequired,
-  index: PropTypes.number.isRequired,
   day: PropTypes.string.isRequired,
+  dimension: PropTypes.object.isRequired,
   image: PropTypes.object.isRequired,
-  imageSrc: PropTypes.string.isRequired,
-  imageHolderStyle: PropTypes.object.isRequired,
   total: PropTypes.number.isRequired,
   groupTotal: PropTypes.number,
+  onImageClick: PropTypes.func,
   // Below Pass from Redux
   group: PropTypes.object.isRequired,
   counter: PropTypes.number.isRequired,
-  photoSwipeOpen: PropTypes.func.isRequired,
   selectCounter: PropTypes.func.isRequired,
 };
 
@@ -113,8 +137,7 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
-  photoSwipeOpen,
   selectCounter,
 }, dispatch);
 
-export default connect(mapStateToProps, mapDispatchToProps)(JustifiedImageHolder);
+export default connect(mapStateToProps, mapDispatchToProps, null, { withRef: true })(JustifiedImageHolder);

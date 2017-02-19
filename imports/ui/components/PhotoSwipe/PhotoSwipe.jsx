@@ -1,8 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import PhotoSwipe from 'photoswipe';
 import PhotoSwipeUIDefault from 'photoswipe/dist/photoswipe-ui-default';
-import '/node_modules/photoswipe/dist/photoswipe.css';
-import '/node_modules/photoswipe/dist/default-skin/default-skin.css';
 import events from './events.js';
 
 export default class ReactPhotoSwipe extends Component {
@@ -23,9 +21,8 @@ export default class ReactPhotoSwipe extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.open) {
-      if (!this.state.open) {
-        this.initPhotoSwipe(nextProps);
-      }
+      if (!this.state.open) this.initPhotoSwipe(nextProps);
+      else this.updatePhotoSwipe(nextProps.items);
     } else if (this.state.open) {
       this.destroyPhotoSwipe();
     }
@@ -43,18 +40,33 @@ export default class ReactPhotoSwipe extends Component {
       if (callback || event === 'destroy') {
         this.PhotoSwipe.listen(event, (...args) => {
           if (callback) callback(args);
-          if (event === 'destroy') this.destroyPhotoSwipe();
+          if (event === 'destroy') this.handleInnerClose();
         });
       }
     });
-    this.PhotoSwipe.init();
-    this.setState({ open: true });
+    this.setState({ open: true }, () => this.PhotoSwipe.init());
+  }
+
+  updatePhotoSwipe(items) {
+    if (items.length === 0) {
+      console.error('New items\'s length must great than 0, there must be at least one slide.'); // eslint-disable-line
+      return;
+    }
+    // Clear previous items, only modify it
+    this.PhotoSwipe.items.length = 0;
+    items.forEach((item) => this.PhotoSwipe.items.push(item));
+    this.photoSwipe.invalidateCurrItems();
+    this.photoSwipe.updateSize(true);
   }
 
   destroyPhotoSwipe() {
     if (!this.PhotoSwipe) return;
-    this.PhotoSwipe.close();
-    this.setState({ open: false });
+    this.setState({ open: false }, () => this.PhotoSwipe.close());
+  }
+
+  handleInnerClose() {
+    const { onClose } = this.props;
+    this.setState({ open: false }, () => onClose && onClose());
   }
 
   render() {
@@ -144,4 +156,5 @@ ReactPhotoSwipe.propTypes = {
     isClickableElement: PropTypes.func,
     modal: PropTypes.bool,
   }),
+  onClose: PropTypes.func,
 };

@@ -40,8 +40,9 @@ export const diaryClose = () => ({
   type: types.DIARY_CLOSE,
 });
 
-export const photoSwipeOpen = (options) => ({
+export const photoSwipeOpen = (items, options) => ({
   type: types.PHOTOSWIPE_OPEN,
+  items,
   options,
 });
 

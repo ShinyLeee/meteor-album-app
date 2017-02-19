@@ -3,7 +3,7 @@ import React, { PureComponent, PropTypes } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
-import { photoSwipeOpen, selectCounter } from '/imports/ui/redux/actions/index.js';
+import { selectCounter } from '/imports/ui/redux/actions/index.js';
 import SelectableImageBackground from './SelectableImageBackground.jsx';
 
 export class SelectableImageHolder extends PureComponent {
@@ -31,8 +31,8 @@ export class SelectableImageHolder extends PureComponent {
   handleSelect() {
     const {
       isEditing,
-      index,
       image,
+      onImageClick,
     } = this.props;
 
     if (isEditing) {
@@ -51,8 +51,8 @@ export class SelectableImageHolder extends PureComponent {
         });
         this.setState({ isSelect: true });
       }
-    } else {
-      this.props.photoSwipeOpen({ index, history: false });
+    } else if (onImageClick) {
+      onImageClick();
     }
   }
 
@@ -61,16 +61,16 @@ export class SelectableImageHolder extends PureComponent {
     const retinaSquare = Math.ceil(clientWidth / 3) * 2;
     const url = `${domain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
     const imageSource = `${url}?imageView2/1/w/${retinaSquare}/h/${retinaSquare}`;
-    const imageStyle = {
-      transform: this.state.isSelect && 'scale(.8)',
-    };
     return (
       <div
         className="GridLayout__Image"
         style={{ backgroundColor: isEditing ? '#eee' : '#fff' }}
         onTouchTap={this.handleSelect}
       >
-        <SelectableImageBackground isEditing={isEditing} isSelect={this.state.isSelect} />
+        <SelectableImageBackground
+          isEditing={isEditing}
+          isSelect={this.state.isSelect}
+        />
         <ReactCSSTransitionGroup
           transitionName="fade"
           transitionAppear
@@ -81,7 +81,7 @@ export class SelectableImageHolder extends PureComponent {
           <img
             src={imageSource}
             alt={image.name}
-            style={imageStyle}
+            style={{ transform: this.state.isSelect && 'scale(.8)' }}
           />
         </ReactCSSTransitionGroup>
       </div>
@@ -101,12 +101,11 @@ SelectableImageHolder.propTypes = {
   domain: PropTypes.string.isRequired,
   clientWidth: PropTypes.number.isRequired,
   isEditing: PropTypes.bool.isRequired,
-  index: PropTypes.number.isRequired,
   image: PropTypes.object.isRequired,
   total: PropTypes.number.isRequired,
+  onImageClick: PropTypes.func,
   // Below Pass from Redux
   counter: PropTypes.number.isRequired,
-  photoSwipeOpen: PropTypes.func.isRequired,
   selectCounter: PropTypes.func.isRequired,
 };
 
@@ -115,7 +114,6 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
-  photoSwipeOpen,
   selectCounter,
 }, dispatch);
 

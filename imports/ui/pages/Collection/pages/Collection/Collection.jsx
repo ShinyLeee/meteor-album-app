@@ -27,7 +27,7 @@ import {
   mutateCollectionCover,
 } from '/imports/api/collections/methods.js';
 import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
-import Justified from '/imports/ui/components/JustifiedLayout/Justified.jsx';
+import ConnectedJustified from '/imports/ui/components/JustifiedLayout/Justified.jsx';
 import Loader from '/imports/ui/components/Loader/Loader.jsx';
 import Loading from '/imports/ui/components/Loader/Loading.jsx';
 import PhotoSwipe from '/imports/ui/components/PhotoSwipe/PhotoSwipe.jsx';
@@ -56,14 +56,13 @@ export default class CollectionPage extends Component {
     this.handleOnTimeout = this.handleOnTimeout.bind(this);
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (!this.props.dataIsReady && nextProps.dataIsReady) {
-      const pswpItems = nextProps.images.map((image) => ({
-        src: `${nextProps.domain}/${image.user}/${image.collection}/${image.name}.${image.type}`,
-        w: image.dimension[0],
-        h: image.dimension[1],
-      }));
-      this.setState({ pswpItems });
+  actionCallback(err, msg, isEditing) {
+    if (isEditing) this.props.disableSelectAll();
+    this.setState({ isProcessing: false, processMsg: '' });
+    this.props.snackBarOpen(msg);
+    if (err) {
+      console.log(err); // eslint-disable-line no-console
+      throw new Meteor.Error(err);
     }
   }
 
@@ -74,15 +73,16 @@ export default class CollectionPage extends Component {
   }
 
   handleOpenUploader() {
+    const { uptoken, User, curColl } = this.props;
     const data = {
-      uptoken: this.props.uptoken,
-      key: `${this.props.User.username}/${this.props.curColl.name}/`,
+      uptoken,
+      key: `${User.username}/${curColl.name}/`,
     };
     document.getElementById('Uploader__container').click();
     this.props.uploaderStart(data);
   }
 
-  handleLockCollection(cb) {
+  handleLockCollection() {
     const { User, curColl } = this.props;
     const msg = curColl.private ? '公开' : '加密';
     lockCollection.callPromise({
@@ -92,14 +92,14 @@ export default class CollectionPage extends Component {
       privateStat: curColl.private,
     })
     .then(() => {
-      cb(null, `${msg}相册成功`);
+      this.actionCallback(null, `${msg}相册成功`);
     })
     .catch((err) => {
-      cb(err, `${msg}相册失败`);
+      this.actionCallback(err, `${msg}相册失败`);
     });
   }
 
-  handleRemoveCollection(cb) {
+  handleRemoveCollection() {
     const { User, images, curColl } = this.props;
     if (images.length === 0) {
       return removeCollection.callPromise({ collId: curColl._id })
@@ -108,7 +108,7 @@ export default class CollectionPage extends Component {
         this.props.snackBarOpen('删除相册成功');
       })
       .catch((err) => {
-        cb(err, '删除相册失败');
+        this.actionCallback(err, '删除相册失败');
       });
     }
 
@@ -127,15 +127,16 @@ export default class CollectionPage extends Component {
       this.props.snackBarOpen('删除相册成功');
     })
     .catch((err) => {
-      cb(err, '删除相册失败');
+      this.actionCallback(err, '删除相册失败');
     });
   }
 
-  handleShiftPhoto(cb) {
+  handleShiftPhoto() {
+    const { curColl, selectImages } = this.props;
     const destColl = JSON.parse(this.state.destColl);
 
-    const keys = _.map(this.props.selectImages, (image) => {
-      const srcKey = `${image.user}/${this.props.curColl.name}/${image.name}.${image.type}`;
+    const keys = _.map(selectImages, (image) => {
+      const srcKey = `${image.user}/${curColl.name}/${image.name}.${image.type}`;
       const destKey = `${image.user}/${destColl.name}/${image.name}.${image.type}`;
       return {
         src: srcKey,
@@ -143,16 +144,13 @@ export default class CollectionPage extends Component {
       };
     });
 
-    Meteor.call('Qiniu.move', { keys }, (error, res) => {
-      if (error) {
-        cb(error, '转移照片失败');
-      }
+    Meteor.callPromise('Qiniu.move', { keys })
+    .then((res) => {
       const rets = res.results;
-
       // Only shift images which are moved success in Qiniu
       let moveStatus = [];
-      let sucMsg = '转移照片成功';
-      let sucMovedImgIds = _.map(this.props.selectImages, (image) => image._id);
+      let sucMsg;
+      let sucMovedImgIds = _.map(selectImages, (image) => image._id);
 
       for (let i = 0; i < rets.length; i++) {
         const status = rets[i].code;
@@ -162,26 +160,29 @@ export default class CollectionPage extends Component {
           console.warn(status, data); // eslint-disable-line no-console
         }
       }
-
       if (moveStatus.length > 0) {
         sucMsg = '部分照片转移失败';
         sucMovedImgIds = _.filter(sucMovedImgIds, (v, i) => _.indexOf(moveStatus, i) < 0);
       }
-
-      shiftImages.call({
-        selectImages: sucMovedImgIds,
+      return { sucMsg, sucMovedImgIds };
+    })
+    .then((related) => { // eslint-disable-line
+      return shiftImages.callPromise({
+        selectImages: related.sucMovedImgIds,
         dest: destColl.name,
         destPrivateStat: destColl.private,
-      }, (err) => {
-        if (err) {
-          cb(err, '转移照片失败');
-        }
-        cb(null, sucMsg, true);
-      });
+      })
+      .then(() => related.sucMsg || '转移照片成功');
+    })
+    .then((sucMsg) => {
+      this.actionCallback(null, sucMsg, true);
+    })
+    .catch((err) => {
+      this.actionCallback(err, '转移照片失败');
     });
   }
 
-  handleSetCover(cb) {
+  handleSetCover() {
     const { domain, selectImages, curColl } = this.props;
     const curImg = selectImages[0];
     const cover = `${domain}/${curImg.user}/${curImg.collection}/${curImg.name}.${curImg.type}`;
@@ -190,22 +191,22 @@ export default class CollectionPage extends Component {
       cover,
     })
     .then(() => {
-      cb(null, '更换封面成功', true);
+      this.actionCallback(null, '更换封面成功', true);
     })
     .catch((err) => {
-      cb(err, '更换封面失败');
+      this.actionCallback(err, '更换封面失败');
     });
   }
 
-  handleRemovePhoto(cb) {
+  handleRemovePhoto() {
     const { selectImages } = this.props;
     const selectImagesIds = _.map(selectImages, (image) => image._id);
     removeImagesToRecycle.callPromise({ selectImages: selectImagesIds })
     .then(() => {
-      cb(null, '删除成功', true);
+      this.actionCallback(null, '删除成功', true);
     })
     .catch((err) => {
-      cb(err, '删除失败');
+      this.actionCallback(err, '删除失败');
     });
   }
 
@@ -263,8 +264,7 @@ export default class CollectionPage extends Component {
           name="collection"
           defaultSelected={this.state.destColl}
           onChange={(e) => this.setState({ destColl: e.target.value })}
-        >
-          {radios}
+        >{radios}
         </RadioButtonGroup>
       );
     }
@@ -274,20 +274,9 @@ export default class CollectionPage extends Component {
   }
 
   triggerDialogAction(action) {
-    const curState = Object.assign({}, this.props.initialAlertState, { isProcessing: true, processMsg: '处理中' });
-
-    this.setState(curState);
-
-    const actionCallback = (err, msg, isEditing) => {
-      if (isEditing) this.props.disableSelectAll();
-      this.setState({ isProcessing: false, processMsg: '' });
-      this.props.snackBarOpen(msg);
-      if (err) {
-        console.log(err); // eslint-disable-line no-console
-        throw new Meteor.Error(err);
-      }
-    };
-    this[`handle${action}`](actionCallback);
+    const newState = Object.assign({}, this.props.initialAlertState, { isProcessing: true, processMsg: '处理中' });
+    this.setState(newState);
+    this[`handle${action}`]();
   }
 
   renderNavHeader() {
@@ -326,11 +315,7 @@ export default class CollectionPage extends Component {
   }
 
   renderContent() {
-    const {
-      domain,
-      images,
-      curColl,
-    } = this.props;
+    const { images, curColl } = this.props;
 
     let duration;
     const imgLen = images.length;
@@ -348,8 +333,7 @@ export default class CollectionPage extends Component {
           <div className="collPics__duration">{duration}</div>
         </div>
         { imgLen > 0 && (
-          <Justified
-            domain={domain}
+          <ConnectedJustified
             isEditing={this.state.isEditing}
             images={images}
           />
@@ -365,6 +349,7 @@ export default class CollectionPage extends Component {
       dataIsReady,
       initialAlertState,
       pswpOpen,
+      pswpItems,
       pswpOps,
       photoSwipeClose,
     } = this.props;
@@ -410,7 +395,7 @@ export default class CollectionPage extends Component {
             : (<Loading />) }
           <PhotoSwipe
             open={pswpOpen}
-            items={this.state.pswpItems}
+            items={pswpItems}
             options={pswpOps}
             onClose={photoSwipeClose}
           />
@@ -464,6 +449,7 @@ CollectionPage.propTypes = {
   uptoken: PropTypes.string, // not required bc guest can vist this page but without uptoken
   counter: PropTypes.number.isRequired,
   pswpOpen: PropTypes.bool.isRequired,
+  pswpItems: PropTypes.array.isRequired,
   pswpOps: PropTypes.object,
   selectImages: PropTypes.array.isRequired,
   disableSelectAll: PropTypes.func.isRequired,

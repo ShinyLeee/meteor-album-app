@@ -13,7 +13,7 @@ export const uptoken = (state = '', action) => {
 export const zoomer = (state = { open: false, image: null }, action) => {
   switch (action.type) {
     case 'ZOOMER_OPEN':
-      return Object.assign({ open: true }, { image: action.image });
+      return { open: true, image: action.image };
     case 'ZOOMER_CLOSE':
       return { open: false, image: null };
     default:
@@ -24,9 +24,9 @@ export const zoomer = (state = { open: false, image: null }, action) => {
 export const dialog = (state = { open: false, bible: null }, action) => {
   switch (action.type) {
     case 'DIALOG_FETCH':
-      return Object.assign({ open: true, bible: null });
+      return { open: true, bible: null };
     case 'DIALOG_OPEN':
-      return Object.assign({ open: true }, { bible: action.bible });
+      return { open: true, bible: action.bible };
     case 'DIALOG_CLOSE':
       return { open: false, bible: null };
     default:
@@ -37,7 +37,7 @@ export const dialog = (state = { open: false, bible: null }, action) => {
 export const diary = (state = { open: false, diary: null }, action) => {
   switch (action.type) {
     case 'DIARY_OPEN':
-      return Object.assign({ open: true }, { diary: action.diary });
+      return { open: true, diary: action.diary };
     case 'DIARY_CLOSE':
       return { open: false, diary: null };
     default:
@@ -45,12 +45,12 @@ export const diary = (state = { open: false, diary: null }, action) => {
   }
 };
 
-export const photoSwipe = (state = { open: false, options: null }, action) => {
+export const photoSwipe = (state = { open: false, items: [], options: null }, action) => {
   switch (action.type) {
     case 'PHOTOSWIPE_OPEN':
-      return Object.assign({ open: true }, { options: action.options });
+      return { open: true, items: action.items, options: action.options };
     case 'PHOTOSWIPE_CLOSE':
-      return { open: false, options: null };
+      return { open: false, items: [], options: null };
     default:
       return state;
   }
@@ -59,7 +59,7 @@ export const photoSwipe = (state = { open: false, options: null }, action) => {
 export const uploader = (state = null, action) => {
   switch (action.type) {
     case 'UPLOADER_START':
-      return Object.assign({}, action.uploader, { open: true });
+      return Object.assign({}, { open: true }, action.uploader);
     case 'UPLOADER_STOP':
       return null;
     default:
@@ -72,7 +72,7 @@ export const snackBar = (state = null, action) => {
   const config = action.config;
   switch (action.type) {
     case 'SNACKBAR_OPEN':
-      return Object.assign({}, { message, open: true }, config);
+      return Object.assign({}, { open: true, message }, config);
     case 'SNACKBAR_CLOSE':
       return null;
     default:

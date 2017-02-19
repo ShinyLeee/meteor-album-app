@@ -50,6 +50,7 @@ const mapStateToProps = (state) => ({
   counter: state.selectCounter.counter,
   selectImages: state.selectCounter.selectImages,
   pswpOpen: state.photoSwipe.open,
+  pswpItems: state.photoSwipe.items,
   pswpOps: state.photoSwipe.options,
 });
 
