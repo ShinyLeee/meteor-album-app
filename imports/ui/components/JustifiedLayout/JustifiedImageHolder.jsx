@@ -72,12 +72,15 @@ export class JustifiedImageHolder extends PureComponent {
   render() {
     const {
       domain,
+      devicePixelRatio,
       isEditing,
       dimension,
       image,
     } = this.props;
     const url = `${domain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
-    const imageSrc = `${url}?imageView2/1/w/${dimension.width * 2}/h/${dimension.height * 2}`;
+    const realWidth = Math.round(dimension.width * devicePixelRatio);
+    const realHeight = Math.round(dimension.height * devicePixelRatio);
+    const imageSrc = `${url}?imageView2/1/w/${realWidth}/h/${realHeight}`;
     const imageHolderStyle = {
       left: `${dimension.left}px`,
       top: `${dimension.top}px`,
@@ -114,10 +117,12 @@ JustifiedImageHolder.displayName = 'JustifiedImageHolder';
 
 JustifiedImageHolder.defaultProps = {
   domain: Meteor.settings.public.imageDomain,
+  devicePixelRatio: window.devicePixelRatio,
 };
 
 JustifiedImageHolder.propTypes = {
   domain: PropTypes.string.isRequired,
+  devicePixelRatio: PropTypes.number.isRequired,
   isEditing: PropTypes.bool.isRequired,
   day: PropTypes.string.isRequired,
   dimension: PropTypes.object.isRequired,

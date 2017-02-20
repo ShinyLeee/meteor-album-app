@@ -2,8 +2,9 @@ import React, { PropTypes } from 'react';
 import { browserHistory } from 'react-router';
 import moment from 'moment';
 
-const CollHolder = ({ User, coll, clientWidth }) => {
-  const fastSrc = `${coll.cover}?imageView2/2/w/${clientWidth * 2}`;
+const CollHolder = ({ User, coll, clientWidth, devicePixelRatio }) => {
+  const realDimension = Math.round(clientWidth * devicePixelRatio);
+  const fastSrc = `${coll.cover}?imageView2/2/w/${realDimension}`;
   const collHolderStyle = coll.cover.indexOf('VF_ac') > 0
                           ? {
                             backgroundSize: 'inherit',
@@ -38,12 +39,14 @@ CollHolder.displayName = 'CollHolder';
 
 CollHolder.defaultProps = {
   clientWidth: document.body.clientWidth,
+  devicePixelRatio: window.devicePixelRatio,
 };
 
 CollHolder.propTypes = {
   User: PropTypes.object.isRequired,
   coll: PropTypes.object.isRequired,
   clientWidth: PropTypes.number.isRequired,
+  devicePixelRatio: PropTypes.number.isRequired,
 };
 
 export default CollHolder;

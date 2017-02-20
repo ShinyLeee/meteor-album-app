@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import React, { Component, PropTypes } from 'react';
 import { browserHistory } from 'react-router';
-import Slider from 'react-slick';
 import Popover from 'material-ui/Popover';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
@@ -10,9 +9,9 @@ import MessageIcon from 'material-ui/svg-icons/communication/message';
 import SettingsIcon from 'material-ui/svg-icons/action/settings';
 import ExitToAppIcon from 'material-ui/svg-icons/action/exit-to-app';
 import { followUser, unFollowUser } from '/imports/api/users/methods.js';
-
 import NavHeader from '../../components/NavHeader/NavHeader.jsx';
 import Loading from '../../components/Loader/Loading.jsx';
+import TopImageSlider from './components/TopImageSlider/TopImageSlider.jsx';
 
 export default class UserPage extends Component {
 
@@ -90,46 +89,37 @@ export default class UserPage extends Component {
     });
   }
 
-  renderSlider() {
-    const { curUser, unOrderedImages } = this.props;
-    const topImages = unOrderedImages.sort((p, n) => n.liker.length - p.liker.length); // sort by likers length
-    return (
-      <Slider
-        slidesToScroll={3}
-        slidesToShow={3}
-        speed={500}
-        infinite={false}
-      >
-        {
-          topImages.map((image, i) => {
-            const src = `${this.props.domain}/${curUser.username}/${image.collection}/${image.name}.${image.type}`;
-            return (
-              <div key={i} style={{ padding: '10px' }}>
-                <img style={{ width: '100%' }} src={`${src}?imageView2/1/w/240/h/300`} alt={image.name} />
-              </div>
-            );
-          })
-        }
-      </Slider>);
-  }
-
   renderContent() {
-    const profileContentLeft = (document.body.clientWidth - 120) / 2;
-    const { isGuest, curUser, likedCount, collectionCount, unOrderedImages } = this.props;
+    const {
+      domain,
+      clientWidth,
+      devicePixelRatio,
+      isGuest,
+      curUser,
+      likedCount,
+      collectionCount,
+      unOrderedImages,
+    } = this.props;
+
+    // sort by likers length --> for TopImageSlider component
+    const topImages = unOrderedImages.sort((p, n) => n.liker.length - p.liker.length);
+    const realDimension = Math.round(clientWidth * devicePixelRatio);
+    const preCover = `${curUser.profile.cover}?imageView2/2/w/${realDimension}`;
+    const trueCover = `${curUser.profile.cover}`;
     return (
       <div className="content__user">
         { /* MAIN SECTION */ }
         <div className="user__main">
           <div
             className="main__cover"
-            style={{ backgroundImage: `url("${curUser.profile.cover}")` }}
+            style={{ backgroundImage: `url("${trueCover}"),url("${preCover}")` }}
           >
             <div className="main__background" />
           </div>
           <div className="main__profile">
             <div
               className="main__content"
-              style={{ left: `${profileContentLeft}px` }}
+              style={{ left: `${(document.body.clientWidth - 120) / 2}px` }}
             >
               <div className="main__avatar">
                 <img src={curUser.profile.avatar} alt={curUser.username} />
@@ -222,7 +212,11 @@ export default class UserPage extends Component {
             <div className="user__rank">
               <div className="rank__header">最受欢迎的</div>
               <div className="rank__content">
-                { this.renderSlider() }
+                <TopImageSlider
+                  domain={domain}
+                  curUser={curUser}
+                  topImages={topImages}
+                />
               </div>
             </div>
           )
@@ -252,11 +246,15 @@ UserPage.displayName = 'UserPage';
 
 UserPage.defaultProps = {
   domain: Meteor.settings.public.imageDomain,
+  clientWidth: document.body.clientWidth,
+  devicePixelRatio: window.devicePixelRatio,
 };
 
 UserPage.propTypes = {
   User: PropTypes.object,
   domain: PropTypes.string.isRequired,
+  clientWidth: PropTypes.number.isRequired,
+  devicePixelRatio: PropTypes.number.isRequired,
   // Below Pass from database
   dataIsReady: PropTypes.bool.isRequired,
   isGuest: PropTypes.bool.isRequired,

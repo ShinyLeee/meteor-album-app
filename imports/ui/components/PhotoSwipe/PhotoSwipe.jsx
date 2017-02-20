@@ -1,6 +1,9 @@
 import React, { Component, PropTypes } from 'react';
 import PhotoSwipe from 'photoswipe';
 import PhotoSwipeUIDefault from 'photoswipe/dist/photoswipe-ui-default';
+import '/node_modules/photoswipe/dist/photoswipe.css';
+import '/node_modules/photoswipe/dist/default-skin/default-skin.css';
+import './pwsp.css';
 import events from './events.js';
 
 export default class ReactPhotoSwipe extends Component {
@@ -88,10 +91,11 @@ export default class ReactPhotoSwipe extends Component {
           <div className="pswp__ui pswp__ui--hidden">
             <div className="pswp__top-bar">
               <div className="pswp__counter" />
+              { /* temporarily not show action button, wait for customize
               <button className="pswp__button pswp__button--close" title="Close (Esc)" />
               <button className="pswp__button pswp__button--share" title="Share" />
               <button className="pswp__button pswp__button--fs" title="Toggle fullscreen" />
-              <button className="pswp__button pswp__button--zoom" title="Zoom in/out" />
+              <button className="pswp__button pswp__button--zoom" title="Zoom in/out" /> */}
               <div className="pswp__preloader">
                 <div className="pswp__preloader__icn">
                   <div className="pswp__preloader__cut">

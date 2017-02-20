@@ -104,14 +104,15 @@ class ZoomerHolder extends Component {
   }
 
   render() {
-    const { image, clientWidth } = this.props;
+    const { image, clientWidth, devicePixelRatio } = this.props;
     const { exif } = this.state;
 
     const imgSrc = this.imgSrc;
-    const slimSrc1 = `${imgSrc}?imageView2/2/w/${clientWidth * 2}`;
-    const slimSrc2 = `${imgSrc}?imageView2/1/w/${clientWidth * 2}`;
+    const realDimension = Math.round(clientWidth * devicePixelRatio);
+    const preSrc = `${imgSrc}?imageView2/2/w/${realDimension}`;
+    const trueSrc = `${imgSrc}?imageView2/3/w/${realDimension}`;
     // double quote for special character see: https://www.w3.org/TR/CSS2/syndata.html#value-def-uri
-    const imageHolderStyle = { backgroundImage: `url("${slimSrc2}"),url("${slimSrc1}")` };
+    const imageHolderStyle = { backgroundImage: `url("${trueSrc}"),url("${preSrc}")` };
     return (
       <div className="component__ZoomerHolder">
         <ZoomerInner
@@ -202,11 +203,13 @@ ZoomerHolder.displayName = 'ZoomerHolder';
 ZoomerHolder.defaultProps = {
   domain: Meteor.settings.public.imageDomain,
   clientWidth: document.body.clientWidth,
+  devicePixelRatio: window.devicePixelRatio,
 };
 
 ZoomerHolder.propTypes = {
   domain: PropTypes.string.isRequired,
   clientWidth: PropTypes.number.isRequired,
+  devicePixelRatio: PropTypes.number.isRequired,
   image: PropTypes.object.isRequired,
   // Below Pass from Redux
   snackBarOpen: PropTypes.func.isRequired,

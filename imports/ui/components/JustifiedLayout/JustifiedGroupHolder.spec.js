@@ -9,24 +9,12 @@ import { Meteor } from 'meteor/meteor';
 if (Meteor.isClient) {
   import React from 'react';
   import faker from 'faker';
-  import justifiedLayout from 'justified-layout';
   import { shallow } from 'enzyme';
   import { chai } from 'meteor/practicalmeteor:chai';
   import { sinon } from 'meteor/practicalmeteor:sinon';
-  import { getRandomArbitrary } from '/imports/utils/utils.js';
   import { JustifiedGroupHolder } from './JustifiedGroupHolder.jsx';
 
   const expect = chai.expect;
-
-  const imageDomain = Meteor.settings.public.imageDomain;
-
-  const generateGeometry = (len) => {
-    const ratios = [];
-    for (let i = 0; i < len; i++) {
-      ratios[i] = getRandomArbitrary(0, 1.5).toFixed(1);
-    }
-    return justifiedLayout(ratios);
-  };
 
   const generateImages = (len) => {
     const images = [];
@@ -36,6 +24,7 @@ if (Meteor.isClient) {
         collection: faker.random.word(),
         name: faker.random.uuid(),
         type: 'jpg',
+        dimension: [1280, 1280],
       };
     }
     return images;
@@ -48,10 +37,8 @@ if (Meteor.isClient) {
     };
     const component = shallow(
       <JustifiedGroupHolder
-        domain={imageDomain}
         isEditing
         day={'2016-12-31'}
-        geometry={generateGeometry(4)}
         dayGroupImage={generateImages(4)}
         total={6}
         groupTotal={4}
@@ -62,10 +49,8 @@ if (Meteor.isClient) {
     );
     const anotherComponent = shallow(
       <JustifiedGroupHolder
-        domain={imageDomain}
         isEditing
         day={'2016-12-30'}
-        geometry={generateGeometry(2)}
         dayGroupImage={generateImages(2)}
         total={6}
         groupTotal={2}

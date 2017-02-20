@@ -77,7 +77,8 @@ class ImageList extends Component {
 
             // get image src
             const url = `${domain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
-            const src = `${url}?imageView2/2/w/${clientWidth * 2}`;
+            const realDimension = Math.round(clientWidth * window.devicePixelRatio);
+            const src = `${url}?imageView2/2/w/${realDimension}`;
 
             // whether current user liked this image
             const curUser = User && User.username;

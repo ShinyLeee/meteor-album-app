@@ -18,8 +18,6 @@ import ShiftIcon from 'material-ui/svg-icons/hardware/keyboard-return';
 import RemoveIcon from 'material-ui/svg-icons/action/delete';
 import SetCoverIcon from 'material-ui/svg-icons/device/wallpaper';
 import { blue500 } from 'material-ui/styles/colors';
-import '/node_modules/photoswipe/dist/photoswipe.css';
-import '/node_modules/photoswipe/dist/default-skin/default-skin.css';
 import { removeImagesToRecycle, shiftImages } from '/imports/api/images/methods.js';
 import {
   removeCollection,

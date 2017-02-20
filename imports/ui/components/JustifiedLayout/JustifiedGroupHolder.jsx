@@ -12,19 +12,38 @@ export class JustifiedGroupHolder extends PureComponent {
 
   constructor(props) {
     super(props);
+
+    const { domain, containerWidth, devicePixelRatio, dayGroupImage } = props;
+
+    const geometry = this.generateGeo();
+
     this.state = {
       isGroupSelect: false,
-      pswpItems: props.dayGroupImage.map((image) => ({
-        src: `${props.domain}/${image.user}/${image.collection}/${image.name}.${image.type}`,
-        w: image.dimension[0],
-        h: image.dimension[1],
-      })),
+      geometry,
+      pswpItems: dayGroupImage.map((image, i) => {
+        const src = `${domain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
+        const realMWidth = Math.round(geometry.boxes[i].width * devicePixelRatio);
+        const realMHeight = Math.round(geometry.boxes[i].height * devicePixelRatio);
+        // generate based on Qiniu imageView2 mode 3 API
+        // more details see https://developer.qiniu.com/dora/api/basic-processing-images-imageview2
+        const minWidth = Math.round(containerWidth * devicePixelRatio);
+        const minHeight = Math.round((image.dimension[1] / image.dimension[0]) * minWidth);
+        return ({
+          msrc: `${src}?imageView2/1/w/${realMWidth}/h/${realMHeight}`,
+          src: `${src}?imageView2/3/w/${minWidth}`,
+          w: minWidth,
+          h: minHeight,
+        });
+      }),
     };
     this.handleToggleSelectGroup = this.handleToggleSelectGroup.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
-    const { isEditing, total, day, groupTotal } = this.props;
+    const { isEditing, dayGroupImage, total, day, groupTotal } = this.props;
+    if (dayGroupImage.length !== nextProps.dayGroupImage.length) {
+      this.setState({ geometry: this.generateGeo() });
+    }
     if (isEditing) {
       if (nextProps.counter === total) {
         this.setState({ isGroupSelect: true });
@@ -53,6 +72,37 @@ export class JustifiedGroupHolder extends PureComponent {
     }
   }
 
+  generateGeo() {
+    const {
+      dayGroupImage,
+      containerWidth,
+      containerPadding,
+      targetRowHeight,
+      targetRowHeightTolerance,
+      boxSpacing,
+      fullWidthBreakoutRowCadence,
+    } = this.props;
+
+    const ratios = dayGroupImage.map((image) => {
+      const ratio = image.dimension[0] / image.dimension[1];
+      // toFixed will save unnecessary zero, it cause bug in justifiedLayout
+      return Math.round(ratio * 100) / 100;
+    });
+
+    const geometry = justifiedLayout(
+      ratios,
+      {
+        containerWidth,
+        containerPadding,
+        targetRowHeight,
+        targetRowHeightTolerance,
+        boxSpacing,
+        fullWidthBreakoutRowCadence,
+      }
+    );
+    return geometry;
+  }
+
   handleToggleSelectGroup() {
     const { day, isEditing, dayGroupImage, groupTotal } = this.props;
     if (isEditing) {
@@ -79,12 +129,6 @@ export class JustifiedGroupHolder extends PureComponent {
       isEditing,
       total,
       groupTotal,
-      containerWidth,
-      containerPadding,
-      targetRowHeight,
-      targetRowHeightTolerance,
-      boxSpacing,
-      fullWidthBreakoutRowCadence,
     } = this.props;
 
     const showDay = day.split('');
@@ -93,25 +137,8 @@ export class JustifiedGroupHolder extends PureComponent {
     showDay[7] += '日';
     showDay.join('');
 
-    const ratios = _.map(dayGroupImage, (image) => {
-      const ratio = image.dimension[0] / image.dimension[1];
-      // toFixed will save unnecessary zero, it cause bug in justifiedLayout
-      return Math.round(ratio * 100) / 100;
-    });
-
-    const geometry = justifiedLayout(
-      ratios,
-      {
-        containerWidth,
-        containerPadding,
-        targetRowHeight,
-        targetRowHeightTolerance,
-        boxSpacing,
-        fullWidthBreakoutRowCadence,
-      }
-    );
     return (
-      <div className="Justified__dayGroup" style={{ height: geometry.containerHeight }}>
+      <div className="Justified__dayGroup" style={{ height: this.state.geometry.containerHeight }}>
         <div
           className="Justified__title"
           onTouchTap={this.handleToggleSelectGroup}
@@ -125,7 +152,7 @@ export class JustifiedGroupHolder extends PureComponent {
               key={i}
               isEditing={isEditing}
               day={day}
-              dimension={geometry.boxes[i]}
+              dimension={this.state.geometry.boxes[i]}
               image={image}
               total={total}
               groupTotal={groupTotal}
@@ -156,9 +183,10 @@ JustifiedGroupHolder.displayName = 'JustifiedGroupHolder';
 
 JustifiedGroupHolder.defaultProps = {
   domain: Meteor.settings.public.imageDomain,
+  devicePixelRatio: window.devicePixelRatio,
   containerWidth: document.body.clientWidth,
   containerPadding: 0,
-  targetRowHeight: 200,
+  targetRowHeight: 180,
   targetRowHeightTolerance: 0.25,
   boxSpacing: 4,
   fullWidthBreakoutRowCadence: false,
@@ -166,6 +194,7 @@ JustifiedGroupHolder.defaultProps = {
 
 JustifiedGroupHolder.propTypes = {
   domain: PropTypes.string.isRequired,
+  devicePixelRatio: PropTypes.number.isRequired,
   isEditing: PropTypes.bool.isRequired,
   day: PropTypes.string.isRequired,
   dayGroupImage: PropTypes.array.isRequired,

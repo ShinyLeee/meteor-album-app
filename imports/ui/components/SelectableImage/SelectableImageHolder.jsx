@@ -39,14 +39,14 @@ export class SelectableImageHolder extends PureComponent {
       if (this.state.isSelect) {
         this.props.selectCounter({
           selectImages: [image],
-          group: 'nested',
+          group: 'grid',
           counter: -1,
         });
         this.setState({ isSelect: false });
       } else {
         this.props.selectCounter({
           selectImages: [image],
-          group: 'nested',
+          group: 'grid',
           counter: 1,
         });
         this.setState({ isSelect: true });
@@ -57,10 +57,16 @@ export class SelectableImageHolder extends PureComponent {
   }
 
   render() {
-    const { domain, isEditing, clientWidth, image } = this.props;
-    const retinaSquare = Math.ceil(clientWidth / 3) * 2;
+    const {
+      domain,
+      isEditing,
+      clientWidth,
+      devicePixelRatio,
+      image,
+    } = this.props;
+    const realDimension = Math.round((clientWidth / 3) * devicePixelRatio);
     const url = `${domain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
-    const imageSource = `${url}?imageView2/1/w/${retinaSquare}/h/${retinaSquare}`;
+    const imageSrc = `${url}?imageView2/1/w/${realDimension}`;
     return (
       <div
         className="GridLayout__Image"
@@ -79,9 +85,10 @@ export class SelectableImageHolder extends PureComponent {
           transitionLeave={false}
         >
           <img
-            src={imageSource}
+            src={imageSrc}
             alt={image.name}
             style={{ transform: this.state.isSelect && 'scale(.8)' }}
+            ref={(node) => { this.image = node; }}
           />
         </ReactCSSTransitionGroup>
       </div>
@@ -95,11 +102,13 @@ SelectableImageHolder.defaultProps = {
   isEditing: false,
   domain: Meteor.settings.public.imageDomain,
   clientWidth: document.body.clientWidth,
+  devicePixelRatio: window.devicePixelRatio,
 };
 
 SelectableImageHolder.propTypes = {
   domain: PropTypes.string.isRequired,
   clientWidth: PropTypes.number.isRequired,
+  devicePixelRatio: PropTypes.number.isRequired,
   isEditing: PropTypes.bool.isRequired,
   image: PropTypes.object.isRequired,
   total: PropTypes.number.isRequired,
@@ -117,4 +126,4 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
   selectCounter,
 }, dispatch);
 
-export default connect(mapStateToProps, mapDispatchToProps)(SelectableImageHolder);
+export default connect(mapStateToProps, mapDispatchToProps, null, { withRef: true })(SelectableImageHolder);

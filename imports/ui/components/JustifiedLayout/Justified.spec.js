@@ -15,7 +15,6 @@ if (Meteor.isClient) {
   import { Justified } from './Justified.jsx';
 
   const expect = chai.expect;
-  const domain = Meteor.settings.public.domain;
 
   const generateImages = (len) => {
     const images = [];
@@ -25,6 +24,7 @@ if (Meteor.isClient) {
         collection: faker.random.word(),
         name: faker.random.uuid(),
         type: 'jpg',
+        dimension: [1280, 1280],
       };
     }
     return images;
@@ -39,7 +39,6 @@ if (Meteor.isClient) {
     };
     const component = shallow(
       <Justified
-        domain={domain}
         isEditing={false}
         images={generateImages(3)}
         group={group}

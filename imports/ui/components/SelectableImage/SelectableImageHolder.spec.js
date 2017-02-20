@@ -16,8 +16,6 @@ if (Meteor.isClient) {
 
   const expect = chai.expect;
 
-  const domain = Meteor.settings.public.domain;
-
   const image = {
     user: faker.internet.userName(),
     collection: faker.random.word(),
@@ -31,7 +29,6 @@ if (Meteor.isClient) {
     };
     const component = shallow(
       <SelectableImageHolder
-        domain={domain}
         isEditing
         image={image}
         total={6}
@@ -65,7 +62,7 @@ if (Meteor.isClient) {
       toggleBtn.simulate('touchTap');
       sinon.assert.calledWith(actions.selectCounter, {
         selectImages: [props.image],
-        group: 'nested',
+        group: 'grid',
         counter: 1,
       });
       component.setState({ isSelect: true }); // have to set it by self without redux mock store
@@ -73,7 +70,7 @@ if (Meteor.isClient) {
       toggleBtn.simulate('touchTap');
       sinon.assert.calledWith(actions.selectCounter, {
         selectImages: [props.image],
-        group: 'nested',
+        group: 'grid',
         counter: -1,
       });
     });

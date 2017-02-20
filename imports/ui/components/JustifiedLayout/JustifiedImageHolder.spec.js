@@ -9,9 +9,11 @@ import { Meteor } from 'meteor/meteor';
 if (Meteor.isClient) {
   import React from 'react';
   import faker from 'faker';
+  import justifiedLayout from 'justified-layout';
   import { shallow } from 'enzyme';
   import { chai } from 'meteor/practicalmeteor:chai';
   import { sinon } from 'meteor/practicalmeteor:sinon';
+  import { getRandomArbitrary } from '/imports/utils/utils.js';
   import { JustifiedImageHolder } from './JustifiedImageHolder.jsx';
 
   const expect = chai.expect;
@@ -21,9 +23,16 @@ if (Meteor.isClient) {
     collection: faker.random.word(),
     name: faker.random.uuid(),
     type: 'jpg',
+    dimension: [1280, 1280],
   };
-  const imageSrc = faker.image.imageUrl();
-  const imageHolderStyle = { left: 0, top: 0, width: '100px', height: '100px' };
+
+  const generateGeometry = (len) => {
+    const ratios = [];
+    for (let i = 0; i < len; i++) {
+      ratios[i] = getRandomArbitrary(0, 1.5).toFixed(1);
+    }
+    return justifiedLayout(ratios);
+  };
 
   const setup = (group = {}, counter = 0) => {
     const actions = {
@@ -35,8 +44,7 @@ if (Meteor.isClient) {
         isEditing
         day={'2016-12-31'}
         image={image}
-        imageSrc={imageSrc}
-        imageHolderStyle={imageHolderStyle}
+        dimension={generateGeometry(1)}
         total={6}
         groupTotal={3}
         group={group}

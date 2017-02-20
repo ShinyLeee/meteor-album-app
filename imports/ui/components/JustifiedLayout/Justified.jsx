@@ -8,9 +8,10 @@ import ComfyIcon from 'material-ui/svg-icons/image/view-comfy';
 import CompactIcon from 'material-ui/svg-icons/image/view-compact';
 import { enableSelectAll, disableSelectAll, photoSwipeOpen } from '/imports/ui/redux/actions/index.js';
 import ConnectedJustifiedGroupHolder from './JustifiedGroupHolder.jsx';
-import GridLayout from '../GridLayout/GridLayout.jsx';
+// import GridLayout from '../GridLayout/GridLayout.jsx';
+import ConnectedGridLayoutHolder from '../GridLayout/GridLayoutHolder.jsx';
 import SelectableIcon from '../SelectableImage/SelectableIcon.jsx';
-import ConnectedSelectableImageHolder from '../SelectableImage/SelectableImageHolder.jsx';
+// import ConnectedSelectableImageHolder from '../SelectableImage/SelectableImageHolder.jsx';
 
 export class Justified extends PureComponent {
 
@@ -18,7 +19,7 @@ export class Justified extends PureComponent {
     super(props);
     this.state = {
       isAllSelect: false,
-      layoutType: 'nested',
+      layoutType: 'group',
     };
     this.handleToggleSelectAll = this.handleToggleSelectAll.bind(this);
   }
@@ -35,14 +36,14 @@ export class Justified extends PureComponent {
     if (this.state.isAllSelect) this.props.disableSelectAll();
     else {
       const counter = this.props.images.length;
-      if (this.state.layoutType === 'nested') {
+      if (this.state.layoutType === 'grid') {
         this.props.enableSelectAll({
           selectImages: this.props.images,
-          group: { nested: counter },
+          group: { grid: counter },
           counter,
         });
       }
-      if (this.state.layoutType === 'day-group') {
+      if (this.state.layoutType === 'group') {
         const group = {};
         const dayGroupImages = _.groupBy(
           this.props.images,
@@ -63,7 +64,7 @@ export class Justified extends PureComponent {
     this.props.disableSelectAll();
   }
 
-  renderDayGroupLayout() {
+  renderGroupLayout() {
     const { isEditing, images } = this.props;
     const dayGroupImages = _.groupBy(images, (image) => moment(image.shootAt).format('YYYYMMDD'));
     return (
@@ -80,7 +81,17 @@ export class Justified extends PureComponent {
     );
   }
 
-  renderNestedLayout() {
+  renderGridLayout() {
+    const { isEditing, images } = this.props;
+    return (
+      <ConnectedGridLayoutHolder
+        isEditing={isEditing}
+        images={images}
+      />
+    );
+  }
+
+  /* renderGridLayout() {
     const { isEditing, images } = this.props;
     return (
       <GridLayout>
@@ -91,18 +102,32 @@ export class Justified extends PureComponent {
               isEditing={isEditing}
               image={image}
               total={images.length}
+              onImageClick={() => this.props.photoSwipeOpen(
+                this.state.pswpItems,
+                {
+                  index: i,
+                  history: false,
+                  getThumbBoundsFn: (index) => {
+                    const thumbnail = this[`thumbnail${index}`];
+                    const img = thumbnail.getWrappedInstance().image;
+                    const pageYScroll = window.pageYOffset || document.documentElement.scrollTop;
+                    const rect = img.getBoundingClientRect();
+                    return { x: rect.left, y: rect.top + pageYScroll, w: rect.width };
+                  },
+                }
+              )}
             />
           ))
         }
       </GridLayout>
     );
-  }
+  }*/
 
   render() {
     return (
       <div
         className="Justified"
-        style={this.state.layoutType === 'day-group' ? { top: 0 } : {}}
+        style={this.state.layoutType === 'group' ? { top: 0 } : {}}
       >
         <div className="Justified__toolbox">
           { this.props.isEditing && (
@@ -112,18 +137,18 @@ export class Justified extends PureComponent {
             </div>
           ) }
           <div className="Justified__toolbox_right">
-            <IconButton onTouchTap={() => this.handleChangeLayout('nested')}>
-              <ComfyIcon color={this.state.layoutType === 'nested' ? '#111' : '#757575'} />
+            <IconButton onTouchTap={() => this.handleChangeLayout('group')}>
+              <CompactIcon color={this.state.layoutType === 'group' ? '#111' : '#757575'} />
             </IconButton>
-            <IconButton onTouchTap={() => this.handleChangeLayout('day-group')}>
-              <CompactIcon color={this.state.layoutType === 'day-group' ? '#111' : '#757575'} />
+            <IconButton onTouchTap={() => this.handleChangeLayout('grid')}>
+              <ComfyIcon color={this.state.layoutType === 'grid' ? '#111' : '#757575'} />
             </IconButton>
           </div>
         </div>
         {
-          this.state.layoutType === 'nested'
-          ? this.renderNestedLayout()
-          : this.renderDayGroupLayout()
+          this.state.layoutType === 'grid'
+          ? this.renderGridLayout()
+          : this.renderGroupLayout()
         }
       </div>
     );
