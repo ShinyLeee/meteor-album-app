@@ -5,9 +5,9 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import { selectCounter } from '/imports/ui/redux/actions/index.js';
-import SelectableImageBackground from '../SelectableImage/SelectableImageBackground.jsx';
+import JustifiedImageBackground from '../../snippet/JustifiedImageBackground.jsx';
 
-export class JustifiedImageHolder extends PureComponent {
+export class GroupImageHolder extends PureComponent {
 
   constructor(props) {
     super(props);
@@ -93,7 +93,7 @@ export class JustifiedImageHolder extends PureComponent {
         style={imageHolderStyle}
         onTouchTap={this.handleSelect}
       >
-        <SelectableImageBackground isEditing={isEditing} isSelect={this.state.isSelect} />
+        <JustifiedImageBackground isEditing={isEditing} isSelect={this.state.isSelect} />
         <ReactCSSTransitionGroup
           transitionName="fade"
           transitionAppear
@@ -113,14 +113,14 @@ export class JustifiedImageHolder extends PureComponent {
   }
 }
 
-JustifiedImageHolder.displayName = 'JustifiedImageHolder';
+GroupImageHolder.displayName = 'GroupImageHolder';
 
-JustifiedImageHolder.defaultProps = {
+GroupImageHolder.defaultProps = {
   domain: Meteor.settings.public.imageDomain,
   devicePixelRatio: window.devicePixelRatio,
 };
 
-JustifiedImageHolder.propTypes = {
+GroupImageHolder.propTypes = {
   domain: PropTypes.string.isRequired,
   devicePixelRatio: PropTypes.number.isRequired,
   isEditing: PropTypes.bool.isRequired,
@@ -145,4 +145,4 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
   selectCounter,
 }, dispatch);
 
-export default connect(mapStateToProps, mapDispatchToProps, null, { withRef: true })(JustifiedImageHolder);
+export default connect(mapStateToProps, mapDispatchToProps, null, { withRef: true })(GroupImageHolder);

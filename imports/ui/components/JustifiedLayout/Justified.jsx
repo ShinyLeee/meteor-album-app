@@ -7,19 +7,17 @@ import IconButton from 'material-ui/IconButton';
 import ComfyIcon from 'material-ui/svg-icons/image/view-comfy';
 import CompactIcon from 'material-ui/svg-icons/image/view-compact';
 import { enableSelectAll, disableSelectAll, photoSwipeOpen } from '/imports/ui/redux/actions/index.js';
-import ConnectedJustifiedGroupHolder from './JustifiedGroupHolder.jsx';
-// import GridLayout from '../GridLayout/GridLayout.jsx';
-import ConnectedGridLayoutHolder from '../GridLayout/GridLayoutHolder.jsx';
-import SelectableIcon from '../SelectableImage/SelectableIcon.jsx';
-// import ConnectedSelectableImageHolder from '../SelectableImage/SelectableImageHolder.jsx';
+import ConnectedGroupLayout from './components/GroupLayout/GroupLayout.jsx';
+import ConnectedGridLayout from './components/GridLayout/GridLayout.jsx';
+import JustifiedSelectIcon from './components/snippet/JustifiedSelectIcon.jsx';
 
 export class Justified extends PureComponent {
 
   constructor(props) {
     super(props);
     this.state = {
-      isAllSelect: false,
       layoutType: 'group',
+      isAllSelect: false,
     };
     this.handleToggleSelectAll = this.handleToggleSelectAll.bind(this);
   }
@@ -49,7 +47,7 @@ export class Justified extends PureComponent {
           this.props.images,
           (image) => moment(image.shootAt).format('YYYYMMDD')
         );
-        _.map(dayGroupImages, (value, key) => (group[key] = value.length));
+        dayGroupImages.forEach((value, key) => (group[key] = value.length));
         this.props.enableSelectAll({
           selectImages: this.props.images,
           group,
@@ -64,91 +62,54 @@ export class Justified extends PureComponent {
     this.props.disableSelectAll();
   }
 
-  renderGroupLayout() {
-    const { isEditing, images } = this.props;
-    const dayGroupImages = _.groupBy(images, (image) => moment(image.shootAt).format('YYYYMMDD'));
-    return (
-      _.map(dayGroupImages, (dayGroupImage, day) => (
-        <ConnectedJustifiedGroupHolder
-          key={day}
-          isEditing={isEditing}
-          day={day}
-          dayGroupImage={dayGroupImage}
-          total={images.length}
-          groupTotal={dayGroupImages[day].length}
-        />
-      ))
-    );
-  }
-
-  renderGridLayout() {
-    const { isEditing, images } = this.props;
-    return (
-      <ConnectedGridLayoutHolder
-        isEditing={isEditing}
-        images={images}
-      />
-    );
-  }
-
-  /* renderGridLayout() {
-    const { isEditing, images } = this.props;
-    return (
-      <GridLayout>
-        {
-          images.map((image, i) => (
-            <ConnectedSelectableImageHolder
-              key={i}
-              isEditing={isEditing}
-              image={image}
-              total={images.length}
-              onImageClick={() => this.props.photoSwipeOpen(
-                this.state.pswpItems,
-                {
-                  index: i,
-                  history: false,
-                  getThumbBoundsFn: (index) => {
-                    const thumbnail = this[`thumbnail${index}`];
-                    const img = thumbnail.getWrappedInstance().image;
-                    const pageYScroll = window.pageYOffset || document.documentElement.scrollTop;
-                    const rect = img.getBoundingClientRect();
-                    return { x: rect.left, y: rect.top + pageYScroll, w: rect.width };
-                  },
-                }
-              )}
-            />
-          ))
-        }
-      </GridLayout>
-    );
-  }*/
-
   render() {
+    let dayGroupImages = [];
+    const { isEditing, images } = this.props;
+    const isDefaultLayout = this.state.layoutType === 'group';
+    if (isDefaultLayout) dayGroupImages = _.groupBy(images, (image) => moment(image.shootAt).format('YYYYMMDD'));
     return (
       <div
         className="Justified"
-        style={this.state.layoutType === 'group' ? { top: 0 } : {}}
+        style={isDefaultLayout ? { top: 0 } : {}}
       >
         <div className="Justified__toolbox">
-          { this.props.isEditing && (
+          { isEditing && (
             <div className="Justified__toolbox_left" onTouchTap={this.handleToggleSelectAll}>
-              <SelectableIcon activate={this.state.isAllSelect} />
+              <JustifiedSelectIcon activate={this.state.isAllSelect} />
               <h4>选择全部</h4>
             </div>
           ) }
           <div className="Justified__toolbox_right">
             <IconButton onTouchTap={() => this.handleChangeLayout('group')}>
-              <CompactIcon color={this.state.layoutType === 'group' ? '#111' : '#757575'} />
+              <CompactIcon color={isDefaultLayout ? '#111' : '#757575'} />
             </IconButton>
             <IconButton onTouchTap={() => this.handleChangeLayout('grid')}>
-              <ComfyIcon color={this.state.layoutType === 'grid' ? '#111' : '#757575'} />
+              <ComfyIcon color={isDefaultLayout ? '#757575' : '#111'} />
             </IconButton>
           </div>
         </div>
         {
-          this.state.layoutType === 'grid'
-          ? this.renderGridLayout()
-          : this.renderGroupLayout()
+          isDefaultLayout
+          ? (
+            _.map(dayGroupImages, (dayGroupImage, day) => (
+              <ConnectedGroupLayout
+                key={day}
+                isEditing={isEditing}
+                day={day}
+                dayGroupImage={dayGroupImage}
+                total={images.length}
+                groupTotal={dayGroupImages[day].length}
+                showGallery
+              />
+              ))
+            )
+          : (
+            <ConnectedGridLayout
+              isEditing={isEditing}
+              images={images}
+              showGallery
+            />
+          )
         }
       </div>
     );

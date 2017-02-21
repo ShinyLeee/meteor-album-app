@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 
-const SelectableIcon = (props) => {
+const JustifiedSelectIcon = (props) => {
   const { activate } = props;
   const selectIconClassName = activate ? 'SelectIcon_activate' : 'SelectIcon';
   return (
@@ -10,14 +10,14 @@ const SelectableIcon = (props) => {
   );
 };
 
-SelectableIcon.displayName = 'SelectableIcon';
+JustifiedSelectIcon.displayName = 'JustifiedSelectIcon';
 
-SelectableIcon.defaultProps = {
+JustifiedSelectIcon.defaultProps = {
   activate: false,
 };
 
-SelectableIcon.propTypes = {
+JustifiedSelectIcon.propTypes = {
   activate: PropTypes.bool.isRequired,
 };
 
-export default SelectableIcon;
+export default JustifiedSelectIcon;

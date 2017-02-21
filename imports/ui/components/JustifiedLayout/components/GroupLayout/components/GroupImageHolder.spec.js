@@ -14,7 +14,7 @@ if (Meteor.isClient) {
   import { chai } from 'meteor/practicalmeteor:chai';
   import { sinon } from 'meteor/practicalmeteor:sinon';
   import { getRandomArbitrary } from '/imports/utils/utils.js';
-  import { JustifiedImageHolder } from './JustifiedImageHolder.jsx';
+  import { GroupImageHolder } from './GroupImageHolder.jsx';
 
   const expect = chai.expect;
 
@@ -39,7 +39,7 @@ if (Meteor.isClient) {
       selectCounter: sinon.spy(),
     };
     const component = shallow(
-      <JustifiedImageHolder
+      <GroupImageHolder
         key={1}
         isEditing
         day={'2016-12-31'}
@@ -58,7 +58,7 @@ if (Meteor.isClient) {
     };
   };
 
-  describe('JustifiedImageHolder', () => {
+  describe('GroupImageHolder', () => {
     it('should isSelect state behave right when counter prop change', () => {
       const { component } = setup();
       expect(component.state('isSelect')).to.equal(false, 'Initial isSelect state must be false');

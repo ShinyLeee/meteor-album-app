@@ -15,9 +15,8 @@ import NavHeader from '../../components/NavHeader/NavHeader.jsx';
 import EmptyHolder from '../../components/EmptyHolder/EmptyHolder.jsx';
 import Loader from '../../components/Loader/Loader.jsx';
 import Loading from '../../components/Loader/Loading.jsx';
-import GridLayout from '../../components/GridLayout/GridLayout.jsx';
-import SelectableImageHolder from '../../components/SelectableImage/SelectableImageHolder.jsx';
-import SelectableIcon from '../../components/SelectableImage/SelectableIcon.jsx';
+import JustifiedSelectIcon from '../../components/JustifiedLayout/components/snippet/JustifiedSelectIcon.jsx';
+import ConnectedGridLayout from '../../components/JustifiedLayout/components/GridLayout/GridLayout.jsx';
 
 export default class RecyclePage extends Component {
 
@@ -119,7 +118,8 @@ export default class RecyclePage extends Component {
   }
 
   renderContent() {
-    if (this.props.images.length === 0) {
+    const { images } = this.props;
+    if (images.length === 0) {
       return (<EmptyHolder mainInfo="您的回收站是空的" />);
     }
     return (
@@ -131,24 +131,14 @@ export default class RecyclePage extends Component {
         <div className="recycle__content">
           <div className="recycle__toolbox">
             <div className="recycle__toolbox_left" onTouchTap={this.handleToggleSelectAll}>
-              <SelectableIcon activate={this.state.isAllSelect} />
+              <JustifiedSelectIcon activate={this.state.isAllSelect} />
               <h4>选择全部</h4>
             </div>
           </div>
-          <GridLayout>
-            {
-              this.props.images.map((image, i) => (
-                <SelectableImageHolder
-                  key={i}
-                  isEditing
-                  image={image}
-                  total={this.props.images.length}
-                  counter={this.props.counter}
-                  selectCounter={this.props.selectCounter}
-                />
-              ))
-            }
-          </GridLayout>
+          <ConnectedGridLayout
+            isEditing={this.state.isEditing}
+            images={images}
+          />
         </div>
       </div>
     );

@@ -5,44 +5,38 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import justifiedLayout from 'justified-layout';
 import { photoSwipeOpen, selectGroupCounter } from '/imports/ui/redux/actions/index.js';
-import SelectableIcon from '../SelectableImage/SelectableIcon.jsx';
-import ConnectedJustifiedImageHolder from './JustifiedImageHolder.jsx';
+import ConnectedGroupImageHolder from './components/GroupImageHolder.jsx';
+import JustifiedSelectIcon from '../snippet/JustifiedSelectIcon.jsx';
 
-export class JustifiedGroupHolder extends PureComponent {
+export class JustifiedGroupLayout extends PureComponent {
 
   constructor(props) {
     super(props);
-
-    const { domain, containerWidth, devicePixelRatio, dayGroupImage } = props;
-
-    const geometry = this.generateGeo();
-
+    const geometry = this.generateGeo(props);
     this.state = {
       isGroupSelect: false,
       geometry,
-      pswpItems: dayGroupImage.map((image, i) => {
-        const src = `${domain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
-        const realMWidth = Math.round(geometry.boxes[i].width * devicePixelRatio);
-        const realMHeight = Math.round(geometry.boxes[i].height * devicePixelRatio);
-        // generate based on Qiniu imageView2 mode 3 API
-        // more details see https://developer.qiniu.com/dora/api/basic-processing-images-imageview2
-        const minWidth = Math.round(containerWidth * devicePixelRatio);
-        const minHeight = Math.round((image.dimension[1] / image.dimension[0]) * minWidth);
-        return ({
-          msrc: `${src}?imageView2/1/w/${realMWidth}/h/${realMHeight}`,
-          src: `${src}?imageView2/3/w/${minWidth}`,
-          w: minWidth,
-          h: minHeight,
-        });
-      }),
+      pswpItems: props.showGallery ? this.generateItems(props, geometry) : undefined,
     };
     this.handleToggleSelectGroup = this.handleToggleSelectGroup.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
-    const { isEditing, dayGroupImage, total, day, groupTotal } = this.props;
-    if (dayGroupImage.length !== nextProps.dayGroupImage.length) {
-      this.setState({ geometry: this.generateGeo() });
+    const {
+      isEditing,
+      showGallery,
+      dayGroupImage,
+      total,
+      day,
+      groupTotal,
+    } = this.props;
+    // When image added in GroupHolder we need to refresh both two state
+    if (showGallery) {
+      if (dayGroupImage.length !== nextProps.dayGroupImage.length) {
+        const geometry = this.generateGeo(nextProps);
+        const pswpItems = this.generateItems(nextProps, geometry);
+        this.setState({ geometry, pswpItems });
+      }
     }
     if (isEditing) {
       if (nextProps.counter === total) {
@@ -72,7 +66,7 @@ export class JustifiedGroupHolder extends PureComponent {
     }
   }
 
-  generateGeo() {
+  generateGeo(props) {
     const {
       dayGroupImage,
       containerWidth,
@@ -81,7 +75,7 @@ export class JustifiedGroupHolder extends PureComponent {
       targetRowHeightTolerance,
       boxSpacing,
       fullWidthBreakoutRowCadence,
-    } = this.props;
+    } = props;
 
     const ratios = dayGroupImage.map((image) => {
       const ratio = image.dimension[0] / image.dimension[1];
@@ -103,6 +97,26 @@ export class JustifiedGroupHolder extends PureComponent {
     return geometry;
   }
 
+  generateItems(props, geometry) {
+    const { domain, containerWidth, devicePixelRatio, dayGroupImage } = props;
+    const pswpItems = dayGroupImage.map((image, i) => {
+      const src = `${domain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
+      const realMWidth = Math.round(geometry.boxes[i].width * devicePixelRatio);
+      const realMHeight = Math.round(geometry.boxes[i].height * devicePixelRatio);
+      // generate based on Qiniu imageView2 mode 3 API
+      // more details see https://developer.qiniu.com/dora/api/basic-processing-images-imageview2
+      const minWidth = Math.round(containerWidth * devicePixelRatio);
+      const minHeight = Math.round((image.dimension[1] / image.dimension[0]) * minWidth);
+      return ({
+        msrc: `${src}?imageView2/1/w/${realMWidth}/h/${realMHeight}`,
+        src: `${src}?imageView2/3/w/${minWidth}`,
+        w: minWidth,
+        h: minHeight,
+      });
+    });
+    return pswpItems;
+  }
+
   handleToggleSelectGroup() {
     const { day, isEditing, dayGroupImage, groupTotal } = this.props;
     if (isEditing) {
@@ -119,6 +133,25 @@ export class JustifiedGroupHolder extends PureComponent {
           counter: groupTotal,
         });
       }
+    }
+  }
+
+  handleOpenGallery(i) {
+    if (this.props.showGallery) {
+      this.props.photoSwipeOpen(
+        this.state.pswpItems,
+        {
+          index: i,
+          history: false,
+          getThumbBoundsFn: (index) => {
+            const thumbnail = this[`thumbnail${index}`];
+            const img = thumbnail.getWrappedInstance().image;
+            const pageYScroll = window.pageYOffset || document.documentElement.scrollTop;
+            const rect = img.getBoundingClientRect();
+            return { x: rect.left, y: rect.top + pageYScroll, w: rect.width };
+          },
+        }
+      );
     }
   }
 
@@ -143,12 +176,12 @@ export class JustifiedGroupHolder extends PureComponent {
           className="Justified__title"
           onTouchTap={this.handleToggleSelectGroup}
         >
-          { isEditing && <SelectableIcon activate={this.state.isGroupSelect} /> }
+          { isEditing && <JustifiedSelectIcon activate={this.state.isGroupSelect} /> }
           <h4>{showDay}</h4>
         </div>
         {
           _.map(dayGroupImage, (image, i) => (
-            <ConnectedJustifiedImageHolder
+            <ConnectedGroupImageHolder
               key={i}
               isEditing={isEditing}
               day={day}
@@ -157,20 +190,7 @@ export class JustifiedGroupHolder extends PureComponent {
               total={total}
               groupTotal={groupTotal}
               ref={(node) => { this[`thumbnail${i}`] = node; }}
-              onImageClick={() => this.props.photoSwipeOpen(
-                this.state.pswpItems,
-                {
-                  index: i,
-                  history: false,
-                  getThumbBoundsFn: (index) => {
-                    const thumbnail = this[`thumbnail${index}`];
-                    const img = thumbnail.getWrappedInstance().image;
-                    const pageYScroll = window.pageYOffset || document.documentElement.scrollTop;
-                    const rect = img.getBoundingClientRect();
-                    return { x: rect.left, y: rect.top + pageYScroll, w: rect.width };
-                  },
-                }
-              )}
+              onImageClick={() => this.handleOpenGallery(i)}
             />
           ))
         }
@@ -179,11 +199,12 @@ export class JustifiedGroupHolder extends PureComponent {
   }
 }
 
-JustifiedGroupHolder.displayName = 'JustifiedGroupHolder';
+JustifiedGroupLayout.displayName = 'JustifiedGroupLayout';
 
-JustifiedGroupHolder.defaultProps = {
+JustifiedGroupLayout.defaultProps = {
   domain: Meteor.settings.public.imageDomain,
   devicePixelRatio: window.devicePixelRatio,
+  showGallery: false,
   containerWidth: document.body.clientWidth,
   containerPadding: 0,
   targetRowHeight: 180,
@@ -192,10 +213,11 @@ JustifiedGroupHolder.defaultProps = {
   fullWidthBreakoutRowCadence: false,
 };
 
-JustifiedGroupHolder.propTypes = {
+JustifiedGroupLayout.propTypes = {
   domain: PropTypes.string.isRequired,
   devicePixelRatio: PropTypes.number.isRequired,
   isEditing: PropTypes.bool.isRequired,
+  showGallery: PropTypes.bool.isRequired,
   day: PropTypes.string.isRequired,
   dayGroupImage: PropTypes.array.isRequired,
   total: PropTypes.number.isRequired,
@@ -232,4 +254,4 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
   selectGroupCounter,
 }, dispatch);
 
-export default connect(mapStateToProps, mapDispatchToProps)(JustifiedGroupHolder);
+export default connect(mapStateToProps, mapDispatchToProps)(JustifiedGroupLayout);

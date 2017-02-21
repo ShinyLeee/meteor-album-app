@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 
-const SelectableImageBackground = (props) => {
+const JustifiedImageBackground = (props) => {
   const { isEditing, isSelect } = props;
   const backgroundStyle = isEditing ? { opacity: 1 } : {};
   const backgroundClassName = isSelect ? 'Justified__background_select' : 'Justified__background';
@@ -26,16 +26,16 @@ const SelectableImageBackground = (props) => {
   );
 };
 
-SelectableImageBackground.displayName = 'SelectableImageBackground';
+JustifiedImageBackground.displayName = 'JustifiedImageBackground';
 
-SelectableImageBackground.defaultProps = {
+JustifiedImageBackground.defaultProps = {
   isEditing: false,
   isSelect: false,
 };
 
-SelectableImageBackground.propTypes = {
+JustifiedImageBackground.propTypes = {
   isEditing: PropTypes.bool.isRequired,
   isSelect: PropTypes.bool.isRequired,
 };
 
-export default SelectableImageBackground;
+export default JustifiedImageBackground;

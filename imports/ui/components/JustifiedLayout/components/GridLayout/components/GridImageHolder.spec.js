@@ -12,7 +12,7 @@ if (Meteor.isClient) {
   import { shallow } from 'enzyme';
   import { chai } from 'meteor/practicalmeteor:chai';
   import { sinon } from 'meteor/practicalmeteor:sinon';
-  import { SelectableImageHolder } from './SelectableImageHolder.jsx';
+  import { GridImageHolder } from './GridImageHolder.jsx';
 
   const expect = chai.expect;
 
@@ -28,7 +28,7 @@ if (Meteor.isClient) {
       selectCounter: sinon.spy(),
     };
     const component = shallow(
-      <SelectableImageHolder
+      <GridImageHolder
         isEditing
         image={image}
         total={6}
@@ -42,7 +42,7 @@ if (Meteor.isClient) {
     };
   };
 
-  describe('SelectableImageHolder', () => {
+  describe('GridImageHolder', () => {
     it('should isSelect state behave right when counter prop change', () => {
       const { component } = setup();
       component.setProps({ counter: 6 });

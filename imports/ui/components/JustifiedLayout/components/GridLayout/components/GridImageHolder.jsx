@@ -4,9 +4,9 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import { selectCounter } from '/imports/ui/redux/actions/index.js';
-import SelectableImageBackground from './SelectableImageBackground.jsx';
+import JustifiedImageBackground from '../../snippet/JustifiedImageBackground.jsx';
 
-export class SelectableImageHolder extends PureComponent {
+export class GridImageHolder extends PureComponent {
 
   constructor(props) {
     super(props);
@@ -73,7 +73,7 @@ export class SelectableImageHolder extends PureComponent {
         style={{ backgroundColor: isEditing ? '#eee' : '#fff' }}
         onTouchTap={this.handleSelect}
       >
-        <SelectableImageBackground
+        <JustifiedImageBackground
           isEditing={isEditing}
           isSelect={this.state.isSelect}
         />
@@ -96,16 +96,16 @@ export class SelectableImageHolder extends PureComponent {
   }
 }
 
-SelectableImageHolder.displayName = 'SelectableImageHolder';
+GridImageHolder.displayName = 'GridImageHolder';
 
-SelectableImageHolder.defaultProps = {
+GridImageHolder.defaultProps = {
   isEditing: false,
   domain: Meteor.settings.public.imageDomain,
   clientWidth: document.body.clientWidth,
   devicePixelRatio: window.devicePixelRatio,
 };
 
-SelectableImageHolder.propTypes = {
+GridImageHolder.propTypes = {
   domain: PropTypes.string.isRequired,
   clientWidth: PropTypes.number.isRequired,
   devicePixelRatio: PropTypes.number.isRequired,
@@ -126,4 +126,4 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
   selectCounter,
 }, dispatch);
 
-export default connect(mapStateToProps, mapDispatchToProps, null, { withRef: true })(SelectableImageHolder);
+export default connect(mapStateToProps, mapDispatchToProps, null, { withRef: true })(GridImageHolder);

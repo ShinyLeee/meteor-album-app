@@ -12,7 +12,7 @@ if (Meteor.isClient) {
   import { shallow } from 'enzyme';
   import { chai } from 'meteor/practicalmeteor:chai';
   import { sinon } from 'meteor/practicalmeteor:sinon';
-  import { JustifiedGroupHolder } from './JustifiedGroupHolder.jsx';
+  import { GroupLayout } from './GroupLayout.jsx';
 
   const expect = chai.expect;
 
@@ -36,7 +36,7 @@ if (Meteor.isClient) {
       selectGroupCounter: sinon.spy(),
     };
     const component = shallow(
-      <JustifiedGroupHolder
+      <GroupLayout
         isEditing
         day={'2016-12-31'}
         dayGroupImage={generateImages(4)}
@@ -48,7 +48,7 @@ if (Meteor.isClient) {
       />
     );
     const anotherComponent = shallow(
-      <JustifiedGroupHolder
+      <GroupLayout
         isEditing
         day={'2016-12-30'}
         dayGroupImage={generateImages(2)}
@@ -66,7 +66,7 @@ if (Meteor.isClient) {
     };
   };
 
-  describe('JustifiedGroupHolder', () => {
+  describe('GroupLayout', () => {
     it('should isGroupSelect state behave right when counter change', () => {
       const { component } = setup();
       component.setProps({ counter: 6 });
