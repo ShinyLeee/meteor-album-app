@@ -19,6 +19,13 @@ import { diaryOpen, diaryClose, snackBarOpen } from '/imports/ui/redux/actions/i
 import QuillShower from '/imports/ui/components/Quill/QuillShower.jsx';
 import QuillEditor from '/imports/ui/components/Quill/QuillEditor.jsx';
 import Loader from '/imports/ui/components/Loader/Loader.jsx';
+import {
+  Wrapper,
+  Body,
+  Article,
+  Footer,
+  Time,
+} from './DiaryHolder.style.js';
 
 class DiaryHolder extends Component {
 
@@ -130,7 +137,7 @@ class DiaryHolder extends Component {
       >
         {
           open && (
-            <div className="component__DiaryHolder">
+            <Wrapper>
               {
                 this.state.isEditing
                 ? (
@@ -160,8 +167,8 @@ class DiaryHolder extends Component {
                   />
                 )
               }
-              <div className="DiaryHolder__body" ref={(node) => { this.diaryBody = node; }}>
-                <div className="DiaryHolder__content">
+              <Body innerRef={(node) => { this.diaryBody = node; }}>
+                <Article>
                   {
                     this.state.isEditing
                     ? (
@@ -174,13 +181,13 @@ class DiaryHolder extends Component {
                     )
                     : (<QuillShower content={diary.content} />)
                   }
-                </div>
-                <div className="DiaryHolder__footer">
-                  <span className="DiaryHolder__time">
+                </Article>
+                <Footer>
+                  <Time dateTime={diary.time}>
                     { this.state.isEditing ? `编辑中 ${moment().format('YYYY.MM.DD A HH:mm')}` : diary.time}
-                  </span>
-                </div>
-              </div>
+                  </Time>
+                </Footer>
+              </Body>
               <Loader
                 open={this.state.isProcessing}
                 message={this.state.processMsg}
@@ -206,7 +213,7 @@ class DiaryHolder extends Component {
                 modal
               >您是否确认删除此日记？
               </Dialog>
-            </div>
+            </Wrapper>
           )
         }
       </ReactCSSTransitionGroup>

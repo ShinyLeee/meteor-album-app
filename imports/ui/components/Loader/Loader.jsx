@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import CircularProgress from 'material-ui/CircularProgress';
 import Dialog from 'material-ui/Dialog';
+import { LoaderContent, LoaderProgress, LoaderMessage } from './styled.js';
 
 export default class Loader extends Component {
 
@@ -52,21 +53,21 @@ export default class Loader extends Component {
 
   render() {
     return this.state.open && (
-      <div className="component__Loader">
+      <div>
         <Dialog
           open={this.state.open}
           modal
         >
-          <div className="Loader__content">
-            <div className="Loader__progress">
+          <LoaderContent>
+            <LoaderProgress>
               <CircularProgress
                 color="#3F51B5"
                 size={30}
                 thickness={2.5}
               />
-            </div>
-            <div className="Loader__message">{this.props.message}</div>
-          </div>
+            </LoaderProgress>
+            <LoaderMessage>{this.props.message}</LoaderMessage>
+          </LoaderContent>
         </Dialog>
       </div>
     );

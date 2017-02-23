@@ -11,14 +11,19 @@ import LazyLoad from 'react-lazyload';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import Avatar from 'material-ui/Avatar';
 import { Card, CardHeader, CardActions, CardMedia } from 'material-ui/Card';
-import IconButton from 'material-ui/IconButton';
 import HeartIcon from 'material-ui/svg-icons/action/favorite';
 import EmptyHeartIcon from 'material-ui/svg-icons/action/favorite-border';
 import CommentIcon from 'material-ui/svg-icons/communication/chat-bubble-outline';
-
 import { Comments } from '/imports/api/comments/comment.js';
 import { snackBarOpen } from '/imports/ui/redux/actions/index.js';
 import CommentList from './components/CommentList.jsx';
+import {
+  Wrapper,
+  ActionButtonWrapper,
+  ActionButtonNum,
+  StyledIconButton,
+  Image,
+} from './ImageHolder.style.js';
 
 const formatter = buildFormatter(CNStrings);
 
@@ -27,7 +32,7 @@ class ImageHolder extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isCommentSectionOpen: false,
+      isCommentOpen: false,
     };
   }
 
@@ -44,13 +49,19 @@ class ImageHolder extends Component {
       comments,
     } = this.props;
 
+    const { isCommentOpen } = this.state;
     return (
-      <div className="component__ImageHolder">
+      <Wrapper>
         <Card>
           <CardHeader
             title={image.user}
             subtitle={<TimeAgo date={image.createdAt} formatter={formatter} />}
-            avatar={<Avatar src={avatar} onTouchTap={() => browserHistory.push(`/user/${image.user}`)} />}
+            avatar={(
+              <Avatar
+                src={avatar}
+                onTouchTap={() => browserHistory.push(`/user/${image.user}`)}
+              />
+            )}
           />
           <ReactCSSTransitionGroup
             transitionName="fade"
@@ -61,25 +72,37 @@ class ImageHolder extends Component {
           >
             <CardMedia onTouchTap={onMediaClick}>
               <LazyLoad height={200} offset={200} once>
-                <img style={{ width: '100%' }} src={imageSrc} role="presentation" />
+                <Image src={imageSrc} role="presentation" />
               </LazyLoad>
             </CardMedia>
           </ReactCSSTransitionGroup>
-          <CardActions className="ImageHolder__actions">
-            <div className="ImageHolder__like">
+          <CardActions>
+            <ActionButtonWrapper>
               {
                 isLiked
-                ? (<IconButton onTouchTap={onUnlikeClick} iconStyle={{ color: '#f15151' }}><HeartIcon /></IconButton>)
-                : (<IconButton onTouchTap={onLikeClick}><EmptyHeartIcon /></IconButton>)
+                ? (
+                  <StyledIconButton
+                    iconStyle={{ color: '#f15151' }}
+                    onTouchTap={onUnlikeClick}
+                  ><HeartIcon />
+                  </StyledIconButton>
+                )
+                : (
+                  <StyledIconButton
+                    onTouchTap={onLikeClick}
+                  ><EmptyHeartIcon />
+                  </StyledIconButton>
+                )
               }
-              { image.liker.length > 0 && <span>{image.liker.length}</span> }
-            </div>
-            <div className="ImageHolder__comment">
-              <IconButton onTouchTap={() => this.setState({ isCommentSectionOpen: !this.state.isCommentSectionOpen })}>
-                <CommentIcon />
-              </IconButton>
-              { comments.length > 0 && <span>{comments.length}</span> }
-            </div>
+              { image.liker.length > 0 && <ActionButtonNum>{image.liker.length}</ActionButtonNum> }
+            </ActionButtonWrapper>
+            <ActionButtonWrapper>
+              <StyledIconButton
+                onTouchTap={() => this.setState({ isCommentOpen: !isCommentOpen })}
+              ><CommentIcon />
+              </StyledIconButton>
+              { comments.length > 0 && <ActionButtonNum>{comments.length}</ActionButtonNum> }
+            </ActionButtonWrapper>
           </CardActions>
           <ReactCSSTransitionGroup
             transitionName="slideDown"
@@ -87,7 +110,7 @@ class ImageHolder extends Component {
             transitionLeaveTimeout={375}
           >
             {
-              this.state.isCommentSectionOpen && (
+              isCommentOpen && (
                 <CommentList
                   key={image._id}
                   User={User}
@@ -99,7 +122,7 @@ class ImageHolder extends Component {
             }
           </ReactCSSTransitionGroup>
         </Card>
-      </div>
+      </Wrapper>
     );
   }
 }

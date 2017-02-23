@@ -1,10 +1,9 @@
 import React, { PropTypes } from 'react';
-import CircularProgress from 'material-ui/CircularProgress';
 import Dialog from 'material-ui/Dialog';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-
 import { dialogClose } from '/imports/ui/redux/actions/index.js';
+import { LoadingCircularProgress, LoadingMessage } from './BibleDialog.style.js';
 
 const BibleDialog = ({ open, bible, bibleDialogClose }) => (
   <Dialog
@@ -19,8 +18,8 @@ const BibleDialog = ({ open, bible, bibleDialogClose }) => (
       ? (<div dangerouslySetInnerHTML={{ __html: bible && bible.verses }} />)
       : (
         <div className="text-center">
-          <CircularProgress color="#3F51B5" style={{ verticalAlign: 'bottom' }} />
-          <span style={{ marginLeft: '32px', lineHeight: '40px', color: '#222' }}>获取中...</span>
+          <LoadingCircularProgress color="#3F51B5" />
+          <LoadingMessage>获取中...</LoadingMessage>
         </div>
       )
     }
@@ -42,7 +41,10 @@ BibleDialog.propTypes = {
   bibleDialogClose: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = (state) => state;
+const mapStateToProps = (state) => ({
+  open: state.dialog.open,
+  bible: state.dialog.bible,
+});
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   bibleDialogClose: dialogClose,

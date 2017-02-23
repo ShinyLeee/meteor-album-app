@@ -80,15 +80,15 @@ class RegisterPage extends Component {
     return (
       <div className="container">
         <NavHeader primary />
-        <div className="content">
+        <main className="content">
           <Loader
             open={this.state.isProcessing}
             message={this.state.processMsg}
             onTimeout={this.handleLoaderTimeout}
           />
           <div className="content__register">
-            <div className="register__logo">Gallery +</div>
-            <div className="register__form">
+            <header className="register__logo">Gallery +</header>
+            <section className="register__form">
               <TextField
                 hintText="邮箱"
                 ref={(ref) => { this.emailField = ref; }}
@@ -117,8 +117,8 @@ class RegisterPage extends Component {
                 type="text"
                 fullWidth
               /><br />
-            </div>
-            <div className="register__button">
+            </section>
+            <section className="register__button">
               <RaisedButton
                 label="注册"
                 labelStyle={styles.label}
@@ -134,9 +134,9 @@ class RegisterPage extends Component {
                 onTouchTap={() => browserHistory.push('/login')}
                 fullWidth
               />
-            </div>
+            </section>
           </div>
-        </div>
+        </main>
       </div>
     );
   }

@@ -104,33 +104,35 @@ export default class SearchResultsPage extends Component {
           onChange={(e) => this.setState({ searchText: e.target.value })}
           onSubmit={this.handleSearchSubmit}
         />
-        <div className="content deep">
+        <main className="content deep">
           { this.props.dataIsReady
             ? (
               <div className="content__search">
-                <div className="search__query">以下为"{query}"的搜索结果:</div>
-                <div className="search__collection">
-                  <div className="collection__header">
+                <section className="search__query">
+                  以下为"{query}"的搜索结果:
+                </section>
+                <section className="search__collection">
+                  <header className="collection__header">
                     <span>相册</span>
-                  </div>
+                  </header>
                   { this.renderCollResults() }
-                </div>
-                <div className="search__user">
-                  <div className="user__header">
+                </section>
+                <section className="search__user">
+                  <header className="user__header">
                     <span>用户</span>
-                  </div>
+                  </header>
                   { this.renderUserResults() }
-                </div>
-                <div className="search__note">
-                  <div className="note__header">
+                </section>
+                <section className="search__note">
+                  <header className="note__header">
                     <span>信息</span>
-                  </div>
+                  </header>
                   { this.renderNoteResults() }
-                </div>
+                </section>
               </div>
             )
             : (<Loading />) }
-        </div>
+        </main>
       </div>
     );
   }

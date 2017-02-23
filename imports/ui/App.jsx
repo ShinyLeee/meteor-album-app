@@ -1,11 +1,11 @@
 import React, { Component, PropTypes } from 'react';
-// import { TransitionMotion, spring, presets } from 'react-motion';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-
+import '/node_modules/quill/dist/quill.snow.css';
+import './components/Quill/Quill.css';
 import { storeUptoken, clearUptoken } from './redux/actions/index.js';
 import SnackBar from './components/SnackBar/SnackBar.jsx';
 import Loading from './components/Loader/Loading.jsx';
@@ -19,8 +19,6 @@ export class App extends Component {
     this.state = {
       transitionName: 'fastIn',
     };
-    // this.willEnter = this.willEnter.bind(this);
-    // this.willLeave = this.willLeave.bind(this);
   }
 
   componentDidMount() {
@@ -68,41 +66,6 @@ export class App extends Component {
     }
   }
 
-  // getStyles() {
-  //   const { children, location } = this.props;
-  //   const { pathname, state } = location;
-  //   return [{
-  //     data: {
-  //       handler: React.cloneElement(children, { User: this.props.User }),
-  //       state,
-  //     },
-  //     style: {
-  //       offset: spring(0, presets.stiff),
-  //     },
-  //     key: pathname,
-  //   }];
-  // }
-
-  // willEnter() {
-  //   let offset;
-  //   const { transitionName } = this.state;
-
-  //   if (transitionName === 'fastIn') offset = 0;
-  //   else if (transitionName === 'slideToLeft') offset = 100;
-  //   else if (transitionName === 'slideToRight') offset = -100;
-  //   return { offset };
-  // }
-
-  // willLeave() {
-  //   let offset;
-  //   const { transitionName } = this.state;
-
-  //   if (transitionName === 'fastIn') offset = spring(0, presets.stiff);
-  //   else if (transitionName === 'slideToLeft') offset = spring(-100, presets.stiff);
-  //   else if (transitionName === 'slideToRight') offset = spring(100, presets.stiff);
-  //   return { offset };
-  // }
-
   render() {
     if (!this.props.userIsReady) {
       return (
@@ -114,35 +77,7 @@ export class App extends Component {
         </div>
       );
     }
-    // return (
-    //   <div>
-    //     <SnackBar />
-    //     <TransitionMotion
-    //       styles={this.getStyles()}
-    //       willEnter={this.willEnter}
-    //       willLeave={this.willLeave}
-    //     >
-    //       {styles =>
-    //         <div id="RootTransitionMotionWrapper">
-    //           {styles.map(({ key, style, data }) =>
-    //             <div
-    //               key={key}
-    //               style={{
-    //                 position: 'absolute',
-    //                 left: 0,
-    //                 right: 0,
-    //                 transform: style.offset !== 0 ? `translateX(${style.offset}%)` : '',
-    //               }}
-    //             >
-    //               {data.handler}
-    //             </div>
-    //           )}
-    //         </div>
-    //       }
-    //     </TransitionMotion>
-    //     <ConnectedUploader User={this.props.User} multiple />
-    //   </div>
-    // );
+
     return (
       <div>
         <SnackBar />

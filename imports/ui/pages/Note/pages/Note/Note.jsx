@@ -172,12 +172,14 @@ export default class NotePage extends Component {
             </IconMenu>
           }
         />
-        <div className="content">
+        <main className="content">
           { this.state.isProcessing && (<Loading />) }
-          { this.props.dataIsReady
+          {
+            this.props.dataIsReady
             ? this.renderContent()
-            : (<Loading />) }
-        </div>
+            : (<Loading />)
+          }
+        </main>
       </div>
     );
   }

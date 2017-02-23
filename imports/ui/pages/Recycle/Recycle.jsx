@@ -15,8 +15,8 @@ import NavHeader from '../../components/NavHeader/NavHeader.jsx';
 import EmptyHolder from '../../components/EmptyHolder/EmptyHolder.jsx';
 import Loader from '../../components/Loader/Loader.jsx';
 import Loading from '../../components/Loader/Loading.jsx';
-import JustifiedSelectIcon from '../../components/JustifiedLayout/components/snippet/JustifiedSelectIcon.jsx';
-import ConnectedGridLayout from '../../components/JustifiedLayout/components/GridLayout/GridLayout.jsx';
+import JustifiedSelectIcon from '../../components/JustifiedLayout/components/snippet/JustifiedSelectIcon.jsx'; // eslint-disable-line max-len
+import ConnectedGridLayout from '../../components/JustifiedLayout/components/GridLayout/GridLayout.jsx'; // eslint-disable-line max-len
 
 export default class RecyclePage extends Component {
 
@@ -124,10 +124,10 @@ export default class RecyclePage extends Component {
     }
     return (
       <div className="content__recycle">
-        <div className="recycle__header">
-          <div className="recycle__title">回收站</div>
+        <header className="recycle__header">
+          <h2 className="recycle__title">回收站</h2>
           <div className="recycle__desc">回收站中的内容会在 30 天后永久删除</div>
-        </div>
+        </header>
         <div className="recycle__content">
           <div className="recycle__toolbox">
             <div className="recycle__toolbox_left" onTouchTap={this.handleToggleSelectAll}>
@@ -197,14 +197,16 @@ export default class RecyclePage extends Component {
             </div>
           }
         />
-        <div className="content">
+        <main className="content">
           <Loader
             open={this.state.isProcessing}
             message={this.state.processMsg}
           />
-          { dataIsReady
+          {
+            dataIsReady
             ? this.renderContent()
-            : (<Loading />) }
+            : (<Loading />)
+          }
           <Dialog
             title="提示"
             titleStyle={{ border: 'none' }}
@@ -223,7 +225,7 @@ export default class RecyclePage extends Component {
             onRequestClose={() => this.setState({ deleteAlert: false })}
           >是否确认彻底删除所选图片？
           </Dialog>
-        </div>
+        </main>
       </div>
     );
   }

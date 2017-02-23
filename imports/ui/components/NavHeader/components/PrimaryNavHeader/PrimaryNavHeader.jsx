@@ -21,9 +21,14 @@ import DeleteIcon from 'material-ui/svg-icons/action/delete';
 import SettingsIcon from 'material-ui/svg-icons/action/settings';
 import ArrowDropdownIcon from 'material-ui/svg-icons/navigation/arrow-drop-down';
 import { purple500 } from 'material-ui/styles/colors';
-
 import scrollTo from '/imports/utils/scrollTo.js';
 import styles from '../../NavHeader.style.js';
+import {
+  DrawerProfile,
+  DrawerBackground,
+  DrawerAvatar,
+  DrawerEmail,
+} from './Drawer.style.js';
 
 export default class PrimaryNavHeader extends Component {
 
@@ -134,9 +139,8 @@ export default class PrimaryNavHeader extends Component {
   render() {
     const { User, location } = this.props;
     return (
-      <div className="component__NavHeader">
+      <div>
         <AppBar
-          className="component__Drawer"
           style={styles.AppBar}
           title="Gallery +"
           titleStyle={styles.AppBarTitle}
@@ -151,21 +155,18 @@ export default class PrimaryNavHeader extends Component {
           open={this.state.drawer}
           onRequestChange={(open) => this.setState({ drawer: open })}
         >
-          <div
-            className="Drawer__profile"
-            style={{ backgroundImage: this.coverSrc }}
-          >
-            <div className="Drawer__background" />
+          <DrawerProfile style={{ backgroundImage: this.coverSrc }}>
+            <DrawerBackground />
             { User && (
               <div>
-                <div className="Drawer__avatar">
+                <DrawerAvatar>
                   <Avatar
                     size={54}
                     src={User.profile.avatar}
                     onTouchTap={() => browserHistory.push(`/user/${User.username}`)}
                   />
-                </div>
-                <div className="Drawer__email">
+                </DrawerAvatar>
+                <DrawerEmail>
                   <div>
                     <span>{(User.emails && User.emails[0].address) || User.username}</span>
                     <div><ArrowDropdownIcon color="#fff" onTouchTap={this.handleOpenActionPop} /></div>
@@ -181,10 +182,10 @@ export default class PrimaryNavHeader extends Component {
                       </Menu>
                     </Popover>
                   </div>
-                </div>
+                </DrawerEmail>
               </div>
             ) }
-          </div>
+          </DrawerProfile>
           <Divider />
           <Menu width="100%" disableAutoFocus>
             <MenuItem

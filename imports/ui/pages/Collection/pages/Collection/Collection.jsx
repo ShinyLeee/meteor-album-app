@@ -326,10 +326,10 @@ export default class CollectionPage extends Component {
     }
     return (
       <div className="content__collPics">
-        <div className="collPics__header">
-          <div className="collPics__name">{curColl.name}</div>
+        <header className="collPics__header">
+          <h2 className="collPics__name">{curColl.name}</h2>
           <div className="collPics__duration">{duration}</div>
-        </div>
+        </header>
         { imgLen > 0 && (
           <ConnectedJustified
             isEditing={this.state.isEditing}
@@ -381,16 +381,19 @@ export default class CollectionPage extends Component {
               }
             />
           )
-          : this.renderNavHeader() }
-        <div className="content">
+          : this.renderNavHeader()
+        }
+        <main className="content">
           <Loader
             open={this.state.isProcessing}
             message={this.state.processMsg}
             onTimeout={this.handleOnTimeout}
           />
-          { dataIsReady
+          {
+            dataIsReady
             ? this.renderContent()
-            : (<Loading />) }
+            : (<Loading />)
+          }
           <PhotoSwipe
             open={pswpOpen}
             items={pswpItems}
@@ -419,7 +422,7 @@ export default class CollectionPage extends Component {
           >
             {this.state.alertContent}
           </Dialog>
-        </div>
+        </main>
       </div>
     );
   }

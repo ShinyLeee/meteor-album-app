@@ -3,15 +3,13 @@ import React, { Component, PropTypes } from 'react';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import TextField from 'material-ui/TextField';
-import FloatingActionButton from 'material-ui/FloatingActionButton';
-import AddIcon from 'material-ui/svg-icons/content/add';
 import { insertCollection } from '/imports/api/collections/methods.js';
 import { getRandomInt } from '/imports/utils/utils.js';
-
 import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
 import Recap from '/imports/ui/components/Recap/Recap.jsx';
 import EmptyHolder from '/imports/ui/components/EmptyHolder/EmptyHolder.jsx';
 import Loading from '/imports/ui/components/Loader/Loading.jsx';
+import FloatButton from '/imports/ui/components/FloatButton/FloatButton.jsx';
 import CollHolder from './components/CollHolder/CollHolder.jsx';
 
 export default class AllCollectionPage extends Component {
@@ -115,7 +113,7 @@ export default class AllCollectionPage extends Component {
           title={isGuest ? `${curUser.username}的相册` : '我的相册'}
           secondary
         />
-        <div className="content">
+        <main className="content">
           { !dataIsReady && (<Loading />) }
           { isGuest
             ? (
@@ -159,16 +157,8 @@ export default class AllCollectionPage extends Component {
               fullWidth
             />
           </Dialog>
-        </div>
-        { !isGuest && (
-          <div className="component__FloatBtn">
-            <FloatingActionButton
-              onTouchTap={() => this.setState({ open: true })}
-              secondary
-            ><AddIcon />
-            </FloatingActionButton>
-          </div>)
-        }
+        </main>
+        { !isGuest && <FloatButton onBtnClick={() => this.setState({ open: true })} />}
       </div>
     );
   }

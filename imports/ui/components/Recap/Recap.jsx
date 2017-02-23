@@ -1,15 +1,15 @@
 import React, { PropTypes } from 'react';
 import IconButton from 'material-ui/IconButton';
-
 import { Github, Wechat, Twitter, Instagram, Website } from '../SubMaterialUI/SvgIcons.jsx';
+import { Wrapper, Title, Detail, IconList } from './Recap.style.js';
 
 const Recap = ({ title, detailFir, detailSec, showIcon }) => (
-  <div className="component__Recap">
-    <h1 className="Recap__title">{title}</h1>
-    <p className="Recap__detail Recap__detail-1">{detailFir}</p>
-    <p className="Recap__detail Recap__detail-2">{detailSec}</p>
-    { showIcon ? (
-      <ul className="Recap__icons">
+  <Wrapper>
+    <Title>{title}</Title>
+    <Detail>{detailFir}</Detail>
+    <Detail>{detailSec}</Detail>
+    { showIcon && (
+      <IconList>
         <IconButton
           href="https://github.com/ShinyLeee"
           target="_blank"
@@ -41,9 +41,9 @@ const Recap = ({ title, detailFir, detailSec, showIcon }) => (
         >
           <Website color="#999" hoverColor="#222" />
         </IconButton>
-      </ul>
-    ) : null }
-  </div>
+      </IconList>)
+    }
+  </Wrapper>
 );
 
 Recap.displayName = 'Recap';

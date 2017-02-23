@@ -88,15 +88,15 @@ class LoginPage extends Component {
     return (
       <div className="container">
         <NavHeader primary />
-        <div className="content">
+        <main className="content">
           <Loader
             open={this.state.isProcessing}
             message={this.state.processMsg}
             onTimeout={this.handleLoaderTimeout}
           />
           <div className="content__login">
-            <div className="login__logo">Gallery +</div>
-            <div className="login__form">
+            <header className="login__logo">Gallery +</header>
+            <section className="login__form">
               <TextField
                 hintText="用户名或邮箱"
                 ref={(ref) => { this.usrInput = ref; }}
@@ -108,8 +108,8 @@ class LoginPage extends Component {
                 type="password"
                 fullWidth
               /><br />
-            </div>
-            <div className="login__button">
+            </section>
+            <section className="login__button">
               <RaisedButton
                 label="立即登录"
                 labelStyle={styles.label}
@@ -125,55 +125,59 @@ class LoginPage extends Component {
                 onTouchTap={() => browserHistory.push('/register')}
                 fullWidth
               />
-              <p onTouchTap={() => this.setState({ resetDialog: true })}>忘记密码？</p>
-            </div>
-            <Dialog
-              title="重置密码"
-              titleStyle={{ border: 'none' }}
-              actions={[
-                <FlatButton
-                  label="取消"
-                  onTouchTap={() => this.setState({ resetDialog: false })}
-                  disabled={this.state.isProcessing}
-                  primary
-                />,
-                <FlatButton
-                  label="确认发送"
-                  onTouchTap={this.handleSentResetEmail}
-                  disabled={this.state.isProcessing}
-                  primary
-                />,
-              ]}
-              actionsContainerStyle={{ border: 'none' }}
-              open={this.state.resetDialog}
-              modal
-            >
-              {
-                this.state.isProcessing
-                ? (
-                  <div style={{ textAlign: 'center' }}>
-                    <CircularProgress
-                      color="#3F51B5"
-                      size={30}
-                      thickness={2.5}
-                      style={{ verticalAlign: 'bottom' }}
-                    />
-                    <span style={{ marginLeft: '24px' }}>发送邮件中...</span>
-                  </div>
-                )
-                : (
-                  <TextField
-                    name="email"
-                    hintText="邮箱地址"
-                    value={this.state.email}
-                    onChange={(e) => this.setState({ email: e.target.value })}
-                    fullWidth
-                  />
-                )
-              }
-            </Dialog>
+            </section>
+            <footer
+              className="login__footer"
+              onTouchTap={() => this.setState({ resetDialog: true })}
+            >忘记密码?
+            </footer>
           </div>
-        </div>
+          <Dialog
+            title="重置密码"
+            titleStyle={{ border: 'none' }}
+            actions={[
+              <FlatButton
+                label="取消"
+                onTouchTap={() => this.setState({ resetDialog: false })}
+                disabled={this.state.isProcessing}
+                primary
+              />,
+              <FlatButton
+                label="确认发送"
+                onTouchTap={this.handleSentResetEmail}
+                disabled={this.state.isProcessing}
+                primary
+              />,
+            ]}
+            actionsContainerStyle={{ border: 'none' }}
+            open={this.state.resetDialog}
+            modal
+          >
+            {
+              this.state.isProcessing
+              ? (
+                <div style={{ textAlign: 'center' }}>
+                  <CircularProgress
+                    color="#3F51B5"
+                    size={30}
+                    thickness={2.5}
+                    style={{ verticalAlign: 'bottom' }}
+                  />
+                  <span style={{ marginLeft: '24px' }}>发送邮件中...</span>
+                </div>
+              )
+              : (
+                <TextField
+                  name="email"
+                  hintText="邮箱地址"
+                  value={this.state.email}
+                  onChange={(e) => this.setState({ email: e.target.value })}
+                  fullWidth
+                />
+              )
+            }
+          </Dialog>
+        </main>
       </div>
     );
   }

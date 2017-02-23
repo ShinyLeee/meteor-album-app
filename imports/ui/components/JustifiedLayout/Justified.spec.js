@@ -13,6 +13,7 @@ if (Meteor.isClient) {
   import { chai } from 'meteor/practicalmeteor:chai';
   import { sinon } from 'meteor/practicalmeteor:sinon';
   import { Justified } from './Justified.jsx';
+  import { ToolbarLeft } from './Justified.style.js';
 
   const expect = chai.expect;
 
@@ -79,7 +80,7 @@ if (Meteor.isClient) {
 
       component.setProps({ isEditing: true });
 
-      const toggleBtn = component.find('.Justified__toolbox_left');
+      const toggleBtn = component.find(ToolbarLeft);
       expect(toggleBtn).to.have.length(1);
 
       toggleBtn.simulate('touchTap');

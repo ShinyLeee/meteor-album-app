@@ -10,7 +10,7 @@ const InternalError = ({ User, sourceDomain }) => (
       User={User}
       primary
     />
-    <div className="content">
+    <main className="content">
       <div className="content__error">
         <div className="error__container">
           <h2 className="error__status">Error: 500 Unexpected Error</h2>
@@ -32,7 +32,7 @@ const InternalError = ({ User, sourceDomain }) => (
           }
         </div>
       </div>
-    </div>
+    </main>
   </div>
 );
 

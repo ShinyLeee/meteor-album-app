@@ -5,6 +5,10 @@ import { connect } from 'react-redux';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import { selectCounter } from '/imports/ui/redux/actions/index.js';
 import JustifiedImageBackground from '../../snippet/JustifiedImageBackground.jsx';
+import {
+  Wrapper,
+  SelectableImage,
+} from './GridImageHolder.style.js';
 
 export class GridImageHolder extends PureComponent {
 
@@ -68,11 +72,7 @@ export class GridImageHolder extends PureComponent {
     const url = `${domain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
     const imageSrc = `${url}?imageView2/1/w/${realDimension}`;
     return (
-      <div
-        className="GridLayout__Image"
-        style={{ backgroundColor: isEditing ? '#eee' : '#fff' }}
-        onTouchTap={this.handleSelect}
-      >
+      <Wrapper isEditing={isEditing} onTouchTap={this.handleSelect}>
         <JustifiedImageBackground
           isEditing={isEditing}
           isSelect={this.state.isSelect}
@@ -84,14 +84,14 @@ export class GridImageHolder extends PureComponent {
           transitionEnterTimeout={500}
           transitionLeave={false}
         >
-          <img
+          <SelectableImage
             src={imageSrc}
             alt={image.name}
-            style={{ transform: this.state.isSelect && 'scale(.8)' }}
-            ref={(node) => { this.image = node; }}
+            isSelect={this.state.isSelect}
+            innerRef={(node) => { this.image = node; }}
           />
         </ReactCSSTransitionGroup>
-      </div>
+      </Wrapper>
     );
   }
 }

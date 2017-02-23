@@ -1,24 +1,21 @@
 import React, { PropTypes } from 'react';
 import pure from 'recompose/pure';
+import { Wrapper, Child } from './GridLayout.style.js';
 
 const GridLayout = ({ columns, gap, children }) => (
-  <div className="component__GridLayout" style={{ margin: `${-gap / 2}px` }}>
+  <Wrapper margin={`${-gap / 2}px`}>
     {
-      React.Children.map(children, (curChild) => {
-        const childStyle = Object.assign({}, {
-          display: 'inline-block',
-          width: `${(100 / columns)}%`,
-          height: 0,
-          padding: `${gap / 2}px`,
-          paddingBottom: `${(100 / columns)}%`,
-          verticalAlign: 'top',
-        });
-        return (
-          <div style={childStyle}>{curChild}</div>
-        );
-      })
+      React.Children.map(children, (curChild) => (
+        <Child
+          childWidth={`${(100 / columns)}%`}
+          padding={`${gap / 2}px`}
+          paddingBottom={`${(100 / columns)}%`}
+        >
+          {curChild}
+        </Child>
+      ))
     }
-  </div>
+  </Wrapper>
 );
 
 GridLayout.displayName = 'GridLayout';

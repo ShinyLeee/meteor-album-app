@@ -49,7 +49,7 @@ export default class SendNotePage extends Component {
       toolbar: {
         container: [
           [{ header: [1, 2, false] }],
-          ['bold', 'italic', { align: [false, 'center', 'right'] }],
+          ['bold', 'blockquote', { align: [false, 'center', 'right'] }],
           ['link', 'image'],
         ],
         handlers: {
@@ -205,19 +205,6 @@ export default class SendNotePage extends Component {
   }
 
   render() {
-    const actions = [
-      <FlatButton
-        label="取消"
-        onTouchTap={() => this.setState({ isAlertOpen: false })}
-        keyboardFocused
-        primary
-      />,
-      <FlatButton
-        label="确认"
-        onTouchTap={() => browserHistory.goBack()}
-        primary
-      />,
-    ];
     return (
       <div className="container">
         <NavHeader
@@ -226,24 +213,38 @@ export default class SendNotePage extends Component {
           iconElementLeft={<IconButton onTouchTap={this.handleGoBack}><ArrowBackIcon /></IconButton>}
           iconElementRight={<IconButton onTouchTap={this.handleSentNote}><SendIcon /></IconButton>}
         />
-        <div className="content">
+        <main className="content">
           <Loader
             open={this.state.isProcessing}
             message={this.state.processMsg}
           />
-          { this.props.dataIsReady
+          {
+            this.props.dataIsReady
             ? this.renderContent()
-            : (<Loading />) }
-        </div>
-        <Dialog
-          title="提示"
-          titleStyle={{ border: 'none' }}
-          actions={actions}
-          actionsContainerStyle={{ border: 'none' }}
-          open={this.state.isAlertOpen}
-          modal={false}
-        >您还有未发送的内容，是否确认退出？
-        </Dialog>
+            : (<Loading />)
+          }
+          <Dialog
+            title="提示"
+            titleStyle={{ border: 'none' }}
+            actions={[
+              <FlatButton
+                label="取消"
+                onTouchTap={() => this.setState({ isAlertOpen: false })}
+                keyboardFocused
+                primary
+              />,
+              <FlatButton
+                label="确认"
+                onTouchTap={() => browserHistory.goBack()}
+                primary
+              />,
+            ]}
+            actionsContainerStyle={{ border: 'none' }}
+            open={this.state.isAlertOpen}
+            modal={false}
+          >您还有未发送的内容，是否确认退出？
+          </Dialog>
+        </main>
       </div>
     );
   }

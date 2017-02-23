@@ -109,7 +109,7 @@ export default class UserPage extends Component {
     return (
       <div className="content__user">
         { /* MAIN SECTION */ }
-        <div className="user__main">
+        <section className="user__main">
           <div
             className="main__cover"
             style={{ backgroundImage: `url("${trueCover}"),url("${preCover}")` }}
@@ -181,9 +181,9 @@ export default class UserPage extends Component {
               )
             }
           </div>
-        </div>
+        </section>
         { /* COUNTER SECTION */ }
-        <div className="user__counter">
+        <section className="user__counter">
           <div
             className="counter counter__likes"
             onTouchTap={() => browserHistory.push(`/user/${curUser.username}/likes`)}
@@ -205,11 +205,11 @@ export default class UserPage extends Component {
             <span>{curUser.profile.followers.length}</span>
             <span>关注者</span>
           </div>
-        </div>
+        </section>
         { /* RANK SECTION */ }
         {
           unOrderedImages.length > 0 && (
-            <div className="user__rank">
+            <section className="user__rank">
               <div className="rank__header">最受欢迎的</div>
               <div className="rank__content">
                 <TopImageSlider
@@ -218,7 +218,7 @@ export default class UserPage extends Component {
                   topImages={topImages}
                 />
               </div>
-            </div>
+            </section>
           )
         }
       </div>
@@ -228,15 +228,18 @@ export default class UserPage extends Component {
   render() {
     return (
       <div className="container">
-        { this.props.isGuest
+        {
+          this.props.isGuest
           ? (<NavHeader title={`${this.props.curUser.username}的主页`} secondary />)
           : (<NavHeader User={this.props.User} location={this.state.location} primary />)
         }
-        <div className="content">
-          { this.props.dataIsReady
+        <main className="content">
+          {
+            this.props.dataIsReady
             ? this.renderContent()
-            : (<Loading />) }
-        </div>
+            : (<Loading />)
+          }
+        </main>
       </div>
     );
   }

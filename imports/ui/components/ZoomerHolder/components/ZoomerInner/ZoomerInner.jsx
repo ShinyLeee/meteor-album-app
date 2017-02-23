@@ -6,55 +6,68 @@ import CameraIcon from 'material-ui/svg-icons/image/camera-alt';
 import InfoIcon from 'material-ui/svg-icons/action/info';
 import TimelineIcon from 'material-ui/svg-icons/action/timeline';
 import { Users } from '/imports/api/users/user.js';
+import {
+  Inner,
+  ZoomerImage,
+  ZoomerBackground,
+  ToolBoxSection,
+  ActionSection,
+  UserAvatar,
+  ImageDetail,
+} from '../../ZoomerHolder.style.js';
 
-const ZoomerInner = ({ image, imageHolderStyle, onLogoClick, onInfoActionClick, onExifActionClick }) => {
+const ZoomerInner = (props) => {
+  const {
+    image,
+    imageHolderStyle,
+    onLogoClick,
+    onInfoActionClick,
+    onExifActionClick,
+  } = props;
   const user = Users.findOne({ username: image.user });
   const avatar = user && user.profile.avatar;
   return (
-    <div className="ZoomerHolder__inner">
-      <div className="ZoomerHolder__image" style={imageHolderStyle}>
-        <div className="ZoomerHolder__background" />
-      </div>
-      <div className="ZoomerHolder__toolbox">
+    <Inner>
+      <ZoomerImage style={imageHolderStyle}>
+        <ZoomerBackground />
+      </ZoomerImage>
+      <ToolBoxSection>
         <IconButton
-          className="ZoomerHolder__logo"
           iconStyle={{ width: '32px', height: '32px', color: '#fff' }}
           onTouchTap={onLogoClick}
         ><CameraIcon />
         </IconButton>
-      </div>
-      <div className="ZoomerHolder__info">
-        <div className="ZoomerHolder__profile">
-          <img
+      </ToolBoxSection>
+      <ActionSection>
+        <div>
+          <UserAvatar
             src={avatar}
             role="presentation"
             onTouchTap={() => browserHistory.push(`/user/${image.user}`)}
           />
-          <div className="ZoomerHolder__detail">
-            <span className="ZoomerHolder__title">
+          <ImageDetail>
+            <span>
               {image.user}
             </span>
-            <span className="ZoomerHolder__subtitle">
+            <span>
               {moment(image.createdAt).format('YYYY-MM-DD HH:mm')}
             </span>
-          </div>
+          </ImageDetail>
         </div>
-        <div className="ZoomerHolder__action_bottom">
+        <div>
           <IconButton
-            className="ZoomerHolder__imgStatus"
             iconStyle={{ color: '#fff' }}
             onTouchTap={onInfoActionClick}
           ><TimelineIcon />
           </IconButton>
           <IconButton
-            className="ZoomerHolder__imgExif"
             iconStyle={{ color: '#fff' }}
             onTouchTap={onExifActionClick}
           ><InfoIcon />
           </IconButton>
         </div>
-      </div>
-    </div>
+      </ActionSection>
+    </Inner>
   );
 };
 

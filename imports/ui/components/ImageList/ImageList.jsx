@@ -68,7 +68,7 @@ class ImageList extends Component {
   render() {
     const { User, domain, clientWidth, images } = this.props;
     return (
-      <div className="component__ImageList">
+      <div>
         {
           images.map((image, i) => {
             // get avatar src

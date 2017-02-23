@@ -3,34 +3,30 @@ import { browserHistory } from 'react-router';
 import TimeAgo from 'react-timeago';
 import CNStrings from 'react-timeago/lib/language-strings/zh-CN';
 import buildFormatter from 'react-timeago/lib/formatters/buildFormatter';
-import { Card, CardHeader, CardActions, CardText } from 'material-ui/Card';
-import IconButton from 'material-ui/IconButton';
+import { Card, CardHeader } from 'material-ui/Card';
 import ReplyIcon from 'material-ui/svg-icons/content/reply';
 import CheckBoxIcon from 'material-ui/svg-icons/toggle/check-box';
 import QuillContent from '/imports/ui/components/Quill/QuillContent.jsx';
+import {
+  Wrapper,
+  StyledCardText,
+  StyledCardActions,
+  ReplyIconButton,
+  CheckBoxIconButton,
+} from './NoteHolder.style.js';
 
 const formatter = buildFormatter(CNStrings);
 
-const styles = {
-  flipReplyStyle: {
-    color: '#999',
-    MozTransform: 'scaleX(-1)',
-    WebkitTransform: 'scaleX(-1)',
-    OTransform: 'scaleX(-1)',
-    transform: 'scaleX(-1)',
-  },
-  replyStyle: {
-    position: 'absolute',
-    right: '56px',
-  },
-  checkboxStyle: {
-    position: 'absolute',
-    right: '4px',
-  },
+const flipReplyStyle = {
+  color: '#999',
+  MozTransform: 'scaleX(-1)',
+  WebkitTransform: 'scaleX(-1)',
+  OTransform: 'scaleX(-1)',
+  transform: 'scaleX(-1)',
 };
 
 const NoteHolder = ({ isRead, avatar, note, onReadBtnClick }) => (
-  <div className="component__NoteHolder">
+  <Wrapper>
     <Card initiallyExpanded>
       <CardHeader
         title={note.title}
@@ -39,33 +35,28 @@ const NoteHolder = ({ isRead, avatar, note, onReadBtnClick }) => (
         actAsExpander
         showExpandableButton
       />
-      <CardText
-        style={{ padding: 0 }}
-        expandable
-      >
+      <StyledCardText expandable>
         <QuillContent content={note.content} />
-      </CardText>
+      </StyledCardText>
       {
         !isRead
         && (
-          <CardActions style={{ height: '58px' }}>
-            <IconButton
-              iconStyle={styles.flipReplyStyle}
-              style={styles.replyStyle}
+          <StyledCardActions>
+            <ReplyIconButton
+              iconStyle={flipReplyStyle}
               onTouchTap={() => browserHistory.push(`/sendNote/?receiver=${note.receiver}`)}
             ><ReplyIcon />
-            </IconButton>
-            <IconButton
-              style={styles.checkboxStyle}
+            </ReplyIconButton>
+            <CheckBoxIconButton
               iconStyle={{ color: '#999' }}
               onTouchTap={onReadBtnClick}
             ><CheckBoxIcon />
-            </IconButton>
-          </CardActions>
+            </CheckBoxIconButton>
+          </StyledCardActions>
         )
       }
     </Card>
-  </div>
+  </Wrapper>
 );
 
 NoteHolder.displayName = 'NoteHolder';

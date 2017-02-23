@@ -36,19 +36,4 @@ export default {
     margin: '12px 0 0 0',
     color: '#fff',
   },
-  SearchBarHolder: {
-    width: '100%',
-    height: '40px',
-    fontSize: '18px',
-    borderRdius: '3px',
-  },
-  SearchBarInput: {
-    width: '100%',
-    height: '100%',
-    backgroundColor: 'rgba(255,255,255,.15)',
-    border: 'none',
-    padding: '0 12px',
-    fontSize: '16px',
-    color: '#fff',
-  },
 };

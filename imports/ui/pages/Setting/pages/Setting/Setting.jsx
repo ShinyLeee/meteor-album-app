@@ -215,7 +215,7 @@ export default class SettingPage extends Component {
     const { User } = this.props;
     return (
       <div className="content__setting">
-        <div className="setting__header">
+        <header className="setting__header">
           <div className="setting__cover" style={{ backgroundImage: `url("${this.state.cover}")` }}>
             <div className="setting__background" />
             <div className="setting__uploader" onTouchTap={() => this.coverInput.click()} >
@@ -240,7 +240,7 @@ export default class SettingPage extends Component {
             </div>
           </div>
           <h2 className="setting__username">{User.username}</h2>
-        </div>
+        </header>
         <Divider />
         <div className="setting__content">
           <List className="setting__primary"> { /* General Setting */ }
@@ -426,7 +426,7 @@ export default class SettingPage extends Component {
             />
           )
         }
-        <div className="content">
+        <main className="content">
           <Loader
             open={this.state.isProcessing}
             message={this.state.processMsg}
@@ -443,7 +443,7 @@ export default class SettingPage extends Component {
             modal
           >您还有尚未保存的设置，是否确认退出？
           </Dialog>
-        </div>
+        </main>
       </div>
     );
   }

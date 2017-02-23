@@ -25,11 +25,11 @@ export default class SearchPage extends Component {
     const { collections, users } = this.props;
     return (
       <div className="content__search">
-        <div className="search__collection">
-          <div className="collection__header">
+        <section className="search__collection">
+          <header className="collection__header">
             <span>精选相册</span>
             {/* <a>展开</a> */}
-          </div>
+          </header>
           {
             collections.map((coll, i) => {
               const user = Meteor.users.findOne({ username: coll.user });
@@ -53,12 +53,12 @@ export default class SearchPage extends Component {
               );
             })
           }
-        </div>
-        <div className="search__user">
-          <div className="user__header">
+        </section>
+        <section className="search__user">
+          <header className="user__header">
             <span>精选用户</span>
             {/* <a>展开</a> */}
-          </div>
+          </header>
           <Paper className="user__container">
             {
               users.map((user, i) => (
@@ -77,7 +77,7 @@ export default class SearchPage extends Component {
               ))
             }
           </Paper>
-        </div>
+        </section>
       </div>
     );
   }
@@ -91,11 +91,11 @@ export default class SearchPage extends Component {
           onChange={(e) => this.setState({ searchText: e.target.value })}
           onSubmit={this.handleSearchSubmit}
         />
-        <div className="content deep">
+        <main className="content deep">
           { dataIsReady
             ? this.renderContent()
             : (<Loading />) }
-        </div>
+        </main>
       </div>
     );
   }

@@ -12,7 +12,8 @@ if (Meteor.isClient) {
   import { shallow } from 'enzyme';
   import { chai } from 'meteor/practicalmeteor:chai';
   import { sinon } from 'meteor/practicalmeteor:sinon';
-  import { GroupLayout } from './GroupLayout.jsx';
+  import { JustifiedGroupLayout } from './GroupLayout.jsx';
+  import { Title } from './GroupLayout.style.js';
 
   const expect = chai.expect;
 
@@ -36,7 +37,7 @@ if (Meteor.isClient) {
       selectGroupCounter: sinon.spy(),
     };
     const component = shallow(
-      <GroupLayout
+      <JustifiedGroupLayout
         isEditing
         day={'2016-12-31'}
         dayGroupImage={generateImages(4)}
@@ -48,7 +49,7 @@ if (Meteor.isClient) {
       />
     );
     const anotherComponent = shallow(
-      <GroupLayout
+      <JustifiedGroupLayout
         isEditing
         day={'2016-12-30'}
         dayGroupImage={generateImages(2)}
@@ -77,7 +78,8 @@ if (Meteor.isClient) {
     });
     it('should isGroupSelect state behave right when group\'s key change', () => {
       const { component, anotherComponent } = setup();
-      expect(component.state('isGroupSelect')).to.equal(false, 'When group prop is {} -- empty Object');
+      expect(component.state('isGroupSelect'))
+      .to.equal(false, 'When group prop is {} -- empty Object');
 
       component.setProps({ group: { '2016-12-31': 4 }, counter: 4 });
       anotherComponent.setProps({ group: { '2016-12-31': 4 }, counter: 4 });
@@ -92,7 +94,8 @@ if (Meteor.isClient) {
 
     it('should isGroupSelect state behave right when group\'s value change', () => {
       const { component, anotherComponent } = setup();
-      expect(anotherComponent.state('isGroupSelect')).to.equal(false, 'Initial isGroupSelect state must be false');
+      expect(anotherComponent.state('isGroupSelect'))
+      .to.equal(false, 'Initial isGroupSelect state must be false');
 
       component.setProps({ group: { '2016-12-31': 4, '2016-12-30': 2 }, counter: 6 });
       anotherComponent.setProps({ group: { '2016-12-31': 4, '2016-12-30': 2 }, counter: 6 });
@@ -112,7 +115,7 @@ if (Meteor.isClient) {
       const { actions, component } = setup();
       const props = component.instance().props;
 
-      const toggleBtn = component.find('.Justified__title');
+      const toggleBtn = component.find(Title);
       expect(toggleBtn).to.have.length(1);
 
       toggleBtn.simulate('touchTap');
@@ -121,7 +124,8 @@ if (Meteor.isClient) {
         group: props.day,
         counter: props.groupTotal,
       });
-      component.setState({ isGroupSelect: true }); // have to set it by self without redux mock store
+      // have to set it by self without redux mock store
+      component.setState({ isGroupSelect: true });
 
       toggleBtn.simulate('touchTap');
       sinon.assert.calledWith(actions.selectGroupCounter, {

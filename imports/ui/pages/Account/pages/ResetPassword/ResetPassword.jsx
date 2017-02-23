@@ -73,9 +73,9 @@ export default class ResetPasswordPage extends Component {
           titleStyle={{ fontSize: '20px' }}
           iconElementLeft={<IconButton onTouchTap={() => this.setState({ isAlertOpen: true })}><ArrowBackIcon /></IconButton>}
         />
-        <div className="content">
+        <main className="content">
           <div className="content__resetPassword">
-            <div className="resetPassword__form">
+            <section className="resetPassword__form">
               <TextField
                 name="newPwd"
                 hintText="新密码"
@@ -96,15 +96,15 @@ export default class ResetPasswordPage extends Component {
                 onChange={this.handleValueChange}
                 fullWidth
               /><br />
-            </div>
-            <div className="resetPassword__button" style={{ padding: '22px 0', textAlign: 'center' }}>
+            </section>
+            <section className="resetPassword__button" style={{ padding: '22px 0', textAlign: 'center' }}>
               <RaisedButton
                 label="修改密码"
                 labelColor="#fff"
                 backgroundColor="#0077d9"
                 onTouchTap={this.handleResetPassword}
               />
-            </div>
+            </section>
             <Dialog
               actions={[
                 <FlatButton
@@ -123,7 +123,7 @@ export default class ResetPasswordPage extends Component {
             >是否确认离开此页面？
             </Dialog>
           </div>
-        </div>
+        </main>
       </div>
     );
   }

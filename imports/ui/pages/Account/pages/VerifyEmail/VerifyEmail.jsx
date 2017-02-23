@@ -24,13 +24,13 @@ export default class VerifyEmailPage extends Component {
     return (
       <div className="container">
         <AppBar title="GalleryPlus" />
-        <div className="content">
+        <main className="content">
           <div className="content__verifyEmail">
             <h2>邮箱验证成功</h2>
             <p>本页面将在2秒后自动跳转返回首页</p>
             <p>若无反应请点击此<Link to="/">链接</Link>进行手动跳转</p>
           </div>
-        </div>
+        </main>
       </div>
     );
   }

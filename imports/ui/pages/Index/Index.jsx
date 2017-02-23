@@ -77,45 +77,47 @@ export default class IndexPage extends PureComponent {
   }
 
   render() {
+    const { User, dataIsReady, zoomerOpen, zoomerImage } = this.props;
     return (
       <div className="container">
         <NavHeader
-          User={this.props.User}
+          User={User}
           location={this.state.location}
           primary
         />
-        { !this.props.dataIsReady && (<Loading />) }
-        <div className="content">
+        <main className="content">
+          { !dataIsReady && (<Loading />) }
           <Recap
             title="Gallery"
             detailFir="Vivian的私人相册"
             detailSec="Created By Shiny Lee"
             showIcon
           />
-          { this.props.dataIsReady && (
-            <div className="content__index">
-              <ReactCSSTransitionGroup
-                transitionName="zoomer"
-                transitionEnterTimeout={300}
-                transitionLeaveTimeout={300}
-              >
-                { this.props.zoomerOpen && <ZoomerHolder key={this.props.zoomerImage._id} image={this.props.zoomerImage} /> }
-              </ReactCSSTransitionGroup>
-              <Infinity
-                isLoading={this.state.isLoading}
-                onInfinityLoad={this.handleLoadImages}
-                offsetToBottom={100}
-              >
-                <ImageList
-                  User={this.props.User}
-                  images={this.state.images}
-                  onLikeOrUnlikeAction={this.handleRefreshImages}
-                />
-              </Infinity>
-            </div>
+          {
+            dataIsReady && (
+              <div className="content__index">
+                <ReactCSSTransitionGroup
+                  transitionName="zoomer"
+                  transitionEnterTimeout={300}
+                  transitionLeaveTimeout={300}
+                >
+                  { zoomerOpen && <ZoomerHolder key={zoomerImage._id} image={zoomerImage} /> }
+                </ReactCSSTransitionGroup>
+                <Infinity
+                  isLoading={this.state.isLoading}
+                  onInfinityLoad={this.handleLoadImages}
+                  offsetToBottom={100}
+                >
+                  <ImageList
+                    User={User}
+                    images={this.state.images}
+                    onLikeOrUnlikeAction={this.handleRefreshImages}
+                  />
+                </Infinity>
+              </div>
             )
           }
-        </div>
+        </main>
       </div>
     );
   }

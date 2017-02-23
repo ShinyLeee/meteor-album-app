@@ -127,20 +127,22 @@ export default class UserFansPage extends PureComponent {
           title={this.props.isGuest ? `${this.props.curUser.username}的关注者` : '我的关注者'}
           secondary
         />
-        { !this.props.dataIsReady && (<Loading />) }
-        <div className="content">
-          { this.props.dataIsReady && (
-            <div className="content__userFans">
-              <div className="userFans__search">
-                <input type="text" placeholder="搜索" onChange={this.handleSearchChange} />
+        <main className="content">
+          {
+            this.props.dataIsReady
+            ? (
+              <div className="content__userFans">
+                <section className="userFans__search">
+                  <input type="text" placeholder="搜索" onChange={this.handleSearchChange} />
+                </section>
+                <section className="userFans__list">
+                  <List>{ this.renderFansList() }</List>
+                </section>
               </div>
-              <List className="userFans__list">
-                { this.renderFansList() }
-              </List>
-            </div>
             )
+            : (<Loading />)
           }
-        </div>
+        </main>
       </div>
     );
   }

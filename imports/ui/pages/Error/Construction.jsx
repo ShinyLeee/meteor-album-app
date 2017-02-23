@@ -10,7 +10,7 @@ const Construction = ({ User, sourceDomain }) => (
       User={User}
       primary
     />
-    <div className="content">
+    <main className="content">
       <div className="content__error">
         <div className="error__container">
           <h2 className="error__status">This Page is Under Construction</h2>
@@ -26,7 +26,7 @@ const Construction = ({ User, sourceDomain }) => (
           </p>
         </div>
       </div>
-    </div>
+    </main>
   </div>
 );
 

@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import { selectCounter } from '/imports/ui/redux/actions/index.js';
 import JustifiedImageBackground from '../../snippet/JustifiedImageBackground.jsx';
+import { Wrapper, SelectableImage } from './GroupImageHolder.style.js';
 
 export class GroupImageHolder extends PureComponent {
 
@@ -88,8 +89,7 @@ export class GroupImageHolder extends PureComponent {
       height: `${dimension.height}px`,
     };
     return (
-      <div
-        className="Justified__imageHolder"
+      <Wrapper
         style={imageHolderStyle}
         onTouchTap={this.handleSelect}
       >
@@ -101,14 +101,14 @@ export class GroupImageHolder extends PureComponent {
           transitionEnterTimeout={500}
           transitionLeave={false}
         >
-          <img
+          <SelectableImage
             src={imageSrc}
             alt={image.name}
-            style={{ transform: this.state.isSelect && 'scale(.8)' }}
-            ref={(node) => { this.image = node; }}
+            isSelect={this.state.isSelect}
+            innerRef={(node) => { this.image = node; }}
           />
         </ReactCSSTransitionGroup>
-      </div>
+      </Wrapper>
     );
   }
 }

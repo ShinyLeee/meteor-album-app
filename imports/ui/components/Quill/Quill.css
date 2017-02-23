@@ -1,0 +1,16 @@
+.ql-editor {
+  padding: 12px 20px;
+}
+
+.ql-editor.ql-blank::before {
+  color: rgba(0, 0, 0, 0.3);
+  font-style: normal;
+}
+
+.ql-toolbar.ql-snow {
+  border: none;
+}
+
+.ql-container.ql-snow {
+  border: none;
+}

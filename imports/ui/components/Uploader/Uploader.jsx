@@ -3,6 +3,16 @@ import React, { PureComponent, PropTypes } from 'react';
 import EXIF from 'exif-js';
 import uuid from 'node-uuid';
 import { insertImage } from '/imports/api/images/methods.js';
+import {
+  Wrapper,
+  Inner,
+  ThumbnailSection,
+  DetailSection,
+  Message,
+  DestMessage,
+  StopButton,
+  Progress,
+} from './Uploader.style.js';
 
 const initialState = {
   pace: 0,               // Current File Uploading Progress
@@ -36,7 +46,7 @@ export default class Uploader extends PureComponent {
 
   uploadToQiniu(files, currentFile) {
     if (!files) {
-      console.error('File is empty, check if miss select upload files'); // eslint-disable-line no-console
+      console.error('File is empty, check if miss select upload files'); // eslint-disable-line
     }
 
     const allowedFiles = ['image/jpeg', 'image/png', 'image/gif'];
@@ -205,18 +215,18 @@ export default class Uploader extends PureComponent {
     if (this.props.open && this.state.uploading) {
       return (
         <div>
-          <div className="component__Uploader">
-            <div className="Uploader__container">
-              <div className="Uploader__thumbnails" style={{ backgroundImage: `url(${this.state.thumbnail})` }} />
-              <div className="Uploader__details">
-                <span>正在上传至</span>
-                <h4>{ this.props.destination.split('/')[1] }</h4>
-                <span>第{this.state.current}张, 共{this.state.total}张</span>
-                <a className="Uploader__stop" ref={(ref) => { this.stopButton = ref; }}>停止</a>
-                <div className="Uploader__pace" style={{ width: this.state.pace }} />
-              </div>
-            </div>
-          </div>
+          <Wrapper>
+            <Inner>
+              <ThumbnailSection style={{ backgroundImage: `url(${this.state.thumbnail})` }} />
+              <DetailSection>
+                <Message>正在上传至</Message>
+                <DestMessage>{this.props.destination.split('/')[1]}</DestMessage>
+                <Message>第{this.state.current}张, 共{this.state.total}张</Message>
+                <StopButton innerRef={(ref) => { this.stopButton = ref; }}>停止</StopButton>
+                <Progress style={{ width: this.state.pace }} />
+              </DetailSection>
+            </Inner>
+          </Wrapper>
         </div>
       );
     }

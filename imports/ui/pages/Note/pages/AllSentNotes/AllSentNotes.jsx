@@ -102,13 +102,13 @@ export default class AllSentNotesPage extends Component {
     return (
       <div className="container">
         <NavHeader title="我发送的消息" style={{ backgroundColor: blue500 }} secondary />
-        <div className="content">
+        <main className="content">
           {
             this.props.dataIsReady
             ? this.renderContent()
             : (<Loading />)
           }
-        </div>
+        </main>
       </div>
     );
   }

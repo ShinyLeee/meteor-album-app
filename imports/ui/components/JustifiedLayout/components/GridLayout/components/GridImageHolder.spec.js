@@ -13,6 +13,7 @@ if (Meteor.isClient) {
   import { chai } from 'meteor/practicalmeteor:chai';
   import { sinon } from 'meteor/practicalmeteor:sinon';
   import { GridImageHolder } from './GridImageHolder.jsx';
+  import { Wrapper } from './GridImageHolder.style.js';
 
   const expect = chai.expect;
 
@@ -56,7 +57,7 @@ if (Meteor.isClient) {
       const { actions, component } = setup();
       const props = component.instance().props;
 
-      const toggleBtn = component.find('.GridLayout__Image');
+      const toggleBtn = component.find(Wrapper);
       expect(toggleBtn).to.have.length(1);
 
       toggleBtn.simulate('touchTap');

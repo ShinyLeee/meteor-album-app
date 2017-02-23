@@ -102,13 +102,13 @@ export default class AllNotesPage extends Component {
     return (
       <div className="container">
         <NavHeader title="全部消息" style={{ backgroundColor: blue500 }} secondary />
-        <div className="content">
+        <main className="content">
           {
             this.props.dataIsReady
             ? this.renderContent()
             : (<Loading />)
           }
-        </div>
+        </main>
       </div>
     );
   }

@@ -1,6 +1,5 @@
 import React, { PropTypes } from 'react';
 import AppBar from 'material-ui/AppBar';
-
 import LoadingNavHeader from './components/LoadingNavHeader/LoadingNavHeader.jsx';
 import ConnectedPrimaryNavHeader from './components/PrimaryNavHeader/index.js';
 import SecondaryNavHeader from './components/SecondaryNavHeader/SecondaryNavHeader.jsx';
@@ -37,18 +36,16 @@ const NavHeader = (props) => {
       />);
   }
   return (
-    <div className="component__NavHeader">
-      <AppBar
-        style={Object.assign({}, styles.AppBar, style)}
-        titleStyle={Object.assign({}, styles.AppBarTitle, titleStyle)}
-        title={title}
-        showMenuIconButton={showMenuIconButton}
-        onTitleTouchTap={onTitleTouchTap}
-        iconElementLeft={iconElementLeft}
-        iconElementRight={iconElementRight}
-        onLeftIconButtonTouchTap={onLeftIconButtonTouchTap}
-      />
-    </div>
+    <AppBar
+      style={Object.assign({}, styles.AppBar, style)}
+      titleStyle={Object.assign({}, styles.AppBarTitle, titleStyle)}
+      title={title}
+      showMenuIconButton={showMenuIconButton}
+      onTitleTouchTap={onTitleTouchTap}
+      iconElementLeft={iconElementLeft}
+      iconElementRight={iconElementRight}
+      onLeftIconButtonTouchTap={onLeftIconButtonTouchTap}
+    />
   );
 };
 
@@ -63,18 +60,7 @@ NavHeader.defaultProps = {
 NavHeader.propTypes = {
   User: PropTypes.object,
   loading: PropTypes.bool.isRequired,
-  /**
-   * primary:
-   *
-   * If true, render a common NavHeader,
-   */
   primary: PropTypes.bool.isRequired,
-  /**
-   * primary:
-   *
-   * If true, render a specific NavHeader,
-   * include specific iconElementLeft
-   */
   secondary: PropTypes.bool.isRequired,
   /**
    * Below:

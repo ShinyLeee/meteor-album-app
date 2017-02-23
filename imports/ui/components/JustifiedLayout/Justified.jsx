@@ -6,10 +6,19 @@ import moment from 'moment';
 import IconButton from 'material-ui/IconButton';
 import ComfyIcon from 'material-ui/svg-icons/image/view-comfy';
 import CompactIcon from 'material-ui/svg-icons/image/view-compact';
-import { enableSelectAll, disableSelectAll, photoSwipeOpen } from '/imports/ui/redux/actions/index.js';
+import {
+  enableSelectAll,
+  disableSelectAll,
+  photoSwipeOpen } from '/imports/ui/redux/actions/index.js';
 import ConnectedGroupLayout from './components/GroupLayout/GroupLayout.jsx';
 import ConnectedGridLayout from './components/GridLayout/GridLayout.jsx';
 import JustifiedSelectIcon from './components/snippet/JustifiedSelectIcon.jsx';
+import {
+  Wrapper,
+  Toolbar,
+  ToolbarLeft,
+  ToolbarRight,
+} from './Justified.style.js';
 
 export class Justified extends PureComponent {
 
@@ -47,7 +56,7 @@ export class Justified extends PureComponent {
           this.props.images,
           (image) => moment(image.shootAt).format('YYYYMMDD')
         );
-        dayGroupImages.forEach((value, key) => (group[key] = value.length));
+        _.each(dayGroupImages, (value, key) => (group[key] = value.length));
         this.props.enableSelectAll({
           selectImages: this.props.images,
           group,
@@ -66,28 +75,27 @@ export class Justified extends PureComponent {
     let dayGroupImages = [];
     const { isEditing, images } = this.props;
     const isDefaultLayout = this.state.layoutType === 'group';
-    if (isDefaultLayout) dayGroupImages = _.groupBy(images, (image) => moment(image.shootAt).format('YYYYMMDD'));
+    if (isDefaultLayout) {
+      dayGroupImages = _.groupBy(images, (image) => moment(image.shootAt).format('YYYYMMDD'));
+    }
     return (
-      <div
-        className="Justified"
-        style={isDefaultLayout ? { top: 0 } : {}}
-      >
-        <div className="Justified__toolbox">
+      <Wrapper isDefaultLayout={isDefaultLayout}>
+        <Toolbar>
           { isEditing && (
-            <div className="Justified__toolbox_left" onTouchTap={this.handleToggleSelectAll}>
+            <ToolbarLeft onTouchTap={this.handleToggleSelectAll}>
               <JustifiedSelectIcon activate={this.state.isAllSelect} />
               <h4>选择全部</h4>
-            </div>
+            </ToolbarLeft>
           ) }
-          <div className="Justified__toolbox_right">
+          <ToolbarRight>
             <IconButton onTouchTap={() => this.handleChangeLayout('group')}>
               <CompactIcon color={isDefaultLayout ? '#111' : '#757575'} />
             </IconButton>
             <IconButton onTouchTap={() => this.handleChangeLayout('grid')}>
               <ComfyIcon color={isDefaultLayout ? '#757575' : '#111'} />
             </IconButton>
-          </div>
-        </div>
+          </ToolbarRight>
+        </Toolbar>
         {
           isDefaultLayout
           ? (
@@ -111,7 +119,7 @@ export class Justified extends PureComponent {
             />
           )
         }
-      </div>
+      </Wrapper>
     );
   }
 }

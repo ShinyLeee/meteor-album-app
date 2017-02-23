@@ -4,14 +4,12 @@ import { _ } from 'meteor/underscore';
 import React, { Component, PropTypes } from 'react';
 import { browserHistory } from 'react-router';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
-import FloatingActionButton from 'material-ui/FloatingActionButton';
 import IconButton from 'material-ui/IconButton';
-import AddIcon from 'material-ui/svg-icons/content/add';
 import ChevronLeftIcon from 'material-ui/svg-icons/navigation/chevron-left';
 import ChevronRightIcon from 'material-ui/svg-icons/navigation/chevron-right';
-
 import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
 import Loading from '/imports/ui/components/Loader/Loading.jsx';
+import FloatButton from '/imports/ui/components/FloatButton/FloatButton.jsx';
 import DiaryHolder from '../../components/DiaryHolder/DiaryHolder.jsx';
 
 export default class DiaryPage extends Component {
@@ -44,7 +42,7 @@ export default class DiaryPage extends Component {
     const currentMonth = date.getMonth();
     return (
       <div className="content__diary">
-        <div
+        <header
           className="diary__header"
           style={{ backgroundImage: `url(${sourceDomain}/GalleryPlus/Default/default-diary.jpg)` }}
         >
@@ -77,7 +75,7 @@ export default class DiaryPage extends Component {
               ))
             }
           </div>
-        </div>
+        </header>
         <div className="diary__body">
           {
             diarys.map((diary, i) => {
@@ -93,17 +91,17 @@ export default class DiaryPage extends Component {
                   transitionEnterTimeout={375}
                   transitionLeave={false}
                 >
-                  <div key={i} className="diary__item">
-                    <div className="diary__title">
+                  <article key={i} className="diary__item">
+                    <header className="diary__title">
                       <h3>{diary.title}</h3>
-                    </div>
-                    <p className="diary__content" onTouchTap={() => this.props.diaryOpen(activeDiary)}>
+                    </header>
+                    <article className="diary__content" onTouchTap={() => this.props.diaryOpen(activeDiary)}>
                       {diary.outline}
-                    </p>
-                    <p className="diary__footer">
-                      <span className="diary__time">{diaryTime}</span>
-                    </p>
-                  </div>
+                    </article>
+                    <footer className="diary__footer">
+                      <time className="diary__time" dateTime={diaryTime}>{diaryTime}</time>
+                    </footer>
+                  </article>
                 </ReactCSSTransitionGroup>
               );
             })
@@ -127,17 +125,15 @@ export default class DiaryPage extends Component {
           iconColor={iconColor}
           secondary
         />
-        <div className="content">
-          { this.props.dataIsReady ? this.renderContent() : <Loading style={{ top: 0 }} /> }
+        <main className="content">
+          {
+            this.props.dataIsReady
+            ? this.renderContent()
+            : (<Loading style={{ top: 0 }} />)
+          }
           <DiaryHolder />
-        </div>
-        <div className="component__FloatBtn">
-          <FloatingActionButton
-            onTouchTap={() => browserHistory.push('/diary/write')}
-            secondary
-          ><AddIcon />
-          </FloatingActionButton>
-        </div>
+        </main>
+        <FloatButton onBtnClick={() => browserHistory.push('/diary/write')} />
       </div>
     );
   }

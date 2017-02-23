@@ -15,6 +15,7 @@ if (Meteor.isClient) {
   import { sinon } from 'meteor/practicalmeteor:sinon';
   import { getRandomArbitrary } from '/imports/utils/utils.js';
   import { GroupImageHolder } from './GroupImageHolder.jsx';
+  import { Wrapper } from './GroupImageHolder.style.js';
 
   const expect = chai.expect;
 
@@ -90,7 +91,7 @@ if (Meteor.isClient) {
       const { actions, component } = setup();
       const props = component.instance().props;
 
-      const toggleBtn = component.find('.Justified__imageHolder');
+      const toggleBtn = component.find(Wrapper);
       expect(toggleBtn).to.have.length(1);
 
       toggleBtn.simulate('touchTap');

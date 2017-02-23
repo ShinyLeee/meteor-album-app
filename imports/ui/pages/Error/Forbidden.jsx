@@ -10,7 +10,7 @@ const Forbidden = ({ User, location, sourceDomain }) => (
       User={User}
       primary
     />
-    <div className="content">
+    <main className="content">
       <div className="content__error">
         <div className="error__container">
           <h2 className="error__status">Error: 403 Access Denied</h2>
@@ -32,8 +32,7 @@ const Forbidden = ({ User, location, sourceDomain }) => (
           }
         </div>
       </div>
-
-    </div>
+    </main>
   </div>
 );
 

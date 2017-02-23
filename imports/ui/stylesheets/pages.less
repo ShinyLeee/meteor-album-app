@@ -41,11 +41,11 @@
       vertical-align: middle;
       width: 47%;
     }
-    & > p {
-      color: @color-font-detail;
-      font-size: 14px;
-      text-align: center;
-    }
+  }
+  & > .login__footer {
+    color: @color-font-detail;
+    font-size: 14px;
+    text-align: center;
   }
 }
 
@@ -236,6 +236,7 @@
         overflow: hidden;
       }
       & > .diary__footer {
+        margin: 16px 0;
         & > .diary__time {
           letter-spacing: .5px;
           font-size: 13px;
@@ -314,6 +315,7 @@
     color: #212121;
     font-size: 34px;
     font-weight: bold;
+    line-height: inherit;
   }
   & > .collPics__duration {
     padding: 6px 16px 16px 72px;
@@ -331,6 +333,7 @@
       color: #212121;
       font-size: 34px;
       font-weight: bold;
+      line-height: inherit;
     }
     & > .recycle__desc {
       padding: 6px 16px 16px 72px;
@@ -464,7 +467,12 @@
     &:nth-child(even) { margin-left: 0; }
     & > .collection__cover {
       width: 100%;
-      & > img { width: 100%; height: 100%; }
+      height: 200px;
+      & > img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
     }
     & > .collection__info {
       position: relative;

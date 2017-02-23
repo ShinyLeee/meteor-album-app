@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import React, { Component, PropTypes } from 'react';
 import { browserHistory } from 'react-router';
-import TimeAgo from 'react-timeago';
 import CNStrings from 'react-timeago/lib/language-strings/zh-CN';
 import buildFormatter from 'react-timeago/lib/formatters/buildFormatter';
 import Avatar from 'material-ui/Avatar';
@@ -9,10 +8,17 @@ import FlatButton from 'material-ui/FlatButton';
 import Popover from 'material-ui/Popover';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
-import TextField from 'material-ui/TextField';
-import { List, ListItem } from 'material-ui/List';
-
+import { ListItem } from 'material-ui/List';
 import { insertComment, removeComment } from '/imports/api/comments/methods.js';
+import {
+  CommentsWrapper,
+  CommentsSection,
+  StyledTimeAgo,
+  StyledTextField,
+  PublishSection,
+  PublisherAvatar,
+  PublishFooter,
+} from './CommentList.style.js';
 
 const formatter = buildFormatter(CNStrings);
 
@@ -103,7 +109,7 @@ export default class CommentList extends Component {
     });
   }
 
-  renderCommentList() {
+  renderCommentItem() {
     const { User, comments } = this.props;
     return comments.map((comment, i) => {
       const user = Meteor.users.findOne({ username: comment.user });
@@ -112,10 +118,10 @@ export default class CommentList extends Component {
           <ListItem
             leftAvatar={<Avatar src={user && user.profile.avatar} />}
             primaryText={
-              <div className="CommentList__header">
+              <header>
                 <span>{comment.user}</span>
-                <TimeAgo date={comment.createdAt} formatter={formatter} />
-              </div>
+                <StyledTimeAgo date={comment.createdAt} formatter={formatter} />
+              </header>
             }
             secondaryText={<div dangerouslySetInnerHTML={{ __html: comment.content }} />}
             secondaryTextLines={2}
@@ -129,11 +135,22 @@ export default class CommentList extends Component {
             onRequestClose={() => this.setState({ [comment._id]: false })}
           >
             <Menu>
-              <MenuItem primaryText="回复" onTouchTap={(e) => this.handleReplyComment(e, comment)} />
-              <MenuItem primaryText="查看该用户" onTouchTap={() => browserHistory.push(`/user/${comment.user}`)} />
+              <MenuItem
+                primaryText="回复"
+                onTouchTap={(e) => this.handleReplyComment(e, comment)}
+              />
+              <MenuItem
+                primaryText="查看该用户"
+                onTouchTap={() => browserHistory.push(`/user/${comment.user}`)}
+              />
               {
                 (User && User.username) === comment.user &&
-                (<MenuItem primaryText="删除评论" onTouchTap={(e) => this.handleRemoveComment(e, comment)} />)
+                (
+                  <MenuItem
+                    primaryText="删除评论"
+                    onTouchTap={(e) => this.handleRemoveComment(e, comment)}
+                  />
+                )
               }
             </Menu>
           </Popover>
@@ -145,15 +162,14 @@ export default class CommentList extends Component {
   render() {
     const { comments } = this.props;
     return (
-      <div className="component__CommentList">
-        <List className="CommentList__comments">
-          { comments.length > 0 && this.renderCommentList() }
-        </List>
-        <div className="CommentList__publish">
-          <div className="CommentList__textfield">
-            <Avatar src={this.avatarSrc} />
-            <TextField
-              className="CommentList__input"
+      <CommentsWrapper>
+        <CommentsSection>
+          { comments.length > 0 && this.renderCommentItem() }
+        </CommentsSection>
+        <PublishSection>
+          <div>
+            <PublisherAvatar src={this.avatarSrc} />
+            <StyledTextField
               name="comment"
               value={this.state.comment}
               hintText="发表评论..."
@@ -162,14 +178,14 @@ export default class CommentList extends Component {
               multiLine
             />
           </div>
-          <div className="CommentList__toolbox">
+          <PublishFooter>
             <FlatButton
               label="发布"
               onTouchTap={this.handlePublishComment}
             />
-          </div>
-        </div>
-      </div>
+          </PublishFooter>
+        </PublishSection>
+      </CommentsWrapper>
     );
   }
 }

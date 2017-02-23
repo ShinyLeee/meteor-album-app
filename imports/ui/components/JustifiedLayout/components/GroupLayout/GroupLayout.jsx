@@ -7,6 +7,10 @@ import justifiedLayout from 'justified-layout';
 import { photoSwipeOpen, selectGroupCounter } from '/imports/ui/redux/actions/index.js';
 import ConnectedGroupImageHolder from './components/GroupImageHolder.jsx';
 import JustifiedSelectIcon from '../snippet/JustifiedSelectIcon.jsx';
+import {
+  Wrapper,
+  Title,
+} from './GroupLayout.style.js';
 
 export class JustifiedGroupLayout extends PureComponent {
 
@@ -171,14 +175,11 @@ export class JustifiedGroupLayout extends PureComponent {
     showDay.join('');
 
     return (
-      <div className="Justified__dayGroup" style={{ height: this.state.geometry.containerHeight }}>
-        <div
-          className="Justified__title"
-          onTouchTap={this.handleToggleSelectGroup}
-        >
+      <Wrapper style={{ height: this.state.geometry.containerHeight }}>
+        <Title onTouchTap={this.handleToggleSelectGroup}>
           { isEditing && <JustifiedSelectIcon activate={this.state.isGroupSelect} /> }
           <h4>{showDay}</h4>
-        </div>
+        </Title>
         {
           _.map(dayGroupImage, (image, i) => (
             <ConnectedGroupImageHolder
@@ -194,7 +195,7 @@ export class JustifiedGroupLayout extends PureComponent {
             />
           ))
         }
-      </div>
+      </Wrapper>
     );
   }
 }

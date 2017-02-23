@@ -81,19 +81,6 @@ export default class WriteDiaryPage extends Component {
   }
 
   render() {
-    const actions = [
-      <FlatButton
-        label="取消"
-        onTouchTap={() => this.setState({ isAlertOpen: false })}
-        keyboardFocused
-        primary
-      />,
-      <FlatButton
-        label="确认"
-        onTouchTap={() => browserHistory.goBack()}
-        primary
-      />,
-    ];
     return (
       <div className="container">
         <NavHeader
@@ -102,7 +89,7 @@ export default class WriteDiaryPage extends Component {
           iconElementLeft={<IconButton onTouchTap={this.handleGoBack}><ArrowBackIcon /></IconButton>}
           iconElementRight={<IconButton onTouchTap={this.handleInsertDiary}><DoneIcon /></IconButton>}
         />
-        <div className="content">
+        <main className="content">
           <Loader
             open={this.state.isProcessing}
             message={this.state.processMsg}
@@ -124,16 +111,28 @@ export default class WriteDiaryPage extends Component {
               onChange={(outline, content) => this.setState({ outline, content })}
             />
           </div>
-        </div>
-        <Dialog
-          title="提示"
-          titleStyle={{ border: 'none' }}
-          actions={actions}
-          actionsContainerStyle={{ border: 'none' }}
-          open={this.state.isAlertOpen}
-          modal
-        >您还有未保存的日记内容，是否确认退出？
-        </Dialog>
+          <Dialog
+            title="提示"
+            titleStyle={{ border: 'none' }}
+            actions={[
+              <FlatButton
+                label="取消"
+                onTouchTap={() => this.setState({ isAlertOpen: false })}
+                keyboardFocused
+                primary
+              />,
+              <FlatButton
+                label="确认"
+                onTouchTap={() => browserHistory.goBack()}
+                primary
+              />,
+            ]}
+            actionsContainerStyle={{ border: 'none' }}
+            open={this.state.isAlertOpen}
+            modal
+          >您还有未保存的日记内容，是否确认退出？
+          </Dialog>
+        </main>
       </div>
     );
   }

@@ -137,45 +137,42 @@ export default class EmailsPage extends Component {
           style={{ backgroundColor: blue500 }}
           secondary
         />
-        <div className="content">
+        <main className="content">
           <Loader
             open={this.state.isProcessing}
             message={this.state.processMsg}
             onTimeout={this.handleLoaderTimeout}
           />
           <div className="content__settingEmails">
-            <div className="settingEmails__holder">
-              <List className="settingEmails__current">
+            <section className="settingEmails__current">
+              <List>
                 <Subheader>
                   <span>邮箱列表</span>
                 </Subheader>
                 { this.renderEmailList() }
               </List>
-              <Divider />
-              <div className="settingEmails__new">
-                <Subheader>添加邮箱</Subheader>
-                <TextField
-                  name="newEmail"
-                  style={{ padding: '0 16px' }}
-                  hintText="邮箱地址"
-                  value={this.state.email}
-                  onChange={this.handleEmailValueChange}
-                />
-              </div>
-              <p
-                className="settingEmails__info"
-                style={{ padding: '0 16px', fontSize: '12px' }}
-              >邮箱用于登陆及修改密码等安全性操作，如若尚未绑定邮箱或仍未完成验证，请即刻完成邮箱绑定或验证，以保护账号安全。
-              </p>
-              <div
-                className="settingEmails__actions"
-                style={{ margin: '18px 24px 0 0', textAlign: 'right' }}
-              >
+            </section>
+            <Divider />
+            <section className="settingEmails__new">
+              <Subheader>添加邮箱</Subheader>
+              <TextField
+                name="newEmail"
+                style={{ padding: '0 16px' }}
+                hintText="邮箱地址"
+                underlineShow={false}
+                value={this.state.email}
+                onChange={this.handleEmailValueChange}
+              />
+            </section>
+            <Divider />
+            <section className="settingEmails__action">
+              <p style={{ padding: '0 16px', fontSize: '12px' }}>邮箱用于登陆及修改密码等安全性操作，如若尚未绑定邮箱或仍未完成验证，请即刻完成邮箱绑定或验证，以保护账号安全。</p>
+              <div style={{ margin: '18px 24px 0 0', textAlign: 'right' }}>
                 <RaisedButton label="下一步" onTouchTap={this.handleAddEmail} />
               </div>
-            </div>
+            </section>
           </div>
-        </div>
+        </main>
       </div>
     );
   }

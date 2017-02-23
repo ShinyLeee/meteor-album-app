@@ -115,10 +115,13 @@ export default class UserLikesPage extends PureComponent {
           title={this.props.isGuest ? `${this.props.curUser.username}喜欢的` : '我喜欢的'}
           secondary
         />
-        { !this.props.dataIsReady && (<Loading />) }
-        <div className="content">
-          { this.props.dataIsReady && this.renderContent() }
-        </div>
+        <main className="content">
+          {
+            this.props.dataIsReady
+            ? this.renderContent()
+            : (<Loading />)
+          }
+        </main>
       </div>
     );
   }

@@ -69,7 +69,7 @@ export default class PasswordPage extends Component {
   renderContent() {
     return (
       <div className="content__settingPassword">
-        <div className="settingPassword__form">
+        <section className="settingPassword__form">
           <TextField
             name="oldPwd"
             hintText="当前密码"
@@ -100,15 +100,15 @@ export default class PasswordPage extends Component {
             onChange={this.handleValueChange}
             fullWidth
           /><br />
-        </div>
-        <div className="settingPassword__button" style={{ padding: '22px 0', textAlign: 'center' }}>
+        </section>
+        <section className="settingPassword__button" style={{ padding: '22px 0', textAlign: 'center' }}>
           <RaisedButton
             label="确认修改"
             labelColor="#fff"
             backgroundColor="#0077d9"
             onTouchTap={this.handlePasswordChange}
           />
-        </div>
+        </section>
       </div>
     );
   }
@@ -121,14 +121,14 @@ export default class PasswordPage extends Component {
           style={{ backgroundColor: blue500 }}
           secondary
         />
-        <div className="content">
+        <main className="content">
           <Loader
             open={this.state.isProcessing}
             message={this.state.processMsg}
             onTimeout={this.handleTimeout}
           />
           { this.renderContent() }
-        </div>
+        </main>
       </div>
     );
   }
