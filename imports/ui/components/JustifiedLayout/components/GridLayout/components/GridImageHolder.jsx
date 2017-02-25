@@ -72,7 +72,7 @@ export class GridImageHolder extends PureComponent {
     const url = `${domain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
     const imageSrc = `${url}?imageView2/1/w/${realDimension}`;
     return (
-      <Wrapper isEditing={isEditing} onTouchTap={this.handleSelect}>
+      <Wrapper onTouchTap={this.handleSelect}>
         <JustifiedImageBackground
           isEditing={isEditing}
           isSelect={this.state.isSelect}

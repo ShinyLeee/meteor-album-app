@@ -25,7 +25,7 @@ export default class ReactPhotoSwipe extends Component {
   componentWillReceiveProps(nextProps) {
     if (nextProps.open) {
       if (!this.state.open) this.initPhotoSwipe(nextProps);
-      else this.updatePhotoSwipe(nextProps.items);
+      else if (this.props.items.length !== nextProps.items.length) this.updatePhotoSwipe(nextProps.items);
     } else if (this.state.open) {
       this.destroyPhotoSwipe();
     }
@@ -42,8 +42,14 @@ export default class ReactPhotoSwipe extends Component {
       const callback = props[event];
       if (callback || event === 'destroy') {
         this.PhotoSwipe.listen(event, (...args) => {
-          if (callback) callback(args);
-          if (event === 'destroy') this.handleInnerClose();
+          if (callback) {
+            if (event === 'beforeChange') callback(args, this.PhotoSwipe.getCurrentIndex());
+            else callback(args);
+          }
+          if (event === 'destroy') {
+            if (!this.state.open) return;
+            this.handleInnerClose();
+          }
         });
       }
     });

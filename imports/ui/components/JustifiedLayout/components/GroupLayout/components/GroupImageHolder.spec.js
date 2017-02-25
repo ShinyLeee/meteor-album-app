@@ -43,7 +43,7 @@ if (Meteor.isClient) {
       <GroupImageHolder
         key={1}
         isEditing
-        day={'2016-12-31'}
+        groupName={'2016-12-31'}
         image={image}
         dimension={generateGeometry(1)}
         total={6}
@@ -97,7 +97,7 @@ if (Meteor.isClient) {
       toggleBtn.simulate('touchTap');
       sinon.assert.calledWith(actions.selectCounter, {
         selectImages: [props.image],
-        group: props.day,
+        group: props.groupName,
         counter: 1,
       });
       component.setState({ isSelect: true }); // have to set it by self without redux mock store
@@ -105,7 +105,7 @@ if (Meteor.isClient) {
       toggleBtn.simulate('touchTap');
       sinon.assert.calledWith(actions.selectCounter, {
         selectImages: [props.image],
-        group: props.day,
+        group: props.groupName,
         counter: -1,
       });
     });

@@ -6,7 +6,7 @@ const D = (props) => <div {...props} />; // eslint-disable-line
 
 export const Wrapper = styled(D)`
   position: absolute;
-  background-color: ${props => props.isEditing ? '#eee' : '#fff'}
+  background-color: #eee;
   transform: translate3d(0px, 0px, 0px);
   overflow: hidden;
 `;

@@ -148,10 +148,14 @@ export const incView = new ValidatedMethod({
   name: 'images.inc',
   mixins: [CallPromiseMixin],
   validate: new SimpleSchema({
-    imageId: { type: String, regEx: SimpleSchema.RegEx.Id },
+    imageIds: { type: [String], regEx: SimpleSchema.RegEx.Id },
   }).validator({ clean: true, filter: false }),
-  run({ imageId }) {
-    Images.update(imageId, { $inc: { view: 1 } });
+  run({ imageIds }) {
+    Images.update(
+    { _id: { $in: imageIds } },
+    { $inc: { view: 1 } },
+    { multi: true }
+  );
   },
 });
 

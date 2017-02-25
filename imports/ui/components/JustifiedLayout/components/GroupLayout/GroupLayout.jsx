@@ -29,14 +29,13 @@ export class JustifiedGroupLayout extends PureComponent {
     const {
       isEditing,
       showGallery,
-      dayGroupImage,
+      groupImages,
       total,
-      day,
-      groupTotal,
+      groupName,
     } = this.props;
     // When image added in GroupHolder we need to refresh both two state
     if (showGallery) {
-      if (dayGroupImage.length !== nextProps.dayGroupImage.length) {
+      if (groupImages.length !== nextProps.groupImages.length) {
         const geometry = this.generateGeo(nextProps);
         const pswpItems = this.generateItems(nextProps, geometry);
         this.setState({ geometry, pswpItems });
@@ -59,9 +58,9 @@ export class JustifiedGroupLayout extends PureComponent {
 
       let hasGroup = false;
       _.each(nextProps.group, (value, key) => {
-        if (key === day) {
+        if (key === groupName) {
           hasGroup = true;
-          if (value === groupTotal) this.setState({ isGroupSelect: true });
+          if (value === groupImages.length) this.setState({ isGroupSelect: true });
           else this.setState({ isGroupSelect: false });
         }
       });
@@ -72,7 +71,7 @@ export class JustifiedGroupLayout extends PureComponent {
 
   generateGeo(props) {
     const {
-      dayGroupImage,
+      groupImages,
       containerWidth,
       containerPadding,
       targetRowHeight,
@@ -81,7 +80,7 @@ export class JustifiedGroupLayout extends PureComponent {
       fullWidthBreakoutRowCadence,
     } = props;
 
-    const ratios = dayGroupImage.map((image) => {
+    const ratios = groupImages.map((image) => {
       const ratio = image.dimension[0] / image.dimension[1];
       // toFixed will save unnecessary zero, it cause bug in justifiedLayout
       return Math.round(ratio * 100) / 100;
@@ -102,8 +101,8 @@ export class JustifiedGroupLayout extends PureComponent {
   }
 
   generateItems(props, geometry) {
-    const { domain, containerWidth, devicePixelRatio, dayGroupImage } = props;
-    const pswpItems = dayGroupImage.map((image, i) => {
+    const { domain, containerWidth, devicePixelRatio, groupImages } = props;
+    const pswpItems = groupImages.map((image, i) => {
       const src = `${domain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
       const realMWidth = Math.round(geometry.boxes[i].width * devicePixelRatio);
       const realMHeight = Math.round(geometry.boxes[i].height * devicePixelRatio);
@@ -112,6 +111,7 @@ export class JustifiedGroupLayout extends PureComponent {
       const minWidth = Math.round(containerWidth * devicePixelRatio);
       const minHeight = Math.round((image.dimension[1] / image.dimension[0]) * minWidth);
       return ({
+        _id: image._id,
         msrc: `${src}?imageView2/1/w/${realMWidth}/h/${realMHeight}`,
         src: `${src}?imageView2/3/w/${minWidth}`,
         w: minWidth,
@@ -122,26 +122,27 @@ export class JustifiedGroupLayout extends PureComponent {
   }
 
   handleToggleSelectGroup() {
-    const { day, isEditing, dayGroupImage, groupTotal } = this.props;
+    const { groupName, isEditing, groupImages } = this.props;
     if (isEditing) {
       if (this.state.isGroupSelect) {
         this.props.selectGroupCounter({
-          selectImages: dayGroupImage,
-          group: day,
-          counter: -groupTotal,
+          selectImages: groupImages,
+          group: groupName,
+          counter: -groupImages.length,
         });
       } else {
         this.props.selectGroupCounter({
-          selectImages: dayGroupImage,
-          group: day,
-          counter: groupTotal,
+          selectImages: groupImages,
+          group: groupName,
+          counter: groupImages.length,
         });
       }
     }
   }
 
   handleOpenGallery(i) {
-    if (this.props.showGallery) {
+    const { showGallery } = this.props;
+    if (showGallery) {
       this.props.photoSwipeOpen(
         this.state.pswpItems,
         {
@@ -161,35 +162,45 @@ export class JustifiedGroupLayout extends PureComponent {
 
   render() {
     const {
-      day,
-      dayGroupImage,
+      groupName,
+      groupImages,
       isEditing,
       total,
-      groupTotal,
+      filterType,
     } = this.props;
 
-    const showDay = day.split('');
-    showDay[3] += '年';
-    showDay[5] += '月';
-    showDay[7] += '日';
-    showDay.join('');
+    const groupTime = groupName.split('');
+    if (filterType === 'day') {
+      groupTime[3] += '年';
+      groupTime[5] += '月';
+      groupTime[7] += '日';
+      groupTime.join('');
+    } else if (filterType === 'month') {
+      groupTime[3] += '年';
+      groupTime[5] += '月';
+      groupTime.join('');
+    } else if (filterType === 'year') {
+      groupTime[3] += '年';
+      groupTime.join('');
+    }
 
     return (
       <Wrapper style={{ height: this.state.geometry.containerHeight }}>
         <Title onTouchTap={this.handleToggleSelectGroup}>
           { isEditing && <JustifiedSelectIcon activate={this.state.isGroupSelect} /> }
-          <h4>{showDay}</h4>
+          <h4>{groupTime}</h4>
+          <span>{groupImages.length}</span>
         </Title>
         {
-          _.map(dayGroupImage, (image, i) => (
+          _.map(groupImages, (image, i) => (
             <ConnectedGroupImageHolder
               key={i}
               isEditing={isEditing}
-              day={day}
+              groupName={groupName}
               dimension={this.state.geometry.boxes[i]}
               image={image}
               total={total}
-              groupTotal={groupTotal}
+              groupTotal={groupImages.length}
               ref={(node) => { this[`thumbnail${i}`] = node; }}
               onImageClick={() => this.handleOpenGallery(i)}
             />
@@ -205,6 +216,7 @@ JustifiedGroupLayout.displayName = 'JustifiedGroupLayout';
 JustifiedGroupLayout.defaultProps = {
   domain: Meteor.settings.public.imageDomain,
   devicePixelRatio: window.devicePixelRatio,
+  filterType: 'day',
   showGallery: false,
   containerWidth: document.body.clientWidth,
   containerPadding: 0,
@@ -218,11 +230,11 @@ JustifiedGroupLayout.propTypes = {
   domain: PropTypes.string.isRequired,
   devicePixelRatio: PropTypes.number.isRequired,
   isEditing: PropTypes.bool.isRequired,
+  filterType: PropTypes.oneOf(['day', 'month', 'year', 'latest', 'oldest', 'popular']).isRequired,
   showGallery: PropTypes.bool.isRequired,
-  day: PropTypes.string.isRequired,
-  dayGroupImage: PropTypes.array.isRequired,
+  groupName: PropTypes.string.isRequired,
+  groupImages: PropTypes.array.isRequired,
   total: PropTypes.number.isRequired,
-  groupTotal: PropTypes.number.isRequired,
   // Below Pass from Redux
   group: PropTypes.object.isRequired,
   counter: PropTypes.number.isRequired,

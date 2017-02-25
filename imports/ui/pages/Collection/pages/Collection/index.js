@@ -5,7 +5,6 @@ import { connect } from 'react-redux';
 import { Collections } from '/imports/api/collections/collection.js';
 import {
   disableSelectAll,
-  photoSwipeClose,
   snackBarOpen,
   uploaderStart,
 } from '/imports/ui/redux/actions/index.js';
@@ -49,14 +48,10 @@ const mapStateToProps = (state) => ({
   uptoken: state.uptoken,
   counter: state.selectCounter.counter,
   selectImages: state.selectCounter.selectImages,
-  pswpOpen: state.photoSwipe.open,
-  pswpItems: state.photoSwipe.items,
-  pswpOps: state.photoSwipe.options,
 });
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   disableSelectAll,
-  photoSwipeClose,
   snackBarOpen,
   uploaderStart,
 }, dispatch);

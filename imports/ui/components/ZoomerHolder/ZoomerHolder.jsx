@@ -39,12 +39,7 @@ class ZoomerHolder extends Component {
     document.body.addEventListener('touchmove', this.disableMobileScroll);
 
     const { image } = this.props;
-
-    incView.callPromise({ imageId: image._id })
-    .catch((err) => {
-      console.log(err); // eslint-disable-line no-console
-      throw new Meteor.Error(err);
-    });
+    incView.call({ imageIds: [image._id] });
   }
 
   componentWillUnmount() {
@@ -122,7 +117,8 @@ class ZoomerHolder extends Component {
           <div>
             <div>
               <InfoHeader><StyledHeartIcon style={{ color: '#999' }} />喜欢</InfoHeader>
-              <InfoNumer>{image.liker.length}</InfoNumer>
+              {/* +1 because this component did not subscribe */}
+              <InfoNumer>{image.liker.length + 1}</InfoNumer>
             </div>
             <div>
               <InfoHeader><StyledEyeIcon style={{ color: '#999' }} />浏览</InfoHeader>

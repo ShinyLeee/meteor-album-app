@@ -35,12 +35,13 @@ if (Meteor.isClient) {
     const actions = {
       selectCounter: sinon.spy(),
       selectGroupCounter: sinon.spy(),
+      photoSwipeOpen: sinon.spy(),
     };
     const component = shallow(
       <JustifiedGroupLayout
         isEditing
-        day={'2016-12-31'}
-        dayGroupImage={generateImages(4)}
+        groupName={'2016-12-31'}
+        groupImages={generateImages(4)}
         total={6}
         groupTotal={4}
         group={group}
@@ -51,8 +52,8 @@ if (Meteor.isClient) {
     const anotherComponent = shallow(
       <JustifiedGroupLayout
         isEditing
-        day={'2016-12-30'}
-        dayGroupImage={generateImages(2)}
+        groupName={'2016-12-30'}
+        groupImages={generateImages(2)}
         total={6}
         groupTotal={2}
         group={group}
@@ -120,8 +121,8 @@ if (Meteor.isClient) {
 
       toggleBtn.simulate('touchTap');
       sinon.assert.calledWith(actions.selectGroupCounter, {
-        selectImages: props.dayGroupImage,
-        group: props.day,
+        selectImages: props.groupImages,
+        group: props.groupName,
         counter: props.groupTotal,
       });
       // have to set it by self without redux mock store
@@ -129,8 +130,8 @@ if (Meteor.isClient) {
 
       toggleBtn.simulate('touchTap');
       sinon.assert.calledWith(actions.selectGroupCounter, {
-        selectImages: props.dayGroupImage,
-        group: props.day,
+        selectImages: props.groupImages,
+        group: props.groupName,
         counter: -props.groupTotal,
       });
     });

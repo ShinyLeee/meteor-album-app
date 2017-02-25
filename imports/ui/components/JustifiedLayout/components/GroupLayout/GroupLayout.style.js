@@ -28,6 +28,15 @@ export const Title = styled(H)`
     vertical-align: middle;
     color: #222;
     font-size: 14px;
+    font-weight: 500;
     font-family: 'Microsoft Yahei';
+  }
+  & > span {
+    position: absolute;
+    right: 24px;
+    display: inline-block;
+    font-size: 14px;
+    font-weight: 300;
+    color: #222;
   }
 `;

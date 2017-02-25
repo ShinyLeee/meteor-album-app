@@ -36,6 +36,7 @@ export class JustifiedGridLayout extends PureComponent {
       const minWidth = Math.round(clientWidth * devicePixelRatio);
       const minHeight = Math.round((image.dimension[1] / image.dimension[0]) * minWidth);
       return ({
+        _id: image._id,
         msrc: `${url}?imageView2/1/w/${realDimension}`,
         src: `${url}?imageView2/3/w/${minWidth}`,
         w: minWidth,
@@ -46,7 +47,8 @@ export class JustifiedGridLayout extends PureComponent {
   }
 
   handleOpenGallery(i) {
-    if (this.props.showGallery) {
+    const { showGallery } = this.props;
+    if (showGallery) {
       this.props.photoSwipeOpen(
         this.state.pswpItems,
         {

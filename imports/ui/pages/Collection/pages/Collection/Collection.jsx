@@ -28,7 +28,7 @@ import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
 import ConnectedJustified from '/imports/ui/components/JustifiedLayout/Justified.jsx';
 import Loader from '/imports/ui/components/Loader/Loader.jsx';
 import Loading from '/imports/ui/components/Loader/Loading.jsx';
-import PhotoSwipe from '/imports/ui/components/PhotoSwipe/PhotoSwipe.jsx';
+import PhotoSwipeHolder from './components/PhotoSwipeHolder/PhotoSwipeHolder.jsx';
 
 export default class CollectionPage extends Component {
 
@@ -42,7 +42,6 @@ export default class CollectionPage extends Component {
       alertTitle: '',
       alertContent: '',
       action: '',
-      pswpItems: [],
     };
     this.handleQuitEditing = this.handleQuitEditing.bind(this);
     this.handleOpenUploader = this.handleOpenUploader.bind(this);
@@ -346,10 +345,6 @@ export default class CollectionPage extends Component {
       counter,
       dataIsReady,
       initialAlertState,
-      pswpOpen,
-      pswpItems,
-      pswpOps,
-      photoSwipeClose,
     } = this.props;
     return (
       <div className="container">
@@ -394,12 +389,7 @@ export default class CollectionPage extends Component {
             ? this.renderContent()
             : (<Loading />)
           }
-          <PhotoSwipe
-            open={pswpOpen}
-            items={pswpItems}
-            options={pswpOps}
-            onClose={photoSwipeClose}
-          />
+          <PhotoSwipeHolder />
           <Dialog
             title={this.state.alertTitle}
             titleStyle={{ border: 'none' }}
@@ -449,12 +439,8 @@ CollectionPage.propTypes = {
   // Below Pass From Redux
   uptoken: PropTypes.string, // not required bc guest can vist this page but without uptoken
   counter: PropTypes.number.isRequired,
-  pswpOpen: PropTypes.bool.isRequired,
-  pswpItems: PropTypes.array.isRequired,
-  pswpOps: PropTypes.object,
   selectImages: PropTypes.array.isRequired,
   disableSelectAll: PropTypes.func.isRequired,
-  photoSwipeClose: PropTypes.func.isRequired,
   snackBarOpen: PropTypes.func.isRequired,
   uploaderStart: PropTypes.func.isRequired,
 };

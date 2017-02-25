@@ -3,62 +3,64 @@ import React, { PureComponent, PropTypes } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import moment from 'moment';
-import IconButton from 'material-ui/IconButton';
-import ComfyIcon from 'material-ui/svg-icons/image/view-comfy';
-import CompactIcon from 'material-ui/svg-icons/image/view-compact';
-import {
-  enableSelectAll,
-  disableSelectAll,
-  photoSwipeOpen } from '/imports/ui/redux/actions/index.js';
+import { enableSelectAll, disableSelectAll } from '/imports/ui/redux/actions/index.js';
 import ConnectedGroupLayout from './components/GroupLayout/GroupLayout.jsx';
 import ConnectedGridLayout from './components/GridLayout/GridLayout.jsx';
-import JustifiedSelectIcon from './components/snippet/JustifiedSelectIcon.jsx';
-import {
-  Wrapper,
-  Toolbar,
-  ToolbarLeft,
-  ToolbarRight,
-} from './Justified.style.js';
+import ToolBar from './components/ToolBar/ToolBar.jsx';
+import { Wrapper } from './Justified.style.js';
 
 export class Justified extends PureComponent {
 
   constructor(props) {
     super(props);
     this.state = {
-      layoutType: 'group',
       isAllSelect: false,
+      layoutType: 'group',
+      filterType: 'day',
+      allImages: props.images, // only used to grid layout
+      allGroupImages: this.generateAllGroupImages(props.images),
     };
     this.handleToggleSelectAll = this.handleToggleSelectAll.bind(this);
+    this.handleLayoutChange = this.handleLayoutChange.bind(this);
+    this.handleFilterChange = this.handleFilterChange.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
     const { images } = this.props;
     const { isEditing, counter } = nextProps;
+    // only when images' length change we need to regenerate the group images
+    if (images.length !== nextProps.images.length) {
+      const allGroupImages = this.generateAllGroupImages(nextProps.images, this.state.filterType);
+      this.setState({ allGroupImages });
+    }
     // Fix potential issue that images is empty when first render
     if (isEditing && counter > 0 && images.length === counter) this.setState({ isAllSelect: true });
     else this.setState({ isAllSelect: false });
   }
 
   handleToggleSelectAll() {
-    if (this.state.isAllSelect) this.props.disableSelectAll();
+    const { images } = this.props;
+    const { isAllSelect, layoutType } = this.state;
+
+    if (isAllSelect) this.props.disableSelectAll();
     else {
-      const counter = this.props.images.length;
-      if (this.state.layoutType === 'grid') {
+      const counter = images.length;
+      if (layoutType === 'grid') {
         this.props.enableSelectAll({
-          selectImages: this.props.images,
+          selectImages: images,
           group: { grid: counter },
           counter,
         });
       }
-      if (this.state.layoutType === 'group') {
+      if (layoutType === 'group') {
         const group = {};
-        const dayGroupImages = _.groupBy(
-          this.props.images,
+        const allGroupImages = _.groupBy(
+          images,
           (image) => moment(image.shootAt).format('YYYYMMDD')
         );
-        _.each(dayGroupImages, (value, key) => (group[key] = value.length));
+        _.each(allGroupImages, (value, key) => (group[key] = value.length));
         this.props.enableSelectAll({
-          selectImages: this.props.images,
+          selectImages: images,
           group,
           counter,
         });
@@ -66,47 +68,70 @@ export class Justified extends PureComponent {
     }
   }
 
-  handleChangeLayout(type) {
-    this.setState({ layoutType: type });
+  handleLayoutChange(newLayoutType) {
+    let newFilterType;
+    if (newLayoutType === 'group') newFilterType = 'day';
+    else if (newLayoutType === 'grid') newFilterType = 'latest';
+    this.setState({ layoutType: newLayoutType, filterType: newFilterType });
     this.props.disableSelectAll();
   }
 
-  render() {
-    let dayGroupImages = [];
-    const { isEditing, images } = this.props;
-    const isDefaultLayout = this.state.layoutType === 'group';
-    if (isDefaultLayout) {
-      dayGroupImages = _.groupBy(images, (image) => moment(image.shootAt).format('YYYYMMDD'));
+  handleFilterChange(newFilterType) {
+    if (this.state.layoutType === 'group') {
+      const allGroupImages = this.generateAllGroupImages(this.props.images, newFilterType);
+      this.setState({ filterType: newFilterType, allGroupImages });
     }
+    if (this.state.layoutType === 'grid') {
+      const { images } = this.props;
+      let allImages;
+      if (newFilterType === 'latest') allImages = [...images];
+      if (newFilterType === 'oldest') allImages = [...images].reverse();
+      if (newFilterType === 'popular') allImages = [...images].sort((p, n) => n.liker.length - p.liker.length);
+      this.setState({ filterType: newFilterType, allImages });
+    }
+  }
+
+  generateAllGroupImages(images, filterType) {
+    let formatStr;
+    switch (filterType) {
+      case 'day': formatStr = 'YYYYMMDD';
+        break;
+      case 'month': formatStr = 'YYYYMM';
+        break;
+      case 'year': formatStr = 'YYYY';
+        break;
+      default: formatStr = 'YYYYMMDD';
+        break;
+    }
+    return _.groupBy(images, (image) => moment(image.shootAt).format(formatStr));
+  }
+
+  render() {
+    const { isEditing, images } = this.props;
+    const { isAllSelect, layoutType, filterType, allImages, allGroupImages } = this.state;
+    const isDefaultLayout = layoutType === 'group';
     return (
       <Wrapper isDefaultLayout={isDefaultLayout}>
-        <Toolbar>
-          { isEditing && (
-            <ToolbarLeft onTouchTap={this.handleToggleSelectAll}>
-              <JustifiedSelectIcon activate={this.state.isAllSelect} />
-              <h4>选择全部</h4>
-            </ToolbarLeft>
-          ) }
-          <ToolbarRight>
-            <IconButton onTouchTap={() => this.handleChangeLayout('group')}>
-              <CompactIcon color={isDefaultLayout ? '#111' : '#757575'} />
-            </IconButton>
-            <IconButton onTouchTap={() => this.handleChangeLayout('grid')}>
-              <ComfyIcon color={isDefaultLayout ? '#757575' : '#111'} />
-            </IconButton>
-          </ToolbarRight>
-        </Toolbar>
+        <ToolBar
+          isEditing={isEditing}
+          isAllSelect={isAllSelect}
+          layoutType={layoutType}
+          filterType={filterType}
+          onSelectAll={this.handleToggleSelectAll}
+          onLayoutChange={this.handleLayoutChange}
+          onFilterChange={this.handleFilterChange}
+        />
         {
           isDefaultLayout
           ? (
-            _.map(dayGroupImages, (dayGroupImage, day) => (
+            _.map(allGroupImages, (groupImages, groupName) => (
               <ConnectedGroupLayout
-                key={day}
+                key={groupName}
                 isEditing={isEditing}
-                day={day}
-                dayGroupImage={dayGroupImage}
+                groupName={groupName}
+                groupImages={groupImages}
                 total={images.length}
-                groupTotal={dayGroupImages[day].length}
+                filterType={filterType}
                 showGallery
               />
               ))
@@ -114,7 +139,7 @@ export class Justified extends PureComponent {
           : (
             <ConnectedGridLayout
               isEditing={isEditing}
-              images={images}
+              images={allImages}
               showGallery
             />
           )
@@ -137,7 +162,6 @@ Justified.propTypes = {
   counter: PropTypes.number.isRequired,
   enableSelectAll: PropTypes.func.isRequired,
   disableSelectAll: PropTypes.func.isRequired,
-  photoSwipeOpen: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => ({
@@ -147,7 +171,6 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   enableSelectAll,
   disableSelectAll,
-  photoSwipeOpen,
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(Justified);

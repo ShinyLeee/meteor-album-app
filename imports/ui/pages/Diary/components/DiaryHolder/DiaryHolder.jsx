@@ -66,13 +66,13 @@ class DiaryHolder extends Component {
     };
   }
 
-    /**
-     * @param {string} outline - plain text take from rich text
-     * @param {object} content - Delta object from Quill.js
-     *
-     * Return from QuillEditor component,
-     * Fire when Editor content change
-     */
+  /**
+   * @param {string} outline - plain text take from rich text
+   * @param {object} content - Delta object from Quill.js
+   *
+   * Return from QuillEditor component,
+   * Fire when Editor content change
+   */
   handleDiaryChange(outline, content) {
     this.setState({ updatedOutline: outline, updatedContent: content });
   }

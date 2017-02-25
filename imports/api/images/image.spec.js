@@ -340,10 +340,10 @@ if (Meteor.isServer) {
 
       describe('incView', () => {
         it('should incre image view field after method call', () => {
-          incView._execute({ userId: curUser._id }, { imageId: imgId });
+          incView._execute({ userId: curUser._id }, { imageIds: [imgId] });
           expect(Images.findOne(imgId).view).to.equal(1);
 
-          incView._execute({}, { imageId: imgId });
+          incView._execute({}, { imageIds: [imgId] });
           expect(Images.findOne(imgId).view).to.equal(2);
         });
       });

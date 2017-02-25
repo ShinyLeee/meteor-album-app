@@ -19,7 +19,7 @@ export class GroupImageHolder extends PureComponent {
   }
 
   componentWillReceiveProps(nextProps) {
-    const { total, day, groupTotal } = this.props;
+    const { total, groupName, groupTotal } = this.props;
     if (nextProps.counter === total) {
       this.setState({ isSelect: true });
       return;
@@ -30,12 +30,12 @@ export class GroupImageHolder extends PureComponent {
     }
     const allGroups = Object.keys(nextProps.group);
     // When next group prop is {}
-    if (allGroups.length === 0 || allGroups.indexOf(day) < 0) {
+    if (allGroups.length === 0 || allGroups.indexOf(groupName) < 0) {
       this.setState({ isSelect: false });
       return;
     }
     _.each(nextProps.group, (value, key) => {
-      if (key === day) {
+      if (key === groupName) {
         if (value === groupTotal) this.setState({ isSelect: true });
         if (value === 0) this.setState({ isSelect: false });
       }
@@ -45,7 +45,7 @@ export class GroupImageHolder extends PureComponent {
   handleSelect() {
     const {
       isEditing,
-      day,
+      groupName,
       image,
       onImageClick,
     } = this.props;
@@ -53,14 +53,14 @@ export class GroupImageHolder extends PureComponent {
       if (this.state.isSelect) {
         this.props.selectCounter({
           selectImages: [image],
-          group: day,
+          group: groupName,
           counter: -1,
         });
         this.setState({ isSelect: false });
       } else {
         this.props.selectCounter({
           selectImages: [image],
-          group: day,
+          group: groupName,
           counter: 1,
         });
         this.setState({ isSelect: true });
@@ -124,7 +124,7 @@ GroupImageHolder.propTypes = {
   domain: PropTypes.string.isRequired,
   devicePixelRatio: PropTypes.number.isRequired,
   isEditing: PropTypes.bool.isRequired,
-  day: PropTypes.string.isRequired,
+  groupName: PropTypes.string.isRequired,
   dimension: PropTypes.object.isRequired,
   image: PropTypes.object.isRequired,
   total: PropTypes.number.isRequired,
