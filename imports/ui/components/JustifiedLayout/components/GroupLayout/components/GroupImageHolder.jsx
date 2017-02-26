@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import React, { PureComponent, PropTypes } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import LazyLoad from 'react-lazyload';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import { selectCounter } from '/imports/ui/redux/actions/index.js';
 import JustifiedImageBackground from '../../snippet/JustifiedImageBackground.jsx';
@@ -79,9 +80,9 @@ export class GroupImageHolder extends PureComponent {
       image,
     } = this.props;
     const url = `${domain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
-    const realWidth = Math.round(dimension.width * devicePixelRatio);
-    const realHeight = Math.round(dimension.height * devicePixelRatio);
-    const imageSrc = `${url}?imageView2/1/w/${realWidth}/h/${realHeight}`;
+    const retinaWidth = Math.round(dimension.width * devicePixelRatio);
+    const retinaHeight = Math.round(dimension.height * devicePixelRatio);
+    const imageSrc = `${url}?imageView2/1/w/${retinaWidth}/h/${retinaHeight}`;
     const imageHolderStyle = {
       left: `${dimension.left}px`,
       top: `${dimension.top}px`,
@@ -94,20 +95,25 @@ export class GroupImageHolder extends PureComponent {
         onTouchTap={this.handleSelect}
       >
         <JustifiedImageBackground isEditing={isEditing} isSelect={this.state.isSelect} />
-        <ReactCSSTransitionGroup
-          transitionName="fade"
-          transitionAppear
-          transitionAppearTimeout={500}
-          transitionEnterTimeout={500}
-          transitionLeave={false}
+        <LazyLoad
+          height={dimension.height}
+          once
         >
-          <SelectableImage
-            src={imageSrc}
-            alt={image.name}
-            isSelect={this.state.isSelect}
-            innerRef={(node) => { this.image = node; }}
-          />
-        </ReactCSSTransitionGroup>
+          <ReactCSSTransitionGroup
+            transitionName="fade"
+            transitionAppear
+            transitionAppearTimeout={500}
+            transitionEnterTimeout={500}
+            transitionLeave={false}
+          >
+            <SelectableImage
+              src={imageSrc}
+              alt={image.name}
+              isSelect={this.state.isSelect}
+              innerRef={(node) => { this.image = node; }}
+            />
+          </ReactCSSTransitionGroup>
+        </LazyLoad>
       </Wrapper>
     );
   }

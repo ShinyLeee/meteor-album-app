@@ -50,8 +50,8 @@ const MeteorContainer = createContainer(({ params }) => {
   };
 }, UserPage);
 
-const mapStateToProps = (state) => state;
+const mapDispatchToProps = (dispatch) => bindActionCreators({
+  snackBarOpen,
+}, dispatch);
 
-const mapDispatchToProps = (dispatch) => bindActionCreators({ snackBarOpen }, dispatch);
-
-export default connect(mapStateToProps, mapDispatchToProps)(MeteorContainer);
+export default connect(null, mapDispatchToProps)(MeteorContainer);

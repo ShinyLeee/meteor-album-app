@@ -109,10 +109,8 @@ JustifiedGridLayout.propTypes = {
   photoSwipeOpen: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = (state) => state;
-
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   photoSwipeOpen,
 }, dispatch);
 
-export default connect(mapStateToProps, mapDispatchToProps)(JustifiedGridLayout);
+export default connect(null, mapDispatchToProps)(JustifiedGridLayout);

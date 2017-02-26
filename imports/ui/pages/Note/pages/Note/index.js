@@ -33,6 +33,8 @@ const mapStateToProps = (state) => ({
   bible: state.dialog.bible,
 });
 
-const mapDispatchToProps = (dispatch) => bindActionCreators({ snackBarOpen }, dispatch);
+const mapDispatchToProps = (dispatch) => bindActionCreators({
+  snackBarOpen,
+}, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(MeteorContainer);

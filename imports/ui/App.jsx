@@ -133,11 +133,9 @@ const MeteorContainer = createContainer(() => {
   };
 }, App);
 
-const mapStateToProps = (state) => state;
-
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   storeUptoken,
   clearUptoken,
 }, dispatch);
 
-export default connect(mapStateToProps, mapDispatchToProps)(MeteorContainer);
+export default connect(null, mapDispatchToProps)(MeteorContainer);

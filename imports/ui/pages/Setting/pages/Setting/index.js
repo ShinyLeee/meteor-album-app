@@ -8,6 +8,8 @@ const mapStateToProps = (state) => ({
   uptoken: state.uptoken,
 });
 
-const mapDispatchToProps = (dispatch) => bindActionCreators({ snackBarOpen }, dispatch);
+const mapDispatchToProps = (dispatch) => bindActionCreators({
+  snackBarOpen,
+}, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(SettingPage);

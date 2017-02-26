@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import React, { PureComponent, PropTypes } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import LazyLoad from 'react-lazyload';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import { selectCounter } from '/imports/ui/redux/actions/index.js';
 import JustifiedImageBackground from '../../snippet/JustifiedImageBackground.jsx';
@@ -68,29 +69,32 @@ export class GridImageHolder extends PureComponent {
       devicePixelRatio,
       image,
     } = this.props;
-    const realDimension = Math.round((clientWidth / 3) * devicePixelRatio);
+    const realDimension = clientWidth / 3;
+    const retinaDimension = Math.round(realDimension * devicePixelRatio);
     const url = `${domain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
-    const imageSrc = `${url}?imageView2/1/w/${realDimension}`;
+    const imageSrc = `${url}?imageView2/1/w/${retinaDimension}`;
     return (
       <Wrapper onTouchTap={this.handleSelect}>
         <JustifiedImageBackground
           isEditing={isEditing}
           isSelect={this.state.isSelect}
         />
-        <ReactCSSTransitionGroup
-          transitionName="fade"
-          transitionAppear
-          transitionAppearTimeout={500}
-          transitionEnterTimeout={500}
-          transitionLeave={false}
-        >
-          <SelectableImage
-            src={imageSrc}
-            alt={image.name}
-            isSelect={this.state.isSelect}
-            innerRef={(node) => { this.image = node; }}
-          />
-        </ReactCSSTransitionGroup>
+        <LazyLoad height={Math.round(realDimension)} once>
+          <ReactCSSTransitionGroup
+            transitionName="fade"
+            transitionAppear
+            transitionAppearTimeout={500}
+            transitionEnterTimeout={500}
+            transitionLeave={false}
+          >
+            <SelectableImage
+              src={imageSrc}
+              alt={image.name}
+              isSelect={this.state.isSelect}
+              innerRef={(node) => { this.image = node; }}
+            />
+          </ReactCSSTransitionGroup>
+        </LazyLoad>
       </Wrapper>
     );
   }

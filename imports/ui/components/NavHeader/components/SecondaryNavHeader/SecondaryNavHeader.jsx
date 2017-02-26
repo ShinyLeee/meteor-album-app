@@ -3,8 +3,7 @@ import { browserHistory } from 'react-router';
 import AppBar from 'material-ui/AppBar';
 import IconButton from 'material-ui/IconButton';
 import ArrowBackIcon from 'material-ui/svg-icons/navigation/arrow-back';
-import scrollTo from '/imports/utils/scrollTo.js';
-
+import scrollTo from '/imports/vendor/scrollTo.js';
 import styles from '../../NavHeader.style.js';
 
 const SecondaryNavHeader = ({ title, titleStyle, iconElementRight, style, iconColor }) => (

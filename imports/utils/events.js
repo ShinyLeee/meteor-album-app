@@ -30,10 +30,8 @@ export const off = (el, type, callback) => {
   }
 };
 
-export const isKeyboard = (event) => {
-  return [
-    'keydown',
-    'keypress',
-    'keyup',
-  ].indexOf(event.type) !== -1;
-};
+export const isKeyboard = (event) => [
+  'keydown',
+  'keypress',
+  'keyup',
+].indexOf(event.type) !== -1;

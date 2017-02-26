@@ -72,7 +72,8 @@ export default class IndexPage extends PureComponent {
     // after like or unlike a image, we need to refresh the data
     const trueImages = Images.find(
       { private: false },
-      { sort: { createdAt: -1 }, limit: this.state.images.length }).fetch();
+      { sort: { createdAt: -1 }, limit: this.state.images.length }
+    ).fetch();
     this.setState({ images: trueImages });
   }
 

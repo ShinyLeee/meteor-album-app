@@ -85,8 +85,6 @@ QuillContent.propTypes = {
   snackBarOpen: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = (state) => state;
-
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   dialogFetch,
   dialogOpen,
@@ -94,4 +92,4 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
   snackBarOpen,
 }, dispatch);
 
-export default connect(mapStateToProps, mapDispatchToProps)(QuillContent);
+export default connect(null, mapDispatchToProps)(QuillContent);

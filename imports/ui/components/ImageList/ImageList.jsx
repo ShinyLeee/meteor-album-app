@@ -66,37 +66,20 @@ class ImageList extends Component {
   }
 
   render() {
-    const { User, domain, clientWidth, images } = this.props;
+    const { User, images } = this.props;
     return (
       <div>
         {
-          images.map((image, i) => {
-            // get avatar src
-            const user = Meteor.users.findOne({ username: image.user });
-            const avatar = user && user.profile.avatar;
-
-            // get image src
-            const url = `${domain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
-            const realDimension = Math.round(clientWidth * window.devicePixelRatio);
-            const src = `${url}?imageView2/2/w/${realDimension}`;
-
-            // whether current user liked this image
-            const curUser = User && User.username;
-            const isLiked = image.liker.indexOf(curUser) > -1;
-            return (
-              <ImageHolder
-                key={i}
-                User={User}
-                avatar={avatar}
-                image={image}
-                imageSrc={src}
-                isLiked={isLiked}
-                onLikeClick={() => this.handleAddLiker(image)}
-                onUnlikeClick={() => this.handleRemoveLiker(image)}
-                onMediaClick={() => this.handleZoomImage(image)}
-              />
-            );
-          })
+          images.map((image, i) => (
+            <ImageHolder
+              key={i}
+              User={User}
+              image={image}
+              onLikeClick={() => this.handleAddLiker(image)}
+              onUnlikeClick={() => this.handleRemoveLiker(image)}
+              onMediaClick={() => this.handleZoomImage(image)}
+            />
+          ))
         }
       </div>
     );
@@ -105,26 +88,17 @@ class ImageList extends Component {
 
 ImageList.displayName = 'ImageList';
 
-ImageList.defaultProps = {
-  domain: Meteor.settings.public.imageDomain,
-  clientWidth: document.body.clientWidth,
-};
-
 ImageList.propTypes = {
   User: PropTypes.object,
-  domain: PropTypes.string.isRequired,
-  clientWidth: PropTypes.number.isRequired,
   images: PropTypes.array.isRequired,
   onLikeOrUnlikeAction: PropTypes.func.isRequired,
   snackBarOpen: PropTypes.func.isRequired,
   zoomerOpen: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = (state) => state;
-
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   snackBarOpen,
   zoomerOpen,
 }, dispatch);
 
-export default connect(mapStateToProps, mapDispatchToProps)(ImageList);
+export default connect(null, mapDispatchToProps)(ImageList);

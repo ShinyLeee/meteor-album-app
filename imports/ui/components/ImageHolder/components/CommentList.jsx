@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import React, { Component, PropTypes } from 'react';
 import { browserHistory } from 'react-router';
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import CNStrings from 'react-timeago/lib/language-strings/zh-CN';
 import buildFormatter from 'react-timeago/lib/formatters/buildFormatter';
 import Avatar from 'material-ui/Avatar';
@@ -160,32 +161,42 @@ export default class CommentList extends Component {
   }
 
   render() {
-    const { comments } = this.props;
+    const { open, comments } = this.props;
     return (
-      <CommentsWrapper>
-        <CommentsSection>
-          { comments.length > 0 && this.renderCommentItem() }
-        </CommentsSection>
-        <PublishSection>
-          <div>
-            <PublisherAvatar src={this.avatarSrc} />
-            <StyledTextField
-              name="comment"
-              value={this.state.comment}
-              hintText="发表评论..."
-              underlineShow={false}
-              onChange={this.handleCommentChange}
-              multiLine
-            />
-          </div>
-          <PublishFooter>
-            <FlatButton
-              label="发布"
-              onTouchTap={this.handlePublishComment}
-            />
-          </PublishFooter>
-        </PublishSection>
-      </CommentsWrapper>
+      <ReactCSSTransitionGroup
+        transitionName="slideDown"
+        transitionEnterTimeout={375}
+        transitionLeaveTimeout={375}
+      >
+        {
+          open && (
+            <CommentsWrapper>
+              <CommentsSection>
+                { comments.length > 0 && this.renderCommentItem() }
+              </CommentsSection>
+              <PublishSection>
+                <div>
+                  <PublisherAvatar src={this.avatarSrc} />
+                  <StyledTextField
+                    name="comment"
+                    value={this.state.comment}
+                    hintText="发表评论..."
+                    underlineShow={false}
+                    onChange={this.handleCommentChange}
+                    multiLine
+                  />
+                </div>
+                <PublishFooter>
+                  <FlatButton
+                    label="发布"
+                    onTouchTap={this.handlePublishComment}
+                  />
+                </PublishFooter>
+              </PublishSection>
+            </CommentsWrapper>
+          )
+        }
+      </ReactCSSTransitionGroup>
     );
   }
 }
@@ -193,11 +204,13 @@ export default class CommentList extends Component {
 CommentList.displayName = 'CommentList';
 
 CommentList.defaultProps = {
+  open: false,
   sourceDomain: Meteor.settings.public.sourceDomain,
 };
 
 CommentList.propTypes = {
   User: PropTypes.object, // not required bc guest can visit it
+  open: PropTypes.bool.isRequired,
   sourceDomain: PropTypes.string.isRequired,
   discId: PropTypes.string.isRequired,
   comments: PropTypes.array.isRequired,

@@ -38,18 +38,32 @@ class ImageHolder extends Component {
 
   render() {
     const {
+      clientWidth,
+      domain,
       User,
-      avatar,
       image,
-      imageSrc,
-      isLiked,
       onLikeClick,
       onUnlikeClick,
       onMediaClick,
       comments,
     } = this.props;
 
-    const { isCommentOpen } = this.state;
+    // get avatar src
+    const imageOwner = Meteor.users.findOne({ username: image.user });
+    const avatar = imageOwner && imageOwner.profile.avatar;
+
+    // get image src
+    const url = `${domain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
+    const retinaWidth = Math.round(clientWidth * window.devicePixelRatio);
+
+    // realHeight for lazyload
+    const realHeight = Math.round((image.dimension[1] / image.dimension[0]) * clientWidth);
+    const imageSrc = `${url}?imageView2/2/w/${retinaWidth}`;
+
+    // whether current user liked this image
+    const curUser = User && User.username;
+    const isLiked = image.liker.indexOf(curUser) > -1;
+
     return (
       <Wrapper>
         <Card>
@@ -63,19 +77,19 @@ class ImageHolder extends Component {
               />
             )}
           />
-          <ReactCSSTransitionGroup
-            transitionName="fade"
-            transitionAppear
-            transitionAppearTimeout={375}
-            transitionEnterTimeout={375}
-            transitionLeave={false}
-          >
-            <CardMedia onTouchTap={onMediaClick}>
-              <LazyLoad height={200} offset={200} once>
+          <CardMedia onTouchTap={onMediaClick}>
+            <LazyLoad height={realHeight} once>
+              <ReactCSSTransitionGroup
+                transitionName="fade"
+                transitionAppear
+                transitionAppearTimeout={375}
+                transitionEnterTimeout={375}
+                transitionLeave={false}
+              >
                 <Image src={imageSrc} role="presentation" />
-              </LazyLoad>
-            </CardMedia>
-          </ReactCSSTransitionGroup>
+              </ReactCSSTransitionGroup>
+            </LazyLoad>
+          </CardMedia>
           <CardActions>
             <ActionButtonWrapper>
               {
@@ -88,39 +102,28 @@ class ImageHolder extends Component {
                   </StyledIconButton>
                 )
                 : (
-                  <StyledIconButton
-                    onTouchTap={onLikeClick}
-                  ><EmptyHeartIcon />
+                  <StyledIconButton onTouchTap={onLikeClick}>
+                    <EmptyHeartIcon />
                   </StyledIconButton>
                 )
               }
               { image.liker.length > 0 && <ActionButtonNum>{image.liker.length}</ActionButtonNum> }
             </ActionButtonWrapper>
             <ActionButtonWrapper>
-              <StyledIconButton
-                onTouchTap={() => this.setState({ isCommentOpen: !isCommentOpen })}
-              ><CommentIcon />
+              <StyledIconButton onTouchTap={() => this.setState(prevState => ({ isCommentOpen: !prevState.isCommentOpen }))}>
+                <CommentIcon />
               </StyledIconButton>
               { comments.length > 0 && <ActionButtonNum>{comments.length}</ActionButtonNum> }
             </ActionButtonWrapper>
           </CardActions>
-          <ReactCSSTransitionGroup
-            transitionName="slideDown"
-            transitionEnterTimeout={375}
-            transitionLeaveTimeout={375}
-          >
-            {
-              isCommentOpen && (
-                <CommentList
-                  key={image._id}
-                  User={User}
-                  discId={image._id}
-                  comments={comments}
-                  snackBarOpen={this.props.snackBarOpen}
-                />
-              )
-            }
-          </ReactCSSTransitionGroup>
+          <CommentList
+            key={image._id}
+            open={this.state.isCommentOpen}
+            User={User}
+            discId={image._id}
+            comments={comments}
+            snackBarOpen={this.props.snackBarOpen}
+          />
         </Card>
       </Wrapper>
     );
@@ -130,16 +133,16 @@ class ImageHolder extends Component {
 ImageHolder.displayName = 'ImageHolder';
 
 ImageHolder.defaultProps = {
-  isLiked: false,
+  domain: Meteor.settings.public.imageDomain,
+  clientWidth: document.body.clientWidth,
   comments: [],
 };
 
 ImageHolder.propTypes = {
+  domain: PropTypes.string.isRequired,
+  clientWidth: PropTypes.number.isRequired,
   User: PropTypes.object, // not required bc guest can visit it
-  avatar: PropTypes.string.isRequired,
   image: PropTypes.object.isRequired,
-  imageSrc: PropTypes.string.isRequired,
-  isLiked: PropTypes.bool.isRequired,
   onLikeClick: PropTypes.func,
   onUnlikeClick: PropTypes.func,
   onMediaClick: PropTypes.func,
@@ -163,8 +166,8 @@ const MeteorContainer = createContainer(({ image }) => {
   };
 }, ImageHolder);
 
-const mapStateToProps = (state) => state;
+const mapDispatchToProps = (dispatch) => bindActionCreators({
+  snackBarOpen,
+}, dispatch);
 
-const mapDispatchToProps = (dispatch) => bindActionCreators({ snackBarOpen }, dispatch);
-
-export default connect(mapStateToProps, mapDispatchToProps)(MeteorContainer);
+export default connect(null, mapDispatchToProps)(MeteorContainer);

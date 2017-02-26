@@ -203,12 +203,10 @@ ZoomerHolder.propTypes = {
   zoomerClose: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = (state) => state;
-
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   snackBarOpen,
   zoomerClose,
 }, dispatch);
 
 
-export default connect(mapStateToProps, mapDispatchToProps)(ZoomerHolder);
+export default connect(null, mapDispatchToProps)(ZoomerHolder);

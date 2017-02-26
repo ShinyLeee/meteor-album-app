@@ -21,7 +21,7 @@ import DeleteIcon from 'material-ui/svg-icons/action/delete';
 import SettingsIcon from 'material-ui/svg-icons/action/settings';
 import ArrowDropdownIcon from 'material-ui/svg-icons/navigation/arrow-drop-down';
 import { purple500 } from 'material-ui/styles/colors';
-import scrollTo from '/imports/utils/scrollTo.js';
+import scrollTo from '/imports/vendor/scrollTo.js';
 import styles from '../../NavHeader.style.js';
 import {
   DrawerProfile,

@@ -42,11 +42,9 @@ const MeteorContainer = createContainer(({ User, location }) => {
   };
 }, DiaryPage);
 
-const mapStateToProps = (state) => state;
-
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   diaryOpen,
   snackBarOpen,
 }, dispatch);
 
-export default connect(mapStateToProps, mapDispatchToProps)(MeteorContainer);
+export default connect(null, mapDispatchToProps)(MeteorContainer);

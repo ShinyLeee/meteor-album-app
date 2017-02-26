@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { browserHistory } from 'react-router';
 import { Meteor } from 'meteor/meteor';
-import Delta from 'quill/node_modules/quill-delta';
+import Delta from 'quill-delta';
 import Avatar from 'material-ui/Avatar';
 import Chip from 'material-ui/Chip';
 import AutoComplete from 'material-ui/AutoComplete';

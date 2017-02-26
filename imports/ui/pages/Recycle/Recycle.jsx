@@ -10,7 +10,7 @@ import RecoveryIcon from 'material-ui/svg-icons/av/replay';
 import RemoveIcon from 'material-ui/svg-icons/action/delete';
 import { blue500 } from 'material-ui/styles/colors';
 import { removeImages, recoveryImages } from '/imports/api/images/methods.js';
-import scrollTo from '/imports/utils/scrollTo.js';
+import scrollTo from '/imports/vendor/scrollTo.js';
 import NavHeader from '../../components/NavHeader/NavHeader.jsx';
 import EmptyHolder from '../../components/EmptyHolder/EmptyHolder.jsx';
 import Loader from '../../components/Loader/Loader.jsx';
