@@ -10,6 +10,7 @@ export const defaultUserProfile = {
   intro: '',
   avatar: `${sourceDomain}/GalleryPlus/Default/default-avatar.jpg`,
   cover: `${sourceDomain}/GalleryPlus/Default/default-cover.jpg`,
+  following: [],
   followers: [],
   settings: {
     allowNoti: true,

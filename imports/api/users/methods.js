@@ -44,8 +44,9 @@ export const followUser = new ValidatedMethod({
   mixins: [CallPromiseMixin],
   validate: new SimpleSchema({
     targetId: { type: String, label: '被关注者Id', regEx: SimpleSchema.RegEx.Id },
+    targetName: { type: String, label: '被关注者用户名', max: 20 },
   }).validator({ clean: true, filter: false }),
-  run({ targetId }) {
+  run({ targetId, targetName }) {
     if (!this.userId) {
       throw new Meteor.Error('api.users.followUser.notLoggedIn');
     }
@@ -53,8 +54,9 @@ export const followUser = new ValidatedMethod({
     if (this.userId === targetId) {
       throw new Meteor.Error('api.users.followUser.targetDenied');
     }
-    const starter = Users.findOne(this.userId).username;
-    Users.update(targetId, { $addToSet: { 'profile.followers': starter } });
+    const followerName = Users.findOne(this.userId).username;
+    Users.update(targetId, { $addToSet: { 'profile.followers': followerName } });
+    Users.update(this.userId, { $addToSet: { 'profile.following': targetName } });
   },
 });
 
@@ -63,8 +65,9 @@ export const unFollowUser = new ValidatedMethod({
   mixins: [CallPromiseMixin],
   validate: new SimpleSchema({
     targetId: { type: String, label: '被取消关注者Id', regEx: SimpleSchema.RegEx.Id },
+    targetName: { type: String, label: '被关注者用户名', max: 20 },
   }).validator({ clean: true, filter: false }),
-  run({ targetId }) {
+  run({ targetId, targetName }) {
     if (!this.userId) {
       throw new Meteor.Error('api.users.unFollowUser.notLoggedIn');
     }
@@ -72,8 +75,9 @@ export const unFollowUser = new ValidatedMethod({
     if (this.userId === targetId) {
       throw new Meteor.Error('api.users.unFollowUser.targetDenied');
     }
-    const starter = Users.findOne(this.userId).username;
-    Users.update(targetId, { $pull: { 'profile.followers': starter } });
+    const unfollowerName = Users.findOne(this.userId).username;
+    Users.update(targetId, { $pull: { 'profile.followers': unfollowerName } });
+    Users.update(this.userId, { $pull: { 'profile.following': targetName } });
   },
 });
 

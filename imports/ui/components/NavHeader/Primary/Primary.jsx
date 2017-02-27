@@ -1,5 +1,8 @@
 import { Meteor } from 'meteor/meteor';
+import { createContainer } from 'meteor/react-meteor-data';
 import React, { Component, PropTypes } from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import { browserHistory } from 'react-router';
 import AppBar from 'material-ui/AppBar';
 import Avatar from 'material-ui/Avatar';
@@ -20,17 +23,19 @@ import DiaryIcon from 'material-ui/svg-icons/action/book';
 import DeleteIcon from 'material-ui/svg-icons/action/delete';
 import SettingsIcon from 'material-ui/svg-icons/action/settings';
 import ArrowDropdownIcon from 'material-ui/svg-icons/navigation/arrow-drop-down';
-import { purple500 } from 'material-ui/styles/colors';
+import { purple500, blue500 } from 'material-ui/styles/colors';
+import { Notes } from '/imports/api/notes/note.js';
+import { snackBarOpen } from '/imports/ui/redux/actions/index.js';
 import scrollTo from '/imports/vendor/scrollTo.js';
-import styles from '../../NavHeader.style.js';
+import { Wrapper, styles } from '../NavHeader.style.js';
 import {
   DrawerProfile,
   DrawerBackground,
   DrawerAvatar,
   DrawerEmail,
-} from './Drawer.style.js';
+} from './Primary.style.js';
 
-export default class PrimaryNavHeader extends Component {
+class PrimaryNavHeader extends Component {
 
   constructor(props) {
     super(props);
@@ -75,12 +80,13 @@ export default class PrimaryNavHeader extends Component {
   }
 
   handleLogout() {
-    Meteor.logout((err) => {
-      if (err) {
-        this.props.snackBarOpen('发生未知错误');
-        throw new Meteor.Error(err);
-      }
-      this.props.snackBarOpen('登出成功');
+    const logoutPromise = Meteor.wrapPromise(Meteor.logout);
+    logoutPromise()
+    .then(() => this.props.snackBarOpen('登出成功'))
+    .catch(err => {
+      console.log(err); // eslint-disable-line no-console
+      this.props.snackBarOpen(err.reason || '发生未知错误');
+      throw new Meteor.Error(err);
     });
   }
 
@@ -137,11 +143,11 @@ export default class PrimaryNavHeader extends Component {
   }
 
   render() {
-    const { User, location } = this.props;
+    const { User, location, style, children } = this.props;
     return (
-      <div>
+      <Wrapper>
         <AppBar
-          style={styles.AppBar}
+          style={Object.assign({}, { backgroundColor: purple500 }, style)}
           title="Gallery +"
           titleStyle={styles.AppBarTitle}
           onLeftIconButtonTouchTap={() => this.setState({ drawer: true })}
@@ -149,6 +155,7 @@ export default class PrimaryNavHeader extends Component {
           iconElementRight={this.renderIconRight()}
           iconStyleRight={styles.AppBarIconElementRight}
         />
+        { children }
         <Drawer
           docked={false}
           width={280}
@@ -195,44 +202,41 @@ export default class PrimaryNavHeader extends Component {
               style={{ color: location === 'explore' ? purple500 : '#000' }}
             />
             <MenuItem
-              leftIcon={<UserIcon color={location === 'user' ? purple500 : ''} />}
+              leftIcon={<UserIcon color={location === 'user' ? '#000' : ''} />}
               primaryText="主页"
               onTouchTap={() => browserHistory.push(this.homeLink)}
-              style={{ color: location === 'user' ? purple500 : '#000' }}
+              style={{ fontWeight: location === 'user' ? 500 : '' }}
             />
             <MenuItem
-              leftIcon={<CameraIcon color={location === 'collection' ? purple500 : ''} />}
+              leftIcon={<CameraIcon color={location === 'collection' ? blue500 : ''} />}
               primaryText="相册"
               onTouchTap={() => browserHistory.push(this.collLink)}
-              style={{ color: location === 'collection' ? purple500 : '#000' }}
+              style={{ color: location === 'collection' ? blue500 : '#000' }}
             />
             <MenuItem
-              leftIcon={<DiaryIcon color={location === 'diary' ? purple500 : ''} />}
+              leftIcon={<DiaryIcon />}
               primaryText="日记"
               onTouchTap={() => browserHistory.push('/diary')}
-              style={{ color: location === 'diary' ? purple500 : '#000' }}
             />
           </Menu>
           <Divider />
           <Menu width="100%" disableAutoFocus>
             <MenuItem
-              leftIcon={<DeleteIcon color={location === 'recycle' ? purple500 : ''} />}
+              leftIcon={<DeleteIcon />}
               primaryText="回收站"
               onTouchTap={() => browserHistory.push('/recycle')}
-              style={{ color: location === 'recycle' ? purple500 : '#000' }}
             />
           </Menu>
           <Divider />
           <Menu width="100%" disableAutoFocus>
             <MenuItem
-              leftIcon={<SettingsIcon color={location === 'setting' ? purple500 : ''} />}
+              leftIcon={<SettingsIcon />}
               primaryText="设置"
               onTouchTap={() => browserHistory.push('/setting')}
-              style={{ color: location === 'setting' ? purple500 : '#000' }}
             />
           </Menu>
         </Drawer>
-      </div>
+      </Wrapper>
     );
   }
 }
@@ -246,11 +250,26 @@ PrimaryNavHeader.defaultProps = {
 };
 
 PrimaryNavHeader.propTypes = {
+  children: PropTypes.any,
   User: PropTypes.object,
   sourceDomain: PropTypes.string.isRequired,
-  location: PropTypes.string.isRequired,
-  // Pass from Database
+  location: PropTypes.oneOf(['explore', 'user', 'collection', 'diary', 'recycle', 'setting']).isRequired,
+  style: PropTypes.object,
+  // Pass from Database and Redux
   noteNum: PropTypes.number.isRequired,
-  // Pass from Redux
   snackBarOpen: PropTypes.func.isRequired,
 };
+
+const MeteorContainer = createContainer(() => {
+  Meteor.subscribe('Notes.receiver');
+  return {
+    noteNum: Notes.find({ isRead: false }).count(),
+  };
+}, PrimaryNavHeader);
+
+const mapDispatchToProps = (dispatch) => bindActionCreators({
+  snackBarOpen,
+}, dispatch);
+
+export default connect(null, mapDispatchToProps)(MeteorContainer);
+

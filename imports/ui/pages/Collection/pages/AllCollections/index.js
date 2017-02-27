@@ -3,7 +3,6 @@ import { createContainer } from 'meteor/react-meteor-data';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Collections } from '/imports/api/collections/collection.js';
-
 import { snackBarOpen } from '/imports/ui/redux/actions/index.js';
 import AllCollectionsPage from './AllCollections.jsx';
 

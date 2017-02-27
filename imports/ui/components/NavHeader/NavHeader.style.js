@@ -1,11 +1,13 @@
-import { purple500 } from 'material-ui/styles/colors';
+import styled from 'styled-components';
 
-export default {
-  AppBar: {
-    position: 'fixed',
-    top: 0,
-    backgroundColor: purple500,
-  },
+export const Wrapper = styled.div`
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1100;
+`;
+
+export const styles = {
   AppBarTitle: {
     fontSize: '20px',
     fontFamily: 'Microsoft Yahei',

@@ -3,9 +3,7 @@ import { Accounts } from 'meteor/accounts-base';
 import React, { Component, PropTypes } from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
-import { blue500 } from 'material-ui/styles/colors';
-
-import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
+import SecondaryNavHeader from '/imports/ui/components/NavHeader/Secondary/Secondary.jsx';
 import Loader from '/imports/ui/components/Loader/Loader.jsx';
 
 export default class PasswordPage extends Component {
@@ -116,11 +114,7 @@ export default class PasswordPage extends Component {
   render() {
     return (
       <div className="container">
-        <NavHeader
-          title="修改密码"
-          style={{ backgroundColor: blue500 }}
-          secondary
-        />
+        <SecondaryNavHeader title="修改密码" />
         <main className="content">
           <Loader
             open={this.state.isProcessing}

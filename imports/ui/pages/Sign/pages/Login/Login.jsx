@@ -7,9 +7,8 @@ import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
-
 import { validateEmail } from '/imports/utils/utils.js';
-import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
+import PrimaryNavHeader from '/imports/ui/components/NavHeader/Primary/Primary.jsx';
 import Loader from '/imports/ui/components/Loader/Loader.jsx';
 import signHOC from '../../components/signHOC.js';
 import styles from '../../sign.style.js';
@@ -87,7 +86,7 @@ class LoginPage extends Component {
   render() {
     return (
       <div className="container">
-        <NavHeader primary />
+        <PrimaryNavHeader />
         <main className="content">
           <Loader
             open={this.state.isProcessing}

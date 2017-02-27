@@ -167,3 +167,57 @@ Migrations.add({
     executeImages();
   },
 });
+
+Migrations.add({
+  version: 3,
+  name: `Add profile.following field in USERS collection and
+         Add color field in IMAGES collection`,
+  up: () => {
+    const domain = Meteor.settings.public.imageDomain;
+    const usersBulk = Users.rawCollection().initializeUnorderedBulkOp();
+    const imagesBulk = Images.rawCollection().initializeUnorderedBulkOp();
+    usersBulk.find({}).update({ $set: { 'profile.following': [] } });
+    Users.find().forEach((user) => {
+      const username = user.username;
+      const followers = user.profile.followers;
+      if (followers.length === 0) {
+        return;
+      }
+      followers.forEach((follower) => {
+        usersBulk.find({ username: follower })
+        .updateOne({ $addToSet: { 'profile.following': username } });
+      });
+    });
+    Images.find().forEach((image) => {
+      const url = encodeURI(`${domain}/${image.user}/${image.collection}/${image.name}.${image.type}?imageAve`);
+      try {
+        const imageStat = HTTP.call('GET', url);
+        imagesBulk.find({ _id: image._id })
+        .updateOne({ $set: { color: `#${imageStat.data.RGB.split('0x')[1]}` } });
+      } catch (err) {
+        console.log(err); // eslint-disable-line no-console
+        throw new Meteor.Error(err);
+      }
+    });
+    const executeUsers = Meteor.wrapAsync(usersBulk.execute, usersBulk);
+    const executeImages = Meteor.wrapAsync(imagesBulk.execute, imagesBulk);
+    executeUsers();
+    executeImages();
+  },
+  down: () => {
+    const usersBulk = Users.rawCollection().initializeUnorderedBulkOp();
+    const imagesBulk = Images.rawCollection().initializeUnorderedBulkOp();
+    Users.find().forEach((user) => {
+      usersBulk.find({ _id: user._id })
+      .updateOne({ $unset: { 'profile.following': 1 } });
+    });
+    Images.find().forEach((image) => {
+      imagesBulk.find({ _id: image._id })
+      .updateOne({ $unset: { color: 1 } });
+    });
+    const executeUsers = Meteor.wrapAsync(usersBulk.execute, usersBulk);
+    const executeImages = Meteor.wrapAsync(imagesBulk.execute, imagesBulk);
+    executeUsers();
+    executeImages();
+  },
+});

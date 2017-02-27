@@ -9,7 +9,7 @@ import './components/Quill/Quill.css';
 import { storeUptoken, clearUptoken } from './redux/actions/index.js';
 import SnackBar from './components/SnackBar/SnackBar.jsx';
 import Loading from './components/Loader/Loading.jsx';
-import NavHeader from './components/NavHeader/NavHeader.jsx';
+import LoadingNavHeader from './components/NavHeader/Loading/Loading.jsx';
 import ConnectedUploader from './components/Uploader/index.js';
 
 export class App extends Component {
@@ -70,7 +70,7 @@ export class App extends Component {
     if (!this.props.userIsReady) {
       return (
         <div className="container">
-          <NavHeader loading />
+          <LoadingNavHeader />
           <div className="content">
             <Loading />
           </div>

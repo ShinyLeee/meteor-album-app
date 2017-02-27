@@ -1,15 +1,16 @@
 import React from 'react';
 import AppBar from 'material-ui/AppBar';
-import styles from '../../NavHeader.style.js';
+import { purple500 } from 'material-ui/styles/colors.js';
+import { Wrapper, styles } from '../NavHeader.style.js';
 
 const LoadingNavHeader = () => (
-  <div className="component__NavHeader">
+  <Wrapper>
     <AppBar
-      style={styles.AppBar}
+      style={{ backgroundColor: purple500 }}
       titleStyle={styles.AppBarTitle}
       title="登录中..."
     />
-  </div>
+  </Wrapper>
 );
 
 LoadingNavHeader.displayName = 'LoadingNavHeader';

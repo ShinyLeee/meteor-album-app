@@ -1,16 +1,18 @@
 import { Meteor } from 'meteor/meteor';
 import React, { Component, PropTypes } from 'react';
+import SwipeableViews from 'react-swipeable-views';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import TextField from 'material-ui/TextField';
+import { Tabs, Tab } from 'material-ui/Tabs';
+import { blue500 } from 'material-ui/styles/colors';
 import { insertCollection } from '/imports/api/collections/methods.js';
 import { getRandomInt } from '/imports/utils/utils.js';
-import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
-import Recap from '/imports/ui/components/Recap/Recap.jsx';
-import EmptyHolder from '/imports/ui/components/EmptyHolder/EmptyHolder.jsx';
+import SecondaryNavHeader from '/imports/ui/components/NavHeader/Secondary/Secondary.jsx';
 import Loading from '/imports/ui/components/Loader/Loading.jsx';
 import FloatButton from '/imports/ui/components/FloatButton/FloatButton.jsx';
-import CollHolder from './components/CollHolder/CollHolder.jsx';
+import OwnedCollections from './components/Owned/Owned.jsx';
+import FollowedCollections from './components/Followed/Followed.jsx';
 
 export default class AllCollectionPage extends Component {
 
@@ -20,25 +22,12 @@ export default class AllCollectionPage extends Component {
       open: false,
       newCollName: '',
       errorText: '',
-      location: 'collection',
+      slideIndex: 0,
     };
     this.handleCloseDialog = this.handleCloseDialog.bind(this);
     this.handleChangeCollName = this.handleChangeCollName.bind(this);
     this.handleAddCollection = this.handleAddCollection.bind(this);
-  }
-
-  componentWillMount() {
-    if (this.props.colls) {
-      const existCollNames = this.props.colls.map((col) => col.name);
-      this.setState({ existCollNames });
-    }
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (this.props.colls !== nextProps.colls) {
-      const existCollNames = nextProps.colls.map((coll) => coll.name);
-      this.setState({ existCollNames });
-    }
+    this.handleTabChange = this.handleTabChange.bind(this);
   }
 
   handleCloseDialog() {
@@ -63,6 +52,7 @@ export default class AllCollectionPage extends Component {
       return;
     }
     this.handleCloseDialog();
+    // TODO 避免创建重名相册
     insertCollection.callPromise({
       name: this.state.newCollName,
       user: this.props.User.username,
@@ -80,57 +70,60 @@ export default class AllCollectionPage extends Component {
     });
   }
 
+  handleTabChange(value) {
+    this.setState({
+      slideIndex: value,
+    });
+  }
+
   renderContent() {
-    const { isGuest, colls } = this.props;
-    if (!isGuest && colls.length === 0) {
-      return (
-        <EmptyHolder
-          mainInfo="你还尚未创建相册"
-          secInfo="点击右下角按钮创建属于自己的相册吧"
-        />
-      );
-    }
+    const { curUser, colls, isGuest, dataIsReady } = this.props;
     return (
-      <div className="content__allCollection">
-        {
-          colls.map((coll) => (
-            <CollHolder
-              key={coll._id}
-              User={this.props.curUser}
-              coll={coll}
-            />
-          ))
-        }
-      </div>
+      <SwipeableViews
+        style={{ marginTop: '112px' }}
+        index={this.state.slideIndex}
+        onChangeIndex={this.handleTabChange}
+      >
+        <OwnedCollections
+          isGuest={isGuest}
+          colls={colls}
+          curUser={curUser}
+          dataIsReady={dataIsReady}
+        />
+        <FollowedCollections
+          isGuest={isGuest}
+          colls={colls}
+          curUser={curUser}
+          dataIsReady={dataIsReady}
+        />
+      </SwipeableViews>
     );
   }
 
   render() {
-    const { isGuest, curUser, dataIsReady, colls } = this.props;
+    const { isGuest, curUser, dataIsReady } = this.props;
     return (
-      <div className="container">
-        <NavHeader
+      <div className="container deep">
+        <SecondaryNavHeader
           title={isGuest ? `${curUser.username}的相册` : '我的相册'}
-          secondary
-        />
-        <main className="content">
-          { !dataIsReady && (<Loading />) }
-          { isGuest
-            ? (
-              <Recap
-                title={curUser.username}
-                detailFir={curUser.profile.intro || '暂无简介'}
-              />
-            )
-            : colls.length > 0 && (
-              <Recap
-                title="我的相册"
-                detailFir="所有创建相册都在这里"
-                detailSec="可以点击右下角的按钮添加相册"
-              />
-            )
+          style={{ boxShadow: '' }}
+        >
+          <Tabs
+            onChange={this.handleTabChange}
+            value={this.state.slideIndex}
+            tabItemContainerStyle={{ backgroundColor: blue500 }}
+            inkBarStyle={{ backgroundColor: '#fff' }}
+          >
+            <Tab label={isGuest ? `${curUser.username}的` : '我的'} value={0} />
+            <Tab label={isGuest ? `${curUser.usename}关注的` : '已关注'} value={1} />
+          </Tabs>
+        </SecondaryNavHeader>
+        <main className="content deep">
+          {
+            dataIsReady
+            ? this.renderContent()
+            : (<Loading />)
           }
-          { dataIsReady && this.renderContent() }
           <Dialog
             title="新建相册"
             actions={[
@@ -169,11 +162,10 @@ AllCollectionPage.displayName = 'AllCollectionPage';
 
 AllCollectionPage.propTypes = {
   User: PropTypes.object,
-  // Below Pass from Database
+  // Below Pass from Database and Redux
   dataIsReady: PropTypes.bool.isRequired,
   isGuest: PropTypes.bool.isRequired, // based on isGuest render different content
   curUser: PropTypes.object.isRequired,
   colls: PropTypes.array.isRequired,
-  // Below Pass from Redux
   snackBarOpen: PropTypes.func.isRequired,
 };

@@ -9,9 +9,8 @@ import { List, ListItem } from 'material-ui/List';
 import IconButton from 'material-ui/IconButton';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import TextField from 'material-ui/TextField';
-import { blue500, grey400 } from 'material-ui/styles/colors';
-
-import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
+import { grey400 } from 'material-ui/styles/colors';
+import SecondaryNavHeader from '/imports/ui/components/NavHeader/Secondary/Secondary.jsx';
 import Loader from '/imports/ui/components/Loader/Loader.jsx';
 
 export default class EmailsPage extends Component {
@@ -132,11 +131,7 @@ export default class EmailsPage extends Component {
   render() {
     return (
       <div className="container">
-        <NavHeader
-          title="我的邮箱"
-          style={{ backgroundColor: blue500 }}
-          secondary
-        />
+        <SecondaryNavHeader title="我的邮箱" />
         <main className="content">
           <Loader
             open={this.state.isProcessing}

@@ -2,8 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import React, { Component, PropTypes } from 'react';
 import { browserHistory } from 'react-router';
 import Paper from 'material-ui/Paper';
-
-import SearchBar from '/imports/ui/components/NavHeader/components/SearchBar/SearchBar.jsx';
+import SearchBar from '/imports/ui/components/NavHeader/SearchBar/SearchBar.jsx';
 import Loading from '/imports/ui/components/Loader/Loading.jsx';
 import NoteHolder from '/imports/ui/components/NoteHolder/NoteHolder.jsx';
 

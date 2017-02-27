@@ -8,9 +8,8 @@ import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
 import ArrowBackIcon from 'material-ui/svg-icons/navigation/arrow-back';
 import DoneIcon from 'material-ui/svg-icons/action/done';
-import { blue500 } from 'material-ui/styles/colors';
 import { insertDiary } from '/imports/api/diarys/methods.js';
-import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
+import SecondaryNavHeader from '/imports/ui/components/NavHeader/Secondary/Secondary.jsx';
 import QuillEditor from '/imports/ui/components/Quill/QuillEditor.jsx';
 import Loader from '/imports/ui/components/Loader/Loader.jsx';
 
@@ -83,9 +82,8 @@ export default class WriteDiaryPage extends Component {
   render() {
     return (
       <div className="container">
-        <NavHeader
+        <SecondaryNavHeader
           title="添加日记"
-          style={{ backgroundColor: blue500 }}
           iconElementLeft={<IconButton onTouchTap={this.handleGoBack}><ArrowBackIcon /></IconButton>}
           iconElementRight={<IconButton onTouchTap={this.handleInsertDiary}><DoneIcon /></IconButton>}
         />

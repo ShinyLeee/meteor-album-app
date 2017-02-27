@@ -162,6 +162,7 @@ export default class Uploader extends PureComponent {
   }
 
   afterUploadFile(file) {
+    // TODO save image average color from QINIU API
     const image = {
       user: this.props.User.username,
       collection: this.props.destination.split('/')[1],
@@ -188,6 +189,7 @@ export default class Uploader extends PureComponent {
       if (this.props.afterUpload) {
         this.props.afterUpload(err);
       }
+      console.log(err); // eslint-disable-line no-console
       throw new Meteor.Error(err);
     }
 

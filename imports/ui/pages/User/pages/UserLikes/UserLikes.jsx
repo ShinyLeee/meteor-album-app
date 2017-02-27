@@ -3,8 +3,7 @@ import React, { PureComponent, PropTypes } from 'react';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import { Images } from '/imports/api/images/image.js';
 import { makeCancelable } from '/imports/utils/utils.js';
-
-import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
+import SecondaryNavHeader from '/imports/ui/components/NavHeader/Secondary/Secondary.jsx';
 import Infinity from '/imports/ui/components/Infinity/Infinity.jsx';
 import Loading from '/imports/ui/components/Loader/Loading.jsx';
 import EmptyHolder from '/imports/ui/components/EmptyHolder/EmptyHolder.jsx';
@@ -111,9 +110,8 @@ export default class UserLikesPage extends PureComponent {
   render() {
     return (
       <div className="container">
-        <NavHeader
+        <SecondaryNavHeader
           title={this.props.isGuest ? `${this.props.curUser.username}喜欢的` : '我喜欢的'}
-          secondary
         />
         <main className="content">
           {

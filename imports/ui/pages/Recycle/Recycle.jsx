@@ -1,22 +1,19 @@
 import React, { Component, PropTypes } from 'react';
-import { browserHistory } from 'react-router';
 import { Meteor } from 'meteor/meteor';
 import IconButton from 'material-ui/IconButton';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
-import ArrowBackIcon from 'material-ui/svg-icons/navigation/arrow-back';
 import CloseIcon from 'material-ui/svg-icons/navigation/close';
 import RecoveryIcon from 'material-ui/svg-icons/av/replay';
 import RemoveIcon from 'material-ui/svg-icons/action/delete';
-import { blue500 } from 'material-ui/styles/colors';
+import { blue500, purple500 } from 'material-ui/styles/colors';
 import { removeImages, recoveryImages } from '/imports/api/images/methods.js';
-import scrollTo from '/imports/vendor/scrollTo.js';
-import NavHeader from '../../components/NavHeader/NavHeader.jsx';
+import SecondaryNavHeader from '../../components/NavHeader/Secondary/Secondary.jsx';
 import EmptyHolder from '../../components/EmptyHolder/EmptyHolder.jsx';
 import Loader from '../../components/Loader/Loader.jsx';
 import Loading from '../../components/Loader/Loading.jsx';
-import JustifiedSelectIcon from '../../components/JustifiedLayout/components/snippet/JustifiedSelectIcon.jsx'; // eslint-disable-line max-len
-import ConnectedGridLayout from '../../components/JustifiedLayout/components/GridLayout/GridLayout.jsx'; // eslint-disable-line max-len
+import JustifiedSelectIcon from '../../components/JustifiedLayout/components/snippet/JustifiedSelectIcon.jsx';
+import ConnectedGridLayout from '../../components/JustifiedLayout/components/GridLayout/GridLayout.jsx';
 
 export default class RecyclePage extends Component {
 
@@ -145,43 +142,16 @@ export default class RecyclePage extends Component {
   }
 
   render() {
-    const { dataIsReady, User, counter } = this.props;
-    const recoveryActions = [
-      <FlatButton
-        label="取消"
-        onTouchTap={() => this.setState({ recoveryAlert: false })}
-        primary
-      />,
-      <FlatButton
-        label="恢复"
-        onTouchTap={this.handleRecoveryImgs}
-        primary
-      />,
-    ];
-    const deleteActions = [
-      <FlatButton
-        label="取消"
-        onTouchTap={() => this.setState({ deleteAlert: false })}
-        primary
-      />,
-      <FlatButton
-        label="彻底删除"
-        onTouchTap={this.handleDeleteImgs}
-        primary
-      />,
-    ];
-    const navHeaderStyle = this.state.isEditing ? { backgroundColor: blue500 } : {};
-    const navHeaderIconLeft = this.state.isEditing
-      ? (<IconButton onTouchTap={this.handleQuitEditing}><CloseIcon /></IconButton>)
-      : (<IconButton onTouchTap={() => browserHistory.goBack()}><ArrowBackIcon /></IconButton>);
+    const { dataIsReady, counter } = this.props;
     return (
       <div className="container">
-        <NavHeader
-          User={User}
+        <SecondaryNavHeader
           title={counter ? `选择了${counter}张照片` : '回收站'}
-          onTitleTouchTap={() => scrollTo(0, 1500)}
-          style={navHeaderStyle}
-          iconElementLeft={navHeaderIconLeft}
+          style={{ backgroundColor: this.state.isEditing ? blue500 : purple500 }}
+          iconElementLeft={
+            this.state.isEditing &&
+            (<IconButton onTouchTap={this.handleQuitEditing}><CloseIcon /></IconButton>)
+          }
           iconElementRight={
             <div>
               <IconButton
@@ -210,7 +180,18 @@ export default class RecyclePage extends Component {
           <Dialog
             title="提示"
             titleStyle={{ border: 'none' }}
-            actions={recoveryActions}
+            actions={[
+              <FlatButton
+                label="取消"
+                onTouchTap={() => this.setState({ recoveryAlert: false })}
+                primary
+              />,
+              <FlatButton
+                label="恢复"
+                onTouchTap={this.handleRecoveryImgs}
+                primary
+              />,
+            ]}
             actionsContainerStyle={{ border: 'none' }}
             open={this.state.recoveryAlert}
             onRequestClose={() => this.setState({ recoveryAlert: false })}
@@ -219,7 +200,18 @@ export default class RecyclePage extends Component {
           <Dialog
             title="提示"
             titleStyle={{ border: 'none' }}
-            actions={deleteActions}
+            actions={[
+              <FlatButton
+                label="取消"
+                onTouchTap={() => this.setState({ deleteAlert: false })}
+                primary
+              />,
+              <FlatButton
+                label="彻底删除"
+                onTouchTap={this.handleDeleteImgs}
+                primary
+              />,
+            ]}
             actionsContainerStyle={{ border: 'none' }}
             open={this.state.deleteAlert}
             onRequestClose={() => this.setState({ deleteAlert: false })}

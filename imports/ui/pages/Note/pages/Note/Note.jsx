@@ -5,12 +5,12 @@ import IconMenu from 'material-ui/IconMenu';
 import IconButton from 'material-ui/IconButton';
 import MenuItem from 'material-ui/MenuItem';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
+import { purple500 } from 'material-ui/styles/colors.js';
 import { Notes } from '/imports/api/notes/note.js';
 import { readNote, readAllNotes } from '/imports/api/notes/methods.js';
 import { makeCancelable } from '/imports/utils/utils.js';
-
 import Infinity from '/imports/ui/components/Infinity/Infinity.jsx';
-import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
+import SecondaryNavHeader from '/imports/ui/components/NavHeader/Secondary/Secondary.jsx';
 import EmptyHolder from '/imports/ui/components/EmptyHolder/EmptyHolder.jsx';
 import Loading from '/imports/ui/components/Loader/Loading.jsx';
 import BibleDialog from '/imports/ui/components/BibleDialog/BibleDialog.jsx';
@@ -148,9 +148,9 @@ export default class NotePage extends Component {
   render() {
     return (
       <div className="container">
-        <NavHeader
+        <SecondaryNavHeader
           title="未读消息"
-          secondary
+          style={{ backgroundColor: purple500 }}
           iconElementRight={
             <IconMenu
               iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}

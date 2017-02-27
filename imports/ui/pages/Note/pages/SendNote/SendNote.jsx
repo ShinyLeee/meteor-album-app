@@ -12,9 +12,8 @@ import TextField from 'material-ui/TextField';
 import IconButton from 'material-ui/IconButton';
 import ArrowBackIcon from 'material-ui/svg-icons/navigation/arrow-back';
 import SendIcon from 'material-ui/svg-icons/content/send';
-import { blue500 } from 'material-ui/styles/colors';
 import { insertNote } from '/imports/api/notes/methods.js';
-import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
+import SecondaryNavHeader from '/imports/ui/components/NavHeader/Secondary/Secondary.jsx';
 import QuillEditor from '/imports/ui/components/Quill/QuillEditor.jsx';
 import DatePickerCN from '/imports/ui/components/SubMaterialUI/DatePickerCN.jsx';
 import Loader from '/imports/ui/components/Loader/Loader.jsx';
@@ -207,9 +206,8 @@ export default class SendNotePage extends Component {
   render() {
     return (
       <div className="container">
-        <NavHeader
+        <SecondaryNavHeader
           title="发送信息"
-          style={{ backgroundColor: blue500 }}
           iconElementLeft={<IconButton onTouchTap={this.handleGoBack}><ArrowBackIcon /></IconButton>}
           iconElementRight={<IconButton onTouchTap={this.handleSentNote}><SendIcon /></IconButton>}
         />

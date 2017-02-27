@@ -7,8 +7,7 @@ import { List, ListItem } from 'material-ui/List';
 import RaisedButton from 'material-ui/RaisedButton';
 import { blueA400 } from 'material-ui/styles/colors';
 import { followUser, unFollowUser } from '/imports/api/users/methods.js';
-
-import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
+import SecondaryNavHeader from '/imports/ui/components/NavHeader/Secondary/Secondary.jsx';
 import Loading from '/imports/ui/components/Loader/Loading.jsx';
 
 export default class UserFansPage extends PureComponent {
@@ -123,9 +122,8 @@ export default class UserFansPage extends PureComponent {
   render() {
     return (
       <div className="container">
-        <NavHeader
+        <SecondaryNavHeader
           title={this.props.isGuest ? `${this.props.curUser.username}的关注者` : '我的关注者'}
-          secondary
         />
         <main className="content">
           {

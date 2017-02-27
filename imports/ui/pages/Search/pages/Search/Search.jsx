@@ -2,9 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import React, { Component, PropTypes } from 'react';
 import { browserHistory } from 'react-router';
 import Paper from 'material-ui/Paper';
-
-import SearchBar from '/imports/ui/components/NavHeader/components/SearchBar/SearchBar.jsx';
+import SearchBar from '/imports/ui/components/NavHeader/SearchBar/SearchBar.jsx';
 import Loading from '/imports/ui/components/Loader/Loading.jsx';
+import CollHolder from '/imports/ui/components/CollHolder/CollHolder.jsx';
 
 export default class SearchPage extends Component {
 
@@ -22,7 +22,7 @@ export default class SearchPage extends Component {
   }
 
   renderContent() {
-    const { collections, users } = this.props;
+    const { User, collections, users } = this.props;
     return (
       <div className="content__search">
         <section className="search__collection">
@@ -32,24 +32,15 @@ export default class SearchPage extends Component {
           </header>
           {
             collections.map((coll, i) => {
-              const user = Meteor.users.findOne({ username: coll.user });
+              let avatarSrc;
+              if (coll.user === User.username) avatarSrc = User.profile.avatar;
+              else avatarSrc = Meteor.users.findOne({ username: coll.user }).profile.avatar;
               return (
-                <Paper
+                <CollHolder
                   key={i}
-                  className="collection__content"
-                  onTouchTap={() => browserHistory.push(`/user/${coll.user}/collection/${coll.name}`)}
-                >
-                  <div className="collection__cover">
-                    <img src={coll.cover} alt={coll.name} />
-                  </div>
-                  <div className="collection__info">
-                    <div className="collection__avatar">
-                      <img src={user && user.profile.avatar} alt={coll.user} />
-                    </div>
-                    <div className="collection__name">{coll.name}</div>
-                    <div className="collection__username">{coll.user}</div>
-                  </div>
-                </Paper>
+                  coll={coll}
+                  avatarSrc={avatarSrc}
+                />
               );
             })
           }

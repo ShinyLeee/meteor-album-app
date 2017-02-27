@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import CircularProgress from 'material-ui/CircularProgress';
 import Dialog from 'material-ui/Dialog';
-import { LoaderContent, LoaderProgress, LoaderMessage } from './styled.js';
+import { LoaderContent, LoaderProgress, LoaderMessage } from './Loader.style.js';
 
 export default class Loader extends Component {
 

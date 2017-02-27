@@ -3,8 +3,7 @@ import React, { PureComponent, PropTypes } from 'react';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import { Images } from '/imports/api/images/image.js';
 import { makeCancelable } from '/imports/utils/utils.js';
-
-import NavHeader from '../../components/NavHeader/NavHeader.jsx';
+import PrimaryNavHeader from '../../components/NavHeader/Primary/Primary.jsx';
 import Infinity from '../../components/Infinity/Infinity.jsx';
 import Recap from '../../components/Recap/Recap.jsx';
 import Loading from '../../components/Loader/Loading.jsx';
@@ -16,7 +15,6 @@ export default class IndexPage extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      location: 'explore',
       isLoading: false,
       images: props.initialImages,
     };
@@ -81,10 +79,9 @@ export default class IndexPage extends PureComponent {
     const { User, dataIsReady, zoomerOpen, zoomerImage } = this.props;
     return (
       <div className="container">
-        <NavHeader
+        <PrimaryNavHeader
           User={User}
-          location={this.state.location}
-          primary
+          location="explore"
         />
         <main className="content">
           { !dataIsReady && (<Loading />) }

@@ -115,7 +115,7 @@ if (Meteor.isServer) {
 
       describe('followUser', () => {
         it('should only work if you are logged in and the target is not yourself', () => {
-          const args = { targetId: curUser._id };
+          const args = { targetId: curUser._id, targetName: curUser.username };
 
           assert.throws(() => {
             followUser._execute({}, args);
@@ -128,21 +128,24 @@ if (Meteor.isServer) {
 
         it('should add profile.followers after method call', () => {
           // create a target User
-          const targetId = Factory.create('user')._id;
+          const target = Factory.create('user');
 
           const methodInvocation = { userId: curUser._id };
-          const args = { targetId };
+          const args = { targetId: target._id, targetName: target.username };
 
           followUser._execute(methodInvocation, args);
 
-          const targetUserFollowers = Users.findOne(targetId).profile.followers;
-          expect(targetUserFollowers).to.include(curUser.username);
+          const targetUser = Users.findOne(target._id);
+          expect(targetUser.profile.followers).to.include(curUser.username);
+
+          const currentUser = Users.findOne(curUser._id);
+          expect(currentUser.profile.following).to.include(targetUser.username);
         });
       });
 
       describe('unFollowUser', () => {
         it('should only work if you are logged in and the target is not yourself', () => {
-          const args = { targetId: curUser._id };
+          const args = { targetId: curUser._id, targetName: curUser.username };
 
           assert.throws(() => {
             unFollowUser._execute({}, args);
@@ -156,15 +159,18 @@ if (Meteor.isServer) {
         it('should add profile.followers after method call', () => {
           // we need create a User that profile has followers [userId]
           const profile = Object.assign({}, defaultUserProfile, { followers: [curUser.username] });
-          const targetId = Factory.create('user', { profile })._id;
+          const target = Factory.create('user', { profile });
 
           const methodInvocation = { userId: curUser._id };
-          const args = { targetId };
+          const args = { targetId: target._id, targetName: target.username };
 
           unFollowUser._execute(methodInvocation, args);
 
-          const targetUserFollowers = Users.findOne(targetId).profile.followers;
-          expect(targetUserFollowers).to.not.include(curUser.username);
+          const targetUser = Users.findOne(target._id);
+          expect(targetUser.profile.followers).to.not.include(curUser.username);
+
+          const currentUser = Users.findOne(curUser._id);
+          expect(currentUser.profile.following).to.not.include(targetUser.username);
         });
       });
     });

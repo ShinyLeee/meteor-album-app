@@ -7,7 +7,7 @@ import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import IconButton from 'material-ui/IconButton';
 import ChevronLeftIcon from 'material-ui/svg-icons/navigation/chevron-left';
 import ChevronRightIcon from 'material-ui/svg-icons/navigation/chevron-right';
-import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
+import SecondaryNavHeader from '/imports/ui/components/NavHeader/Secondary/Secondary.jsx';
 import Loading from '/imports/ui/components/Loader/Loading.jsx';
 import FloatButton from '/imports/ui/components/FloatButton/FloatButton.jsx';
 import DiaryHolder from '../../components/DiaryHolder/DiaryHolder.jsx';
@@ -118,12 +118,11 @@ export default class DiaryPage extends Component {
     } = this.state;
     return (
       <div className="container">
-        <NavHeader
+        <SecondaryNavHeader
           style={{ backgroundColor: 'transparent' }}
           title={navTitle}
           titleStyle={navTitle ? { color: '#222' } : {}}
           iconColor={iconColor}
-          secondary
         />
         <main className="content">
           {

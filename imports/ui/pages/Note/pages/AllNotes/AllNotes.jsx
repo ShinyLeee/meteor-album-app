@@ -1,11 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import React, { Component, PropTypes } from 'react';
-import { blue500 } from 'material-ui/styles/colors';
 import { Notes } from '/imports/api/notes/note.js';
 import { makeCancelable } from '/imports/utils/utils.js';
-
 import Infinity from '/imports/ui/components/Infinity/Infinity.jsx';
-import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
+import SecondaryNavHeader from '/imports/ui/components/NavHeader/Secondary/Secondary.jsx';
 import EmptyHolder from '/imports/ui/components/EmptyHolder/EmptyHolder.jsx';
 import Loading from '/imports/ui/components/Loader/Loading.jsx';
 import BibleDialog from '/imports/ui/components/BibleDialog/BibleDialog.jsx';
@@ -101,7 +99,7 @@ export default class AllNotesPage extends Component {
   render() {
     return (
       <div className="container">
-        <NavHeader title="全部消息" style={{ backgroundColor: blue500 }} secondary />
+        <SecondaryNavHeader title="全部消息" />
         <main className="content">
           {
             this.props.dataIsReady

@@ -20,8 +20,8 @@ import InboxIcon from 'material-ui/svg-icons/content/inbox';
 import EmailIcon from 'material-ui/svg-icons/communication/email';
 import { blue500 } from 'material-ui/styles/colors';
 import { updateProfile } from '/imports/api/users/methods.js';
-
-import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
+import CustomNavHeader from '/imports/ui/components/NavHeader/Custom/Custom.jsx';
+import SecondaryNavHeader from '/imports/ui/components/NavHeader/Secondary/Secondary.jsx';
 import Loader from '/imports/ui/components/Loader/Loader.jsx';
 import styles from '../../Setting.style.js';
 
@@ -402,7 +402,7 @@ export default class SettingPage extends Component {
         {
           this.state.isEditing
           ? (
-            <NavHeader
+            <CustomNavHeader
               User={User}
               title={this.state.isProcessing ? '上传图片中' : '修改设置中'}
               style={{ backgroundColor: blue500 }}
@@ -419,11 +419,7 @@ export default class SettingPage extends Component {
             />
           )
           : (
-            <NavHeader
-              title="个人设置"
-              style={{ backgroundColor: blue500 }}
-              secondary
-            />
+            <SecondaryNavHeader title="个人设置" />
           )
         }
         <main className="content">

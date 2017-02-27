@@ -17,14 +17,13 @@ import CloseIcon from 'material-ui/svg-icons/navigation/close';
 import ShiftIcon from 'material-ui/svg-icons/hardware/keyboard-return';
 import RemoveIcon from 'material-ui/svg-icons/action/delete';
 import SetCoverIcon from 'material-ui/svg-icons/device/wallpaper';
-import { blue500 } from 'material-ui/styles/colors';
 import { removeImagesToRecycle, shiftImages } from '/imports/api/images/methods.js';
 import {
   removeCollection,
   lockCollection,
   mutateCollectionCover,
 } from '/imports/api/collections/methods.js';
-import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
+import SecondaryNavHeader from '/imports/ui/components/NavHeader/Secondary/Secondary.jsx';
 import ConnectedJustified from '/imports/ui/components/JustifiedLayout/Justified.jsx';
 import Loader from '/imports/ui/components/Loader/Loader.jsx';
 import Loading from '/imports/ui/components/Loader/Loading.jsx';
@@ -279,10 +278,10 @@ export default class CollectionPage extends Component {
   renderNavHeader() {
     const { isGuest, curColl } = this.props;
     return isGuest
-    ? (<NavHeader title={curColl.name} secondary />)
+    ? (<SecondaryNavHeader title={curColl.name} />)
     : (
-      <NavHeader
-        title="我的相册"
+      <SecondaryNavHeader
+        title={curColl.name}
         iconElementRight={
           <div>
             <IconButton iconStyle={{ color: '#fff' }} onTouchTap={this.handleOpenUploader}>
@@ -307,7 +306,6 @@ export default class CollectionPage extends Component {
             </IconMenu>
           </div>
         }
-        secondary
       />);
   }
 
@@ -350,10 +348,9 @@ export default class CollectionPage extends Component {
       <div className="container">
         { this.state.isEditing
           ? (
-            <NavHeader
+            <SecondaryNavHeader
               User={User}
               title={counter ? `选择了${counter}张照片` : ''}
-              style={{ backgroundColor: blue500 }}
               iconElementLeft={<IconButton onTouchTap={this.handleQuitEditing}><CloseIcon /></IconButton>}
               iconElementRight={
                 <div>

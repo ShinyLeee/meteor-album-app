@@ -1,15 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import React, { PropTypes } from 'react';
 import { Link } from 'react-router';
-
-import NavHeader from '../../components/NavHeader/NavHeader.jsx';
+import PrimaryNavHeader from '../../components/NavHeader/Primary/Primary.jsx';
 
 const NotFound = ({ User, sourceDomain }) => (
   <div className="container">
-    <NavHeader
-      User={User}
-      primary
-    />
+    <PrimaryNavHeader User={User} />
     <main className="content">
       <div className="content__error">
         <div className="error__container">

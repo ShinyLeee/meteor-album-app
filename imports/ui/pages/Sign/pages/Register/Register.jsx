@@ -4,8 +4,7 @@ import { browserHistory } from 'react-router';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import { checkCode, useCode } from '/imports/api/codes/methods.js';
-
-import NavHeader from '/imports/ui/components/NavHeader/NavHeader.jsx';
+import PrimaryNavHeader from '/imports/ui/components/NavHeader/Primary/Primary.jsx';
 import Loader from '/imports/ui/components/Loader/Loader.jsx';
 import signHOC from '../../components/signHOC.js';
 import styles from '../../sign.style.js';
@@ -79,7 +78,7 @@ class RegisterPage extends Component {
   render() {
     return (
       <div className="container">
-        <NavHeader primary />
+        <PrimaryNavHeader />
         <main className="content">
           <Loader
             open={this.state.isProcessing}

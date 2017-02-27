@@ -9,7 +9,8 @@ import MessageIcon from 'material-ui/svg-icons/communication/message';
 import SettingsIcon from 'material-ui/svg-icons/action/settings';
 import ExitToAppIcon from 'material-ui/svg-icons/action/exit-to-app';
 import { followUser, unFollowUser } from '/imports/api/users/methods.js';
-import NavHeader from '../../components/NavHeader/NavHeader.jsx';
+import PrimaryNavHeader from '/imports/ui/components/NavHeader/Primary/Primary.jsx';
+import SecondaryNavHeader from '/imports/ui/components/NavHeader/Secondary/Secondary.jsx';
 import Loading from '../../components/Loader/Loading.jsx';
 import TopImageSlider from './components/TopImageSlider/TopImageSlider.jsx';
 
@@ -58,11 +59,12 @@ export default class UserPage extends Component {
   }
 
   handleFollow() {
-    if (!this.props.User) {
+    const { User, curUser } = this.props;
+    if (!User) {
       this.props.snackBarOpen('您还尚未登录');
       return;
     }
-    followUser.callPromise({ targetId: this.props.curUser._id })
+    followUser.callPromise({ targetId: curUser._id, targetName: curUser.username })
     .then(() => {
       this.props.snackBarOpen('关注成功');
     })
@@ -74,11 +76,12 @@ export default class UserPage extends Component {
   }
 
   handleUnFollow() {
-    if (!this.props.User) {
+    const { User, curUser } = this.prosp;
+    if (!User) {
       this.props.snackBarOpen('您还尚未登录');
       return;
     }
-    unFollowUser.callPromise({ targetId: this.props.curUser._id })
+    unFollowUser.callPromise({ targetId: curUser._id, targetName: curUser.username })
     .then(() => {
       this.props.snackBarOpen('取消关注成功');
     })
@@ -230,8 +233,8 @@ export default class UserPage extends Component {
       <div className="container">
         {
           this.props.isGuest
-          ? (<NavHeader title={`${this.props.curUser.username}的主页`} secondary />)
-          : (<NavHeader User={this.props.User} location={this.state.location} primary />)
+          ? (<SecondaryNavHeader title={`${this.props.curUser.username}的主页`} />)
+          : (<PrimaryNavHeader User={this.props.User} location={this.state.location} />)
         }
         <main className="content">
           {
