@@ -18,15 +18,18 @@ const MeteorContainer = createContainer(({ params }) => {
 
   const userHandler = Meteor.subscribe('Users.all');
   const collHandler = isGuest
-                      ? Meteor.subscribe('Collections.inUser', username)
-                      : Meteor.subscribe('Collections.own');
+  ? Meteor.subscribe('Collections.inUser', username) && Meteor.subscribe('Collections.inUserFollowing', username)
+  : Meteor.subscribe('Collections.own') && Meteor.subscribe('Collections.ownFollowing');
+
   const dataIsReady = userHandler.ready() && collHandler.ready();
 
   let colls;
+  let existCollNames;
   const curUser = Meteor.users.findOne({ username }) || preCurUser;
 
   if (!isGuest) {
     colls = Collections.find({}, { sort: { createdAt: -1 } }).fetch();
+    existCollNames = Collections.find({ user: User.username }, { fields: { name: 1 } }).map(coll => coll.name);
   } else {
     colls = Collections.find({ private: false }, { sort: { createdAt: -1 } }).fetch();
   }
@@ -36,6 +39,7 @@ const MeteorContainer = createContainer(({ params }) => {
     isGuest,
     curUser,
     colls,
+    existCollNames,
   };
 }, AllCollectionsPage);
 

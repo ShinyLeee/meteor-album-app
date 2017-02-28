@@ -17,7 +17,6 @@ export class Justified extends PureComponent {
       isAllSelect: false,
       layoutType: 'group',
       filterType: 'day',
-      allImages: props.images, // only used to grid layout
       allGroupImages: this.generateAllGroupImages(props.images),
     };
     this.handleToggleSelectAll = this.handleToggleSelectAll.bind(this);
@@ -82,12 +81,7 @@ export class Justified extends PureComponent {
       this.setState({ filterType: newFilterType, allGroupImages });
     }
     if (this.state.layoutType === 'grid') {
-      const { images } = this.props;
-      let allImages;
-      if (newFilterType === 'latest') allImages = [...images];
-      if (newFilterType === 'oldest') allImages = [...images].reverse();
-      if (newFilterType === 'popular') allImages = [...images].sort((p, n) => n.liker.length - p.liker.length);
-      this.setState({ filterType: newFilterType, allImages });
+      this.setState({ filterType: newFilterType });
     }
   }
 
@@ -108,7 +102,7 @@ export class Justified extends PureComponent {
 
   render() {
     const { isEditing, images } = this.props;
-    const { isAllSelect, layoutType, filterType, allImages, allGroupImages } = this.state;
+    const { isAllSelect, layoutType, filterType, allGroupImages } = this.state;
     const isDefaultLayout = layoutType === 'group';
     return (
       <Wrapper isDefaultLayout={isDefaultLayout}>
@@ -138,8 +132,9 @@ export class Justified extends PureComponent {
             )
           : (
             <ConnectedGridLayout
+              images={images}
               isEditing={isEditing}
-              images={allImages}
+              filterType={filterType}
               showGallery
             />
           )

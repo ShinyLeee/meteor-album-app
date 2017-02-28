@@ -2,29 +2,29 @@ import styled from 'styled-components';
 import Paper from 'material-ui/Paper';
 
 export const Wrapper = styled(Paper)`
-  position: relative;
   display: inline-block;
   width: calc(50% - 2px);
+  max-width: 225px;
   margin-top: 4px;
   cursor: pointer;
-  &:nth-child(even) {
+  &:nth-of-type(even) {
     margin-left: 4px;
   }
 `;
 
 export const Cover = styled.section`
   width: 100%;
-  height: 200px;
+  height: 180px;
   backgroundColor: #eee;
   & > img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
-  }
+    object-fit: cover;  }
 `;
 
 export const Info = styled.section`
-  margin: -18px 0 18px 12px;
+  margin: -18px 0 16px 12px;
+  text-align: left;
 `;
 
 export const Avatar = styled.div`
@@ -34,6 +34,7 @@ export const Avatar = styled.div`
   & > img {
     width: 100%;
     height: 100%;
+    border: 1px solid #fff;    
     border-radius: 50%;
   }
 `;
@@ -43,6 +44,12 @@ export const CollName = styled.div`
 `;
 
 export const UserName = styled.div`
-  font-size: 12px;
+  font-size: 13px;
   color: #666;
+`;
+
+export const Time = styled.time`
+  display: block;
+  font-size: 12px;
+  color: #999;
 `;

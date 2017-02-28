@@ -4,6 +4,7 @@ import { browserHistory } from 'react-router';
 import Paper from 'material-ui/Paper';
 import SearchBar from '/imports/ui/components/NavHeader/SearchBar/SearchBar.jsx';
 import Loading from '/imports/ui/components/Loader/Loading.jsx';
+import CollHolder from '/imports/ui/components/CollHolder/CollHolder.jsx';
 import NoteHolder from '/imports/ui/components/NoteHolder/NoteHolder.jsx';
 
 export default class SearchResultsPage extends Component {
@@ -22,27 +23,18 @@ export default class SearchResultsPage extends Component {
   }
 
   renderCollResults() {
-    const { collections, params: { query } } = this.props;
+    const { User, collections, params: { query } } = this.props;
     if (collections.length === 0) return <p className="search__empty">未找到符合“{query}”的结果</p>;
     return collections.map((coll, i) => {
-      const user = Meteor.users.findOne({ username: coll.user });
+      let avatarSrc;
+      if (coll.user === User.username) avatarSrc = User.profile.avatar;
+      else avatarSrc = Meteor.users.findOne({ username: coll.user }).profile.avatar;
       return (
-        <Paper
+        <CollHolder
           key={i}
-          className="collection__content"
-          onTouchTap={() => browserHistory.push(`/user/${coll.user}/collection/${coll.name}`)}
-        >
-          <div className="collection__cover">
-            <img src={coll.cover} alt={coll.name} />
-          </div>
-          <div className="collection__info">
-            <div className="collection__avatar">
-              <img src={user && user.profile.avatar} alt={coll.user} />
-            </div>
-            <div className="collection__name">{coll.name}</div>
-            <div className="collection__username">{coll.user}</div>
-          </div>
-        </Paper>
+          coll={coll}
+          avatarSrc={avatarSrc}
+        />
       );
     });
   }

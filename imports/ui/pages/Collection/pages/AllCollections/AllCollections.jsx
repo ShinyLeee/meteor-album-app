@@ -10,9 +10,8 @@ import { insertCollection } from '/imports/api/collections/methods.js';
 import { getRandomInt } from '/imports/utils/utils.js';
 import SecondaryNavHeader from '/imports/ui/components/NavHeader/Secondary/Secondary.jsx';
 import Loading from '/imports/ui/components/Loader/Loading.jsx';
-import FloatButton from '/imports/ui/components/FloatButton/FloatButton.jsx';
-import OwnedCollections from './components/Owned/Owned.jsx';
-import FollowedCollections from './components/Followed/Followed.jsx';
+import OwnCollections from './components/Own/Own.jsx';
+import FollowingCollections from './components/Following/Following.jsx';
 
 export default class AllCollectionPage extends Component {
 
@@ -35,10 +34,11 @@ export default class AllCollectionPage extends Component {
   }
 
   handleChangeCollName(e) {
+    const { existCollNames } = this.props;
     const newCollName = e.target.value;
     if (newCollName.length > 10) {
       this.setState({ errorText: '相册名不能超过十个字符' });
-    } else if (this.state.existCollNames.indexOf(newCollName) >= 0) {
+    } else if (existCollNames.indexOf(newCollName) >= 0) {
       this.setState({ errorText: '该相册已存在' });
     } else {
       this.setState({ newCollName, errorText: '' });
@@ -52,7 +52,6 @@ export default class AllCollectionPage extends Component {
       return;
     }
     this.handleCloseDialog();
-    // TODO 避免创建重名相册
     insertCollection.callPromise({
       name: this.state.newCollName,
       user: this.props.User.username,
@@ -77,24 +76,23 @@ export default class AllCollectionPage extends Component {
   }
 
   renderContent() {
-    const { curUser, colls, isGuest, dataIsReady } = this.props;
+    const { curUser, colls, isGuest } = this.props;
     return (
       <SwipeableViews
-        style={{ marginTop: '112px' }}
+        className="content__allCollections"
         index={this.state.slideIndex}
         onChangeIndex={this.handleTabChange}
       >
-        <OwnedCollections
+        <OwnCollections
           isGuest={isGuest}
-          colls={colls}
           curUser={curUser}
-          dataIsReady={dataIsReady}
+          colls={colls.filter(coll => coll.user === curUser.username)}
+          onAddClick={() => this.setState({ open: true })}
         />
-        <FollowedCollections
+        <FollowingCollections
           isGuest={isGuest}
-          colls={colls}
           curUser={curUser}
-          dataIsReady={dataIsReady}
+          colls={colls.filter(coll => coll.user !== curUser.username)}
         />
       </SwipeableViews>
     );
@@ -115,7 +113,7 @@ export default class AllCollectionPage extends Component {
             inkBarStyle={{ backgroundColor: '#fff' }}
           >
             <Tab label={isGuest ? `${curUser.username}的` : '我的'} value={0} />
-            <Tab label={isGuest ? `${curUser.usename}关注的` : '已关注'} value={1} />
+            <Tab label={isGuest ? `${curUser.username}关注的` : '已关注'} value={1} />
           </Tabs>
         </SecondaryNavHeader>
         <main className="content deep">
@@ -151,7 +149,6 @@ export default class AllCollectionPage extends Component {
             />
           </Dialog>
         </main>
-        { !isGuest && <FloatButton onBtnClick={() => this.setState({ open: true })} />}
       </div>
     );
   }
@@ -167,5 +164,6 @@ AllCollectionPage.propTypes = {
   isGuest: PropTypes.bool.isRequired, // based on isGuest render different content
   curUser: PropTypes.object.isRequired,
   colls: PropTypes.array.isRequired,
+  existCollNames: PropTypes.array, // not required bc only Owner use it
   snackBarOpen: PropTypes.func.isRequired,
 };

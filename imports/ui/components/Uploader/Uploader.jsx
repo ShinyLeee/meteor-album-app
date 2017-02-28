@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import React, { PureComponent, PropTypes } from 'react';
+import { HTTP } from 'meteor/http';
+import React, { Component, PropTypes } from 'react';
 import EXIF from 'exif-js';
 import uuid from 'node-uuid';
 import { insertImage } from '/imports/api/images/methods.js';
@@ -22,7 +23,8 @@ const initialState = {
   uploading: false,  // Is in Uploading Progress
 };
 
-export default class Uploader extends PureComponent {
+// TODO make this component code clear and efficient
+export default class Uploader extends Component {
 
   constructor(props) {
     super(props);
@@ -47,6 +49,7 @@ export default class Uploader extends PureComponent {
   uploadToQiniu(files, currentFile) {
     if (!files) {
       console.error('File is empty, check if miss select upload files'); // eslint-disable-line
+      return;
     }
 
     const allowedFiles = ['image/jpeg', 'image/png', 'image/gif'];
@@ -162,10 +165,10 @@ export default class Uploader extends PureComponent {
   }
 
   afterUploadFile(file) {
-    // TODO save image average color from QINIU API
+    const { domain, User, destination } = this.props;
     const image = {
-      user: this.props.User.username,
-      collection: this.props.destination.split('/')[1],
+      user: User.username,
+      collection: destination.split('/')[1],
       name: file.fileName,
       type: file.surfix,
       dimension: file.dimension,
@@ -173,11 +176,16 @@ export default class Uploader extends PureComponent {
       createdAt: new Date(),
       updatedAt: new Date(),
     };
-    return insertImage.call(image, (err) => {
-      if (err) {
-        this.props.uploaderStop();
-        this.props.snackBarOpen(err.message);
-      }
+    const httpPromise = Meteor.wrapPromise(HTTP.call);
+    const url = encodeURI(`${domain}/${image.user}/${image.collection}/${image.name}.${image.type}?imageAve`);
+    return httpPromise('GET', url)
+    .then((res) => {
+      image.color = `#${res.data.RGB.split('0x')[1]}`;
+      return insertImage.callPromise(image);
+    })
+    .catch((err) => {
+      this.props.uploaderStop();
+      this.props.snackBarOpen(err.message);
     });
   }
 
@@ -251,12 +259,14 @@ export default class Uploader extends PureComponent {
 Uploader.displayName = 'Uploader';
 
 Uploader.defaultProps = {
+  domain: Meteor.settings.public.imageDomain,
   open: false,
   multiple: false,
   uploadURL: window.location.protocol === 'https:' ? 'https://up.qbox.me/' : 'http://upload.qiniu.com',
 };
 
 Uploader.propTypes = {
+  domain: PropTypes.string.isRequired,
   User: PropTypes.object,
   open: PropTypes.bool.isRequired,
   /**

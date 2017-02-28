@@ -79,12 +79,16 @@ export class GridImageHolder extends PureComponent {
           isEditing={isEditing}
           isSelect={this.state.isSelect}
         />
-        <LazyLoad height={Math.round(realDimension)} once>
+        <LazyLoad
+          height={Math.round(realDimension)}
+          placeholder={<div style={{ height: '100%', backgroundColor: image.color }} />}
+          once
+        >
           <ReactCSSTransitionGroup
             transitionName="fade"
             transitionAppear
-            transitionAppearTimeout={500}
-            transitionEnterTimeout={500}
+            transitionAppearTimeout={375}
+            transitionEnterTimeout={375}
             transitionLeave={false}
           >
             <SelectableImage

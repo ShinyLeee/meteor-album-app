@@ -230,7 +230,7 @@ JustifiedGroupLayout.propTypes = {
   domain: PropTypes.string.isRequired,
   devicePixelRatio: PropTypes.number.isRequired,
   isEditing: PropTypes.bool.isRequired,
-  filterType: PropTypes.oneOf(['day', 'month', 'year', 'latest', 'oldest', 'popular']).isRequired,
+  filterType: PropTypes.oneOf(['day', 'month', 'year']).isRequired,
   showGallery: PropTypes.bool.isRequired,
   groupName: PropTypes.string.isRequired,
   groupImages: PropTypes.array.isRequired,

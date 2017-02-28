@@ -96,14 +96,15 @@ export class GroupImageHolder extends PureComponent {
       >
         <JustifiedImageBackground isEditing={isEditing} isSelect={this.state.isSelect} />
         <LazyLoad
+          placeholder={<div style={{ height: '100%', backgroundColor: image.color }} />}
           height={dimension.height}
           once
         >
           <ReactCSSTransitionGroup
             transitionName="fade"
             transitionAppear
-            transitionAppearTimeout={500}
-            transitionEnterTimeout={500}
+            transitionAppearTimeout={375}
+            transitionEnterTimeout={375}
             transitionLeave={false}
           >
             <SelectableImage

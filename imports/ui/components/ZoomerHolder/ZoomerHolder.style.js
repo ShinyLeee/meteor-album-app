@@ -108,6 +108,12 @@ export const StyledCameraIcon = styled(CameraIcon)`
 
 export const ExifLoader = styled.div`
   text-align: center;
+  & > div {
+    vertical-align: bottom;
+  }
+  & > span {
+    margin-left: 12px;
+  }
 `;
 
 export const ExifInfo = styled.div`

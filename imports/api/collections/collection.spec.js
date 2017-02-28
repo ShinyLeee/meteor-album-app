@@ -5,7 +5,7 @@ import { _ } from 'meteor/underscore';
 import { PublicationCollector } from 'meteor/johanbrook:publication-collector';
 import { assert, expect } from 'meteor/practicalmeteor:chai';
 import { insertCollection, removeCollection, lockCollection, mutateCollectionCover } from './methods.js';
-import { Users } from '../users/user.js';
+import { Users, defaultUserProfile } from '../users/user.js';
 import { Images } from '../images/image.js';
 import { Collections } from './collection.js';
 import { Comments } from '../comments/comment.js';
@@ -32,7 +32,8 @@ if (Meteor.isServer) {
         Users.remove({});
         Collections.remove({});
 
-        curUser = Factory.create('user');
+        const profile = Object.assign({}, defaultUserProfile, { following: ['tester'] });
+        curUser = Factory.create('user', { profile });
 
         // Create 2 collection belong to current user
         Factory.create('collection', { user: curUser.username });
@@ -63,6 +64,17 @@ if (Meteor.isServer) {
         });
       });
 
+      describe('Collections.ownFollowing', () => {
+        it('should send own following users\' public collection documents', (done) => {
+          const collector = new PublicationCollector({ userId: curUser._id });
+          collector.collect('Collections.ownFollowing', (collections) => {
+            expect(collections.collections[0].user).to.equal('tester');
+            expect(collections.collections).to.have.length(1);
+            done();
+          });
+        });
+      });
+
       describe('Collection.inUser', () => {
         it('should send specific user\'s public collection documents', (done) => {
           const collector = new PublicationCollector();
@@ -73,19 +85,12 @@ if (Meteor.isServer) {
         });
       });
 
-      describe('Collection.collNames', () => {
-        it('should only send current user\'s all collections documents', (done) => {
-          const collector = new PublicationCollector({ userId: curUser._id });
-          collector.collect('Collections.collNames', (collections) => {
-            expect(collections.collections).to.have.length(2);
-            done();
-          });
-        });
-
-        it('should only send name field to client', (done) => {
-          const collector = new PublicationCollector({ userId: curUser._id });
-          collector.collect('Collections.collNames', (collections) => {
-            expect(collections.collections[0]).to.have.all.keys(['_id', 'name']);
+      describe('Collection.inUserFollowing', () => {
+        it('should send specific user and its following users\' public collection documents', (done) => {
+          const collector = new PublicationCollector();
+          collector.collect('Collections.inUserFollowing', curUser.username, (collections) => {
+            expect(collections.collections[0].user).to.equal('tester');
+            expect(collections.collections).to.have.length(1);
             done();
           });
         });

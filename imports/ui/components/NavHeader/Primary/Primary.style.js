@@ -21,6 +21,9 @@ export const DrawerAvatar = styled.div`
   width: 100%;
   height: 50%;
   padding: 24px 0 0px 26px;
+  & > img {
+    border: 1px solid #fff;
+  }
 `;
 
 export const DrawerEmail = styled.div`

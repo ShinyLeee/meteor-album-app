@@ -23,7 +23,7 @@ import DiaryIcon from 'material-ui/svg-icons/action/book';
 import DeleteIcon from 'material-ui/svg-icons/action/delete';
 import SettingsIcon from 'material-ui/svg-icons/action/settings';
 import ArrowDropdownIcon from 'material-ui/svg-icons/navigation/arrow-drop-down';
-import { purple500, blue500 } from 'material-ui/styles/colors';
+import { purple500, teal500 } from 'material-ui/styles/colors';
 import { Notes } from '/imports/api/notes/note.js';
 import { snackBarOpen } from '/imports/ui/redux/actions/index.js';
 import scrollTo from '/imports/vendor/scrollTo.js';
@@ -202,16 +202,15 @@ class PrimaryNavHeader extends Component {
               style={{ color: location === 'explore' ? purple500 : '#000' }}
             />
             <MenuItem
-              leftIcon={<UserIcon color={location === 'user' ? '#000' : ''} />}
+              leftIcon={<UserIcon color={location === 'user' ? teal500 : ''} />}
               primaryText="主页"
               onTouchTap={() => browserHistory.push(this.homeLink)}
-              style={{ fontWeight: location === 'user' ? 500 : '' }}
+              style={{ color: location === 'user' ? teal500 : '#000' }}
             />
             <MenuItem
-              leftIcon={<CameraIcon color={location === 'collection' ? blue500 : ''} />}
+              leftIcon={<CameraIcon />}
               primaryText="相册"
               onTouchTap={() => browserHistory.push(this.collLink)}
-              style={{ color: location === 'collection' ? blue500 : '#000' }}
             />
             <MenuItem
               leftIcon={<DiaryIcon />}

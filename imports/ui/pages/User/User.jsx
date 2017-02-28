@@ -8,6 +8,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import MessageIcon from 'material-ui/svg-icons/communication/message';
 import SettingsIcon from 'material-ui/svg-icons/action/settings';
 import ExitToAppIcon from 'material-ui/svg-icons/action/exit-to-app';
+import { teal500 } from 'material-ui/styles/colors.js';
 import { followUser, unFollowUser } from '/imports/api/users/methods.js';
 import PrimaryNavHeader from '/imports/ui/components/NavHeader/Primary/Primary.jsx';
 import SecondaryNavHeader from '/imports/ui/components/NavHeader/Secondary/Secondary.jsx';
@@ -234,7 +235,12 @@ export default class UserPage extends Component {
         {
           this.props.isGuest
           ? (<SecondaryNavHeader title={`${this.props.curUser.username}的主页`} />)
-          : (<PrimaryNavHeader User={this.props.User} location={this.state.location} />)
+          : (
+            <PrimaryNavHeader
+              User={this.props.User}
+              location={this.state.location}
+              style={{ backgroundColor: teal500 }}
+            />)
         }
         <main className="content">
           {

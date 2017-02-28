@@ -68,11 +68,15 @@ export class JustifiedGridLayout extends PureComponent {
   }
 
   render() {
-    const { isEditing, images } = this.props;
+    const { isEditing, filterType, images } = this.props;
+    let filteredImages;
+    if (filterType === 'latest') filteredImages = [...images];
+    if (filterType === 'oldest') filteredImages = [...images].reverse();
+    if (filterType === 'popular') filteredImages = [...images].sort((p, n) => n.liker.length - p.liker.length);
     return (
       <GridLayout>
         {
-          images.map((image, i) => (
+          filteredImages.map((image, i) => (
             <ConnectedGridImageHolder
               key={i}
               isEditing={isEditing}
@@ -96,6 +100,7 @@ JustifiedGridLayout.defaultProps = {
   devicePixelRatio: window.devicePixelRatio,
   isEditing: false,
   showGallery: false,
+  filterType: 'latest',
 };
 
 JustifiedGridLayout.propTypes = {
@@ -105,6 +110,7 @@ JustifiedGridLayout.propTypes = {
   isEditing: PropTypes.bool.isRequired,
   images: PropTypes.array.isRequired,
   showGallery: PropTypes.bool.isRequired,
+  filterType: PropTypes.oneOf(['latest', 'oldest', 'popular']).isRequired,
   // Below Pass From Redux
   photoSwipeOpen: PropTypes.func.isRequired,
 };

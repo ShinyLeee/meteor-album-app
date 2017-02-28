@@ -8,7 +8,6 @@ import TimeAgo from 'react-timeago';
 import CNStrings from 'react-timeago/lib/language-strings/zh-CN';
 import buildFormatter from 'react-timeago/lib/formatters/buildFormatter';
 import LazyLoad from 'react-lazyload';
-import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import Avatar from 'material-ui/Avatar';
 import { Card, CardHeader, CardActions, CardMedia } from 'material-ui/Card';
 import HeartIcon from 'material-ui/svg-icons/action/favorite';
@@ -78,16 +77,12 @@ class ImageHolder extends Component {
             )}
           />
           <CardMedia onTouchTap={onMediaClick}>
-            <LazyLoad height={realHeight} once>
-              <ReactCSSTransitionGroup
-                transitionName="fade"
-                transitionAppear
-                transitionAppearTimeout={375}
-                transitionEnterTimeout={375}
-                transitionLeave={false}
-              >
-                <Image src={imageSrc} role="presentation" />
-              </ReactCSSTransitionGroup>
+            <LazyLoad
+              placeholder={<div style={{ height: `${realHeight}px`, backgroundColor: image.color }} />}
+              height={realHeight}
+              once
+            >
+              <Image src={imageSrc} role="presentation" />
             </LazyLoad>
           </CardMedia>
           <CardActions>

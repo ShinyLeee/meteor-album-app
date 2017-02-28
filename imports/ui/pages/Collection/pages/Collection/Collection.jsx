@@ -339,7 +339,6 @@ export default class CollectionPage extends Component {
 
   render() {
     const {
-      User,
       counter,
       dataIsReady,
       initialAlertState,
@@ -349,7 +348,6 @@ export default class CollectionPage extends Component {
         { this.state.isEditing
           ? (
             <SecondaryNavHeader
-              User={User}
               title={counter ? `选择了${counter}张照片` : ''}
               iconElementLeft={<IconButton onTouchTap={this.handleQuitEditing}><CloseIcon /></IconButton>}
               iconElementRight={

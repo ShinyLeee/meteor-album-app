@@ -16,6 +16,14 @@ Meteor.publish('Collections.own', function ownCollections() {
   });
 });
 
+Meteor.publish('Collections.ownFollowing', function ownFollowingCollections() {
+  const own = Meteor.users.findOne(this.userId);
+  return Collections.find({
+    user: { $in: own.profile.following },
+    private: false,
+  });
+});
+
 Meteor.publish('Collections.inUser', function targetUserCollections(user) {
   new SimpleSchema({
     user: { type: String, label: '用户名', max: 10 },
@@ -26,30 +34,15 @@ Meteor.publish('Collections.inUser', function targetUserCollections(user) {
   });
 });
 
-Meteor.publish('Collections.ownFollowed', function ownFollowedCollections() {
-  const own = Meteor.users.findOne(this.userId);
-  return Collections.find({
-    user: { $in: [...own.profile.following, own.username] },
-  });
-});
-
-Meteor.publish('Collections.inUserFollowed', function targetUserFollowedCollections(user) {
+Meteor.publish('Collections.inUserFollowing', function targetUserFollowingCollections(user) {
   new SimpleSchema({
     user: { type: String, label: '用户名', max: 10 },
   }).validator({ clean: true, filter: false });
-  const userObj = Meteor.users.findOne({ user });
+  const userObj = Meteor.users.findOne({ username: user });
   return Collections.find({
-    user: { $in: [...userObj.profile.following, user] },
+    user: { $in: userObj.profile.following },
     private: false,
   });
-});
-
-Meteor.publish('Collections.collNames', function collNames() {
-  const user = Meteor.users.findOne(this.userId);
-  return Collections.find(
-    { user: user && user.username },
-    { fields: { name: 1 } }
-  );
 });
 
 Meteor.publish('Collections.limit', function limit(num) {
