@@ -5,7 +5,7 @@ export const uptoken = (state = '', action) => {
     return action.uptoken;
   }
   if (action.type === 'CLEAR_UPTOKEN') {
-    return null;
+    return '';
   }
   return state;
 };
@@ -56,12 +56,12 @@ export const photoSwipe = (state = { open: false, items: [], options: null }, ac
   }
 };
 
-export const uploader = (state = null, action) => {
+export const uploader = (state = { open: false, destination: '' }, action) => {
   switch (action.type) {
     case 'UPLOADER_START':
       return Object.assign({}, { open: true }, action.uploader);
     case 'UPLOADER_STOP':
-      return null;
+      return { open: false, destination: '' };
     default:
       return state;
   }

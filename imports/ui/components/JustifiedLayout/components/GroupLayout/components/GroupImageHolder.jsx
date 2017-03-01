@@ -88,6 +88,7 @@ export class GroupImageHolder extends PureComponent {
       top: `${dimension.top}px`,
       width: `${dimension.width}px`,
       height: `${dimension.height}px`,
+      backgroundColor: image.color,
     };
     return (
       <Wrapper
@@ -96,7 +97,6 @@ export class GroupImageHolder extends PureComponent {
       >
         <JustifiedImageBackground isEditing={isEditing} isSelect={this.state.isSelect} />
         <LazyLoad
-          placeholder={<div style={{ height: '100%', backgroundColor: image.color }} />}
           height={dimension.height}
           once
         >

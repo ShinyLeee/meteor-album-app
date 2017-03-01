@@ -4,6 +4,7 @@ import { bindActionCreators } from 'redux';
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { browserHistory } from 'react-router';
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import TimeAgo from 'react-timeago';
 import CNStrings from 'react-timeago/lib/language-strings/zh-CN';
 import buildFormatter from 'react-timeago/lib/formatters/buildFormatter';
@@ -76,13 +77,23 @@ class ImageHolder extends Component {
               />
             )}
           />
-          <CardMedia onTouchTap={onMediaClick}>
+          <CardMedia
+            style={{ height: realHeight, backgroundColor: image.color }}
+            onTouchTap={onMediaClick}
+          >
             <LazyLoad
-              placeholder={<div style={{ height: `${realHeight}px`, backgroundColor: image.color }} />}
               height={realHeight}
               once
             >
-              <Image src={imageSrc} role="presentation" />
+              <ReactCSSTransitionGroup
+                transitionName="fade"
+                transitionAppear
+                transitionAppearTimeout={375}
+                transitionEnterTimeout={375}
+                transitionLeave={false}
+              >
+                <Image src={imageSrc} role="presentation" />
+              </ReactCSSTransitionGroup>
             </LazyLoad>
           </CardMedia>
           <CardActions>

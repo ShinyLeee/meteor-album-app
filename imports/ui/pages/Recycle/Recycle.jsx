@@ -8,12 +8,12 @@ import RecoveryIcon from 'material-ui/svg-icons/av/replay';
 import RemoveIcon from 'material-ui/svg-icons/action/delete';
 import { blue500, purple500 } from 'material-ui/styles/colors';
 import { removeImages, recoveryImages } from '/imports/api/images/methods.js';
-import SecondaryNavHeader from '../../components/NavHeader/Secondary/Secondary.jsx';
-import EmptyHolder from '../../components/EmptyHolder/EmptyHolder.jsx';
-import Loader from '../../components/Loader/Loader.jsx';
-import Loading from '../../components/Loader/Loading.jsx';
-import JustifiedSelectIcon from '../../components/JustifiedLayout/components/snippet/JustifiedSelectIcon.jsx';
-import ConnectedGridLayout from '../../components/JustifiedLayout/components/GridLayout/GridLayout.jsx';
+import SecondaryNavHeader from '/imports/ui/components/NavHeader/Secondary/Secondary.jsx';
+import EmptyHolder from '/imports/ui/components/EmptyHolder/EmptyHolder.jsx';
+import Loader from '/imports/ui/components/Loader/Loader.jsx';
+import Loading from '/imports/ui/components/Loader/Loading.jsx';
+import JustifiedSelectIcon from '/imports/ui/components/JustifiedLayout/components/snippet/JustifiedSelectIcon.jsx';
+import ConnectedGridLayout from '/imports/ui/components/JustifiedLayout/components/GridLayout/GridLayout.jsx';
 
 export default class RecyclePage extends Component {
 
@@ -74,16 +74,17 @@ export default class RecyclePage extends Component {
   }
 
   handleRecoveryImgs() {
-    this.setState({ isProcessing: true, processMsg: '恢复相片中' });
-    const selectImagesIds = this.props.selectImages.map((image) => image._id);
+    const { selectImages } = this.props;
+    this.setState({ isProcessing: true, processMsg: '恢复相片中', recoveryAlert: false });
+    const selectImagesIds = selectImages.map((image) => image._id);
     recoveryImages.callPromise({ selectImages: selectImagesIds })
     .then(() => {
-      this.setState({ isProcessing: false, processMsg: '', recoveryAlert: false });
+      this.setState({ isProcessing: false, processMsg: '' });
       this.props.snackBarOpen('恢复相片成功');
       this.props.disableSelectAll();
     })
     .catch((err) => {
-      this.setState({ isProcessing: false, processMsg: '', recoveryAlert: false });
+      this.setState({ isProcessing: false, processMsg: '' });
       console.log(err); // eslint-disable-line no-console
       this.props.snackBarOpen(err.reason || '恢复相片失败');
       throw new Meteor.Error(err);
@@ -91,23 +92,22 @@ export default class RecyclePage extends Component {
   }
 
   handleDeleteImgs() {
-    this.setState({ isProcessing: true, processMsg: '删除相片中' });
-    const selectImagesIds = this.props.selectImages.map((image) => image._id);
-    const keys = this.props.selectImages.map((image) => {
+    const { selectImages } = this.props;
+    this.setState({ isProcessing: true, processMsg: '删除相片中', deleteAlert: false });
+    const selectImagesIds = selectImages.map((image) => image._id);
+    const keys = selectImages.map((image) => {
       const key = `${image.user}/${image.collection}/${image.name}.${image.type}`;
       return key;
     });
     Meteor.callPromise('Qiniu.remove', { keys })
+    .then(() => removeImages.callPromise({ selectImages: selectImagesIds }))
     .then(() => {
-      removeImages.callPromise({ selectImages: selectImagesIds });
-    })
-    .then(() => {
-      this.setState({ isProcessing: false, processMsg: '', deleteAlert: false });
+      this.setState({ isProcessing: false, processMsg: '' });
       this.props.snackBarOpen('删除相片成功');
       this.props.disableSelectAll();
     })
     .catch((err) => {
-      this.setState({ isProcessing: false, processMsg: '', deleteAlert: false });
+      this.setState({ isProcessing: false, processMsg: '' });
       console.log(err); // eslint-disable-line no-console
       this.props.snackBarOpen(err.reason || '删除相片失败');
       throw new Meteor.Error(err);

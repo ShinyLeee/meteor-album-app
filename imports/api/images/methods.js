@@ -24,7 +24,7 @@ export const insertImage = new ValidatedMethod({
     const newImage = image;
     const dest = Collections.findOne({ name: image.collection, user: image.user });
     newImage.private = dest && dest.private;
-    return Images.insert(newImage);
+    Images.insert(newImage);
   },
 });
 

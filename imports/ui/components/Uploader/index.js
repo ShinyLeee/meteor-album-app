@@ -1,22 +1,22 @@
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-
-import { snackBarOpen, uploaderStop } from '/imports/ui/redux/actions/index.js';
+import {
+  clearUptoken,
+  storeUptoken,
+  snackBarOpen,
+  uploaderStop,
+} from '/imports/ui/redux/actions/index.js';
 import Uploader from './Uploader.jsx';
 
-const mapStateToProps = (state) => {
-  const uploader = state.uploader;
-  if (uploader) {
-    return {
-      open: uploader.open,
-      token: uploader.uptoken,
-      destination: uploader.key,
-    };
-  }
-  return { open: false };
-};
+const mapStateToProps = (state) => ({
+  token: state.uptoken,
+  open: state.uploader.open,
+  destination: state.uploader.destination,
+});
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
+  clearUptoken,
+  storeUptoken,
   snackBarOpen,
   uploaderStop,
 }, dispatch);

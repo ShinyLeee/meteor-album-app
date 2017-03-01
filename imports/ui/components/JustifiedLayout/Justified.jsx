@@ -68,10 +68,16 @@ export class Justified extends PureComponent {
   }
 
   handleLayoutChange(newLayoutType) {
-    let newFilterType;
-    if (newLayoutType === 'group') newFilterType = 'day';
-    else if (newLayoutType === 'grid') newFilterType = 'latest';
-    this.setState({ layoutType: newLayoutType, filterType: newFilterType });
+    if (newLayoutType === 'group') {
+      const allGroupImages = this.generateAllGroupImages(this.props.images, 'day');
+      this.setState({
+        allGroupImages,
+        layoutType: newLayoutType,
+        filterType: 'day',
+      });
+    } else if (newLayoutType === 'grid') {
+      this.setState({ layoutType: newLayoutType, filterType: 'latest' });
+    }
     this.props.disableSelectAll();
   }
 

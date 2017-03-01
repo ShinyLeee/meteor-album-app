@@ -8,7 +8,7 @@ const GridLayout = ({ columns, gap, children }) => (
       React.Children.map(children, (curChild) => (
         <Child
           childWidth={`${(100 / columns)}%`}
-          padding={`${gap / 2}px`}
+          padding={`0 ${gap / 2}px`}
           paddingBottom={`${(100 / columns)}%`}
         >
           {curChild}

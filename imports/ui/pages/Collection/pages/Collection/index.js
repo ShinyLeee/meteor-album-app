@@ -45,7 +45,6 @@ const MeteorContainer = createContainer(({ params }) => {
 }, CollectionPage);
 
 const mapStateToProps = (state) => ({
-  uptoken: state.uptoken,
   counter: state.selectCounter.counter,
   selectImages: state.selectCounter.selectImages,
 });

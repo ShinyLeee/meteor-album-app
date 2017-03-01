@@ -74,14 +74,16 @@ export class GridImageHolder extends PureComponent {
     const url = `${domain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
     const imageSrc = `${url}?imageView2/1/w/${retinaDimension}`;
     return (
-      <Wrapper onTouchTap={this.handleSelect}>
+      <Wrapper
+        style={{ backgroundColor: image.color }}
+        onTouchTap={this.handleSelect}
+      >
         <JustifiedImageBackground
           isEditing={isEditing}
           isSelect={this.state.isSelect}
         />
         <LazyLoad
           height={Math.round(realDimension)}
-          placeholder={<div style={{ height: '100%', backgroundColor: image.color }} />}
           once
         >
           <ReactCSSTransitionGroup

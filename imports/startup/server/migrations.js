@@ -221,3 +221,7 @@ Migrations.add({
     executeImages();
   },
 });
+
+Meteor.startup(() => {
+  Migrations.migrateTo('latest');
+});

@@ -2045,9 +2045,9 @@ react-router@^2.7.0:
     loose-envify "^1.2.0"
     warning "^3.0.0"
 
-react-slick@^0.14.5:
-  version "0.14.6"
-  resolved "https://registry.yarnpkg.com/react-slick/-/react-slick-0.14.6.tgz#dd0439b2434bafd43ed50f93aa483d104ff6b1e2"
+react-slick@0.14.2:
+  version "0.14.2"
+  resolved "https://registry.yarnpkg.com/react-slick/-/react-slick-0.14.2.tgz#f54aa8d2cb2cf0611266f9a5e7b2ef9a9cfff011"
   dependencies:
     classnames "^2.2.5"
     json2mq "^0.2.0"

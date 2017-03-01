@@ -23,7 +23,7 @@ const initialState = {
   uploading: false,  // Is in Uploading Progress
 };
 
-// TODO make this component code clear and efficient
+// TODO 令该组件可最小化后台运行
 export default class Uploader extends Component {
 
   constructor(props) {
@@ -32,6 +32,27 @@ export default class Uploader extends Component {
     this.handleImageChange = this.handleImageChange.bind(this);
   }
 
+  componentDidMount() {
+    Meteor.callPromise('Qiniu.getUptoken')
+    .then((res) => {
+      console.log('%c Meteor finish getUptoken', 'color: blue'); // eslint-disable-line no-console
+      this.props.storeUptoken(res.uptoken);
+    })
+    .catch((err) => {
+      console.log(err); // eslint-disable-line no-console
+      throw new Meteor.Error(err);
+    });
+  }
+
+  /**
+   * Call when user select images to upload
+   * @param {object}  e - input change event
+   *
+   * Get the uploading files' length,
+   * Show uploading box,
+   *
+   * After Done above, call beforeUpload.
+   */
   handleImageChange(e) {
     e.preventDefault();
     const files = [...e.target.files];
@@ -39,42 +60,52 @@ export default class Uploader extends Component {
       total: files.length,
       uploading: true,
     }, () => {
-      if (this.props.beforeUpload) {
-        this.props.beforeUpload(files);
+      if (this.props.onBeforeUpload) {
+        this.props.onBeforeUpload(files);
       }
-      this.uploadToQiniu(files);
+      this.beforeUpload(files);
     });
   }
 
-  uploadToQiniu(files, currentFile) {
+  /**
+   * Call after uploading box show, before uploading to Qiniu
+   * @param {array}  files - all files wait for uploading
+   * @param {object}  file - current wait uploading file(image), not exist when first call
+   *
+   * Check whether currentFile is valid image,
+   * Show currentFile(image)'s thumbnail,
+   * Extract currentFile(image)'s information, eg: type, dimension...,
+   *
+   * After done above, call uploadingToQiniu.
+   */
+  beforeUpload(files, file) {
     if (!files) {
-      console.error('File is empty, check if miss select upload files'); // eslint-disable-line
-      return;
+      throw new Error('File is empty, check whether miss select upload files');
     }
 
-    const allowedFiles = ['image/jpeg', 'image/png', 'image/gif'];
+    const { User, allowedFiles, destination, token } = this.props;
 
-    const f = currentFile || files[0];
+    const currentFile = file || files[0];
 
     // If upload not allowedFiles, We need stop upload.
-    if (allowedFiles.indexOf(f.type) < 0) {
+    if (allowedFiles.indexOf(currentFile.type) < 0) {
       this.props.uploaderStop();
       this.props.snackBarOpen('只允许上传.jpg .png或.gif文件');
       return;
-    } else if (allowedFiles.indexOf(f.type) === 0) f.surfix = 'jpg';
-    else if (allowedFiles.indexOf(f.type) === 1) f.surfix = 'png';
-    else if (allowedFiles.indexOf(f.type) === 2) f.surfix = 'gif';
-
-    const formData = new FormData();
-    const fileName = uuid.v4();
+    } else if (allowedFiles.indexOf(currentFile.type) === 0) currentFile.surfix = 'jpg';
+    else if (allowedFiles.indexOf(currentFile.type) === 1) currentFile.surfix = 'png';
+    else if (allowedFiles.indexOf(currentFile.type) === 2) currentFile.surfix = 'gif';
 
     this.setState({
       current: this.state.current + 1,
-      thumbnail: URL.createObjectURL(f),
+      thumbnail: URL.createObjectURL(currentFile),
     }, () => {
-      formData.append('file', f);
-      formData.append('key', `${this.props.destination}${fileName}.${f.surfix}`);
-      formData.append('token', this.props.token);
+      const fileName = uuid.v4();
+      const formData = new FormData();
+
+      formData.append('file', currentFile);
+      formData.append('key', `${User.username}/${destination}/${fileName}.${currentFile.surfix}`);
+      formData.append('token', token);
       const img = new Image();
       img.onload = () => {
         const width = img.naturalWidth || img.width;
@@ -82,50 +113,16 @@ export default class Uploader extends Component {
         const dimension = [width, height];
 
         // We need to store image's dimension and lastModified in local DB
-        f.fileName = fileName;
-        f.dimension = dimension;
-        const startAjax = () => {
-          $.ajax({
-            xhr: () => {
-              const xhr = new window.XMLHttpRequest();
-              xhr.upload.addEventListener('progress', (evt) => {
-                this.fileUploading(evt, xhr);
-              }, false);
-              xhr.addEventListener('progress', (evt) => {
-                this.fileUploading(evt, xhr);
-              }, false);
-              return xhr;
-            },
-            method: 'POST',
-            url: this.props.uploadURL,
-            data: formData,
-            dataType: 'json',
-            contentType: false,
-            processData: false,
-          })
-          .done((res) => {
-            f.key = res.key;
-            if (this.afterUploadFile(f)) {
-              // if have upload all files, just call finishUpload without error
-              if (this.state.current === this.state.total) {
-                this.finishUpload(null);
-              } else {
-                // if have not upload all files, we need to call it again
-                this.uploadToQiniu(files, files[this.state.current]);
-              }
-            }
-          })
-          .fail((err) => {
-            this.finishUpload(err);
-          });
-        };
+        currentFile.fileName = fileName;
+        currentFile.dimension = dimension;
 
         // 如果MIME-TYPE不是image/jpeg，则无法提取exif信息
-        if (f.surfix !== 'jpg') {
-          f.shootAt = f.lastModified;
-          startAjax();
+        if (currentFile.surfix !== 'jpg') {
+          currentFile.shootAt = currentFile.lastModified;
+          this.uploadingToQiniu(formData, files, currentFile);
           return;
         }
+        const self = this;
         // Fix lastModified property not support by safari
         EXIF.getData(img, function () {  // eslint-disable-line
           const dateTime = EXIF.getTag(this, 'DateTime');
@@ -137,20 +134,72 @@ export default class Uploader extends Component {
           if (exifTime) {
             const temp = exifTime.split(' ');
             temp[0] = temp[0].split(':').join('-');
-            f.shootAt = new Date(`${temp[0]}T${temp[1]}`);
-            startAjax();
+            currentFile.shootAt = new Date(`${temp[0]}T${temp[1]}`);
+            self.uploadingToQiniu(formData, files, currentFile);
             return;
           }
-          f.shootAt = f.lastModified;
-          startAjax();
+          currentFile.shootAt = currentFile.lastModified;
+          self.uploadingToQiniu(formData, files, currentFile);
         });
       };
-
       img.src = this.state.thumbnail;
     });
   }
 
-  fileUploading(e, xhr) {
+  /**
+   * Call after Extract image's information, before insert image to database
+   * @param {object} formData - contain required key/value pairs for uploading to qiniu
+   * @param {array}  files    - all files
+   * @param {object} file     - current file which has injected information
+   *
+   * Use Ajax to upload file to Qiniu,
+   * TODO, after Meteor 1.5 release, remove jQuery.
+   *
+   * After done above, call afterUploadFile.
+   */
+  uploadingToQiniu(formData, files, file) {
+    if (!file || !files || !formData) {
+      throw new Error('Required arguments not exist, please check it');
+    }
+
+    const currentFile = file;
+    const { uploadURL } = this.props;
+
+    $.ajax({
+      xhr: () => {
+        const xhr = new window.XMLHttpRequest();
+        xhr.upload.addEventListener('progress', (evt) => {
+          this.uploadingFile(evt, xhr);
+        }, false);
+        xhr.addEventListener('progress', (evt) => {
+          this.uploadingFile(evt, xhr);
+        }, false);
+        return xhr;
+      },
+      method: 'POST',
+      url: uploadURL,
+      data: formData,
+      dataType: 'json',
+      contentType: false,
+      processData: false,
+    })
+    .done(() => {
+      this.afterUploadFile(files, currentFile);
+    })
+    .fail((err) => {
+      this.finishUpload(err);
+    });
+  }
+
+  /**
+   * Call when uploading image to Qiniu
+   * @param {object}  e   - click event object
+   * @param {object}  xhr - xhr object
+   *
+   * Bind click event listender to StopButton,
+   * Show uploading progress.
+   */
+  uploadingFile(e, xhr) {
     if (this.stopButton) {
       this.stopButton.addEventListener('click', (event) => {
         this.stopUploading(event, xhr);
@@ -164,11 +213,25 @@ export default class Uploader extends Component {
     }
   }
 
-  afterUploadFile(file) {
+  /**
+   * Call after finish uploading file to Qiniu
+   * @param {array}  files    - all files
+   * @param {object} file     - current file which has uploaded
+   *
+   * Via Qiniu ?imageAve api grab its average color and attach it to uploaded file,
+   * Insert uploaded file to databse.
+   *
+   * After done above,
+   *   if has uploaded all files, call finishUpload without error param,
+   *   if has files wait for upload, call beforeUpload with files and next file params.
+   *   if got error, call finishUpload with error param.
+   *
+   */
+  afterUploadFile(files, file) {
     const { domain, User, destination } = this.props;
     const image = {
       user: User.username,
-      collection: destination.split('/')[1],
+      collection: destination,
       name: file.fileName,
       type: file.surfix,
       dimension: file.dimension,
@@ -183,46 +246,65 @@ export default class Uploader extends Component {
       image.color = `#${res.data.RGB.split('0x')[1]}`;
       return insertImage.callPromise(image);
     })
+    .then(() => {
+      if (this.state.current === this.state.total) {
+        this.finishUpload(null);
+      } else {
+        // if have not upload all files, we need to call it again
+        this.beforeUpload(files, files[this.state.current]);
+      }
+    })
     .catch((err) => {
-      this.props.uploaderStop();
-      this.props.snackBarOpen(err.message);
+      this.finishUpload(err);
     });
   }
 
-  finishUpload(err) {
-    if (err) {
-      this.setState(initialState);
-      this.props.uploaderStop();
-      this.props.snackBarOpen('上传失败');
-      if (this.props.afterUpload) {
-        this.props.afterUpload(err);
-      }
-      console.log(err); // eslint-disable-line no-console
-      throw new Meteor.Error(err);
-    }
-
-    this.props.uploaderStop();
-    this.props.snackBarOpen(`成功上传${this.state.total}个文件`);
-    this.setState(initialState);
-    if (this.props.afterUpload) {
-      this.props.afterUpload(null);
-    }
-    return;
-  }
-
+  /**
+   * Call when click stopButton when uploading
+   * @param {object}  e   - click event object
+   * @param {object}  xhr - xhr object
+   *
+   * Abort xhr request
+   * Reset initialState,
+   * HideUploader and show message via snackBar.
+   */
   stopUploading(e, xhr) {
     e.preventDefault();
     if (xhr && xhr.readyState !== 4) {
       xhr.abort();
-      const stopMsg = `您取消了上传文件, 已成功上传${this.state.current}个文件`;
       this.setState(initialState);
       this.props.uploaderStop();
-      this.props.snackBarOpen(stopMsg);
+      this.props.snackBarOpen(`您取消了上传文件, 已成功上传${this.state.current}个文件`);
+    }
+  }
+
+  /**
+   * Call error happen when uploading to qiniu or use qiniu API or manipulate database
+   * Or call after all files have uploaded
+   * @param {object}  err - null or error object
+   *
+   * Reset initialState,
+   * HideUploader and show message via snackBar.
+   */
+  finishUpload(err) {
+    let message;
+    if (err) {
+      message = '上传失败';
+      console.log(err); // eslint-disable-line no-console
+    } else {
+      message = `成功上传${this.state.total}个文件`;
+    }
+    this.setState(initialState);
+    this.props.uploaderStop();
+    this.props.snackBarOpen(message);
+    if (this.props.onAfterUpload) {
+      this.props.onAfterUpload(err);
     }
   }
 
   render() {
-    if (this.props.open && this.state.uploading) {
+    const { open, multiple, destination } = this.props;
+    if (open && this.state.uploading) {
       return (
         <div>
           <Wrapper>
@@ -230,7 +312,7 @@ export default class Uploader extends Component {
               <ThumbnailSection style={{ backgroundImage: `url(${this.state.thumbnail})` }} />
               <DetailSection>
                 <Message>正在上传至</Message>
-                <DestMessage>{this.props.destination.split('/')[1]}</DestMessage>
+                <DestMessage>{destination}</DestMessage>
                 <Message>第{this.state.current}张, 共{this.state.total}张</Message>
                 <StopButton innerRef={(ref) => { this.stopButton = ref; }}>停止</StopButton>
                 <Progress style={{ width: this.state.pace }} />
@@ -243,12 +325,12 @@ export default class Uploader extends Component {
     return (
       <div>
         <input
-          id="Uploader__container"
+          id="Uploader"
           type="file"
           style={{ display: 'none' }}
           onChange={this.handleImageChange}
           ref={(ref) => { this.filesInput = ref; }}
-          multiple={this.props.multiple}
+          multiple={multiple}
           accept="image/*"
         />
       </div>
@@ -262,30 +344,24 @@ Uploader.defaultProps = {
   domain: Meteor.settings.public.imageDomain,
   open: false,
   multiple: false,
+  allowedFiles: ['image/jpeg', 'image/png', 'image/gif'],
   uploadURL: window.location.protocol === 'https:' ? 'https://up.qbox.me/' : 'http://upload.qiniu.com',
 };
 
 Uploader.propTypes = {
   domain: PropTypes.string.isRequired,
-  User: PropTypes.object,
-  open: PropTypes.bool.isRequired,
-  /**
-   * uploadURL:
-   * eg: https://up.qbox.me/, http://upload.qiniu.com.
-   */
-  uploadURL: PropTypes.string.isRequired,
+  User: PropTypes.object.isRequired,
   multiple: PropTypes.bool.isRequired,
-  beforeUpload: PropTypes.func,
-  afterUpload: PropTypes.func,
+  allowedFiles: PropTypes.array.isRequired,
+  uploadURL: PropTypes.string.isRequired,
+  onBeforeUpload: PropTypes.func,
+  onAfterUpload: PropTypes.func,
   // Below Pass from Redux
-  /**
-   * destination:
-   *
-   * Composed by Username and Collection name,
-   * eg: ShinyLee/风景.
-   */
-  token: PropTypes.string,        // not required bc don't need it before Uploading
+  token: PropTypes.string.isRequired,
+  open: PropTypes.bool.isRequired,
   destination: PropTypes.string,  // not required bc don't need it before Uploading
+  clearUptoken: PropTypes.func.isRequired,
+  storeUptoken: PropTypes.func.isRequired,
   snackBarOpen: PropTypes.func.isRequired,
   uploaderStop: PropTypes.func.isRequired,
 };

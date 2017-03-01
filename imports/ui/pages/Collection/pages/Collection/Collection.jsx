@@ -69,13 +69,9 @@ export default class CollectionPage extends Component {
   }
 
   handleOpenUploader() {
-    const { uptoken, User, curColl } = this.props;
-    const data = {
-      uptoken,
-      key: `${User.username}/${curColl.name}/`,
-    };
-    document.getElementById('Uploader__container').click();
-    this.props.uploaderStart(data);
+    const { curColl } = this.props;
+    document.getElementById('Uploader').click();
+    this.props.uploaderStart({ destination: curColl.name });
   }
 
   handleLockCollection() {
@@ -432,7 +428,6 @@ CollectionPage.propTypes = {
   otherColls: PropTypes.array.isRequired,
   images: PropTypes.array.isRequired,
   // Below Pass From Redux
-  uptoken: PropTypes.string, // not required bc guest can vist this page but without uptoken
   counter: PropTypes.number.isRequired,
   selectImages: PropTypes.array.isRequired,
   disableSelectAll: PropTypes.func.isRequired,
