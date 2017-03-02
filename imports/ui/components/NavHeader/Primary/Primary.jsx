@@ -91,8 +91,8 @@ class PrimaryNavHeader extends Component {
   }
 
   renderIconRight() {
-    const bellStyle = this.props.noteNum > 0 ? 'bell-shake' : '';
-    if (Meteor.loggingIn() || this.props.User) {
+    const { User, noteNum } = this.props;
+    if (Meteor.loggingIn() || User) {
       return (
         <div>
           <IconButton
@@ -102,22 +102,22 @@ class PrimaryNavHeader extends Component {
           ><SearchIcon />
           </IconButton>
           <Badge
-            badgeContent={this.props.noteNum || 0}
+            badgeContent={noteNum || 0}
             style={{ padding: 0 }}
-            badgeStyle={{ width: '20px', height: '20px', top: '4px' }}
+            badgeStyle={styles.badgeStyle}
             primary
           >
             <IconButton
-              className={bellStyle}
+              className={noteNum > 0 ? 'bell-shake' : ''}
               style={styles.AppBarIcon}
               iconStyle={styles.AppBarIconSvg}
-              onTouchTap={() => browserHistory.push(`/note/${this.props.User.username}`)}
+              onTouchTap={() => browserHistory.push(`/note/${User.username}`)}
             ><NotificationIcon />
             </IconButton>
           </Badge>
           <IconButton
             style={styles.AppBarIconBtnForAvatar}
-            onTouchTap={() => browserHistory.push(`/user/${this.props.User.username}`)}
+            onTouchTap={() => browserHistory.push(`/user/${User.username}`)}
           ><Avatar src={this.avatarSrc} />
           </IconButton>
         </div>
@@ -128,8 +128,8 @@ class PrimaryNavHeader extends Component {
         <IconButton
           style={styles.AppBarIconBtnForLogin}
           iconStyle={styles.AppBarIconSvg}
-        >
-          <SearchIcon />
+          onTouchTap={() => browserHistory.push('/search')}
+        ><SearchIcon />
         </IconButton>
         <FlatButton
           label="登录"
@@ -252,7 +252,7 @@ PrimaryNavHeader.propTypes = {
   children: PropTypes.any,
   User: PropTypes.object,
   sourceDomain: PropTypes.string.isRequired,
-  location: PropTypes.oneOf(['explore', 'user', 'collection', 'diary', 'recycle', 'setting']).isRequired,
+  location: PropTypes.oneOf(['explore', 'user', 'collection', 'diary', 'recycle', 'setting', 'sign']).isRequired,
   style: PropTypes.object,
   // Pass from Database and Redux
   noteNum: PropTypes.number.isRequired,

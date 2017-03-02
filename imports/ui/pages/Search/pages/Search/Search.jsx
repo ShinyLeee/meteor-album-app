@@ -33,7 +33,7 @@ export default class SearchPage extends Component {
           {
             collections.map((coll, i) => {
               let avatarSrc;
-              if (coll.user === User.username) avatarSrc = User.profile.avatar;
+              if (User && (coll.user === User.username)) avatarSrc = User.profile.avatar;
               else avatarSrc = Meteor.users.findOne({ username: coll.user }).profile.avatar;
               return (
                 <CollHolder
@@ -101,7 +101,7 @@ SearchPage.defaultProps = {
 };
 
 SearchPage.propTypes = {
-  User: PropTypes.object.isRequired,
+  User: PropTypes.object, // not required bc guest can visit
   // Below Pass from Database
   dataIsReady: PropTypes.bool.isRequired,
   users: PropTypes.array.isRequired,

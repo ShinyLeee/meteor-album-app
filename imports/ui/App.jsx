@@ -87,7 +87,7 @@ App.propTypes = {
 };
 
 export default createContainer(() => {
-  let userIsReady = false;
+  let userIsReady = true;
   const User = Meteor.user();
   if (typeof User === 'undefined' || User) userIsReady = !!User;
   return {

@@ -13,6 +13,7 @@ import Loader from '/imports/ui/components/Loader/Loader.jsx';
 import signHOC from '../../components/signHOC.js';
 import styles from '../../sign.style.js';
 
+// TODO add Recaptch in this Login page component
 class LoginPage extends Component {
 
   constructor(props) {
@@ -86,7 +87,7 @@ class LoginPage extends Component {
   render() {
     return (
       <div className="container">
-        <PrimaryNavHeader />
+        <PrimaryNavHeader location="sign" />
         <main className="content">
           <Loader
             open={this.state.isProcessing}

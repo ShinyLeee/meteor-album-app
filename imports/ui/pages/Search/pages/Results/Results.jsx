@@ -24,10 +24,12 @@ export default class SearchResultsPage extends Component {
 
   renderCollResults() {
     const { User, collections, params: { query } } = this.props;
-    if (collections.length === 0) return <p className="search__empty">未找到符合“{query}”的结果</p>;
+    if (collections.length === 0) {
+      return <p className="search__empty">未找到符合“{query}”的结果</p>;
+    }
     return collections.map((coll, i) => {
       let avatarSrc;
-      if (coll.user === User.username) avatarSrc = User.profile.avatar;
+      if (User && (coll.user === User.username)) avatarSrc = User.profile.avatar;
       else avatarSrc = Meteor.users.findOne({ username: coll.user }).profile.avatar;
       return (
         <CollHolder
@@ -87,7 +89,7 @@ export default class SearchResultsPage extends Component {
   }
 
   render() {
-    const { params: { query } } = this.props;
+    const { dataIsReady, params: { query } } = this.props;
     return (
       <div className="container deep">
         <SearchBar
@@ -96,7 +98,7 @@ export default class SearchResultsPage extends Component {
           onSubmit={this.handleSearchSubmit}
         />
         <main className="content deep">
-          { this.props.dataIsReady
+          { dataIsReady
             ? (
               <div className="content__search">
                 <section className="search__query">
@@ -139,7 +141,7 @@ SearchResultsPage.defaultProps = {
 };
 
 SearchResultsPage.propTypes = {
-  User: PropTypes.object.isRequired,
+  User: PropTypes.object, // not required bc guest can visit
   params: PropTypes.object.isRequired,
   // Below Pass from Database
   dataIsReady: PropTypes.bool.isRequired,

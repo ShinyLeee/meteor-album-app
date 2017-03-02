@@ -6,6 +6,9 @@ import { Notes } from '/imports/api/notes/note.js';
 import { Images } from '/imports/api/images/image.js';
 import { Collections } from '/imports/api/collections/collection.js';
 
+// TODO wrap Migration up / down as a Meteor method,
+// which I can control it in the Admin route.
+// But it will be delayed after Admin Page complete.
 Migrations.config({
   // Log job run details to console
   log: true,
@@ -220,8 +223,4 @@ Migrations.add({
     executeUsers();
     executeImages();
   },
-});
-
-Meteor.startup(() => {
-  Migrations.migrateTo('latest');
 });

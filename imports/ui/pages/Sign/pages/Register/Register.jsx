@@ -78,7 +78,7 @@ class RegisterPage extends Component {
   render() {
     return (
       <div className="container">
-        <PrimaryNavHeader />
+        <PrimaryNavHeader location="sign" />
         <main className="content">
           <Loader
             open={this.state.isProcessing}

@@ -39,4 +39,9 @@ export const styles = {
     margin: '12px 0 0 0',
     color: '#fff',
   },
+  BadgeStyle: {
+    width: '20px',
+    height: '20px',
+    top: '4px',
+  },
 };

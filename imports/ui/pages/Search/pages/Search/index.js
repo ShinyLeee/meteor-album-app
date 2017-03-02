@@ -2,7 +2,6 @@ import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
 import { Users } from '/imports/api/users/user.js';
 import { Collections } from '/imports/api/collections/collection.js';
-
 import SearchPage from './Search.jsx';
 
 const MeteorContainer = createContainer(() => {
