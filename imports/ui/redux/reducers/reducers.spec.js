@@ -3,7 +3,6 @@
 import { Meteor } from 'meteor/meteor';
 
 if (Meteor.isClient) {
-  import faker from 'faker';
   import { chai } from 'meteor/practicalmeteor:chai';
   import * as reducers from './reducers';
 
@@ -12,29 +11,36 @@ if (Meteor.isClient) {
   describe('reducers', () => {
     describe('uptoken', () => {
       it('should STORE_UPTOKEN store uptoken', () => {
-        const uptoken = faker.random.number();
+        const uptoken = 'uptoken001';
         expect(reducers.uptoken('', { type: 'STORE_UPTOKEN', uptoken })).to.equal(uptoken);
       });
 
       it('should CLEAR_UPTOKEN clear uptoken', () => {
-        expect(reducers.uptoken('', { type: 'CLEAR_UPTOKEN' })).to.be.null;
+        const uptoken = 'uptoken001';
+        expect(reducers.uptoken(uptoken, { type: 'CLEAR_UPTOKEN' })).to.be.empty;
       });
     });
 
     describe('uploader', () => {
-      it('should UPLOADER_START return token and key', () => {
+      it('should UPLOADER_START open and pass destination value', () => {
         const uploader = {
-          uptoken: faker.random.number(),
-          key: `${faker.internet.userName()}/${faker.random.word()}`,
+          destination: 'testColl',
         };
-        const returnValue = reducers.uploader(null, { type: 'UPLOADER_START', uploader });
-        expect(returnValue.uptoken).to.equal(uploader.uptoken);
-        expect(returnValue.key).to.equal(uploader.key);
+        const returnValue = reducers.uploader(
+          { open: false, destination: '' },
+          { type: 'UPLOADER_START', uploader }
+        );
         expect(returnValue.open).to.be.true;
+        expect(returnValue.destination).to.equal(uploader.destination);
       });
 
-      it('should UPLOADER_STOP return null', () => {
-        expect(reducers.uploader(null, { type: 'UPLOADER_STOP' })).to.be.null;
+      it('should UPLOADER_STOP return initial uploader state', () => {
+        const prevState = {
+          destination: 'testColl',
+        };
+        const returnValue = reducers.uploader(prevState, { type: 'UPLOADER_STOP' });
+        expect(returnValue.open).to.be.false;
+        expect(returnValue.destination).to.be.empty;
       });
     });
 

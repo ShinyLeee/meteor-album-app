@@ -224,3 +224,57 @@ Migrations.add({
     executeImages();
   },
 });
+
+Migrations.add({
+  version: 4,
+  name: `Make sure all dimension field width and height right 
+         based on its orientation in IMAGE collection`,
+  up: () => {
+    const domain = Meteor.settings.public.imageDomain;
+    const imagesBulk = Images.rawCollection().initializeUnorderedBulkOp();
+
+    Images.find().forEach((image) => {
+      if (image.type !== 'jpg') return;
+      const url = encodeURI(`${domain}/${image.user}/${image.collection}/${image.name}.${image.type}?imageInfo`);
+      try {
+        const imageInfo = HTTP.call('GET', url);
+        const orientation = imageInfo.data.orientation;
+        if (orientation === 'Right-top' || orientation === 'Left-bottom') {
+          const newDimension = image.dimension.reverse();
+          imagesBulk.find({ _id: image._id }).updateOne({ $set: { dimension: newDimension } });
+        }
+      } catch (err) {
+        console.log(err); // eslint-disable-line no-console
+        throw new Error(err);
+      }
+    });
+    const executeImages = Meteor.wrapAsync(imagesBulk.execute, imagesBulk);
+    executeImages();
+  },
+  down: () => {
+    const domain = Meteor.settings.public.imageDomain;
+    const imagesBulk = Images.rawCollection().initializeUnorderedBulkOp();
+
+    Images.find().forEach((image) => {
+      if (image.type !== 'jpg') return;
+      const url = encodeURI(`${domain}/${image.user}/${image.collection}/${image.name}.${image.type}?imageInfo`);
+      try {
+        const imageInfo = HTTP.call('GET', url);
+        const orientation = imageInfo.data.orientation;
+        if (orientation === 'Right-top' || orientation === 'Left-bottom') {
+          const newDimension = image.dimension.reverse();
+          imagesBulk.find({ _id: image._id }).updateOne({ $set: { dimension: newDimension } });
+        }
+      } catch (err) {
+        console.log(err); // eslint-disable-line no-console
+        throw new Error(err);
+      }
+    });
+    const executeImages = Meteor.wrapAsync(imagesBulk.execute, imagesBulk);
+    executeImages();
+  },
+});
+
+Meteor.startup(() => {
+  Migrations.migrateTo('latest');
+});

@@ -58,6 +58,7 @@ class ImageHolder extends Component {
 
     // realHeight for lazyload
     const realHeight = Math.round((image.dimension[1] / image.dimension[0]) * clientWidth);
+
     const imageSrc = `${url}?imageView2/2/w/${retinaWidth}`;
 
     // whether current user liked this image

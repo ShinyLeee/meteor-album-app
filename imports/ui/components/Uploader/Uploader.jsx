@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 import React, { Component, PropTypes } from 'react';
-import EXIF from 'exif-js';
 import uuid from 'node-uuid';
 import { insertImage } from '/imports/api/images/methods.js';
 import {
@@ -112,35 +111,11 @@ export default class Uploader extends Component {
         const height = img.naturalHeight || img.height;
         const dimension = [width, height];
 
-        // We need to store image's dimension and lastModified in local DB
+        // We need to store image's fileName dimension and lastModified in local DB
         currentFile.fileName = fileName;
         currentFile.dimension = dimension;
-
-        // 如果MIME-TYPE不是image/jpeg，则无法提取exif信息
-        if (currentFile.surfix !== 'jpg') {
-          currentFile.shootAt = currentFile.lastModified;
-          this.uploadingToQiniu(formData, files, currentFile);
-          return;
-        }
-        const self = this;
-        // Fix lastModified property not support by safari
-        EXIF.getData(img, function () {  // eslint-disable-line
-          const dateTime = EXIF.getTag(this, 'DateTime');
-          const dateTimeOriginal = EXIF.getTag(this, 'DateTimeOriginal');
-          const dateTimeDigitized = EXIF.getTag(this, 'DateTimeDigitized');
-          const exifTime = dateTime || dateTimeOriginal || dateTimeDigitized;
-
-          // 若该图片存在时间信息，则保存为拍摄时间
-          if (exifTime) {
-            const temp = exifTime.split(' ');
-            temp[0] = temp[0].split(':').join('-');
-            currentFile.shootAt = new Date(`${temp[0]}T${temp[1]}`);
-            self.uploadingToQiniu(formData, files, currentFile);
-            return;
-          }
-          currentFile.shootAt = currentFile.lastModified;
-          self.uploadingToQiniu(formData, files, currentFile);
-        });
+        currentFile.shootAt = currentFile.lastModified;
+        this.uploadingToQiniu(formData, files, currentFile);
       };
       img.src = this.state.thumbnail;
     });
@@ -240,23 +215,61 @@ export default class Uploader extends Component {
       updatedAt: new Date(),
     };
     const httpPromise = Meteor.wrapPromise(HTTP.call);
-    const url = encodeURI(`${domain}/${image.user}/${image.collection}/${image.name}.${image.type}?imageAve`);
-    return httpPromise('GET', url)
-    .then((res) => {
-      image.color = `#${res.data.RGB.split('0x')[1]}`;
-      return insertImage.callPromise(image);
-    })
-    .then(() => {
-      if (this.state.current === this.state.total) {
-        this.finishUpload(null);
-      } else {
-        // if have not upload all files, we need to call it again
-        this.beforeUpload(files, files[this.state.current]);
-      }
-    })
-    .catch((err) => {
-      this.finishUpload(err);
-    });
+    const imageURL = encodeURI(`${domain}/${image.user}/${image.collection}/${image.name}.${image.type}`);
+    const aveAPI = `${imageURL}?imageAve`;
+    const exifAPI = `${imageURL}?exif`;
+
+    if (image.type === 'jpg') {
+      httpPromise('GET', aveAPI)
+      .then((res) => {
+        image.color = `#${res.data.RGB.split('0x')[1]}`;
+        return httpPromise('GET', exifAPI);
+      })
+      .then((res) => {
+        const exif = res.data;
+        const orientation = exif.Orientation;
+        const exifDate = exif.DateTimeOriginal || exif.DateTimeDigitized || exif.DateTime;
+        if (orientation) {
+          if (orientation.val === 'Right-top' || orientation.val === 'Left-bottom') {
+            image.dimension = image.dimension.reverse();
+          }
+        }
+        if (exifDate) {
+          const temp = exifDate.val.split(' ');
+          temp[0] = temp[0].split(':').join('-');
+          image.shootAt = new Date(`${temp[0]}T${temp[1]}`);
+        }
+        return insertImage.callPromise(image);
+      })
+      .then(() => {
+        if (this.state.current === this.state.total) {
+          this.finishUpload(null);
+        } else {
+          // if have not upload all files, we need to call it again
+          this.beforeUpload(files, files[this.state.current]);
+        }
+      })
+      .catch((err) => {
+        this.finishUpload(err);
+      });
+    } else {
+      httpPromise('GET', aveAPI)
+      .then((res) => {
+        image.color = `#${res.data.RGB.split('0x')[1]}`;
+        return insertImage.callPromise(image);
+      })
+      .then(() => {
+        if (this.state.current === this.state.total) {
+          this.finishUpload(null);
+        } else {
+          // if have not upload all files, we need to call it again
+          this.beforeUpload(files, files[this.state.current]);
+        }
+      })
+      .catch((err) => {
+        this.finishUpload(err);
+      });
+    }
   }
 
   /**
