@@ -112,40 +112,13 @@ export default class NotePage extends Component {
     });
   }
 
-  renderContent() {
-    const { bibleDialogOpen, bible } = this.props;
-    const { notes } = this.state;
-    if (notes.length === 0) return (<EmptyHolder mainInfo="您还未收到消息" />);
-    return (
-      <div className="content__note">
-        <Infinity
-          onInfinityLoad={this.handleLoadNotes}
-          isLoading={this.state.isLoading}
-          offsetToBottom={100}
-        >
-          {
-            notes.map((note, i) => {
-              const senderObj = Meteor.users.findOne({ username: note.sender });
-              return (
-                <NoteHolder
-                  key={i}
-                  avatar={senderObj.profile.avatar}
-                  note={note}
-                  onReadBtnClick={(e) => this.handleReadNote(e, note._id)}
-                />
-              );
-            })
-          }
-        </Infinity>
-        <BibleDialog
-          open={bibleDialogOpen}
-          bible={bible}
-        />
-      </div>
-    );
-  }
-
   render() {
+    const {
+      dataIsReady,
+      User,
+      bibleDialogOpen,
+      bible,
+    } = this.props;
     return (
       <div className="container">
         <SecondaryNavHeader
@@ -163,11 +136,11 @@ export default class NotePage extends Component {
               />
               <MenuItem
                 primaryText="我发出的所有信息"
-                onTouchTap={() => browserHistory.push(`/note/${this.props.User.username}/sent`)}
+                onTouchTap={() => browserHistory.push(`/note/${User.username}/sent`)}
               />
               <MenuItem
                 primaryText="我收到的所有信息"
-                onTouchTap={() => browserHistory.push(`/note/${this.props.User.username}/received`)}
+                onTouchTap={() => browserHistory.push(`/note/${User.username}/received`)}
               />
             </IconMenu>
           }
@@ -175,8 +148,36 @@ export default class NotePage extends Component {
         <main className="content">
           { this.state.isProcessing && (<Loading />) }
           {
-            this.props.dataIsReady
-            ? this.renderContent()
+            dataIsReady // eslint-disable-line no-nested-ternary
+            ? this.state.notes.length === 0
+              ? (<EmptyHolder mainInfo="您还未收到消息" />)
+              : (
+                <div className="content__note">
+                  <Infinity
+                    onInfinityLoad={this.handleLoadNotes}
+                    isLoading={this.state.isLoading}
+                    offsetToBottom={100}
+                  >
+                    {
+                      this.state.notes.map((note, i) => {
+                        const senderObj = Meteor.users.findOne({ username: note.sender });
+                        return (
+                          <NoteHolder
+                            key={i}
+                            avatar={senderObj.profile.avatar}
+                            note={note}
+                            onReadBtnClick={(e) => this.handleReadNote(e, note._id)}
+                          />
+                        );
+                      })
+                    }
+                  </Infinity>
+                  <BibleDialog
+                    open={bibleDialogOpen}
+                    bible={bible}
+                  />
+                </div>
+              )
             : (<Loading />)
           }
         </main>

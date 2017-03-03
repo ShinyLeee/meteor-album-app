@@ -22,17 +22,13 @@ export default class Loader extends Component {
   componentWillReceiveProps(nextProps) {
     if (this.props.open !== nextProps.open) {
       this.setState({ open: nextProps.open, message: nextProps.message });
-    } else {
-      clearTimeout(this.timeoutFn);
-      this.setState({ open: nextProps.open, message: nextProps.message });
     }
   }
 
   componentDidUpdate(prevProps, prevState) {
     if (prevState.open !== this.state.open) {
-      if (this.state.open) {
-        this.setTimeoutTimer();
-      }
+      if (this.state.open) this.setTimeoutTimer();
+      else clearTimeout(this.timeoutFn);
     }
   }
 
@@ -46,7 +42,7 @@ export default class Loader extends Component {
     if (timeout > 0) {
       this.timeoutFn = setTimeout(() => {
         if (this.props.onTimeout) this.props.onTimeout();
-        this.setState({ open: false });
+        this.setState({ open: false, message: '' });
       }, timeout);
     }
   }
@@ -66,7 +62,7 @@ export default class Loader extends Component {
                 thickness={2.5}
               />
             </LoaderProgress>
-            <LoaderMessage>{this.props.message}</LoaderMessage>
+            <LoaderMessage>{this.state.message}</LoaderMessage>
           </LoaderContent>
         </Dialog>
       </div>

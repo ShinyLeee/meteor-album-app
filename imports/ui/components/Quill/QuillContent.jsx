@@ -2,7 +2,6 @@ import { _ } from 'meteor/underscore';
 import React, { Component, PropTypes } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-
 import { dialogFetch, dialogOpen, dialogClose, snackBarOpen } from '/imports/ui/redux/actions/index.js';
 
 class QuillContent extends Component {

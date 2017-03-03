@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 import { CardActions, CardText } from 'material-ui/Card';
-import IconButton from 'material-ui/IconButton';
 
 export const Wrapper = styled.div`
   marginBottom: 10px;
@@ -14,12 +13,23 @@ export const StyledCardActions = styled(CardActions)`
   height: 58px;
 `;
 
-export const ReplyIconButton = styled(IconButton)`
-  position: absolute;
-  right: 56px;
-`;
-
-export const CheckBoxIconButton = styled(IconButton)`
-  position: absolute;
-  right: 4px;
-`;
+export const inlineStyles = {
+  replyButton: {
+    position: 'absolute',
+    right: '56px',
+  },
+  checkBoxButton: {
+    position: 'absolute',
+    right: '4px',
+  },
+  flipReplyIcon: {
+    color: '#999',
+    MozTransform: 'scaleX(-1)',
+    WebkitTransform: 'scaleX(-1)',
+    OTransform: 'scaleX(-1)',
+    transform: 'scaleX(-1)',
+  },
+  checkBoxIcon: {
+    color: '#999',
+  },
+};

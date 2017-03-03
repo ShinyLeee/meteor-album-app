@@ -1918,7 +1918,7 @@ querystring@0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/querystring/-/querystring-0.2.0.tgz#b209849203bb25df820da756e747005878521620"
 
-quill-delta@3.4.3:
+quill-delta@3.4.3, quill-delta@^3.4.3:
   version "3.4.3"
   resolved "https://registry.yarnpkg.com/quill-delta/-/quill-delta-3.4.3.tgz#2b8cc300f8c98d5b179ef3fd1ff4b522f857a1d3"
   dependencies:

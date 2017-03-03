@@ -63,47 +63,43 @@ export default class AllSentNotesPage extends Component {
       });
   }
 
-  renderContent() {
-    const { bibleDialogOpen, bible } = this.props;
-    const { notes } = this.state;
-    if (notes.length === 0) return (<EmptyHolder mainInfo="您还未发送过消息" />);
-    return (
-      <div className="content__allSentNotes">
-        <Infinity
-          onInfinityLoad={this.handleLoadNotes}
-          isLoading={this.state.isLoading}
-          offsetToBottom={100}
-        >
-          {
-            notes.map((note, i) => {
-              const receiverObj = Meteor.users.findOne({ username: note.receiver });
-              return (
-                <NoteHolder
-                  key={i}
-                  avatar={receiverObj && receiverObj.profile.avatar}
-                  note={note}
-                  isRead
-                />
-              );
-            })
-          }
-        </Infinity>
-        <BibleDialog
-          open={bibleDialogOpen}
-          bible={bible}
-        />
-      </div>
-    );
-  }
-
   render() {
+    const { dataIsReady, bibleDialogOpen, bible } = this.props;
     return (
       <div className="container">
         <SecondaryNavHeader title="我发送的消息" />
         <main className="content">
           {
-            this.props.dataIsReady
-            ? this.renderContent()
+            dataIsReady // eslint-disable-line no-nested-ternary
+            ? this.state.notes.length === 0
+              ? (<EmptyHolder mainInfo="您还未发送过消息" />)
+              : (
+                <div className="content__allSentNotes">
+                  <Infinity
+                    onInfinityLoad={this.handleLoadNotes}
+                    isLoading={this.state.isLoading}
+                    offsetToBottom={100}
+                  >
+                    {
+                      this.state.notes.map((note, i) => {
+                        const receiverObj = Meteor.users.findOne({ username: note.receiver });
+                        return (
+                          <NoteHolder
+                            key={i}
+                            avatar={receiverObj && receiverObj.profile.avatar}
+                            note={note}
+                            isRead
+                          />
+                        );
+                      })
+                    }
+                  </Infinity>
+                  <BibleDialog
+                    open={bibleDialogOpen}
+                    bible={bible}
+                  />
+                </div>
+              )
             : (<Loading />)
           }
         </main>
