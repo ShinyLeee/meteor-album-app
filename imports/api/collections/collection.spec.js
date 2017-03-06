@@ -152,6 +152,7 @@ if (Meteor.isServer) {
         });
       });
 
+      // TODO make test check is Qiniu remote image also remove
       describe('removeCollection', () => {
         it('should only can remove if you are logged in', () => {
           assert.throws(() => {
@@ -161,7 +162,7 @@ if (Meteor.isServer) {
 
         it('should remove collection after method call', () => {
           const methodInvocation = { userId: curUser._id };
-          const args = { collId: curColl._id };
+          const args = { username: curUser.username, collName: curColl.name };
 
           expect(Collections.find({ user: curUser.username }).count()).to.equal(1);
 
@@ -174,7 +175,7 @@ if (Meteor.isServer) {
           expect(Images.find({ user: curUser.username, collection: curColl.name }).count()).to.equal(2);
 
           const methodInvocation = { userId: curUser._id };
-          const args = { collId: curColl._id };
+          const args = { username: curUser.username, collName: curColl.name };
 
           removeCollection._execute(methodInvocation, args);
           expect(Images.find({ user: curUser.username, collection: curColl.name }).count()).to.equal(0);
@@ -186,7 +187,10 @@ if (Meteor.isServer) {
           expect(Images.find({ user: curUser.username, collection: curColl.name }).count()).to.equal(1);
           expect(Comments.find({ discussion_id: img._id }).count()).to.equal(1);
 
-          removeCollection._execute({ userId: curUser._id }, { collId: curColl._id });
+          const methodInvocation = { userId: curUser._id };
+          const args = { username: curUser.username, collName: curColl.name };
+
+          removeCollection._execute(methodInvocation, args);
           expect(Images.find({ user: curUser.username, collection: curColl.name }).count()).to.equal(0);
           expect(Comments.find({ discussion_id: img._id }).count()).to.equal(0);
         });

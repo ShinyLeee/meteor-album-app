@@ -33,13 +33,22 @@ export const removeCollection = new ValidatedMethod({
   name: 'collections.remove',
   mixins: [CallPromiseMixin],
   validate: new SimpleSchema({
-    collId: { type: String, label: '相册Id', regEx: SimpleSchema.RegEx.Id },
+    username: { type: String, label: '用户名', max: 20 },
+    collName: { type: String, label: '相册名', max: 20 },
   }).validator({ clean: true, filter: false }),
-  run({ collId }) {
+  run({ username, collName }) {
     if (!this.userId) {
       throw new Meteor.Error('api.collections.remove.notLoggedIn');
     }
-    Collections.remove(collId);
+    const images = Images.find({ username, collection: collName }).fetch();
+
+    if (images.length === 0) {
+      return Collections.remove({ user: username, name: collName });
+    }
+
+    const keys = images.map((image) => `${image.user}/${collName}/${image.name}.${image.type}`);
+    Meteor.call('Qiniu.remove', { keys });
+    return Collections.remove({ user: username, name: collName });
   },
 });
 

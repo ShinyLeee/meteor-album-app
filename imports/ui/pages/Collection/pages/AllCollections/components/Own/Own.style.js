@@ -1,11 +1,19 @@
 import styled from 'styled-components';
 import Paper from 'material-ui/Paper';
 
+const inlineStyles = {
+  AddIcon: {
+    width: '48px',
+    height: '48px',
+    color: '#676767',
+  },
+};
+
 const AddWrapper = styled(Paper)`
   display: inline-block;
   width: calc(50% - 2px);
   max-width: 200px;
-  height: 270px;
+  height: 256px;
   margin-top: 4px;
   vertical-align: top;
   cursor: pointer;
@@ -24,4 +32,4 @@ const AddMessage = styled.span`
   text-align: center;
 `;
 
-export { AddWrapper, AddSvgWrapper, AddMessage };
+export { inlineStyles, AddWrapper, AddSvgWrapper, AddMessage };

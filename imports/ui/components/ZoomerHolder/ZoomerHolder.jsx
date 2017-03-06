@@ -117,12 +117,12 @@ class ZoomerHolder extends Component {
           <div>
             <div>
               <InfoHeader><StyledHeartIcon style={{ color: '#999' }} />喜欢</InfoHeader>
-              {/* +1 because this component did not subscribe */}
-              <InfoNumer>{image.liker.length + 1}</InfoNumer>
+              <InfoNumer>{image.liker.length}</InfoNumer>
             </div>
             <div>
               <InfoHeader><StyledEyeIcon style={{ color: '#999' }} />浏览</InfoHeader>
-              <InfoNumer>{image.view || 0}</InfoNumer>
+              {/* +1 because this component did not subscribe */}
+              <InfoNumer>{(image.view && image.view + 1) || 1}</InfoNumer>
             </div>
             <div>
               <InfoHeader><StyledCameraIcon style={{ color: '#999' }} />所属相册</InfoHeader>

@@ -36,6 +36,7 @@ export default class FollowedCollection extends Component {
               key={i}
               avatarSrc={coll.userAvatar}
               coll={coll}
+              showUser
             />
           ))
         }

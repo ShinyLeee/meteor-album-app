@@ -98,12 +98,12 @@ class LoginPage extends Component {
             <header className="login__logo">Gallery +</header>
             <section className="login__form">
               <TextField
-                hintText="用户名或邮箱"
+                hintText="体验账号: guest"
                 ref={(ref) => { this.usrInput = ref; }}
                 fullWidth
               /><br />
               <TextField
-                hintText="密码"
+                hintText="密码: guest001"
                 ref={(ref) => { this.pwdInput = ref; }}
                 type="password"
                 fullWidth

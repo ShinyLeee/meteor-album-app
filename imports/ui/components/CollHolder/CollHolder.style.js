@@ -1,6 +1,21 @@
 import styled from 'styled-components';
 import Paper from 'material-ui/Paper';
 
+export const inlineStyles = {
+  lockIcon: {
+    width: '17px',
+    height: '17px',
+    marginRight: '5px',
+    color: '#999',
+    verticalAlign: 'middle',
+  },
+  moreVertButton: {
+    position: 'absolute',
+    top: '12px',
+    right: 0,
+  },
+};
+
 export const Wrapper = styled(Paper)`
   display: inline-block;
   width: calc(50% - 2px);
@@ -23,12 +38,13 @@ export const Cover = styled.section`
 `;
 
 export const Info = styled.section`
-  margin: -18px 0 16px 12px;
-  text-align: left;
+  position: relative;
+  padding: 12px 28px 16px 12px
 `;
 
 export const Avatar = styled.div`
-  display: inline-block;
+  position: absolute;
+  top: -18px;
   width: 26px;
   height: 26px;
   & > img {
@@ -40,7 +56,11 @@ export const Avatar = styled.div`
 `;
 
 export const CollName = styled.div`
+  width: 100%;
   margin-top: 4px;
+  text-overflow: ellipsis;
+  white-space:nowrap;
+  overflow: hidden;
 `;
 
 export const UserName = styled.div`
@@ -49,7 +69,6 @@ export const UserName = styled.div`
 `;
 
 export const Time = styled.time`
-  display: block;
   font-size: 12px;
   color: #999;
 `;
