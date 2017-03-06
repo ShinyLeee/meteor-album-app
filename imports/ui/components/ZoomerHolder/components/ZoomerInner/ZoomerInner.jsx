@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 import { browserHistory } from 'react-router';
 import moment from 'moment';
 import IconButton from 'material-ui/IconButton';
-import CameraIcon from 'material-ui/svg-icons/image/camera-alt';
+import CloseIcon from 'material-ui/svg-icons/navigation/close';
 import InfoIcon from 'material-ui/svg-icons/action/info';
 import TimelineIcon from 'material-ui/svg-icons/action/timeline';
 import { Users } from '/imports/api/users/user.js';
@@ -35,7 +35,7 @@ const ZoomerInner = (props) => {
         <IconButton
           iconStyle={{ width: '32px', height: '32px', color: '#fff' }}
           onTouchTap={onLogoClick}
-        ><CameraIcon />
+        ><CloseIcon />
         </IconButton>
       </ToolBoxSection>
       <ActionSection>

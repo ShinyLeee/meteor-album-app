@@ -75,31 +75,8 @@ export default class AllCollectionPage extends Component {
     });
   }
 
-  renderContent() {
-    const { curUser, colls, isGuest } = this.props;
-    return (
-      <SwipeableViews
-        className="content__allCollections"
-        index={this.state.slideIndex}
-        onChangeIndex={this.handleTabChange}
-      >
-        <OwnCollections
-          isGuest={isGuest}
-          curUser={curUser}
-          colls={colls.filter(coll => coll.user === curUser.username)}
-          onAddClick={() => this.setState({ open: true })}
-        />
-        <FollowingCollections
-          isGuest={isGuest}
-          curUser={curUser}
-          colls={colls.filter(coll => coll.user !== curUser.username)}
-        />
-      </SwipeableViews>
-    );
-  }
-
   render() {
-    const { isGuest, curUser, dataIsReady } = this.props;
+    const { isGuest, curUser, dataIsReady, colls } = this.props;
     return (
       <div className="container deep">
         <SecondaryNavHeader
@@ -119,8 +96,26 @@ export default class AllCollectionPage extends Component {
         <main className="content deep">
           {
             dataIsReady
-            ? this.renderContent()
-            : (<Loading />)
+            ? (
+              <SwipeableViews
+                className="content__allCollections"
+                index={this.state.slideIndex}
+                onChangeIndex={this.handleTabChange}
+              >
+                <OwnCollections
+                  isGuest={isGuest}
+                  curUser={curUser}
+                  colls={colls.filter(coll => coll.user === curUser.username)}
+                  onAddClick={() => this.setState({ open: true })}
+                />
+                <FollowingCollections
+                  isGuest={isGuest}
+                  curUser={curUser}
+                  colls={colls.filter(coll => coll.user !== curUser.username)}
+                />
+              </SwipeableViews>
+            )
+            : (<Loading style={{ top: '112px' }} />)
           }
           <Dialog
             title="新建相册"

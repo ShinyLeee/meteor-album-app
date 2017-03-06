@@ -2,26 +2,22 @@ import React, { PropTypes } from 'react';
 import AddIcon from 'material-ui/svg-icons/content/add-circle-outline';
 import CollHolder from '/imports/ui/components/CollHolder/CollHolder.jsx';
 import {
+  inlineStyles,
+  Wrapper,
   AddWrapper,
   AddSvgWrapper,
   AddMessage,
 } from './Own.style.js';
 
-const AddIconStyle = {
-  width: '48px',
-  height: '48px',
-  color: '#676767',
-};
-
 const OwnedCollection = (props) => {
   const { isGuest, curUser, colls, onAddClick } = props;
   const avatarSrc = curUser.profile.avatar;
   return (
-    <div>
+    <Wrapper>
       {
         !isGuest && (
           <AddWrapper onTouchTap={onAddClick}>
-            <AddSvgWrapper><AddIcon style={AddIconStyle} /></AddSvgWrapper>
+            <AddSvgWrapper><AddIcon style={inlineStyles.addIcon} /></AddSvgWrapper>
             <AddMessage>添加相册</AddMessage>
           </AddWrapper>
         )
@@ -36,7 +32,7 @@ const OwnedCollection = (props) => {
           />
         ))
       }
-    </div>
+    </Wrapper>
   );
 };
 
