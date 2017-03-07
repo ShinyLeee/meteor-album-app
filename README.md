@@ -4,3 +4,5 @@
 
 Personal Photo Web App Based on Meteor and React
 
+## License
+MIT
