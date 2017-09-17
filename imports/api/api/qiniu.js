@@ -1,5 +1,5 @@
+import _ from 'lodash';
 import { Meteor } from 'meteor/meteor';
-import { _ } from 'meteor/underscore';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 
@@ -99,7 +99,7 @@ if (Meteor.isServer) {
   // Only allow 2 operations per connection per 5 second
   DDPRateLimiter.addRule({
     name(name) {
-      return _.contains(QINIU_METHODS, name);
+      return _.includes(QINIU_METHODS, name);
     },
 
     // Rate limit per connection ID

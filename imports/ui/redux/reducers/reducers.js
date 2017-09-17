@@ -1,4 +1,4 @@
-import { _ } from 'meteor/underscore';
+import _ from 'lodash';
 
 export const uptoken = (state = '', action) => {
   if (action.type === 'STORE_UPTOKEN') {
@@ -129,7 +129,7 @@ export const selectCounter = (state = { selectImages: [], group: {}, counter: 0 
       if (Object.keys(state.group).length === 0) group = { [day]: action.counter };
       else {
         const newGroup = { [day]: (state.group[day] || 0) + action.counter };
-        group = _.extend(state.group, newGroup);
+        group = Object.assign({}, state.group, newGroup);
       }
 
       // console.log(selectImages);
@@ -162,7 +162,7 @@ export const selectCounter = (state = { selectImages: [], group: {}, counter: 0 
       if (prevImages.length === 0) selectImages = [...nextImages];
       else {
         if (groupCounter > 0) {
-          selectImages = _.uniq([...prevImages, ...nextImages], (image) => image._id);
+          selectImages = _.uniqBy([...prevImages, ...nextImages], (image) => image._id);
         }
         // If disselect a group, we need to remove nextImages from prevImages
         if (groupCounter < 0) {

@@ -1,5 +1,5 @@
+import _ from 'lodash';
 import { Meteor } from 'meteor/meteor';
-import { _ } from 'meteor/underscore';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
@@ -96,7 +96,7 @@ export const mutateCollectionCover = new ValidatedMethod({
 });
 
 // Get list of all method names on Collections
-const COLLECTIONS_METHODS = _.pluck([
+const COLLECTIONS_METHODS = _.map([
   insertCollection,
   removeCollection,
   lockCollection,
@@ -107,7 +107,7 @@ if (Meteor.isServer) {
   // Only allow 1 user operations per connection per second
   DDPRateLimiter.addRule({
     name(name) {
-      return _.contains(COLLECTIONS_METHODS, name);
+      return _.includes(COLLECTIONS_METHODS, name);
     },
 
     // Rate limit per connection ID

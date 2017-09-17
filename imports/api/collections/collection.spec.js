@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-expressions */
+import _ from 'lodash';
 import faker from 'faker';
 import { Meteor } from 'meteor/meteor';
 import { Factory } from 'meteor/dburles:factory';
-import { _ } from 'meteor/underscore';
 import { PublicationCollector } from 'meteor/johanbrook:publication-collector';
 import { assert, expect } from 'meteor/practicalmeteor:chai';
 import { getRandomInt, limitStrLength } from '/imports/utils/utils.js';

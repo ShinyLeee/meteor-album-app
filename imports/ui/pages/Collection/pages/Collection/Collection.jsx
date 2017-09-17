@@ -1,6 +1,6 @@
+import _ from 'lodash';
 import React, { Component, PropTypes } from 'react';
 import { Meteor } from 'meteor/meteor';
-import { _ } from 'meteor/underscore';
 import moment from 'moment';
 import IconButton from 'material-ui/IconButton';
 import Dialog from 'material-ui/Dialog';

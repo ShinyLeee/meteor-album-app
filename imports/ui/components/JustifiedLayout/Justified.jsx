@@ -1,4 +1,4 @@
-import { _ } from 'meteor/underscore';
+import _ from 'lodash';
 import React, { PureComponent, PropTypes } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -57,7 +57,7 @@ export class Justified extends PureComponent {
           images,
           (image) => moment(image.shootAt).format('YYYYMMDD')
         );
-        _.each(allGroupImages, (value, key) => (group[key] = value.length));
+        _.forEach(allGroupImages, (value, key) => (group[key] = value.length));
         this.props.enableSelectAll({
           selectImages: images,
           group,

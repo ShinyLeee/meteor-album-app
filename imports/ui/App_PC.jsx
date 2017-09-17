@@ -1,4 +1,4 @@
-import { _ } from 'meteor/underscore';
+import _ from 'lodash';
 import { Meteor } from 'meteor/meteor';
 import React from 'react';
 

@@ -1,4 +1,4 @@
-import { _ } from 'meteor/underscore';
+import _ from 'lodash';
 import React, { Component, PropTypes } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';

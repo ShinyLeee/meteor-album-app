@@ -1,6 +1,6 @@
+import _ from 'lodash';
 import moment from 'moment';
 import { Meteor } from 'meteor/meteor';
-import { _ } from 'meteor/underscore';
 import React, { Component, PropTypes } from 'react';
 import { browserHistory } from 'react-router';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';

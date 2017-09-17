@@ -1,4 +1,4 @@
-import { _ } from 'meteor/underscore';
+import _ from 'lodash';
 import { Meteor } from 'meteor/meteor';
 import React, { PureComponent, PropTypes } from 'react';
 import { bindActionCreators } from 'redux';
@@ -57,7 +57,7 @@ export class JustifiedGroupLayout extends PureComponent {
       }
 
       let hasGroup = false;
-      _.each(nextProps.group, (value, key) => {
+      _.forEach(nextProps.group, (value, key) => {
         if (key === groupName) {
           hasGroup = true;
           if (value === groupImages.length) this.setState({ isGroupSelect: true });

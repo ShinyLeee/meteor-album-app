@@ -1,5 +1,5 @@
+import _ from 'lodash';
 import { Meteor } from 'meteor/meteor';
-import { _ } from 'meteor/underscore';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
@@ -59,7 +59,7 @@ export const readNote = new ValidatedMethod({
 });
 
 // Get list of all method names on Notes
-const NOTES_METHODS = _.pluck([
+const NOTES_METHODS = _.map([
   insertNote,
   readAllNotes,
   readNote,
@@ -69,7 +69,7 @@ if (Meteor.isServer) {
   // Only allow 1 note operations per connection per second
   DDPRateLimiter.addRule({
     name(name) {
-      return _.contains(NOTES_METHODS, name);
+      return _.includes(NOTES_METHODS, name);
     },
 
     // Rate limit per connection ID

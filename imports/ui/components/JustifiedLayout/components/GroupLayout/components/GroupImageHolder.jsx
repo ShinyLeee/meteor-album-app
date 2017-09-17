@@ -1,4 +1,4 @@
-import { _ } from 'meteor/underscore';
+import _ from 'lodash';
 import { Meteor } from 'meteor/meteor';
 import React, { PureComponent, PropTypes } from 'react';
 import { bindActionCreators } from 'redux';
@@ -35,7 +35,7 @@ export class GroupImageHolder extends PureComponent {
       this.setState({ isSelect: false });
       return;
     }
-    _.each(nextProps.group, (value, key) => {
+    _.forEach(nextProps.group, (value, key) => {
       if (key === groupName) {
         if (value === groupTotal) this.setState({ isSelect: true });
         if (value === 0) this.setState({ isSelect: false });

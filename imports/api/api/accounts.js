@@ -1,6 +1,6 @@
+import _ from 'lodash';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
-import { _ } from 'meteor/underscore';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 
@@ -62,7 +62,7 @@ if (Meteor.isServer) {
   // Only allow 2 user operations per connection 5 second
   DDPRateLimiter.addRule({
     name(name) {
-      return _.contains(ACCOUNTS_METHODS, name);
+      return _.includes(ACCOUNTS_METHODS, name);
     },
 
     // Rate limit per connection ID
