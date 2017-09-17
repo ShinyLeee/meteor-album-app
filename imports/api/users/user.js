@@ -39,15 +39,3 @@ Users.deny({
   update() { return true; },
   remove() { return true; },
 });
-
-if (Meteor.isTest) {
-  import faker from 'faker';
-  import { Factory } from 'meteor/dburles:factory';
-  import { limitStrLength } from '/imports/utils/utils.js';
-
-  Factory.define('user', Users, {
-    username: () => limitStrLength(faker.internet.userName(), 20),
-    profile: () => defaultUserProfile,
-    createdAt: () => new Date(),
-  });
-}

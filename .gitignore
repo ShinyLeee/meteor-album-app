@@ -5,3 +5,4 @@ settings-production.json
 pm2.json
 *.log
 .vscode
+build/

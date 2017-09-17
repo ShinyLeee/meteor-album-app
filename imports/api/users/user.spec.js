@@ -1,10 +1,18 @@
+import faker from 'faker';
 import { Meteor } from 'meteor/meteor';
 import { Factory } from 'meteor/dburles:factory';
 import { _ } from 'meteor/underscore';
 import { PublicationCollector } from 'meteor/johanbrook:publication-collector';
 import { assert, expect } from 'meteor/practicalmeteor:chai';
+import { limitStrLength } from '/imports/utils/utils.js';
 import { updateProfile, followUser, unFollowUser } from './methods.js';
 import { Users, defaultUserProfile } from './user.js';
+
+Factory.define('user', Users, {
+  username: () => limitStrLength(faker.internet.userName(), 20),
+  profile: () => defaultUserProfile,
+  createdAt: () => new Date(),
+});
 
 const sourceDomain = Meteor.settings.public.sourceDomain;
 

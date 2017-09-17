@@ -1,10 +1,12 @@
 /* eslint-disable no-unused-expressions */
+import faker from 'faker';
 import { Meteor } from 'meteor/meteor';
 import { Factory } from 'meteor/dburles:factory';
 import { _ } from 'meteor/underscore';
 import { PublicationCollector } from 'meteor/johanbrook:publication-collector';
 import { assert, expect } from 'meteor/practicalmeteor:chai';
 import { Random } from 'meteor/random';
+import { limitStrLength } from '/imports/utils/utils.js';
 import {
   insertImage,
   removeImages,
@@ -19,6 +21,17 @@ import { Users } from '../users/user.js';
 import { Collections } from '../collections/collection.js';
 import { Images } from './image.js';
 import { Comments } from '../comments/comment.js';
+
+Factory.define('image', Images, {
+  user: () => limitStrLength(faker.internet.userName(), 20),
+  collection: () => limitStrLength(faker.hacker.noun(), 20),
+  name: () => faker.random.uuid(),
+  type: () => 'jpg',
+  dimension: [1280, 1280],
+  shootAt: () => new Date(),
+  createdAt: () => new Date(),
+  updatedAt: () => new Date(),
+});
 
 if (Meteor.isServer) {
   import './server/publications.js';

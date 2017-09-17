@@ -1,13 +1,22 @@
 /* eslint-disable no-unused-expressions */
+import faker from 'faker';
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { Factory } from 'meteor/dburles:factory';
 import { _ } from 'meteor/underscore';
 import { PublicationCollector } from 'meteor/johanbrook:publication-collector';
 import { assert, expect } from 'meteor/practicalmeteor:chai';
+import { limitStrLength } from '/imports/utils/utils.js';
 import { insertComment, removeComment } from './methods.js';
 import { Users } from '../users/user.js';
 import { Comments } from './comment.js';
+
+Factory.define('comment', Comments, {
+  user: () => limitStrLength(faker.internet.userName(), 20),
+  discussion_id: () => Random.id(),
+  content: () => limitStrLength(faker.lorem.sentence(), 20),
+  createdAt: () => new Date(),
+});
 
 if (Meteor.isServer) {
   import './server/publications.js';

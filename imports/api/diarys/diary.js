@@ -32,24 +32,3 @@ Diarys.deny({
   update() { return true; },
   remove() { return true; },
 });
-
-const deltaObj = {
-  ops: [
-    { insert: 'Test' },
-  ],
-};
-
-if (Meteor.isTest) {
-  import faker from 'faker';
-  import { Factory } from 'meteor/dburles:factory';
-  import { limitStrLength } from '/imports/utils/utils.js';
-
-  Factory.define('diary', Diarys, {
-    user: () => limitStrLength(faker.internet.userName(), 20),
-    title: () => limitStrLength(faker.hacker.noun(), 20),
-    outline: () => faker.hacker.noun(),
-    content: deltaObj,
-    createdAt: () => new Date(),
-    updatedAt: () => new Date(),
-  });
-}

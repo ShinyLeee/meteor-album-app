@@ -1,14 +1,24 @@
 /* eslint-disable no-unused-expressions */
+import faker from 'faker';
 import { Meteor } from 'meteor/meteor';
 import { Factory } from 'meteor/dburles:factory';
 import { _ } from 'meteor/underscore';
 import { PublicationCollector } from 'meteor/johanbrook:publication-collector';
 import { assert, expect } from 'meteor/practicalmeteor:chai';
+import { getRandomInt, limitStrLength } from '/imports/utils/utils.js';
 import { insertCollection, removeCollection, lockCollection, mutateCollectionCover } from './methods.js';
 import { Users, defaultUserProfile } from '../users/user.js';
 import { Images } from '../images/image.js';
 import { Collections } from './collection.js';
 import { Comments } from '../comments/comment.js';
+
+Factory.define('collection', Collections, {
+  name: () => limitStrLength(faker.hacker.noun(), 20),
+  user: () => limitStrLength(faker.internet.userName(), 20),
+  cover: () => `/img/pattern/VF_ac${getRandomInt(1, 28)}.jpg`,
+  createdAt: () => new Date(),
+  updatedAt: () => new Date(),
+});
 
 if (Meteor.isServer) {
   import './server/publications.js';

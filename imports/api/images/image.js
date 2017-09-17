@@ -51,20 +51,3 @@ Images.helpers({
     return !!this.userId;
   },
 });
-
-if (Meteor.isTest) {
-  import faker from 'faker';
-  import { Factory } from 'meteor/dburles:factory';
-  import { limitStrLength } from '/imports/utils/utils.js';
-
-  Factory.define('image', Images, {
-    user: () => limitStrLength(faker.internet.userName(), 20),
-    collection: () => limitStrLength(faker.hacker.noun(), 20),
-    name: () => faker.random.uuid(),
-    type: () => 'jpg',
-    dimension: [1280, 1280],
-    shootAt: () => new Date(),
-    createdAt: () => new Date(),
-    updatedAt: () => new Date(),
-  });
-}

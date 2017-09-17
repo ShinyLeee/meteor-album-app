@@ -29,7 +29,7 @@ export default class FollowedCollection extends Component {
   render() {
     const { colls } = this.state;
     return (
-      <div>
+      <div style={{ paddingBottom: '30px' }}>
         {
           colls.map((coll, i) => (
             <CollHolder
