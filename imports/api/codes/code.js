@@ -30,14 +30,3 @@ Codes.deny({
   update() { return true; },
   remove() { return true; },
 });
-
-if (Meteor.isTest) {
-  import faker from 'faker';
-  import { Factory } from 'meteor/dburles:factory';
-
-  Factory.define('code', Codes, {
-    no: () => faker.random.number(),
-    createdAt: () => new Date(),
-  });
-}
-

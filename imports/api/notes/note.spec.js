@@ -1,12 +1,23 @@
 /* eslint-disable no-unused-expressions */
+import faker from 'faker';
 import { Meteor } from 'meteor/meteor';
 import { Factory } from 'meteor/dburles:factory';
 import { _ } from 'meteor/underscore';
 import { PublicationCollector } from 'meteor/johanbrook:publication-collector';
 import { assert, expect } from 'meteor/practicalmeteor:chai';
+import { limitStrLength } from '/imports/utils/utils.js';
 import { insertNote, readAllNotes, readNote } from './methods.js';
 import { Users } from '../users/user.js';
 import { Notes } from './note.js';
+
+Factory.define('note', Notes, {
+  title: () => limitStrLength(faker.hacker.noun(), 20),
+  content: () => faker.lorem.sentence(),
+  sender: () => limitStrLength(faker.internet.userName(), 20),
+  receiver: () => limitStrLength(faker.internet.userName(), 20),
+  sendAt: () => new Date(),
+  createdAt: () => new Date(),
+});
 
 if (Meteor.isServer) {
   import './server/publications.js';

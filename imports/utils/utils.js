@@ -59,4 +59,4 @@ export const validateEmail = (email) => {
 export const limitStrLength = (str, limit) => {
   if (str.length <= limit) return str;
   return str.slice(0, limit);
-}
+};

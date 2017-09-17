@@ -1,10 +1,16 @@
 /* eslint-disable no-unused-expressions */
+import faker from 'faker';
 import { Meteor } from 'meteor/meteor';
 import { Factory } from 'meteor/dburles:factory';
 import { Random } from 'meteor/random';
 import { assert, expect } from 'meteor/practicalmeteor:chai';
 import { checkCode, useCode } from './methods.js';
 import { Codes } from './code.js';
+
+Factory.define('code', Codes, {
+  no: () => faker.random.number(),
+  createdAt: () => new Date(),
+});
 
 if (Meteor.isServer) {
   describe('CODES API', () => {

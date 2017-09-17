@@ -32,16 +32,3 @@ Comments.deny({
   update() { return true; },
   remove() { return true; },
 });
-
-if (Meteor.isTest) {
-  import faker from 'faker';
-  import { Factory } from 'meteor/dburles:factory';
-  import { limitStrLength } from '/imports/utils/utils.js';
-
-  Factory.define('comment', Comments, {
-    user: () => limitStrLength(faker.internet.userName(), 20),
-    discussion_id: () => Random.id(),
-    content: () => limitStrLength(faker.lorem.sentence(), 20),
-    createdAt: () => new Date(),
-  });
-}

@@ -55,17 +55,3 @@ Collections.helpers({
     );
   },
 });
-
-if (Meteor.isTest) {
-  import faker from 'faker';
-  import { Factory } from 'meteor/dburles:factory';
-  import { getRandomInt, limitStrLength } from '/imports/utils/utils.js';
-
-  Factory.define('collection', Collections, {
-    name: () => limitStrLength(faker.hacker.noun(), 20),
-    user: () => limitStrLength(faker.internet.userName(), 20),
-    cover: () => `/img/pattern/VF_ac${getRandomInt(1, 28)}.jpg`,
-    createdAt: () => new Date(),
-    updatedAt: () => new Date(),
-  });
-}

@@ -9,7 +9,7 @@ export const Child = styled.div`
   display: inline-block;
   width: ${props => props.childWidth};
   height: 0;
-  padding: ${props => props.padding}
-  paddingBottom: ${props => props.paddingBottom}
-  verticalAlign: top;
+  padding: ${props => props.padding};
+  padding-bottom: ${props => props.paddingBottom};
+  vertical-align: top;
 `;

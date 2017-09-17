@@ -1,12 +1,29 @@
 /* eslint-disable no-unused-expressions */
+import faker from 'faker';
 import { Meteor } from 'meteor/meteor';
 import { Factory } from 'meteor/dburles:factory';
 import { _ } from 'meteor/underscore';
 import { PublicationCollector } from 'meteor/johanbrook:publication-collector';
 import { assert, expect } from 'meteor/practicalmeteor:chai';
+import { limitStrLength } from '/imports/utils/utils.js';
 import { insertDiary, updateDiary, removeDiary } from './methods.js';
 import { Users } from '../users/user.js';
 import { Diarys } from './diary.js';
+
+const deltaObj = {
+  ops: [
+    { insert: 'Test' },
+  ],
+};
+
+Factory.define('diary', Diarys, {
+  user: () => limitStrLength(faker.internet.userName(), 20),
+  title: () => limitStrLength(faker.hacker.noun(), 20),
+  outline: () => faker.hacker.noun(),
+  content: deltaObj,
+  createdAt: () => new Date(),
+  updatedAt: () => new Date(),
+});
 
 if (Meteor.isServer) {
   import './server/publications.js';
