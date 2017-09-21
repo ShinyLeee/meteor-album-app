@@ -16,13 +16,15 @@
     "rules": {
       "import/no-extraneous-dependencies": 0,
       "import/prefer-default-export": 0,
+      "react/jsx-filename-extension": 0,
       "no-underscore-dangle": 0,
+      "no-nested-ternary": 0,
+      "no-console": 0,
       "max-len": 0
     },
     "env": {
       "browser": true,
       "node": true,
-      "mocha": true,
-      "jquery": true
+      "mocha": true
     }
 }

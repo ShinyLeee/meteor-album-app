@@ -12,7 +12,7 @@ import { teal500 } from 'material-ui/styles/colors.js';
 import { followUser, unFollowUser } from '/imports/api/users/methods.js';
 import PrimaryNavHeader from '/imports/ui/components/NavHeader/Primary/Primary.jsx';
 import SecondaryNavHeader from '/imports/ui/components/NavHeader/Secondary/Secondary.jsx';
-import Loading from '../../components/Loader/Loading.jsx';
+import Loading from '/imports/ui/components/Loader/Loading.jsx';
 import TopImageSlider from './components/TopImageSlider/TopImageSlider.jsx';
 
 export default class UserPage extends Component {

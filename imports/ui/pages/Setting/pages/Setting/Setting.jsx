@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import axios from 'axios';
 import React, { Component, PropTypes } from 'react';
 import { browserHistory } from 'react-router';
 import { List, ListItem } from 'material-ui/List';
@@ -73,7 +74,11 @@ export default class SettingPage extends Component {
     }
 
     if (keys.length !== 0) {
-      Meteor.call('Qiniu.remove', { keys }, (err) => err && console.log(err)); // eslint-disable-line no-console
+      Meteor.call(
+        'Qiniu.remove',
+        { keys },
+        (err) => err && console.log(err)
+      );
     }
     this.setState(initialSettings);
   }
@@ -96,9 +101,8 @@ export default class SettingPage extends Component {
       this.setState({ isEditing: false });
     })
     .catch((err) => {
+      console.log(err);
       this.props.snackBarOpen('设置保存失败');
-      console.log(err); // eslint-disable-line no-console
-      throw new Meteor.Error(err);
     });
   }
 
@@ -117,32 +121,28 @@ export default class SettingPage extends Component {
     formData.append('key', key);
     formData.append('token', this.props.uptoken);
 
-    $.ajax({
+    axios({
       method: 'POST',
       url: this.props.uploadURL,
       data: formData,
-      dataType: 'json',
-      contentType: false,
-      processData: false,
-      timeout: 5000,
     })
-    .done((res) => {
+    .then(({ data }) => {
       this.setState({
         isEditing: true,
         isProcessing: false,
         processMsg: '',
-        cover: `${this.props.domain}/${res.key}`,
+        cover: `${this.props.domain}/${data.key}`,
       });
       this.props.snackBarOpen('上传封面成功');
     })
-    .fail((err) => {
+    .catch((err) => {
+      console.log(err);
       this.setState({
         isEditing: false,
         isProcessing: false,
         processMsg: '',
       });
-      this.props.snackBarOpen('上传封面失败');
-      throw new Meteor.Error(err);
+      this.props.snackBarOpen(`上传封面失败 ${err}`);
     });
   }
 
@@ -175,17 +175,13 @@ export default class SettingPage extends Component {
       formData.append('key', key);
       formData.append('token', this.props.uptoken);
 
-      $.ajax({
+      axios({
         method: 'POST',
         url: this.props.uploadURL,
         data: formData,
-        dataType: 'json',
-        contentType: false,
-        processData: false,
-        timeout: 5000,
       })
-      .done((res) => {
-        const avatarSrc = `${this.props.domain}/${res.key}?imageView2/1/w/240/h/240`;
+      .then(({ data }) => {
+        const avatarSrc = `${this.props.domain}/${data.key}?imageView2/1/w/240/h/240`;
         this.setState({
           isEditing: true,
           isProcessing: false,
@@ -194,14 +190,14 @@ export default class SettingPage extends Component {
         });
         this.props.snackBarOpen('上传头像成功');
       })
-      .fail((err) => {
+      .catch((err) => {
+        console.log(err);
         this.setState({
           isEditing: false,
           isProcessing: false,
           processMsg: '',
         });
-        this.props.snackBarOpen('上传头像失败');
-        throw new Meteor.Error(err);
+        this.props.snackBarOpen(`上传头像失败 ${err}`);
       });
     }
   }
@@ -403,7 +399,6 @@ export default class SettingPage extends Component {
           this.state.isEditing
           ? (
             <CustomNavHeader
-              User={User}
               title={this.state.isProcessing ? '上传图片中' : '修改设置中'}
               style={{ backgroundColor: blue500 }}
               iconElementLeft={

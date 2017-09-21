@@ -5,6 +5,7 @@
 # but you can also edit it by hand.
 
 static-html
+dynamic-import
 meteor-base@1.1.0             # Packages every Meteor app needs to have
 mobile-experience@1.0.4       # Packages for a great mobile UX
 mongo@1.2.0                   # The database Meteor supports right now
@@ -47,5 +48,3 @@ practicalmeteor:sinon
 johanbrook:publication-collector
 dispatch:mocha-phantomjs
 dispatch:phantomjs-tests@=0.0.5
-dynamic-import
-bundle-visualizer

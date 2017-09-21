@@ -1,15 +1,10 @@
 import React, { PropTypes } from 'react';
-import Slider from 'react-slick';
-import '/node_modules/slick-carousel/slick/slick.css';
-import '/node_modules/slick-carousel/slick/slick-theme.css';
-import './slick.css';
+import Slider from '/imports/ui/components/Slider';
 
 const TopImageSlider = ({ domain, curUser, topImages }) => (
   <Slider
-    slidesToScroll={3}
-    slidesToShow={3}
-    speed={500}
-    infinite={false}
+    visibleNum={4}
+    gap={10}
   >
     {
       topImages.map((image, i) => {

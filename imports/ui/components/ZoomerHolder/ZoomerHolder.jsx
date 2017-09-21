@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import axios from 'axios';
 import React, { Component, PropTypes } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -74,20 +75,18 @@ class ZoomerHolder extends Component {
       return;
     }
     this.setState({ exifDialog: true, isLoading: true });
-    const imgSrc = this.imgSrc;
-    $.ajax({
-      method: 'get',
-      url: `${imgSrc}?exif`,
+    axios({
+      method: 'GET',
+      url: `${this.imgSrc}?exif`,
     })
-    .done((res) => {
-      // console.log(res);
-      this.setState({ exif: res, isLoading: false });
+    .then(({ data }) => {
+      // console.log(data);
+      this.setState({ exif: data, isLoading: false });
     })
-    .fail((err) => {
-      this.setState({ isLoading: false });
-      this.props.snackBarOpen(`获取EXIF信息失败, ${err.responseJSON.error}`);
+    .catch((err) => {
       console.log(err); // eslint-disable-line no-console
-      throw new Meteor.Error(err);
+      this.setState({ isLoading: false });
+      this.props.snackBarOpen(`获取EXIF信息失败, ${err}`);
     });
   }
 

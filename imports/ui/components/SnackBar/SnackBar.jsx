@@ -8,10 +8,10 @@ class SnackBar extends Component {
 
   constructor(props) {
     super(props);
-    this.state = ({
+    this.state = {
       open: false,
       message: '',
-    });
+    };
   }
 
   componentWillReceiveProps(nextProps) {

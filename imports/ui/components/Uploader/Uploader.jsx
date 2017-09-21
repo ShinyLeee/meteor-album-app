@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { HTTP } from 'meteor/http';
+import axios from 'axios';
 import React, { Component, PropTypes } from 'react';
 import uuid from 'node-uuid';
 import { insertImage } from '/imports/api/images/methods.js';
@@ -27,6 +27,7 @@ export default class Uploader extends Component {
 
   constructor(props) {
     super(props);
+    this._cancelFn = undefined;
     this.state = initialState;
     this.handleImageChange = this.handleImageChange.bind(this);
   }
@@ -34,12 +35,12 @@ export default class Uploader extends Component {
   componentDidMount() {
     Meteor.callPromise('Qiniu.getUptoken')
     .then((res) => {
-      console.log('%c Meteor finish getUptoken', 'color: blue'); // eslint-disable-line no-console
+      console.log('%c Meteor finish getUptoken', 'color: blue');
       this.props.storeUptoken(res.uptoken);
     })
     .catch((err) => {
-      console.log(err); // eslint-disable-line no-console
-      throw new Meteor.Error(err);
+      console.log(err);
+      this.props.snackBarOpen(`获取七牛云token失败 ${err}`);
     });
   }
 
@@ -128,7 +129,6 @@ export default class Uploader extends Component {
    * @param {object} file     - current file which has injected information
    *
    * Use Ajax to upload file to Qiniu,
-   * TODO, after Meteor 1.5 release, remove jQuery.
    *
    * After done above, call afterUploadFile.
    */
@@ -138,30 +138,21 @@ export default class Uploader extends Component {
     }
 
     const currentFile = file;
-    const { uploadURL } = this.props;
 
-    $.ajax({
-      xhr: () => {
-        const xhr = new window.XMLHttpRequest();
-        xhr.upload.addEventListener('progress', (evt) => {
-          this.uploadingFile(evt, xhr);
-        }, false);
-        xhr.addEventListener('progress', (evt) => {
-          this.uploadingFile(evt, xhr);
-        }, false);
-        return xhr;
-      },
+    axios({
       method: 'POST',
-      url: uploadURL,
+      url: this.props.uploadURL,
       data: formData,
-      dataType: 'json',
-      contentType: false,
-      processData: false,
+      cancelToken: new axios.CancelToken((c) => {
+        // An executor function receives a cancel function as a parameter
+        this._cancelFn = c;
+      }),
+      onUploadProgress: (evt) => this.uploadingFile(evt),
     })
-    .done(() => {
+    .then(() => {
       this.afterUploadFile(files, currentFile);
     })
-    .fail((err) => {
+    .catch((err) => {
       this.finishUpload(err);
     });
   }
@@ -174,17 +165,18 @@ export default class Uploader extends Component {
    * Bind click event listender to StopButton,
    * Show uploading progress.
    */
-  uploadingFile(e, xhr) {
+  uploadingFile(e) {
     if (this.stopButton) {
       this.stopButton.addEventListener('click', (event) => {
-        this.stopUploading(event, xhr);
+        event.preventDefault();
+        this.stopUploading();
       }, false);
     }
     if (e.lengthComputable) {
       const percentComplete = e.loaded / e.total;
       const pace = `${Math.round(percentComplete * 100)}%`;
       this.setState({ pace });
-      console.log(pace); // eslint-disable-line no-console
+      console.log(pace);
     }
   }
 
@@ -214,19 +206,16 @@ export default class Uploader extends Component {
       createdAt: new Date(),
       updatedAt: new Date(),
     };
-    const httpPromise = Meteor.wrapPromise(HTTP.call);
     const imageURL = encodeURI(`${domain}/${image.user}/${image.collection}/${image.name}.${image.type}`);
-    const aveAPI = `${imageURL}?imageAve`;
-    const exifAPI = `${imageURL}?exif`;
+
+    const getImageAve = () => axios.get(`${imageURL}?imageAve`);
+    const getImageExif = () => axios.get(`${imageURL}?exif`);
 
     if (image.type === 'jpg') {
-      httpPromise('GET', aveAPI)
-      .then((res) => {
-        image.color = `#${res.data.RGB.split('0x')[1]}`;
-        return httpPromise('GET', exifAPI);
-      })
-      .then((res) => {
-        const exif = res.data;
+      axios.all([getImageAve(), getImageExif()])
+      .then(axios.spread((aveRes, exifRes) => {
+        image.color = `#${aveRes.data.RGB.split('0x')[1]}`;
+        const exif = exifRes.data;
         const orientation = exif.Orientation;
         const exifDate = exif.DateTimeOriginal || exif.DateTimeDigitized || exif.DateTime;
         if (orientation) {
@@ -240,7 +229,7 @@ export default class Uploader extends Component {
           image.shootAt = new Date(`${temp[0]}T${temp[1]}`);
         }
         return insertImage.callPromise(image);
-      })
+      }))
       .then(() => {
         if (this.state.current === this.state.total) {
           this.finishUpload(null);
@@ -253,7 +242,7 @@ export default class Uploader extends Component {
         this.finishUpload(err);
       });
     } else {
-      httpPromise('GET', aveAPI)
+      getImageAve()
       .then((res) => {
         image.color = `#${res.data.RGB.split('0x')[1]}`;
         return insertImage.callPromise(image);
@@ -281,10 +270,12 @@ export default class Uploader extends Component {
    * Reset initialState,
    * HideUploader and show message via snackBar.
    */
-  stopUploading(e, xhr) {
-    e.preventDefault();
-    if (xhr && xhr.readyState !== 4) {
-      xhr.abort();
+  stopUploading() {
+    if (
+      this._cancelFn !== undefined &&
+      typeof this._cancelFn === 'function'
+    ) {
+      this._cancelFn();
       this.setState(initialState);
       this.props.uploaderStop();
       this.props.snackBarOpen(`您取消了上传文件, 已成功上传${this.state.current}个文件`);
@@ -302,14 +293,19 @@ export default class Uploader extends Component {
   finishUpload(err) {
     let message;
     if (err) {
-      message = '上传失败';
-      console.log(err); // eslint-disable-line no-console
+      if (this._cancelFn) {
+        message = '您取消了上传';
+      } else {
+        message = '上传失败';
+      }
+      console.log(err);
     } else {
       message = `成功上传${this.state.total}个文件`;
     }
     this.setState(initialState);
     this.props.uploaderStop();
     this.props.snackBarOpen(message);
+    this._cancelFn = undefined;
     if (this.props.onAfterUpload) {
       this.props.onAfterUpload(err);
     }
