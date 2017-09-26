@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import React, { Component, PropTypes } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -8,12 +7,12 @@ import { zoomerOpen, snackBarOpen } from '/imports/ui/redux/actions/index.js';
 import ImageHolder from '../ImageHolder/ImageHolder.jsx';
 
 class ImageList extends Component {
-
-  constructor(props) {
-    super(props);
-    this.handleAddLiker = this.handleAddLiker.bind(this);
-    this.handleRemoveLiker = this.handleRemoveLiker.bind(this);
-    this.handleZoomImage = this.handleZoomImage.bind(this);
+  static propTypes = {
+    User: PropTypes.object,
+    images: PropTypes.array.isRequired,
+    onLikeOrUnlikeAction: PropTypes.func.isRequired,
+    snackBarOpen: PropTypes.func.isRequired,
+    zoomerOpen: PropTypes.func.isRequired,
   }
 
   componentWillUnmount() {
@@ -22,7 +21,7 @@ class ImageList extends Component {
     }
   }
 
-  handleAddLiker(image) {
+  _handleAddLiker = (image) => {
     const { User } = this.props;
 
     if (!User) {
@@ -37,13 +36,12 @@ class ImageList extends Component {
       this.props.onLikeOrUnlikeAction();
     })
     .catch((err) => {
-      console.log(err); // eslint-disable-line no-console
+      console.log(err);
       this.props.snackBarOpen(err.reason || '发生未知错误');
-      throw new Meteor.Error(err);
     });
   }
 
-  handleRemoveLiker(image) {
+  _handleRemoveLiker = (image) => {
     const { User } = this.props;
 
     unlikeImage.callPromise({
@@ -54,30 +52,28 @@ class ImageList extends Component {
       this.props.onLikeOrUnlikeAction();
     })
     .catch((err) => {
-      console.log(err); // eslint-disable-line no-console
+      console.log(err);
       this.props.snackBarOpen(err.reason || '发生未知错误');
-      throw new Meteor.Error(err);
     });
   }
 
-  handleZoomImage(image) {
+  _handleZoomImage = (image) => {
     this.props.zoomerOpen(image);
     document.body.style.overflow = 'hidden';
   }
 
   render() {
-    const { User, images } = this.props;
+    const { images } = this.props;
     return (
       <div>
         {
           images.map((image, i) => (
             <ImageHolder
               key={i}
-              User={User}
               image={image}
-              onLikeClick={() => this.handleAddLiker(image)}
-              onUnlikeClick={() => this.handleRemoveLiker(image)}
-              onMediaClick={() => this.handleZoomImage(image)}
+              onLikeClick={this._handleAddLiker}
+              onUnlikeClick={this._handleRemoveLiker}
+              onMediaClick={this._handleZoomImage}
             />
           ))
         }
@@ -86,19 +82,13 @@ class ImageList extends Component {
   }
 }
 
-ImageList.displayName = 'ImageList';
-
-ImageList.propTypes = {
-  User: PropTypes.object,
-  images: PropTypes.array.isRequired,
-  onLikeOrUnlikeAction: PropTypes.func.isRequired,
-  snackBarOpen: PropTypes.func.isRequired,
-  zoomerOpen: PropTypes.func.isRequired,
-};
+const mapStateToProps = (state) => ({
+  User: state.User,
+});
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   snackBarOpen,
   zoomerOpen,
 }, dispatch);
 
-export default connect(null, mapDispatchToProps)(ImageList);
+export default connect(mapStateToProps, mapDispatchToProps)(ImageList);

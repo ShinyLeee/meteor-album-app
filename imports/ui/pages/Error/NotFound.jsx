@@ -1,11 +1,13 @@
 import { Meteor } from 'meteor/meteor';
-import React, { PropTypes } from 'react';
-import { Link } from 'react-router';
+import React from 'react';
+import { Link } from 'react-router-dom';
 import PrimaryNavHeader from '../../components/NavHeader/Primary/Primary.jsx';
 
-const NotFound = ({ User, sourceDomain }) => (
+const sourceDomain = Meteor.settings.public.sourceDomain;
+
+const NotFound = () => (
   <div className="container">
-    <PrimaryNavHeader User={User} />
+    <PrimaryNavHeader />
     <main className="content">
       <div className="content__error">
         <div className="error__container">
@@ -31,16 +33,5 @@ const NotFound = ({ User, sourceDomain }) => (
     </main>
   </div>
 );
-
-NotFound.displayName = 'NotFound';
-
-NotFound.defaultProps = {
-  sourceDomain: Meteor.settings.public.sourceDomain,
-};
-
-NotFound.propTypes = {
-  User: PropTypes.object,
-  sourceDomain: PropTypes.string.isRequired,
-};
 
 export default NotFound;

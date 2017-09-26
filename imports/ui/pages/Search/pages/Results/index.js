@@ -6,7 +6,9 @@ import { Notes } from '/imports/api/notes/note.js';
 
 import ResultsPage from './Results.jsx';
 
-const MeteorContainer = createContainer(({ params: { query } }) => {
+const MeteorContainer = createContainer(({ match }) => {
+  const query = match.params.query;
+
   const userHandler = Meteor.subscribe('Users.all');
   const collHandler = Meteor.subscribe('Collections.all');
   const noteHandler = Meteor.subscribe('Notes.receiver');

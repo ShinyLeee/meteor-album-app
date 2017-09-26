@@ -1,6 +1,4 @@
 import React, { Component, PropTypes } from 'react';
-import { browserHistory } from 'react-router';
-import { Meteor } from 'meteor/meteor';
 import Dialog from 'material-ui/Dialog';
 import Divider from 'material-ui/Divider';
 import TextField from 'material-ui/TextField';
@@ -14,6 +12,13 @@ import QuillEditor from '/imports/ui/components/Quill/QuillEditor.jsx';
 import Loader from '/imports/ui/components/Loader/Loader.jsx';
 
 export default class WriteDiaryPage extends Component {
+  static propTypes = {
+    // Below Pass from React-Router
+    history: PropTypes.object.isRequired,
+    // Below Pass from Redux
+    User: PropTypes.object.isRequired,
+    snackBarOpen: PropTypes.func.isRequired,
+  }
 
   constructor(props) {
     super(props);
@@ -25,8 +30,6 @@ export default class WriteDiaryPage extends Component {
       outline: '',
       content: '',
     };
-    this.handleGoBack = this.handleGoBack.bind(this);
-    this.handleInsertDiary = this.handleInsertDiary.bind(this);
   }
 
   get quillModulesConfig() {
@@ -42,16 +45,17 @@ export default class WriteDiaryPage extends Component {
     };
   }
 
-  handleGoBack() {
+  _handleGoBack = () => {
+    const { history } = this.props;
     if (this.state.content) {
       this.setState({ isAlertOpen: true });
       return;
     }
-    browserHistory.goBack();
+    history.goBack();
   }
 
-  handleInsertDiary() {
-    const { User } = this.props;
+  _handleInsertDiary = () => {
+    const { User, history } = this.props;
     const { title, outline, content } = this.state;
     if (!title || !content) {
       this.props.snackBarOpen('请输入必填项');
@@ -68,24 +72,24 @@ export default class WriteDiaryPage extends Component {
     })
     .then(() => {
       // because go to another component so we do not need set inital state
-      browserHistory.replace('/diary');
+      history.replace('/diary');
       this.props.snackBarOpen('添加日记成功');
     })
     .catch((err) => {
+      console.log(err);
       this.setState({ isProcessing: false, processMsg: '' });
-      console.log(err); // eslint-disable-line no-console
-      this.props.snackBarOpen(err.reason || '添加日记失败');
-      throw new Meteor.Error(err);
+      this.props.snackBarOpen(`添加日记失败 ${err.reason}`);
     });
   }
 
   render() {
+    const { history } = this.props;
     return (
       <div className="container">
         <SecondaryNavHeader
           title="添加日记"
-          iconElementLeft={<IconButton onTouchTap={this.handleGoBack}><ArrowBackIcon /></IconButton>}
-          iconElementRight={<IconButton onTouchTap={this.handleInsertDiary}><DoneIcon /></IconButton>}
+          iconElementLeft={<IconButton onTouchTap={this._handleGoBack}><ArrowBackIcon /></IconButton>}
+          iconElementRight={<IconButton onTouchTap={this._handleInsertDiary}><DoneIcon /></IconButton>}
         />
         <main className="content">
           <Loader
@@ -121,7 +125,7 @@ export default class WriteDiaryPage extends Component {
               />,
               <FlatButton
                 label="确认"
-                onTouchTap={() => browserHistory.goBack()}
+                onTouchTap={() => history.goBack()}
                 primary
               />,
             ]}
@@ -135,11 +139,3 @@ export default class WriteDiaryPage extends Component {
     );
   }
 }
-
-WriteDiaryPage.displayName = 'WriteDiaryPage';
-
-WriteDiaryPage.propTypes = {
-  User: PropTypes.object,
-  // Below Pass from Redux
-  snackBarOpen: PropTypes.func.isRequired,
-};

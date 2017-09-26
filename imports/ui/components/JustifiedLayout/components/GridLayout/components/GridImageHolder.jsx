@@ -11,14 +11,30 @@ import {
   SelectableImage,
 } from './GridImageHolder.style.js';
 
+const domain = Meteor.settings.public.imageDomain;
+
 export class GridImageHolder extends PureComponent {
+  static propTypes = {
+    isEditing: PropTypes.bool.isRequired,
+    image: PropTypes.object.isRequired,
+    total: PropTypes.number.isRequired,
+    onImageClick: PropTypes.func,
+    // Below Pass from Redux
+    counter: PropTypes.number.isRequired,
+    selectCounter: PropTypes.func.isRequired,
+  }
+
+  static defaultProps = {
+    isEditing: false,
+  }
 
   constructor(props) {
     super(props);
+    this._clientWidth = document.body.clientWidth;
+    this._pixelRatio = window.devicePixelRatio;
     this.state = {
       isSelect: false,
     };
-    this.handleSelect = this.handleSelect.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -33,7 +49,7 @@ export class GridImageHolder extends PureComponent {
     }
   }
 
-  handleSelect() {
+  _handleSelect = () => {
     const {
       isEditing,
       image,
@@ -62,21 +78,15 @@ export class GridImageHolder extends PureComponent {
   }
 
   render() {
-    const {
-      domain,
-      isEditing,
-      clientWidth,
-      devicePixelRatio,
-      image,
-    } = this.props;
-    const realDimension = clientWidth / 3;
-    const retinaDimension = Math.round(realDimension * devicePixelRatio);
+    const { isEditing, image } = this.props;
+    const realDimension = this._clientWidth / 3;
+    const retinaDimension = Math.round(realDimension * this._pixelRatio);
     const url = `${domain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
     const imageSrc = `${url}?imageView2/1/w/${retinaDimension}`;
     return (
       <Wrapper
         style={{ backgroundColor: image.color }}
-        onTouchTap={this.handleSelect}
+        onTouchTap={this._handleSelect}
       >
         <JustifiedImageBackground
           isEditing={isEditing}
@@ -105,28 +115,6 @@ export class GridImageHolder extends PureComponent {
     );
   }
 }
-
-GridImageHolder.displayName = 'GridImageHolder';
-
-GridImageHolder.defaultProps = {
-  isEditing: false,
-  domain: Meteor.settings.public.imageDomain,
-  clientWidth: document.body.clientWidth,
-  devicePixelRatio: window.devicePixelRatio,
-};
-
-GridImageHolder.propTypes = {
-  domain: PropTypes.string.isRequired,
-  clientWidth: PropTypes.number.isRequired,
-  devicePixelRatio: PropTypes.number.isRequired,
-  isEditing: PropTypes.bool.isRequired,
-  image: PropTypes.object.isRequired,
-  total: PropTypes.number.isRequired,
-  onImageClick: PropTypes.func,
-  // Below Pass from Redux
-  counter: PropTypes.number.isRequired,
-  selectCounter: PropTypes.func.isRequired,
-};
 
 const mapStateToProps = (state) => ({
   counter: state.selectCounter.counter,

@@ -7,6 +7,10 @@ import SecondaryNavHeader from '/imports/ui/components/NavHeader/Secondary/Secon
 import Loader from '/imports/ui/components/Loader/Loader.jsx';
 
 export default class PasswordPage extends Component {
+  static propTypes = {
+    // Below Pass from Redux
+    snackBarOpen: PropTypes.func.isRequired,
+  }
 
   constructor(props) {
     super(props);
@@ -17,16 +21,13 @@ export default class PasswordPage extends Component {
       newPwd: '',
       newPwd2: '',
     };
-    this.handleValueChange = this.handleValueChange.bind(this);
-    this.handlePasswordChange = this.handlePasswordChange.bind(this);
-    this.handleTimeout = this.handleTimeout.bind(this);
   }
 
-  handleValueChange(e) {
+  _handleValueChange = (e) => {
     this.setState({ [e.target.name]: e.target.value });
   }
 
-  handlePasswordChange(e) {
+  _handlePasswordChange = (e) => {
     e.preventDefault();
 
     const { oldPwd, newPwd, newPwd2 } = this.state;
@@ -52,14 +53,13 @@ export default class PasswordPage extends Component {
       this.props.snackBarOpen('修改密码成功，请重新登录');
     })
     .catch((err) => {
+      console.log(err);
       this.setState({ isProcessing: false, processMsg: '' });
       this.props.snackBarOpen(err.reason || '修改密码失败');
-      console.log(err); // eslint-disable-line no-console
-      throw new Meteor.Error(err);
     });
   }
 
-  handleTimeout() {
+  _handleTimeout = () => {
     this.setState({ isProcessing: false, processMsg: '' });
     this.props.snackBarOpen('更换密码超时，请重试');
   }
@@ -75,7 +75,7 @@ export default class PasswordPage extends Component {
             inputStyle={{ textIndent: '12px' }}
             type="password"
             value={this.state.oldPwd}
-            onChange={this.handleValueChange}
+            onChange={this._handleValueChange}
             fullWidth
           /><br />
           <TextField
@@ -85,7 +85,7 @@ export default class PasswordPage extends Component {
             inputStyle={{ textIndent: '12px' }}
             type="password"
             value={this.state.newPwd}
-            onChange={this.handleValueChange}
+            onChange={this._handleValueChange}
             fullWidth
           /><br />
           <TextField
@@ -95,7 +95,7 @@ export default class PasswordPage extends Component {
             inputStyle={{ textIndent: '12px' }}
             type="password"
             value={this.state.newPwd2}
-            onChange={this.handleValueChange}
+            onChange={this._handleValueChange}
             fullWidth
           /><br />
         </section>
@@ -104,7 +104,7 @@ export default class PasswordPage extends Component {
             label="确认修改"
             labelColor="#fff"
             backgroundColor="#0077d9"
-            onTouchTap={this.handlePasswordChange}
+            onTouchTap={this._handlePasswordChange}
           />
         </section>
       </div>
@@ -119,7 +119,7 @@ export default class PasswordPage extends Component {
           <Loader
             open={this.state.isProcessing}
             message={this.state.processMsg}
-            onTimeout={this.handleTimeout}
+            onTimeout={this._handleTimeout}
           />
           { this.renderContent() }
         </main>
@@ -128,10 +128,3 @@ export default class PasswordPage extends Component {
   }
 
 }
-
-PasswordPage.displayName = 'PasswordPage';
-
-PasswordPage.propTypes = {
-  // Below Pass from Redux
-  snackBarOpen: PropTypes.func.isRequired,
-};

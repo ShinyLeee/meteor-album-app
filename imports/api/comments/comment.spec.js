@@ -6,7 +6,7 @@ import { Random } from 'meteor/random';
 import { Factory } from 'meteor/dburles:factory';
 import { PublicationCollector } from 'meteor/johanbrook:publication-collector';
 import { assert, expect } from 'meteor/practicalmeteor:chai';
-import { limitStrLength } from '/imports/utils/utils.js';
+import { limitStrLength } from '/imports/utils';
 import { insertComment, removeComment } from './methods.js';
 import { Users } from '../users/user.js';
 import { Comments } from './comment.js';

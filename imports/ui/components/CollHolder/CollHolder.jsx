@@ -1,6 +1,6 @@
 import moment from 'moment';
 import React, { PropTypes } from 'react';
-import { browserHistory } from 'react-router';
+import { Link } from 'react-router-dom';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import IconButton from 'material-ui/IconButton';
@@ -39,11 +39,12 @@ const CollHolder = (props) => {
   return (
     <Wrapper>
       <Cover>
-        <img
-          onTouchTap={() => browserHistory.push(`/user/${coll.user}/collection/${coll.name}`)}
-          src={fastSrc}
-          role="presentation"
-        />
+        <Link to={`/user/${coll.user}/collection/${coll.name}`}>
+          <img
+            src={fastSrc}
+            role="presentation"
+          />
+        </Link>
       </Cover>
       <Info>
         <Avatar>

@@ -13,7 +13,7 @@ if (Meteor.isClient) {
   import { shallow } from 'enzyme';
   import { chai } from 'meteor/practicalmeteor:chai';
   import { sinon } from 'meteor/practicalmeteor:sinon';
-  import { getRandomArbitrary } from '/imports/utils/utils.js';
+  import { getRandomArbitrary } from '/imports/utils';
   import { GroupImageHolder } from './GroupImageHolder.jsx';
   import { Wrapper } from './GroupImageHolder.style.js';
 

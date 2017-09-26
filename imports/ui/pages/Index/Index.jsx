@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import React, { PureComponent, PropTypes } from 'react';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import { Images } from '/imports/api/images/image.js';
-import { makeCancelable } from '/imports/utils/utils.js';
+import { makeCancelable } from '/imports/utils';
 import PrimaryNavHeader from '../../components/NavHeader/Primary/Primary.jsx';
 import Infinity from '../../components/Infinity/Infinity.jsx';
 import Recap from '../../components/Recap/Recap.jsx';
@@ -11,6 +11,18 @@ import ZoomerHolder from '../../components/ZoomerHolder/ZoomerHolder.jsx';
 import ImageList from '../..//components/ImageList/ImageList.jsx';
 
 export default class IndexPage extends PureComponent {
+  static propTypes = {
+    // Below Pass from Database
+    limit: PropTypes.number.isRequired,
+    dataIsReady: PropTypes.bool.isRequired,
+    initialImages: PropTypes.array.isRequired,
+    // Below Pass from Redux
+    zoomerOpen: PropTypes.bool.isRequired,
+    zoomerImage: PropTypes.object, // zoomerImage only required when zoomerOpen is true
+    snackBarOpen: PropTypes.func.isRequired,
+    // Below Pass from React-Router
+    location: PropTypes.object.isRequired,
+  }
 
   constructor(props) {
     super(props);
@@ -18,8 +30,16 @@ export default class IndexPage extends PureComponent {
       isLoading: false,
       images: props.initialImages,
     };
-    this.handleLoadImages = this.handleLoadImages.bind(this);
-    this.handleRefreshImages = this.handleRefreshImages.bind(this);
+  }
+
+  componentDidMount() {
+    const { location } = this.props;
+    if (
+      location.state !== undefined &&
+      location.state.message !== undefined
+    ) {
+      this.props.snackBarOpen(location.state.message);
+    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -39,7 +59,7 @@ export default class IndexPage extends PureComponent {
     }
   }
 
-  handleLoadImages() {
+  _handleLoadImages = () => {
     const { limit } = this.props;
     const { images } = this.state;
     const skip = images.length;
@@ -56,17 +76,16 @@ export default class IndexPage extends PureComponent {
     });
 
     this.loadPromise = makeCancelable(loadPromise);
-    this.loadPromise
-      .promise
-      .then(() => {
-        this.setState({ isLoading: false });
-      })
-      .catch((err) => {
-        throw new Meteor.Error(err);
-      });
+    this.loadPromise.promise
+    .then(() => {
+      this.setState({ isLoading: false });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
   }
 
-  handleRefreshImages() {
+  _handleRefreshImages = () => {
     // after like or unlike a image, we need to refresh the data
     const trueImages = Images.find(
       { private: false },
@@ -76,13 +95,10 @@ export default class IndexPage extends PureComponent {
   }
 
   render() {
-    const { User, dataIsReady, zoomerOpen, zoomerImage } = this.props;
+    const { dataIsReady, zoomerOpen, zoomerImage } = this.props;
     return (
       <div className="container">
-        <PrimaryNavHeader
-          User={User}
-          location="explore"
-        />
+        <PrimaryNavHeader location="explore" />
         <main className="content">
           { !dataIsReady && (<Loading />) }
           <Recap
@@ -103,13 +119,12 @@ export default class IndexPage extends PureComponent {
                 </ReactCSSTransitionGroup>
                 <Infinity
                   isLoading={this.state.isLoading}
-                  onInfinityLoad={this.handleLoadImages}
+                  onInfinityLoad={this._handleLoadImages}
                   offsetToBottom={100}
                 >
                   <ImageList
-                    User={User}
                     images={this.state.images}
-                    onLikeOrUnlikeAction={this.handleRefreshImages}
+                    onLikeOrUnlikeAction={this._handleRefreshImages}
                   />
                 </Infinity>
               </div>
@@ -121,16 +136,3 @@ export default class IndexPage extends PureComponent {
   }
 
 }
-
-IndexPage.displayName = 'IndexPage';
-
-IndexPage.propTypes = {
-  User: PropTypes.object, // only required in only Owner page, etc.. Setting/Recycle/Note
-  // Below Pass from Database
-  limit: PropTypes.number.isRequired,
-  dataIsReady: PropTypes.bool.isRequired,
-  initialImages: PropTypes.array.isRequired,
-  // Below Pass from Redux
-  zoomerOpen: PropTypes.bool.isRequired,
-  zoomerImage: PropTypes.object, // zoomerImage only required when zoomerOpen is true
-};

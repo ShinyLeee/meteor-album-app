@@ -9,14 +9,29 @@ import { selectCounter } from '/imports/ui/redux/actions/index.js';
 import JustifiedImageBackground from '../../snippet/JustifiedImageBackground.jsx';
 import { Wrapper, SelectableImage } from './GroupImageHolder.style.js';
 
+const domain = Meteor.settings.public.imageDomain;
+
 export class GroupImageHolder extends PureComponent {
+  static propTypes = {
+    isEditing: PropTypes.bool.isRequired,
+    groupName: PropTypes.string.isRequired,
+    dimension: PropTypes.object.isRequired,
+    image: PropTypes.object.isRequired,
+    total: PropTypes.number.isRequired,
+    groupTotal: PropTypes.number,
+    onImageClick: PropTypes.func,
+    // Below Pass from Redux
+    group: PropTypes.object.isRequired,
+    counter: PropTypes.number.isRequired,
+    selectCounter: PropTypes.func.isRequired,
+  }
 
   constructor(props) {
     super(props);
+    this._pixelRatio = window.devicePixelRatio;
     this.state = {
       isSelect: false,
     };
-    this.handleSelect = this.handleSelect.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -43,7 +58,7 @@ export class GroupImageHolder extends PureComponent {
     });
   }
 
-  handleSelect() {
+  _handleSelect = () => {
     const {
       isEditing,
       groupName,
@@ -73,15 +88,13 @@ export class GroupImageHolder extends PureComponent {
 
   render() {
     const {
-      domain,
-      devicePixelRatio,
       isEditing,
       dimension,
       image,
     } = this.props;
     const url = `${domain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
-    const retinaWidth = Math.round(dimension.width * devicePixelRatio);
-    const retinaHeight = Math.round(dimension.height * devicePixelRatio);
+    const retinaWidth = Math.round(dimension.width * this._pixelRatio);
+    const retinaHeight = Math.round(dimension.height * this._pixelRatio);
     const imageSrc = `${url}?imageView2/1/w/${retinaWidth}/h/${retinaHeight}`;
     const imageHolderStyle = {
       left: `${dimension.left}px`,
@@ -93,7 +106,7 @@ export class GroupImageHolder extends PureComponent {
     return (
       <Wrapper
         style={imageHolderStyle}
-        onTouchTap={this.handleSelect}
+        onTouchTap={this._handleSelect}
       >
         <JustifiedImageBackground isEditing={isEditing} isSelect={this.state.isSelect} />
         <LazyLoad
@@ -119,29 +132,6 @@ export class GroupImageHolder extends PureComponent {
     );
   }
 }
-
-GroupImageHolder.displayName = 'GroupImageHolder';
-
-GroupImageHolder.defaultProps = {
-  domain: Meteor.settings.public.imageDomain,
-  devicePixelRatio: window.devicePixelRatio,
-};
-
-GroupImageHolder.propTypes = {
-  domain: PropTypes.string.isRequired,
-  devicePixelRatio: PropTypes.number.isRequired,
-  isEditing: PropTypes.bool.isRequired,
-  groupName: PropTypes.string.isRequired,
-  dimension: PropTypes.object.isRequired,
-  image: PropTypes.object.isRequired,
-  total: PropTypes.number.isRequired,
-  groupTotal: PropTypes.number,
-  onImageClick: PropTypes.func,
-  // Below Pass from Redux
-  group: PropTypes.object.isRequired,
-  counter: PropTypes.number.isRequired,
-  selectCounter: PropTypes.func.isRequired,
-};
 
 const mapStateToProps = (state) => ({
   group: state.selectCounter.group,

@@ -10,10 +10,9 @@ import {
 } from '/imports/ui/redux/actions/index.js';
 import CollectionPage from './Collection.jsx';
 
-const MeteorContainer = createContainer(({ params }) => {
-  const { username, cname } = params;
+const MeteorContainer = createContainer(({ User, match }) => {
+  const { username, cname } = match.params;
 
-  const User = Meteor.user();
   let isGuest = !User;  // if User is null, isGuest is true
 
   // if User exist and its name equal with params.username, isGuest is false
@@ -45,6 +44,7 @@ const MeteorContainer = createContainer(({ params }) => {
 }, CollectionPage);
 
 const mapStateToProps = (state) => ({
+  User: state.User,
   counter: state.selectCounter.counter,
   selectImages: state.selectCounter.selectImages,
 });

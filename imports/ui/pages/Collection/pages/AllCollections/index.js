@@ -8,9 +8,9 @@ import AllCollectionsPage from './AllCollections.jsx';
 
 const preCurUser = Meteor.settings.public.preCurUser;
 
-const MeteorContainer = createContainer(({ params }) => {
-  const { username } = params;
-  const User = Meteor.user();
+const MeteorContainer = createContainer(({ User, match }) => {
+  const { username } = match.params;
+
   let isGuest = !User;  // if User is null, isGuest is true
   // if User exist and its name equal with params.username, isGuest is false
   if (User && User.username === username) isGuest = false;
@@ -43,8 +43,12 @@ const MeteorContainer = createContainer(({ params }) => {
   };
 }, AllCollectionsPage);
 
+const mapStateToProps = (state) => ({
+  User: state.User,
+});
+
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   snackBarOpen,
 }, dispatch);
 
-export default connect(null, mapDispatchToProps)(MeteorContainer);
+export default connect(mapStateToProps, mapDispatchToProps)(MeteorContainer);

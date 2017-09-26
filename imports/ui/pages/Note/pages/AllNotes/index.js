@@ -5,8 +5,8 @@ import { Notes } from '/imports/api/notes/note.js';
 
 import AllNotesPage from './AllNotes.jsx';
 
-const MeteorContainer = createContainer(({ params }) => {
-  const { username } = params;
+const MeteorContainer = createContainer(({ match }) => {
+  const { username } = match.params;
   // Define How many notes render in the first time
   const limit = 5;
 
@@ -27,6 +27,7 @@ const MeteorContainer = createContainer(({ params }) => {
 }, AllNotesPage);
 
 const mapStateToProps = (state) => ({
+  User: state.User,
   bibleDialogOpen: state.dialog.open,
   bible: state.dialog.bible,
 });

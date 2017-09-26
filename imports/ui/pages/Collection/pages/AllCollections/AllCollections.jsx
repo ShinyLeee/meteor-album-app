@@ -8,16 +8,25 @@ import OwnCollections from './components/Own/Own.jsx';
 import FollowingCollections from './components/Following/Following.jsx';
 
 export default class AllCollectionPage extends Component {
+  static propTypes = {
+    // Below Pass from Database and Redux
+    User: PropTypes.object,
+    dataIsReady: PropTypes.bool.isRequired,
+    isGuest: PropTypes.bool.isRequired, // based on isGuest render different content
+    curUser: PropTypes.object.isRequired,
+    colls: PropTypes.array.isRequired,
+    existCollNames: PropTypes.array, // not required bc only Owner use it
+    snackBarOpen: PropTypes.func.isRequired,
+  }
 
   constructor(props) {
     super(props);
     this.state = {
       slideIndex: 0,
     };
-    this.handleTabChange = this.handleTabChange.bind(this);
   }
 
-  handleTabChange(value) {
+  _handleTabChange = (value) => {
     this.setState({
       slideIndex: value,
     });
@@ -38,7 +47,7 @@ export default class AllCollectionPage extends Component {
           style={{ boxShadow: '' }}
         >
           <Tabs
-            onChange={this.handleTabChange}
+            onChange={this._handleTabChange}
             value={this.state.slideIndex}
             tabItemContainerStyle={{ backgroundColor: blue500 }}
             inkBarStyle={{ backgroundColor: '#fff' }}
@@ -54,7 +63,7 @@ export default class AllCollectionPage extends Component {
               <SwipeableViews
                 className="content__allCollections"
                 index={this.state.slideIndex}
-                onChangeIndex={this.handleTabChange}
+                onChangeIndex={this._handleTabChange}
               >
                 <OwnCollections
                   isGuest={isGuest}
@@ -78,16 +87,3 @@ export default class AllCollectionPage extends Component {
   }
 
 }
-
-AllCollectionPage.displayName = 'AllCollectionPage';
-
-AllCollectionPage.propTypes = {
-  User: PropTypes.object,
-  // Below Pass from Database and Redux
-  dataIsReady: PropTypes.bool.isRequired,
-  isGuest: PropTypes.bool.isRequired, // based on isGuest render different content
-  curUser: PropTypes.object.isRequired,
-  colls: PropTypes.array.isRequired,
-  existCollNames: PropTypes.array, // not required bc only Owner use it
-  snackBarOpen: PropTypes.func.isRequired,
-};

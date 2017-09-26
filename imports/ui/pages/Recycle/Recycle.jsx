@@ -16,6 +16,19 @@ import JustifiedSelectIcon from '/imports/ui/components/JustifiedLayout/componen
 import ConnectedGridLayout from '/imports/ui/components/JustifiedLayout/components/GridLayout/GridLayout.jsx';
 
 export default class RecyclePage extends Component {
+  static propTypes = {
+    // Below Pass from Database
+    dataIsReady: PropTypes.bool.isRequired,
+    images: PropTypes.array.isRequired,
+    // Below Pass From Redux
+    User: PropTypes.object.isRequired,
+    selectImages: PropTypes.array.isRequired,
+    counter: PropTypes.number.isRequired,
+    selectCounter: PropTypes.func.isRequired,
+    disableSelectAll: PropTypes.func.isRequired,
+    enableSelectAll: PropTypes.func.isRequired,
+    snackBarOpen: PropTypes.func.isRequired,
+  }
 
   constructor(props) {
     super(props);
@@ -27,10 +40,6 @@ export default class RecyclePage extends Component {
       recoveryAlert: false,
       deleteAlert: false,
     };
-    this.handleQuitEditing = this.handleQuitEditing.bind(this);
-    this.handleToggleSelectAll = this.handleToggleSelectAll.bind(this);
-    this.handleRecoveryImgs = this.handleRecoveryImgs.bind(this);
-    this.handleDeleteImgs = this.handleDeleteImgs.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -45,12 +54,12 @@ export default class RecyclePage extends Component {
     }
   }
 
-  handleQuitEditing(e) {
+  _handleQuitEditing = (e) => {
     e.preventDefault();
     this.props.disableSelectAll();
   }
 
-  handleToggleSelectAll() {
+  _handleToggleSelectAll = () => {
     const { images } = this.props;
     if (this.state.isAllSelect) {
       this.props.disableSelectAll();
@@ -64,7 +73,7 @@ export default class RecyclePage extends Component {
     }
   }
 
-  handleOpenAlert(type) {
+  _handleOpenAlert = (type) => {
     const { selectImages } = this.props;
     if (selectImages.length === 0) {
       this.props.snackBarOpen('您尚未选择相片');
@@ -73,7 +82,7 @@ export default class RecyclePage extends Component {
     this.setState({ [type]: true });
   }
 
-  handleRecoveryImgs() {
+  _handleRecoveryImgs = () => {
     const { selectImages } = this.props;
     this.setState({ isProcessing: true, processMsg: '恢复相片中', recoveryAlert: false });
     const selectImagesIds = selectImages.map((image) => image._id);
@@ -85,13 +94,11 @@ export default class RecyclePage extends Component {
     })
     .catch((err) => {
       this.setState({ isProcessing: false, processMsg: '' });
-      console.log(err); // eslint-disable-line no-console
-      this.props.snackBarOpen(err.reason || '恢复相片失败');
-      throw new Meteor.Error(err);
+      this.props.snackBarOpen(`恢复相片失败 ${err.reason}`);
     });
   }
 
-  handleDeleteImgs() {
+  _handleDeleteImgs = () => {
     const { selectImages } = this.props;
     this.setState({ isProcessing: true, processMsg: '删除相片中', deleteAlert: false });
     const selectImagesIds = selectImages.map((image) => image._id);
@@ -107,10 +114,9 @@ export default class RecyclePage extends Component {
       this.props.disableSelectAll();
     })
     .catch((err) => {
+      console.log(err);
       this.setState({ isProcessing: false, processMsg: '' });
-      console.log(err); // eslint-disable-line no-console
-      this.props.snackBarOpen(err.reason || '删除相片失败');
-      throw new Meteor.Error(err);
+      this.props.snackBarOpen(`删除相片失败 ${err.reason}`);
     });
   }
 
@@ -127,7 +133,7 @@ export default class RecyclePage extends Component {
         </header>
         <div className="recycle__content">
           <div className="recycle__toolbox">
-            <div className="recycle__toolbox_left" onTouchTap={this.handleToggleSelectAll}>
+            <div className="recycle__toolbox_left" onTouchTap={this._handleToggleSelectAll}>
               <JustifiedSelectIcon activate={this.state.isAllSelect} />
               <h4>选择全部</h4>
             </div>
@@ -150,18 +156,18 @@ export default class RecyclePage extends Component {
           style={{ backgroundColor: this.state.isEditing ? blue500 : purple500 }}
           iconElementLeft={
             this.state.isEditing &&
-            (<IconButton onTouchTap={this.handleQuitEditing}><CloseIcon /></IconButton>)
+            (<IconButton onTouchTap={this._handleQuitEditing}><CloseIcon /></IconButton>)
           }
           iconElementRight={
             <div>
               <IconButton
                 iconStyle={{ color: '#fff' }}
-                onTouchTap={() => this.handleOpenAlert('recoveryAlert')}
+                onTouchTap={() => this._handleOpenAlert('recoveryAlert')}
               ><RecoveryIcon />
               </IconButton>
               <IconButton
                 iconStyle={{ color: '#fff' }}
-                onTouchTap={() => this.handleOpenAlert('deleteAlert')}
+                onTouchTap={() => this._handleOpenAlert('deleteAlert')}
               ><RemoveIcon />
               </IconButton>
             </div>
@@ -188,7 +194,7 @@ export default class RecyclePage extends Component {
               />,
               <FlatButton
                 label="恢复"
-                onTouchTap={this.handleRecoveryImgs}
+                onTouchTap={this._handleRecoveryImgs}
                 primary
               />,
             ]}
@@ -208,7 +214,7 @@ export default class RecyclePage extends Component {
               />,
               <FlatButton
                 label="彻底删除"
-                onTouchTap={this.handleDeleteImgs}
+                onTouchTap={this._handleDeleteImgs}
                 primary
               />,
             ]}
@@ -223,20 +229,3 @@ export default class RecyclePage extends Component {
   }
 
 }
-
-RecyclePage.displayName = 'RecyclePage';
-
-RecyclePage.propTypes = {
-  User: PropTypes.object,
-  // Below Pass from Database
-  dataIsReady: PropTypes.bool.isRequired,
-  images: PropTypes.array.isRequired,
-  // Below Pass From Redux
-  uptoken: PropTypes.string.isRequired,
-  selectImages: PropTypes.array.isRequired,
-  counter: PropTypes.number.isRequired,
-  selectCounter: PropTypes.func.isRequired,
-  disableSelectAll: PropTypes.func.isRequired,
-  enableSelectAll: PropTypes.func.isRequired,
-  snackBarOpen: PropTypes.func.isRequired,
-};

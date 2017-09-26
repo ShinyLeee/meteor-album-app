@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-import { browserHistory } from 'react-router';
+import { withRouter } from 'react-router-dom';
 import AppBar from 'material-ui/AppBar';
 import IconButton from 'material-ui/IconButton';
 import ArrowBackIcon from 'material-ui/svg-icons/navigation/arrow-back';
@@ -12,9 +12,10 @@ const SecondaryNavHeader = (props) => {
     children,
     titleStyle,
     iconElementLeft,
+    iconElementRight,
     style,
     iconColor,
-    ...others
+    history,
   } = props;
   return (
     <Wrapper>
@@ -24,19 +25,19 @@ const SecondaryNavHeader = (props) => {
         onTitleTouchTap={() => scrollTo(0, 1500)}
         iconElementLeft={
           !iconElementLeft
-          ? (<IconButton onTouchTap={() => browserHistory.goBack()}>
-            <ArrowBackIcon color={iconColor || '#fff'} />
-          </IconButton>)
+          ? (
+            <IconButton onTouchTap={() => history.goBack()}>
+              <ArrowBackIcon color={iconColor || '#fff'} />
+            </IconButton>
+          )
           : iconElementLeft
         }
-        {...others}
+        iconElementRight={iconElementRight}
       />
       {children}
     </Wrapper>
   );
 };
-
-SecondaryNavHeader.displayName = 'SecondaryNavHeader';
 
 SecondaryNavHeader.propTypes = {
   children: PropTypes.any,
@@ -45,8 +46,16 @@ SecondaryNavHeader.propTypes = {
     PropTypes.bool,
     PropTypes.element,
   ]),
+  iconElementRight: PropTypes.oneOfType([
+    PropTypes.bool,
+    PropTypes.element,
+  ]),
   style: PropTypes.object,
   iconColor: PropTypes.string,
+  // Pass from React-Router
+  match: PropTypes.object.isRequired,
+  location: PropTypes.object.isRequired,
+  history: PropTypes.object.isRequired,
 };
 
-export default SecondaryNavHeader;
+export default withRouter(SecondaryNavHeader);

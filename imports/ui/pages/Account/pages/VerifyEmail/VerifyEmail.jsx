@@ -1,11 +1,12 @@
-import React, { Component } from 'react';
-import { browserHistory, Link } from 'react-router';
+import React, { Component, PropTypes } from 'react';
+import { withRouter, Link } from 'react-router-dom';
 import AppBar from 'material-ui/AppBar';
 
-export default class VerifyEmailPage extends Component {
-  constructor(props) {
-    super(props);
-    this.autoRedirect = this.autoRedirect.bind(this);
+class VerifyEmailPage extends Component {
+  static propTypes = {
+    match: PropTypes.object.isRequired,
+    location: PropTypes.object.isRequired,
+    history: PropTypes.object.isRequired,
   }
 
   componentDidMount() {
@@ -17,7 +18,7 @@ export default class VerifyEmailPage extends Component {
   }
 
   autoRedirect() {
-    browserHistory.replace('/');
+    this.props.history.replace('/');
   }
 
   render() {
@@ -36,4 +37,4 @@ export default class VerifyEmailPage extends Component {
   }
 }
 
-VerifyEmailPage.displayName = 'VerifyEmailPage';
+export default withRouter(VerifyEmailPage);

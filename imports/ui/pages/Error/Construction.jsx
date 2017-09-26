@@ -1,11 +1,13 @@
 import { Meteor } from 'meteor/meteor';
-import React, { PropTypes } from 'react';
-import { Link } from 'react-router';
+import React from 'react';
+import { Link } from 'react-router-dom';
 import PrimaryNavHeader from '../../components/NavHeader/Primary/Primary.jsx';
 
-const Construction = ({ User, sourceDomain }) => (
+const sourceDomain = Meteor.settings.public.sourceDomain;
+
+const Construction = () => (
   <div className="container">
-    <PrimaryNavHeader User={User} />
+    <PrimaryNavHeader />
     <main className="content">
       <div className="content__error">
         <div className="error__container">
@@ -25,16 +27,5 @@ const Construction = ({ User, sourceDomain }) => (
     </main>
   </div>
 );
-
-Construction.displayName = 'Construction';
-
-Construction.defaultProps = {
-  sourceDomain: Meteor.settings.public.sourceDomain,
-};
-
-Construction.propTypes = {
-  User: PropTypes.object,
-  sourceDomain: PropTypes.string.isRequired,
-};
 
 export default Construction;

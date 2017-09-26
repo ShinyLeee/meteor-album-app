@@ -1,5 +1,8 @@
 import React, { Component, PropTypes } from 'react';
-import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
+import { BrowserRouter as Router } from 'react-router-dom';
+import { createStore } from 'redux';
+import { Provider } from 'react-redux';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
 import '/node_modules/quill/dist/quill.snow.css';
@@ -8,88 +11,70 @@ import ConnectedSnackBar from './components/SnackBar/SnackBar.jsx';
 import Loading from './components/Loader/Loading.jsx';
 import LoadingNavHeader from './components/NavHeader/Loading/Loading.jsx';
 import ConnectedUploader from './components/Uploader/index.js';
+import { userLogin } from './redux/actions';
+import reducers from './redux/reducers';
+import Routes from './Routes';
+
+const Store = createStore(reducers);
 
 export class App extends Component {
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      transitionName: 'fastIn',
-    };
+  static propTypes = {
+    User: PropTypes.object,
+    userIsReady: PropTypes.bool.isRequired,
   }
 
-  componentWillReceiveProps(nextProps) {
-    const prevIndex = this.props.children.props.route.index;
-    const nextIndex = nextProps.children.props.route.index;
-
-    let transitionName;
-    const indexGap = nextIndex - prevIndex;
-    if (indexGap > 0) transitionName = 'slideToLeft';
-    else transitionName = indexGap < 0 ? 'slideToRight' : 'fastIn';
-    this.setState({ transitionName });
+  shouldComponentUpdate(nextProps) {
+    return this.props.User !== nextProps.User ||
+    this.props.userIsReady !== nextProps.userIsReady;
   }
 
   render() {
     const {
       User,
       userIsReady,
-      location,
-      children,
     } = this.props;
 
-    if (!userIsReady) {
-      return (
-        <div className="container">
-          <LoadingNavHeader />
-          <div className="content">
-            <Loading />
-          </div>
-        </div>
-      );
-    }
-
     return (
-      <div>
-        <ConnectedSnackBar />
-        <ReactCSSTransitionGroup
-          transitionName={this.state.transitionName}
-          transitionEnterTimeout={this.state.transitionName === 'fastIn' ? 200 : 375}
-          transitionLeaveTimeout={this.state.transitionName === 'fastIn' ? 200 : 375}
-        >
-          {
-            // this.cloneChildren()
-            // React validates propTypes on elements when those elements are created,
-            // rather than when they're about to render.
-            // This means that any prop types with isRequired will fail validation
-            // when those props are supplied via this approach. In these cases,
-            // you should not specify isRequired for those props.
-            React.cloneElement(
-              children,
-              { key: location.pathname, User }
-            )
-          }
-        </ReactCSSTransitionGroup>
-        {/* Uploader in there because we can uploading file even if route change */}
-        { User && <ConnectedUploader User={User} multiple /> }
-      </div>
+      <Provider store={Store}>
+        <MuiThemeProvider>
+          <Router>
+            {
+              userIsReady
+              ? (
+                <div>
+                  <ConnectedSnackBar />
+
+                  <Routes />
+
+                  { User && <ConnectedUploader multiple /> }
+                </div>
+              )
+              : (
+                <div className="container">
+                  <LoadingNavHeader />
+                  <div className="content">
+                    <Loading />
+                  </div>
+                </div>
+              )
+            }
+          </Router>
+        </MuiThemeProvider>
+      </Provider>
     );
   }
 
 }
 
-App.displayName = 'RootApp';
-
-App.propTypes = {
-  User: PropTypes.object,
-  userIsReady: PropTypes.bool.isRequired,
-  location: PropTypes.object.isRequired,
-  children: PropTypes.element.isRequired,
-};
-
 export default createContainer(() => {
   let userIsReady = true;
   const User = Meteor.user();
-  if (typeof User === 'undefined' || User) userIsReady = !!User;
+  if (typeof User === 'undefined' || User) {
+    userIsReady = !!User;
+  }
+  if (User) {
+    Store.dispatch(userLogin(User));
+  }
   return {
     User,
     userIsReady,

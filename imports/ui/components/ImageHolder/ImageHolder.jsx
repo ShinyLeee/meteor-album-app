@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
-import { bindActionCreators } from 'redux';
 import React, { Component, PropTypes } from 'react';
+import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { browserHistory } from 'react-router';
+import { withRouter } from 'react-router-dom';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import TimeAgo from 'react-timeago';
 import CNStrings from 'react-timeago/lib/language-strings/zh-CN';
@@ -27,25 +27,53 @@ import {
 
 const formatter = buildFormatter(CNStrings);
 
+const domain = Meteor.settings.public.imageDomain;
+
 class ImageHolder extends Component {
+  static propTypes = {
+    image: PropTypes.object.isRequired,
+    onLikeClick: PropTypes.func.isRequired,
+    onUnlikeClick: PropTypes.func.isRequired,
+    onMediaClick: PropTypes.func.isRequired,
+    // Below Pass from Database and Redux
+    User: PropTypes.object, // not required bc guest can visit it
+    comments: PropTypes.array.isRequired,
+    snackBarOpen: PropTypes.func.isRequired,
+    // Below Pass from React-Router
+    history: PropTypes.object.isRequired,
+  }
+
+  static defaultProps = {
+    comments: [],
+  }
 
   constructor(props) {
     super(props);
+    this._clientWidth = document.body.clientWidth;
+    this._pixelRatio = window.devicePixelRatio;
     this.state = {
       isCommentOpen: false,
     };
   }
 
+  _handleMediaTouch = () => {
+    this.props.onMediaClick(this.props.image);
+  }
+
+  _handleLike = () => {
+    this.props.onLikeClick(this.props.image);
+  }
+
+  _handleUnlike = () => {
+    this.props.onUnlikeClick(this.props.image);
+  }
+
   render() {
     const {
-      clientWidth,
-      domain,
       User,
       image,
-      onLikeClick,
-      onUnlikeClick,
-      onMediaClick,
       comments,
+      history,
     } = this.props;
 
     // get avatar src
@@ -54,16 +82,14 @@ class ImageHolder extends Component {
 
     // get image src
     const url = `${domain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
-    const retinaWidth = Math.round(clientWidth * window.devicePixelRatio);
+    const retinaWidth = Math.round(this._clientWidth * this._pixelRatio);
 
     // realHeight for lazyload
-    const realHeight = Math.round((image.dimension[1] / image.dimension[0]) * clientWidth);
+    const realHeight = Math.round((image.dimension[1] / image.dimension[0]) * this._clientWidth);
 
     const imageSrc = `${url}?imageView2/2/w/${retinaWidth}`;
 
-    // whether current user liked this image
-    const curUser = User && User.username;
-    const isLiked = image.liker.indexOf(curUser) > -1;
+    const isLiked = User && image.liker.indexOf(User.username) > -1;
 
     return (
       <Wrapper>
@@ -74,13 +100,13 @@ class ImageHolder extends Component {
             avatar={(
               <Avatar
                 src={avatar}
-                onTouchTap={() => browserHistory.push(`/user/${image.user}`)}
+                onTouchTap={() => history.push(`/user/${image.user}`)}
               />
             )}
           />
           <CardMedia
             style={{ height: realHeight, backgroundColor: image.color }}
-            onTouchTap={onMediaClick}
+            onTouchTap={this._handleMediaTouch}
           >
             <LazyLoad
               height={realHeight}
@@ -104,12 +130,12 @@ class ImageHolder extends Component {
                 ? (
                   <StyledIconButton
                     iconStyle={{ color: '#f15151' }}
-                    onTouchTap={onUnlikeClick}
+                    onTouchTap={this._handleUnlike}
                   ><HeartIcon />
                   </StyledIconButton>
                 )
                 : (
-                  <StyledIconButton onTouchTap={onLikeClick}>
+                  <StyledIconButton onTouchTap={this._handleLike}>
                     <EmptyHeartIcon />
                   </StyledIconButton>
                 )
@@ -126,37 +152,14 @@ class ImageHolder extends Component {
           <CommentList
             key={image._id}
             open={this.state.isCommentOpen}
-            User={User}
             discId={image._id}
             comments={comments}
-            snackBarOpen={this.props.snackBarOpen}
           />
         </Card>
       </Wrapper>
     );
   }
 }
-
-ImageHolder.displayName = 'ImageHolder';
-
-ImageHolder.defaultProps = {
-  domain: Meteor.settings.public.imageDomain,
-  clientWidth: document.body.clientWidth,
-  comments: [],
-};
-
-ImageHolder.propTypes = {
-  domain: PropTypes.string.isRequired,
-  clientWidth: PropTypes.number.isRequired,
-  User: PropTypes.object, // not required bc guest can visit it
-  image: PropTypes.object.isRequired,
-  onLikeClick: PropTypes.func,
-  onUnlikeClick: PropTypes.func,
-  onMediaClick: PropTypes.func,
-  // Below Pass from Database and Redux
-  comments: PropTypes.array.isRequired,
-  snackBarOpen: PropTypes.func.isRequired,
-};
 
 const MeteorContainer = createContainer(({ image }) => {
   // discussion_id from comment
@@ -173,8 +176,12 @@ const MeteorContainer = createContainer(({ image }) => {
   };
 }, ImageHolder);
 
+const mapStateToProps = (state) => ({
+  User: state.User,
+});
+
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   snackBarOpen,
 }, dispatch);
 
-export default connect(null, mapDispatchToProps)(MeteorContainer);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(MeteorContainer));

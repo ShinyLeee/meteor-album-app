@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import React, { PureComponent, PropTypes } from 'react';
-import { browserHistory } from 'react-router';
 import Avatar from 'material-ui/Avatar';
 import Divider from 'material-ui/Divider';
 import { List, ListItem } from 'material-ui/List';
@@ -11,6 +10,18 @@ import SecondaryNavHeader from '/imports/ui/components/NavHeader/Secondary/Secon
 import Loading from '/imports/ui/components/Loader/Loading.jsx';
 
 export default class UserFansPage extends PureComponent {
+  static propTypes = {
+    // Below Pass from Database
+    dataIsReady: PropTypes.bool.isRequired,
+    isGuest: PropTypes.bool.isRequired, // based on isGuest render different content
+    curUser: PropTypes.object.isRequired,
+    initialFans: PropTypes.array.isRequired,
+    // Below Pass from Redux
+    User: PropTypes.object, // not required bc guest can visit this page
+    snackBarOpen: PropTypes.func.isRequired,
+    // Below Pass from React-Router
+    history: PropTypes.object.isRequired,
+  }
 
   constructor(props) {
     super(props);
@@ -18,9 +29,6 @@ export default class UserFansPage extends PureComponent {
       wholeFans: props.initialFans,
       fans: props.initialFans,
     };
-    this.handleSearchChange = this.handleSearchChange.bind(this);
-    this.handleFollow = this.handleFollow.bind(this);
-    this.handleUnFollow = this.handleUnFollow.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -29,12 +37,12 @@ export default class UserFansPage extends PureComponent {
     }
   }
 
-  handleSearchChange(e) {
+  _handleSearchChange = (e) => {
     const filteredFans = this.state.wholeFans.filter((fan) => fan.toLowerCase().indexOf(e.target.value) !== -1);
     this.setState({ fans: filteredFans });
   }
 
-  handleFollow(e, fanObject) {
+  _handleFollow = (e, fanObject) => {
     e.preventDefault();
     if (!this.props.User) {
       this.props.snackBarOpen('您还尚未登录');
@@ -45,13 +53,12 @@ export default class UserFansPage extends PureComponent {
       this.props.snackBarOpen('关注成功');
     })
     .catch((err) => {
-      console.log(err); // eslint-disable-line no-console
+      console.log(err);
       this.props.snackBarOpen('关注失败');
-      throw new Meteor.Error(err);
     });
   }
 
-  handleUnFollow(e, fanObject) {
+  _handleUnFollow = (e, fanObject) => {
     e.preventDefault();
     if (!this.props.User) {
       this.props.snackBarOpen('您还尚未登录');
@@ -61,14 +68,13 @@ export default class UserFansPage extends PureComponent {
       this.props.snackBarOpen('取消关注成功');
     })
     .catch((err) => {
-      console.log(err); // eslint-disable-line no-console
+      console.log(err);
       this.props.snackBarOpen('取消关注失败');
-      throw new Meteor.Error(err);
     });
   }
 
   renderListItem(fanObject) {
-    const { isGuest, User } = this.props;
+    const { isGuest, User, history } = this.props;
     if (isGuest || fanObject.profile.followers.indexOf(User.username) === -1) {
       return (
         <ListItem
@@ -78,13 +84,13 @@ export default class UserFansPage extends PureComponent {
               label="关注"
               style={{ top: '' }}
               buttonStyle={{ backgroundColor: blueA400 }}
-              onTouchTap={(e) => this.handleFollow(e, fanObject)}
+              onTouchTap={(e) => this._handleFollow(e, fanObject)}
               primary
             />
           }
           primaryText={fanObject.username}
           secondaryText={fanObject.profile.nickname}
-          onTouchTap={() => browserHistory.push(`/user/${fanObject.username}`)}
+          onTouchTap={() => history.push(`/user/${fanObject.username}`)}
         />
       );
     }
@@ -95,12 +101,12 @@ export default class UserFansPage extends PureComponent {
           <RaisedButton
             label="已关注"
             style={{ top: '' }}
-            onTouchTap={(e) => this.handleUnFollow(e, fanObject)}
+            onTouchTap={(e) => this._handleUnFollow(e, fanObject)}
           />
         }
         primaryText={fanObject.username}
         secondaryText={fanObject.profile.nickname}
-        onTouchTap={() => browserHistory.push(`/user/${fanObject.username}`)}
+        onTouchTap={() => history.push(`/user/${fanObject.username}`)}
       />
     );
   }
@@ -120,18 +126,19 @@ export default class UserFansPage extends PureComponent {
   }
 
   render() {
+    const { isGuest, curUser, dataIsReady } = this.props;
     return (
       <div className="container">
         <SecondaryNavHeader
-          title={this.props.isGuest ? `${this.props.curUser.username}的关注者` : '我的关注者'}
+          title={isGuest ? `${curUser.username}的关注者` : '我的关注者'}
         />
         <main className="content">
           {
-            this.props.dataIsReady
+            dataIsReady
             ? (
               <div className="content__userFans">
                 <section className="userFans__search">
-                  <input type="text" placeholder="搜索" onChange={this.handleSearchChange} />
+                  <input type="text" placeholder="搜索" onChange={this._handleSearchChange} />
                 </section>
                 <section className="userFans__list">
                   <List>{ this.renderFansList() }</List>
@@ -145,16 +152,3 @@ export default class UserFansPage extends PureComponent {
     );
   }
 }
-
-UserFansPage.displayName = 'UserFansPage';
-
-UserFansPage.propTypes = {
-  User: PropTypes.object, // not required bc guest can visit this page
-  // Below Pass from Database
-  dataIsReady: PropTypes.bool.isRequired,
-  isGuest: PropTypes.bool.isRequired, // based on isGuest render different content
-  curUser: PropTypes.object.isRequired,
-  initialFans: PropTypes.array.isRequired,
-  // Below Pass from Redux
-  snackBarOpen: PropTypes.func.isRequired,
-};

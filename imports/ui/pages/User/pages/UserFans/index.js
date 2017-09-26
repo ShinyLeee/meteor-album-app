@@ -6,10 +6,9 @@ import { connect } from 'react-redux';
 import { snackBarOpen } from '/imports/ui/redux/actions/index.js';
 import UserFansPage from './UserFans.jsx';
 
-const MeteorContainer = createContainer(({ params }) => {
-  const { username } = params;
+const MeteorContainer = createContainer(({ User, match }) => {
+  const { username } = match.params;
 
-  const User = Meteor.user();
   let isGuest = !User;  // if User is null, isGuest is true
 
   // if User exist and its name equal with params.username, isGuest is false
@@ -29,8 +28,12 @@ const MeteorContainer = createContainer(({ params }) => {
   };
 }, UserFansPage);
 
+const mapStateToProps = (state) => ({
+  User: state.User,
+});
+
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   snackBarOpen,
 }, dispatch);
 
-export default connect(null, mapDispatchToProps)(MeteorContainer);
+export default connect(mapStateToProps, mapDispatchToProps)(MeteorContainer);

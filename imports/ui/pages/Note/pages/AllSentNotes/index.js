@@ -5,8 +5,8 @@ import { Notes } from '/imports/api/notes/note.js';
 
 import AllSentNotes from './AllSentNotes.jsx';
 
-const MeteorContainer = createContainer(({ params }) => {
-  const { username } = params;
+const MeteorContainer = createContainer(({ match }) => {
+  const { username } = match.params;
   // Define How many notes render in the first time
   const limit = 5;
 

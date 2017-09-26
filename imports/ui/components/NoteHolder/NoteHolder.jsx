@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-import { browserHistory } from 'react-router';
+import { withRouter } from 'react-router-dom';
 import TimeAgo from 'react-timeago';
 import CNStrings from 'react-timeago/lib/language-strings/zh-CN';
 import buildFormatter from 'react-timeago/lib/formatters/buildFormatter';
@@ -17,7 +17,7 @@ import {
 
 const formatter = buildFormatter(CNStrings);
 
-const NoteHolder = ({ isRead, avatar, note, onReadBtnClick }) => (
+const NoteHolder = ({ isRead, avatar, note, onReadBtnClick, history }) => (
   <Wrapper>
     <Card initiallyExpanded>
       <CardHeader
@@ -37,7 +37,7 @@ const NoteHolder = ({ isRead, avatar, note, onReadBtnClick }) => (
             <IconButton
               style={inlineStyles.replyButton}
               iconStyle={inlineStyles.flipReplyIcon}
-              onTouchTap={() => browserHistory.push(`/sendNote/?receiver=${note.receiver}`)}
+              onTouchTap={() => history.push(`/sendNote/?receiver=${note.receiver}`)}
             ><ReplyIcon />
             </IconButton>
             <IconButton
@@ -53,8 +53,6 @@ const NoteHolder = ({ isRead, avatar, note, onReadBtnClick }) => (
   </Wrapper>
 );
 
-NoteHolder.displayName = 'NoteHolder';
-
 NoteHolder.defaultProps = {
   isRead: false,
 };
@@ -64,6 +62,8 @@ NoteHolder.propTypes = {
   avatar: PropTypes.string.isRequired,
   note: PropTypes.object.isRequired,
   onReadBtnClick: PropTypes.func, // Not required bc AllNotePage do not need read notes
+  // Below Pass from React-Router
+  history: PropTypes.object.isRequired,
 };
 
-export default NoteHolder;
+export default withRouter(NoteHolder);

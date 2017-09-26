@@ -7,8 +7,8 @@ import { Notes } from '/imports/api/notes/note.js';
 import { snackBarOpen } from '/imports/ui/redux/actions/index.js';
 import NotePage from './Note.jsx';
 
-const MeteorContainer = createContainer(({ params }) => {
-  const { username } = params;
+const MeteorContainer = createContainer(({ match }) => {
+  const { username } = match.params;
   // Define How many notes render in the first time
   const limit = 5;
 
@@ -29,6 +29,7 @@ const MeteorContainer = createContainer(({ params }) => {
 }, NotePage);
 
 const mapStateToProps = (state) => ({
+  User: state.User,
   bibleDialogOpen: state.dialog.open,
   bible: state.dialog.bible,
 });

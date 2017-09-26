@@ -6,10 +6,28 @@ import { photoSwipeOpen } from '/imports/ui/redux/actions/index.js';
 import GridLayout from '/imports/ui/components/GridLayout/GridLayout.jsx';
 import ConnectedGridImageHolder from './components/GridImageHolder.jsx';
 
+const domain = Meteor.settings.public.imageDomain;
+
 export class JustifiedGridLayout extends PureComponent {
+  static propTypes = {
+    isEditing: PropTypes.bool.isRequired,
+    images: PropTypes.array.isRequired,
+    showGallery: PropTypes.bool.isRequired,
+    filterType: PropTypes.oneOf(['latest', 'oldest', 'popular']).isRequired,
+    // Below Pass From Redux
+    photoSwipeOpen: PropTypes.func.isRequired,
+  }
+
+  static defaultProps = {
+    isEditing: false,
+    showGallery: false,
+    filterType: 'latest',
+  }
 
   constructor(props) {
     super(props);
+    this._clientWidth = document.body.clientWidth;
+    this._pixelRatio = window.devicePixelRatio;
     this.state = {
       isGroupSelect: false,
       pswpItems: props.showGallery ? this.generateItems(props) : undefined,
@@ -27,13 +45,13 @@ export class JustifiedGridLayout extends PureComponent {
   }
 
   generateItems(props) {
-    const { domain, clientWidth, devicePixelRatio, images } = props;
+    const { images } = props;
     const pswpItems = images.map((image) => {
-      const realDimension = Math.round((clientWidth / 3) * devicePixelRatio);
+      const realDimension = Math.round((this._clientWidth / 3) * this._pixelRatio);
       const url = `${domain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
       // generate based on Qiniu imageView2 mode 3 API
       // more details see https://developer.qiniu.com/dora/api/basic-processing-images-imageview2
-      const minWidth = Math.round(clientWidth * devicePixelRatio);
+      const minWidth = Math.round(this._clientWidth * this._pixelRatio);
       const minHeight = Math.round((image.dimension[1] / image.dimension[0]) * minWidth);
       return ({
         _id: image._id,
@@ -91,29 +109,6 @@ export class JustifiedGridLayout extends PureComponent {
     );
   }
 }
-
-JustifiedGridLayout.displayName = 'JustifiedGridLayout';
-
-JustifiedGridLayout.defaultProps = {
-  domain: Meteor.settings.public.imageDomain,
-  clientWidth: document.body.clientWidth,
-  devicePixelRatio: window.devicePixelRatio,
-  isEditing: false,
-  showGallery: false,
-  filterType: 'latest',
-};
-
-JustifiedGridLayout.propTypes = {
-  domain: PropTypes.string.isRequired,
-  clientWidth: PropTypes.number.isRequired,
-  devicePixelRatio: PropTypes.number.isRequired,
-  isEditing: PropTypes.bool.isRequired,
-  images: PropTypes.array.isRequired,
-  showGallery: PropTypes.bool.isRequired,
-  filterType: PropTypes.oneOf(['latest', 'oldest', 'popular']).isRequired,
-  // Below Pass From Redux
-  photoSwipeOpen: PropTypes.func.isRequired,
-};
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   photoSwipeOpen,

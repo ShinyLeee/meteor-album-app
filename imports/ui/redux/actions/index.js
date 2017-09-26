@@ -1,5 +1,14 @@
 import * as types from '../constants/ActionTypes';
 
+export const userLogin = (data) => ({
+  type: types.USER_LOGIN,
+  data,
+});
+
+export const userLogout = () => ({
+  type: types.USER_LOGOUT,
+});
+
 export const storeUptoken = (uptoken) => ({
   type: types.STORE_UPTOKEN,
   uptoken,

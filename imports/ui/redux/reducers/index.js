@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux';
 import {
+  User,
   uptoken,
   zoomer,
   dialog,
@@ -11,6 +12,7 @@ import {
 } from './reducers';
 
 const reducers = combineReducers({
+  User,
   uptoken,
   zoomer,
   dialog,

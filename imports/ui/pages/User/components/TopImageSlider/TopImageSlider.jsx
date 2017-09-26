@@ -1,7 +1,10 @@
+import { Meteor } from 'meteor/meteor';
 import React, { PropTypes } from 'react';
 import Slider from '/imports/ui/components/Slider';
 
-const TopImageSlider = ({ domain, curUser, topImages }) => (
+const domain = Meteor.settings.public.imageDomain;
+
+const TopImageSlider = ({ curUser, topImages }) => (
   <Slider
     visibleNum={4}
     gap={10}
@@ -28,7 +31,6 @@ TopImageSlider.defaultProps = {
 };
 
 TopImageSlider.propTypes = {
-  domain: PropTypes.string.isRequired,
   curUser: PropTypes.object.isRequired,
   topImages: PropTypes.array.isRequired,
 };

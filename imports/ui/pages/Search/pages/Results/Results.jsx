@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import React, { Component, PropTypes } from 'react';
-import { browserHistory } from 'react-router';
 import Paper from 'material-ui/Paper';
 import SearchBar from '/imports/ui/components/NavHeader/SearchBar/SearchBar.jsx';
 import Loading from '/imports/ui/components/Loader/Loading.jsx';
@@ -8,22 +7,41 @@ import CollHolder from '/imports/ui/components/CollHolder/CollHolder.jsx';
 import NoteHolder from '/imports/ui/components/NoteHolder/NoteHolder.jsx';
 
 export default class SearchResultsPage extends Component {
+  static propTypes = {
+    // Below Pass from Redux
+    User: PropTypes.object, // not required bc guest can visit
+    // Below Pass from React-Router
+    history: PropTypes.object.isRequired,
+    match: PropTypes.object.isRequired,
+    // Below Pass from Database
+    dataIsReady: PropTypes.bool.isRequired,
+    users: PropTypes.array.isRequired,
+    collections: PropTypes.array.isRequired,
+    notes: PropTypes.array.isRequired,
+  }
+
+  static defaultProps = {
+    dataIsReady: false,
+    users: [],
+    collections: [],
+    notes: [],
+  }
 
   constructor(props) {
     super(props);
     this.state = {
       searchText: '',
     };
-    this.handleSearchSubmit = this.handleSearchSubmit.bind(this);
   }
 
-  handleSearchSubmit(e) {
+  _handleSearchSubmit = (e) => {
     e.preventDefault();
-    browserHistory.replace(`/search/${this.state.searchText}`);
+    this.props.history.replace(`/search/${this.state.searchText}`);
   }
 
   renderCollResults() {
-    const { User, collections, params: { query } } = this.props;
+    const { User, collections, match } = this.props;
+    const { query } = match.params;
     if (collections.length === 0) {
       return <p className="search__empty">未找到符合“{query}”的结果</p>;
     }
@@ -42,7 +60,8 @@ export default class SearchResultsPage extends Component {
   }
 
   renderUserResults() {
-    const { users, params: { query } } = this.props;
+    const { users, match, history } = this.props;
+    const { query } = match.params;
     if (users.length === 0) return <p className="search__empty">未找到符合“{query}”的结果</p>;
     return (
       <Paper className="user__container">
@@ -51,7 +70,7 @@ export default class SearchResultsPage extends Component {
             <div
               key={i}
               className="user__content"
-              onTouchTap={() => browserHistory.push(`/user/${user.username}`)}
+              onTouchTap={() => history.push(`/user/${user.username}`)}
             >
               <div className="user__avatar">
                 <img src={user.profile.avatar} alt={user.username} />
@@ -67,7 +86,8 @@ export default class SearchResultsPage extends Component {
   }
 
   renderNoteResults() {
-    const { notes, params: { query } } = this.props;
+    const { notes, match } = this.props;
+    const { query } = match.params;
     if (notes.length === 0) return <p className="search__empty">未找到符合“{query}”的结果</p>;
     return (
       <div className="note__container">
@@ -89,13 +109,14 @@ export default class SearchResultsPage extends Component {
   }
 
   render() {
-    const { dataIsReady, params: { query } } = this.props;
+    const { dataIsReady, match, history } = this.props;
+    const { query } = match.params;
     return (
       <div className="container deep">
         <SearchBar
-          onLeftIconTouchTap={() => browserHistory.replace('/search')}
+          onLeftIconTouchTap={() => history.replace('/search')}
           onChange={(e) => this.setState({ searchText: e.target.value })}
-          onSubmit={this.handleSearchSubmit}
+          onSubmit={this._handleSearchSubmit}
         />
         <main className="content deep">
           { dataIsReady
@@ -130,22 +151,3 @@ export default class SearchResultsPage extends Component {
     );
   }
 }
-
-SearchResultsPage.displayName = 'SearchResultsPage';
-
-SearchResultsPage.defaultProps = {
-  dataIsReady: false,
-  users: [],
-  collections: [],
-  notes: [],
-};
-
-SearchResultsPage.propTypes = {
-  User: PropTypes.object, // not required bc guest can visit
-  params: PropTypes.object.isRequired,
-  // Below Pass from Database
-  dataIsReady: PropTypes.bool.isRequired,
-  users: PropTypes.array.isRequired,
-  collections: PropTypes.array.isRequired,
-  notes: PropTypes.array.isRequired,
-};

@@ -3,7 +3,7 @@ import { createContainer } from 'meteor/react-meteor-data';
 import React, { Component, PropTypes } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { browserHistory } from 'react-router';
+import { withRouter } from 'react-router-dom';
 import AppBar from 'material-ui/AppBar';
 import Avatar from 'material-ui/Avatar';
 import Badge from 'material-ui/Badge';
@@ -25,7 +25,7 @@ import SettingsIcon from 'material-ui/svg-icons/action/settings';
 import ArrowDropdownIcon from 'material-ui/svg-icons/navigation/arrow-drop-down';
 import { purple500, teal500 } from 'material-ui/styles/colors';
 import { Notes } from '/imports/api/notes/note.js';
-import { snackBarOpen } from '/imports/ui/redux/actions/index.js';
+import { userLogout, snackBarOpen } from '/imports/ui/redux/actions/index.js';
 import scrollTo from '/imports/vendor/scrollTo.js';
 import { Wrapper, styles } from '../NavHeader.style.js';
 import {
@@ -35,7 +35,28 @@ import {
   DrawerEmail,
 } from './Primary.style.js';
 
+const sourceDomain = Meteor.settings.public.sourceDomain;
+
 class PrimaryNavHeader extends Component {
+  static propTypes = {
+    children: PropTypes.any,
+    located: PropTypes.oneOf(['explore', 'user', 'collection', 'diary', 'recycle', 'setting', 'sign']).isRequired,
+    style: PropTypes.object,
+    // Pass from Database and Redux
+    User: PropTypes.object,
+    noteNum: PropTypes.number.isRequired,
+    userLogout: PropTypes.func.isRequired,
+    snackBarOpen: PropTypes.func.isRequired,
+    // Pass from React-Router
+    match: PropTypes.object.isRequired,
+    location: PropTypes.object.isRequired,
+    history: PropTypes.object.isRequired,
+  }
+
+  static defaultProps = {
+    located: 'explore',
+    noteNum: 0,
+  }
 
   constructor(props) {
     super(props);
@@ -43,35 +64,30 @@ class PrimaryNavHeader extends Component {
       drawer: false,
       actionPop: false,
     };
-    this.handlePrimaryTitleTouchTap = this.handlePrimaryTitleTouchTap.bind(this);
-    this.handleOpenActionPop = this.handleOpenActionPop.bind(this);
-    this.handleLogout = this.handleLogout.bind(this);
   }
 
   get avatarSrc() {
-    const defaultAvatar = `${this.props.sourceDomain}/GalleryPlus/Default/default-avatar.jpg`;
-    return this.props.User ? this.props.User.profile.avatar : defaultAvatar;
+    const { User } = this.props;
+    const defaultAvatar = `${sourceDomain}/GalleryPlus/Default/default-avatar.jpg`;
+    return User ? User.profile.avatar : defaultAvatar;
   }
 
   get coverSrc() {
-    const defaultCover = `url(${this.props.sourceDomain}/GalleryPlus/Default/default-cover.jpg)`;
-    return this.props.User ? `url("${this.props.User.profile.cover}")` : defaultCover;
+    const { User } = this.props;
+    const defaultCover = `url(${sourceDomain}/GalleryPlus/Default/default-cover.jpg)`;
+    return User ? `url("${User.profile.cover}")` : defaultCover;
   }
 
-  get homeLink() {
-    return this.props.User ? `/user/${this.props.User.username}` : '/login';
+  navigate(location) {
+    return this.props.history.push(location);
   }
 
-  get collLink() {
-    return this.props.User ? `/user/${this.props.User.username}/collection` : '/login';
-  }
-
-  handlePrimaryTitleTouchTap() {
+  _handlePrimaryTitleTouchTap = () => {
     scrollTo(0, 1500);
-    browserHistory.push('/');
+    this.navigate('/');
   }
 
-  handleOpenActionPop(e) {
+  _handleOpenActionPop = (e) => {
     e.preventDefault();
     this.setState({
       actionPop: true,
@@ -79,14 +95,16 @@ class PrimaryNavHeader extends Component {
     });
   }
 
-  handleLogout() {
+  _handleLogout = () => {
     const logoutPromise = Meteor.wrapPromise(Meteor.logout);
     logoutPromise()
-    .then(() => this.props.snackBarOpen('登出成功'))
+    .then(() => {
+      this.props.userLogout();
+      this.props.snackBarOpen('登出成功');
+    })
     .catch(err => {
-      console.log(err); // eslint-disable-line no-console
-      this.props.snackBarOpen(err.reason || '发生未知错误');
-      throw new Meteor.Error(err);
+      console.log(err);
+      this.props.snackBarOpen(`登出失败 ${err.reason}`);
     });
   }
 
@@ -98,7 +116,7 @@ class PrimaryNavHeader extends Component {
           <IconButton
             style={styles.AppBarIcon}
             iconStyle={styles.AppBarIconSvg}
-            onTouchTap={() => browserHistory.push('/search')}
+            onTouchTap={() => this.navigate('/search')}
           ><SearchIcon />
           </IconButton>
           <Badge
@@ -111,13 +129,13 @@ class PrimaryNavHeader extends Component {
               className={noteNum > 0 ? 'bell-shake' : ''}
               style={styles.AppBarIcon}
               iconStyle={styles.AppBarIconSvg}
-              onTouchTap={() => browserHistory.push(`/note/${User.username}`)}
+              onTouchTap={() => this.navigate(`/note/${User.username}`)}
             ><NotificationIcon />
             </IconButton>
           </Badge>
           <IconButton
             style={styles.AppBarIconBtnForAvatar}
-            onTouchTap={() => browserHistory.push(`/user/${User.username}`)}
+            onTouchTap={() => this.navigate(`/user/${User.username}`)}
           ><Avatar src={this.avatarSrc} />
           </IconButton>
         </div>
@@ -128,7 +146,7 @@ class PrimaryNavHeader extends Component {
         <IconButton
           style={styles.AppBarIconBtnForLogin}
           iconStyle={styles.AppBarIconSvg}
-          onTouchTap={() => browserHistory.push('/search')}
+          onTouchTap={() => this.navigate('/search')}
         ><SearchIcon />
         </IconButton>
         <FlatButton
@@ -136,14 +154,14 @@ class PrimaryNavHeader extends Component {
           style={styles.AppBarLoginBtn}
           backgroundColor="rgba(153, 153, 153, 0.2)"
           hoverColor="rgba(153, 153, 153, 0.4)"
-          onTouchTap={() => browserHistory.push('/login')}
+          onTouchTap={() => this.navigate('/login')}
         />
       </div>
     );
   }
 
   render() {
-    const { User, location, style, children } = this.props;
+    const { User, located, style, children } = this.props;
     return (
       <Wrapper>
         <AppBar
@@ -151,7 +169,7 @@ class PrimaryNavHeader extends Component {
           title="Gallery +"
           titleStyle={styles.AppBarTitle}
           onLeftIconButtonTouchTap={() => this.setState({ drawer: true })}
-          onTitleTouchTap={this.handlePrimaryTitleTouchTap}
+          onTitleTouchTap={this._handlePrimaryTitleTouchTap}
           iconElementRight={this.renderIconRight()}
           iconStyleRight={styles.AppBarIconElementRight}
         />
@@ -170,13 +188,13 @@ class PrimaryNavHeader extends Component {
                   <Avatar
                     size={54}
                     src={User.profile.avatar}
-                    onTouchTap={() => browserHistory.push(`/user/${User.username}`)}
+                    onTouchTap={() => this.navigate(`/user/${User.username}`)}
                   />
                 </DrawerAvatar>
                 <DrawerEmail>
                   <div>
                     <span>{(User.emails && User.emails[0].address) || User.username}</span>
-                    <div><ArrowDropdownIcon color="#fff" onTouchTap={this.handleOpenActionPop} /></div>
+                    <div><ArrowDropdownIcon color="#fff" onTouchTap={this._handleOpenActionPop} /></div>
                     <Popover
                       open={this.state.actionPop}
                       anchorEl={this.state.anchorEl}
@@ -185,7 +203,7 @@ class PrimaryNavHeader extends Component {
                       onRequestClose={() => this.setState({ actionPop: false })}
                     >
                       <Menu>
-                        <MenuItem primaryText="登出" onTouchTap={this.handleLogout} />
+                        <MenuItem primaryText="登出" onTouchTap={this._handleLogout} />
                       </Menu>
                     </Popover>
                   </div>
@@ -196,26 +214,26 @@ class PrimaryNavHeader extends Component {
           <Divider />
           <Menu width="100%" disableAutoFocus>
             <MenuItem
-              leftIcon={<ExploreIcon color={location === 'explore' ? purple500 : ''} />}
+              leftIcon={<ExploreIcon color={located === 'explore' ? purple500 : ''} />}
               primaryText="探索"
-              onTouchTap={() => browserHistory.push('/')}
-              style={{ color: location === 'explore' ? purple500 : '#000' }}
+              onTouchTap={() => this.navigate('/')}
+              style={{ color: located === 'explore' ? purple500 : '#000' }}
             />
             <MenuItem
-              leftIcon={<UserIcon color={location === 'user' ? teal500 : ''} />}
+              leftIcon={<UserIcon color={located === 'user' ? teal500 : ''} />}
               primaryText="主页"
-              onTouchTap={() => browserHistory.push(this.homeLink)}
-              style={{ color: location === 'user' ? teal500 : '#000' }}
+              onTouchTap={() => this.navigate(`/user/${this.props.User.username}`)}
+              style={{ color: located === 'user' ? teal500 : '#000' }}
             />
             <MenuItem
               leftIcon={<CameraIcon />}
               primaryText="相册"
-              onTouchTap={() => browserHistory.push(this.collLink)}
+              onTouchTap={() => this.navigate(`/user/${this.props.User.username}/collection`)}
             />
             <MenuItem
               leftIcon={<DiaryIcon />}
               primaryText="日记"
-              onTouchTap={() => browserHistory.push('/diary')}
+              onTouchTap={() => this.navigate('/diary')}
             />
           </Menu>
           <Divider />
@@ -223,7 +241,7 @@ class PrimaryNavHeader extends Component {
             <MenuItem
               leftIcon={<DeleteIcon />}
               primaryText="回收站"
-              onTouchTap={() => browserHistory.push('/recycle')}
+              onTouchTap={() => this.navigate('/recycle')}
             />
           </Menu>
           <Divider />
@@ -231,7 +249,7 @@ class PrimaryNavHeader extends Component {
             <MenuItem
               leftIcon={<SettingsIcon />}
               primaryText="设置"
-              onTouchTap={() => browserHistory.push('/setting')}
+              onTouchTap={() => this.navigate('/setting')}
             />
           </Menu>
         </Drawer>
@@ -240,25 +258,6 @@ class PrimaryNavHeader extends Component {
   }
 }
 
-PrimaryNavHeader.displayName = 'PrimaryNavHeader';
-
-PrimaryNavHeader.defaultProps = {
-  sourceDomain: Meteor.settings.public.sourceDomain,
-  location: 'explore',
-  noteNum: 0,
-};
-
-PrimaryNavHeader.propTypes = {
-  children: PropTypes.any,
-  User: PropTypes.object,
-  sourceDomain: PropTypes.string.isRequired,
-  location: PropTypes.oneOf(['explore', 'user', 'collection', 'diary', 'recycle', 'setting', 'sign']).isRequired,
-  style: PropTypes.object,
-  // Pass from Database and Redux
-  noteNum: PropTypes.number.isRequired,
-  snackBarOpen: PropTypes.func.isRequired,
-};
-
 const MeteorContainer = createContainer(() => {
   Meteor.subscribe('Notes.receiver');
   return {
@@ -266,9 +265,14 @@ const MeteorContainer = createContainer(() => {
   };
 }, PrimaryNavHeader);
 
+const mapStateToProps = (state) => ({
+  User: state.User,
+});
+
 const mapDispatchToProps = (dispatch) => bindActionCreators({
+  userLogout,
   snackBarOpen,
 }, dispatch);
 
-export default connect(null, mapDispatchToProps)(MeteorContainer);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(MeteorContainer));
 

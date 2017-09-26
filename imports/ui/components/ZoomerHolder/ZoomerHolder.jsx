@@ -3,6 +3,7 @@ import axios from 'axios';
 import React, { Component, PropTypes } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
 import moment from 'moment';
 import CircularProgress from 'material-ui/CircularProgress';
 import Dialog from 'material-ui/Dialog';
@@ -20,19 +21,28 @@ import {
   ExifInfo,
 } from './ZoomerHolder.style.js';
 
+const domain = Meteor.settings.public.imageDomain;
+
 class ZoomerHolder extends Component {
+  static propTypes = {
+    image: PropTypes.object.isRequired,
+    // Below Pass from Redux
+    snackBarOpen: PropTypes.func.isRequired,
+    zoomerClose: PropTypes.func.isRequired,
+    // Below Pass from React-Router
+    history: PropTypes.object.isRequired,
+  }
 
   constructor(props) {
     super(props);
+    this._clientWidth = document.body.clientWidth;
+    this._pixelRatio = window.devicePixelRatio;
     this.state = {
       infoDialog: false,
       exifDialog: false,
       isLoading: false,
       exif: {},
     };
-    this.handleCloseZoomer = this.handleCloseZoomer.bind(this);
-    this.handleGetInfo = this.handleGetInfo.bind(this);
-    this.handleGetExif = this.handleGetExif.bind(this);
   }
 
   componentDidMount() {
@@ -48,7 +58,7 @@ class ZoomerHolder extends Component {
   }
 
   get imgSrc() {
-    const { domain, image } = this.props;
+    const { image } = this.props;
     return `${domain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
   }
 
@@ -56,16 +66,20 @@ class ZoomerHolder extends Component {
     e.preventDefault(e);
   }
 
-  handleCloseZoomer() {
+  _handleCloseZoomer = () => {
     document.body.style.overflow = '';
     this.props.zoomerClose();
   }
 
-  handleGetInfo() {
+  _handleAccessUser = () => {
+    this.props.history.push(`/user/${this.props.image.user}`);
+  }
+
+  _handleGetInfo = () => {
     this.setState({ infoDialog: true });
   }
 
-  handleGetExif() {
+  _handleGetExif = () => {
     if (this.props.image.type !== 'jpg') {
       this.props.snackBarOpen('只有JPG图片存有EXIF信息');
       return;
@@ -84,18 +98,18 @@ class ZoomerHolder extends Component {
       this.setState({ exif: data, isLoading: false });
     })
     .catch((err) => {
-      console.log(err); // eslint-disable-line no-console
+      console.log(err);
       this.setState({ isLoading: false });
       this.props.snackBarOpen(`获取EXIF信息失败, ${err}`);
     });
   }
 
   render() {
-    const { image, clientWidth, devicePixelRatio } = this.props;
+    const { image } = this.props;
     const { exif } = this.state;
 
     const imgSrc = this.imgSrc;
-    const realDimension = Math.round(clientWidth * devicePixelRatio);
+    const realDimension = Math.round(this._clientWidth * this._pixelRatio);
     const preSrc = `${imgSrc}?imageView2/2/w/${realDimension}`;
     const trueSrc = `${imgSrc}?imageView2/3/w/${realDimension}`;
     // double quote for special character see: https://www.w3.org/TR/CSS2/syndata.html#value-def-uri
@@ -105,9 +119,10 @@ class ZoomerHolder extends Component {
         <ZoomerInner
           image={image}
           imageHolderStyle={imageHolderStyle}
-          onLogoClick={this.handleCloseZoomer}
-          onInfoActionClick={this.handleGetInfo}
-          onExifActionClick={this.handleGetExif}
+          onLogoClick={this._handleCloseZoomer}
+          onAvatarClick={this._handleAccessUser}
+          onInfoActionClick={this._handleGetInfo}
+          onExifActionClick={this._handleGetExif}
         />
         <Dialog
           open={this.state.infoDialog}
@@ -184,28 +199,10 @@ class ZoomerHolder extends Component {
   }
 }
 
-ZoomerHolder.displayName = 'ZoomerHolder';
-
-ZoomerHolder.defaultProps = {
-  domain: Meteor.settings.public.imageDomain,
-  clientWidth: document.body.clientWidth,
-  devicePixelRatio: window.devicePixelRatio,
-};
-
-ZoomerHolder.propTypes = {
-  domain: PropTypes.string.isRequired,
-  clientWidth: PropTypes.number.isRequired,
-  devicePixelRatio: PropTypes.number.isRequired,
-  image: PropTypes.object.isRequired,
-  // Below Pass from Redux
-  snackBarOpen: PropTypes.func.isRequired,
-  zoomerClose: PropTypes.func.isRequired,
-};
-
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   snackBarOpen,
   zoomerClose,
 }, dispatch);
 
 
-export default connect(null, mapDispatchToProps)(ZoomerHolder);
+export default withRouter(connect(null, mapDispatchToProps)(ZoomerHolder));

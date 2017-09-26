@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import React, { Component, PropTypes } from 'react';
-import { browserHistory } from 'react-router';
 import Popover from 'material-ui/Popover';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
@@ -16,29 +15,44 @@ import Loading from '/imports/ui/components/Loader/Loading.jsx';
 import TopImageSlider from './components/TopImageSlider/TopImageSlider.jsx';
 
 export default class UserPage extends Component {
+  static propTypes = {
+    // Below Pass from React-Router
+    history: PropTypes.object.isRequired,
+    // Below Pass from database
+    User: PropTypes.object,
+    dataIsReady: PropTypes.bool.isRequired,
+    isGuest: PropTypes.bool.isRequired,
+    curUser: PropTypes.object.isRequired,
+    unOrderedImages: PropTypes.array.isRequired,
+    likedCount: PropTypes.number.isRequired,
+    collectionCount: PropTypes.number.isRequired,
+    // Below Pass from Redux
+    userLogout: PropTypes.func.isRequired,
+    snackBarOpen: PropTypes.func.isRequired,
+  }
 
   constructor(props) {
     super(props);
+    this._clientWidth = document.body.clientWidth;
+    this._pixelRatio = window.devicePixelRatio;
     this.state = {
       location: 'user',
       popOpen: false,
     };
-    this.handleOpenPopup = this.handleOpenPopup.bind(this);
-    this.handleLogout = this.handleLogout.bind(this);
-    this.handleFollow = this.handleFollow.bind(this);
-    this.handleUnFollow = this.handleUnFollow.bind(this);
   }
 
   get isFollowed() {
-    return !!this.props.User && this.props.curUser.profile.followers.indexOf(this.props.User.username) >= 0;
+    const { User, curUser } = this.props;
+    return !!User && curUser.profile.followers.indexOf(User.username) >= 0;
   }
 
   get sendNoteLink() {
-    const link = this.props.isGuest ? `/sendNote?receiver=${this.props.curUser.username}` : '/sendNote';
+    const { isGuest, curUser } = this.props;
+    const link = isGuest ? `/sendNote?receiver=${curUser.username}` : '/sendNote';
     return link;
   }
 
-  handleOpenPopup(e) {
+  _handleOpenPopup = (e) => {
     e.preventDefault();
     this.setState({
       popOpen: true,
@@ -46,20 +60,19 @@ export default class UserPage extends Component {
     });
   }
 
-  handleLogout() {
+  _handleLogout = () => {
     const logoutPromise = Meteor.wrapPromise(Meteor.logout);
     logoutPromise()
     .then(() => {
       this.props.snackBarOpen('登出成功');
     })
     .catch((err) => {
-      console.log(err); // eslint-disable-line no-console
+      console.log(err);
       this.props.snackBarOpen(err.reason || '发生未知错误');
-      throw new Meteor.Error(err);
     });
   }
 
-  handleFollow() {
+  _handleFollow = () => {
     const { User, curUser } = this.props;
     if (!User) {
       this.props.snackBarOpen('您还尚未登录');
@@ -67,16 +80,16 @@ export default class UserPage extends Component {
     }
     followUser.callPromise({ targetId: curUser._id, targetName: curUser.username })
     .then(() => {
+      this.props.userLogout();
       this.props.snackBarOpen('关注成功');
     })
     .catch((err) => {
-      console.log(err); // eslint-disable-line no-console
+      console.log(err);
       this.props.snackBarOpen('关注失败');
-      throw new Meteor.Error(err);
     });
   }
 
-  handleUnFollow() {
+  _handleUnFollow = () => {
     const { User, curUser } = this.prosp;
     if (!User) {
       this.props.snackBarOpen('您还尚未登录');
@@ -87,17 +100,14 @@ export default class UserPage extends Component {
       this.props.snackBarOpen('取消关注成功');
     })
     .catch((err) => {
-      console.log(err); // eslint-disable-line no-console
+      console.log(err);
       this.props.snackBarOpen('取消关注失败');
-      throw new Meteor.Error(err);
     });
   }
 
   renderContent() {
     const {
-      domain,
-      clientWidth,
-      devicePixelRatio,
+      history,
       isGuest,
       curUser,
       likedCount,
@@ -107,7 +117,7 @@ export default class UserPage extends Component {
 
     // sort by likers length --> for TopImageSlider component
     const topImages = unOrderedImages.sort((p, n) => n.liker.length - p.liker.length);
-    const realDimension = Math.round(clientWidth * devicePixelRatio);
+    const realDimension = Math.round(this._clientWidth * this._pixelRatio);
     const preCover = `${curUser.profile.cover}?imageView2/2/w/${realDimension}`;
     const trueCover = `${curUser.profile.cover}`;
     return (
@@ -137,7 +147,7 @@ export default class UserPage extends Component {
           <div className="main__action">
             <RaisedButton
               label={isGuest ? '发送私信' : '发送信息'}
-              onTouchTap={() => browserHistory.push(this.sendNoteLink)}
+              onTouchTap={() => history.push(this.sendNoteLink)}
               style={{ marginRight: '20px' }}
               primary
             />
@@ -146,7 +156,7 @@ export default class UserPage extends Component {
               ? (
                 <RaisedButton
                   label={this.isFollowed ? '取消关注' : '关注'}
-                  onTouchTap={this.isFollowed ? this.handleUnFollow : this.handleFollow}
+                  onTouchTap={this.isFollowed ? this._handleUnFollow : this._handleFollow}
                   secondary
                 />
                 )
@@ -154,7 +164,7 @@ export default class UserPage extends Component {
                 <div style={{ display: 'inline-block' }}>
                   <RaisedButton
                     label="更多操作"
-                    onTouchTap={this.handleOpenPopup}
+                    onTouchTap={this._handleOpenPopup}
                   />
                   <Popover
                     open={this.state.popOpen}
@@ -166,18 +176,18 @@ export default class UserPage extends Component {
                     <Menu>
                       <MenuItem
                         primaryText="我的信息"
-                        onTouchTap={() => browserHistory.push(`/note/${curUser.username}`)}
+                        onTouchTap={() => history.push(`/note/${curUser.username}`)}
                         leftIcon={<MessageIcon />}
                       />
                       <MenuItem
                         primaryText="账号设置"
-                        onTouchTap={() => browserHistory.push('/setting')}
+                        onTouchTap={() => history.push('/setting')}
                         leftIcon={<SettingsIcon />}
                       />
                       <MenuItem
                         primaryText="登出"
                         leftIcon={<ExitToAppIcon />}
-                        onTouchTap={this.handleLogout}
+                        onTouchTap={this._handleLogout}
                       />
                     </Menu>
                   </Popover>
@@ -190,21 +200,21 @@ export default class UserPage extends Component {
         <section className="user__counter">
           <div
             className="counter counter__likes"
-            onTouchTap={() => browserHistory.push(`/user/${curUser.username}/likes`)}
+            onTouchTap={() => history.push(`/user/${curUser.username}/likes`)}
           >
             <span>{likedCount}</span>
             <span>喜欢</span>
           </div>
           <div
             className="counter counter__collections"
-            onTouchTap={() => browserHistory.push(`/user/${curUser.username}/collection`)}
+            onTouchTap={() => history.push(`/user/${curUser.username}/collection`)}
           >
             <span>{collectionCount}</span>
             <span>相册</span>
           </div>
           <div
             className="counter counter__follwer"
-            onTouchEnd={() => browserHistory.push(`/user/${curUser.username}/fans`)}
+            onTouchEnd={() => history.push(`/user/${curUser.username}/fans`)}
           >
             <span>{curUser.profile.followers.length}</span>
             <span>关注者</span>
@@ -217,7 +227,6 @@ export default class UserPage extends Component {
               <div className="rank__header">最受欢迎的</div>
               <div className="rank__content">
                 <TopImageSlider
-                  domain={domain}
                   curUser={curUser}
                   topImages={topImages}
                 />
@@ -237,7 +246,6 @@ export default class UserPage extends Component {
           ? (<SecondaryNavHeader title={`${this.props.curUser.username}的主页`} />)
           : (
             <PrimaryNavHeader
-              User={this.props.User}
               location={this.state.location}
               style={{ backgroundColor: teal500 }}
             />)
@@ -253,27 +261,3 @@ export default class UserPage extends Component {
     );
   }
 }
-
-UserPage.displayName = 'UserPage';
-
-UserPage.defaultProps = {
-  domain: Meteor.settings.public.imageDomain,
-  clientWidth: document.body.clientWidth,
-  devicePixelRatio: window.devicePixelRatio,
-};
-
-UserPage.propTypes = {
-  User: PropTypes.object,
-  domain: PropTypes.string.isRequired,
-  clientWidth: PropTypes.number.isRequired,
-  devicePixelRatio: PropTypes.number.isRequired,
-  // Below Pass from database
-  dataIsReady: PropTypes.bool.isRequired,
-  isGuest: PropTypes.bool.isRequired,
-  curUser: PropTypes.object.isRequired,
-  unOrderedImages: PropTypes.array.isRequired,
-  likedCount: PropTypes.number.isRequired,
-  collectionCount: PropTypes.number.isRequired,
-  // Below Pass from Redux
-  snackBarOpen: PropTypes.func.isRequired,
-};

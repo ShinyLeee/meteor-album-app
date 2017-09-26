@@ -1,3 +1,4 @@
+import { withRouter } from 'react-router-dom';
 import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
 import { Users } from '/imports/api/users/user.js';
@@ -19,4 +20,4 @@ const MeteorContainer = createContainer(() => {
   };
 }, SearchPage);
 
-export default MeteorContainer;
+export default withRouter(MeteorContainer);

@@ -1,25 +1,25 @@
 import { Accounts } from 'meteor/accounts-base';
-import { browserHistory } from 'react-router';
+import history from '/imports/utils/history';
 
 Accounts.onLogout(() => {
-  browserHistory.replace('/login');
+  history.replace('/login');
 });
 
 Accounts.onEmailVerificationLink((token) => {
   Accounts.verifyEmail(token, (err) => {
     if (err) {
-      console.log(err); // eslint-disable-line no-console
-      return browserHistory.replace({
+      console.log(err);
+      return history.replace({
         pathname: `/${err.error || 500}`,
         state: { message: err.reason || '服务器内部错误' },
       });
     }
-    return browserHistory.replace('/accounts/verifyEmail');
+    return history.replace('/accounts/verifyEmail');
   });
 });
 
 Accounts.onResetPasswordLink((token) => {
-  browserHistory.replace({
+  history.replace({
     pathname: '/accounts/resetPassword',
     state: { token },
   });

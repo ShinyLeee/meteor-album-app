@@ -14,6 +14,8 @@ import {
   Progress,
 } from './Uploader.style.js';
 
+const domain = Meteor.settings.public.imageDomain;
+
 const initialState = {
   pace: 0,               // Current File Uploading Progress
   current: 0,           // Current Uploading file
@@ -24,12 +26,32 @@ const initialState = {
 
 // TODO 令该组件可最小化后台运行
 export default class Uploader extends Component {
+  static propTypes = {
+    multiple: PropTypes.bool.isRequired,
+    onBeforeUpload: PropTypes.func,
+    onAfterUpload: PropTypes.func,
+    // Below Pass from Redux
+    User: PropTypes.object.isRequired,
+    token: PropTypes.string,
+    open: PropTypes.bool.isRequired,
+    destination: PropTypes.string,  // not required bc don't need it before Uploading
+    storeUptoken: PropTypes.func.isRequired,
+    clearUptoken: PropTypes.func.isRequired,
+    snackBarOpen: PropTypes.func.isRequired,
+    uploaderStop: PropTypes.func.isRequired,
+  }
+
+  static defaultProps = {
+    open: false,
+    multiple: false,
+  }
 
   constructor(props) {
     super(props);
     this._cancelFn = undefined;
+    this._allowedFiles = ['image/jpeg', 'image/png', 'image/gif'];
+    this._uploadURL = window.location.protocol === 'https:' ? 'https://up.qbox.me/' : 'http://upload.qiniu.com';
     this.state = initialState;
-    this.handleImageChange = this.handleImageChange.bind(this);
   }
 
   componentDidMount() {
@@ -44,6 +66,15 @@ export default class Uploader extends Component {
     });
   }
 
+  shouldComponentUpdate(nextProps, nextState) {
+    return this.props.open !== nextProps.open ||
+    JSON.stringify(this.state) !== JSON.stringify(nextState);
+  }
+
+  componentWillUnmount() {
+    this.props.clearUptoken();
+  }
+
   /**
    * Call when user select images to upload
    * @param {object}  e - input change event
@@ -53,8 +84,11 @@ export default class Uploader extends Component {
    *
    * After Done above, call beforeUpload.
    */
-  handleImageChange(e) {
-    e.preventDefault();
+  _handleImageChange = (e) => {
+    if (!this.props.token) {
+      this.props.snackBarOpen('上传失败 - [uptoken is not exist]');
+      return;
+    }
     const files = [...e.target.files];
     this.setState({
       total: files.length,
@@ -83,18 +117,18 @@ export default class Uploader extends Component {
       throw new Error('File is empty, check whether miss select upload files');
     }
 
-    const { User, allowedFiles, destination, token } = this.props;
+    const { User, destination, token } = this.props;
 
     const currentFile = file || files[0];
 
     // If upload not allowedFiles, We need stop upload.
-    if (allowedFiles.indexOf(currentFile.type) < 0) {
+    if (this._allowedFiles.indexOf(currentFile.type) < 0) {
       this.props.uploaderStop();
       this.props.snackBarOpen('只允许上传.jpg .png或.gif文件');
       return;
-    } else if (allowedFiles.indexOf(currentFile.type) === 0) currentFile.surfix = 'jpg';
-    else if (allowedFiles.indexOf(currentFile.type) === 1) currentFile.surfix = 'png';
-    else if (allowedFiles.indexOf(currentFile.type) === 2) currentFile.surfix = 'gif';
+    } else if (this._allowedFiles.indexOf(currentFile.type) === 0) currentFile.surfix = 'jpg';
+    else if (this._allowedFiles.indexOf(currentFile.type) === 1) currentFile.surfix = 'png';
+    else if (this._allowedFiles.indexOf(currentFile.type) === 2) currentFile.surfix = 'gif';
 
     this.setState({
       current: this.state.current + 1,
@@ -141,7 +175,7 @@ export default class Uploader extends Component {
 
     axios({
       method: 'POST',
-      url: this.props.uploadURL,
+      url: this._uploadURL,
       data: formData,
       cancelToken: new axios.CancelToken((c) => {
         // An executor function receives a cancel function as a parameter
@@ -195,7 +229,7 @@ export default class Uploader extends Component {
    *
    */
   afterUploadFile(files, file) {
-    const { domain, User, destination } = this.props;
+    const { User, destination } = this.props;
     const image = {
       user: User.username,
       collection: destination,
@@ -337,7 +371,7 @@ export default class Uploader extends Component {
           id="Uploader"
           type="file"
           style={{ display: 'none' }}
-          onChange={this.handleImageChange}
+          onChange={this._handleImageChange}
           ref={(ref) => { this.filesInput = ref; }}
           multiple={multiple}
           accept="image/*"
@@ -346,31 +380,3 @@ export default class Uploader extends Component {
     );
   }
 }
-
-Uploader.displayName = 'Uploader';
-
-Uploader.defaultProps = {
-  domain: Meteor.settings.public.imageDomain,
-  open: false,
-  multiple: false,
-  allowedFiles: ['image/jpeg', 'image/png', 'image/gif'],
-  uploadURL: window.location.protocol === 'https:' ? 'https://up.qbox.me/' : 'http://upload.qiniu.com',
-};
-
-Uploader.propTypes = {
-  domain: PropTypes.string.isRequired,
-  User: PropTypes.object.isRequired,
-  multiple: PropTypes.bool.isRequired,
-  allowedFiles: PropTypes.array.isRequired,
-  uploadURL: PropTypes.string.isRequired,
-  onBeforeUpload: PropTypes.func,
-  onAfterUpload: PropTypes.func,
-  // Below Pass from Redux
-  token: PropTypes.string.isRequired,
-  open: PropTypes.bool.isRequired,
-  destination: PropTypes.string,  // not required bc don't need it before Uploading
-  clearUptoken: PropTypes.func.isRequired,
-  storeUptoken: PropTypes.func.isRequired,
-  snackBarOpen: PropTypes.func.isRequired,
-  uploaderStop: PropTypes.func.isRequired,
-};

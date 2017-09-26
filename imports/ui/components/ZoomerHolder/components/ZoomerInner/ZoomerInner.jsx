@@ -1,5 +1,4 @@
 import React, { PropTypes } from 'react';
-import { browserHistory } from 'react-router';
 import moment from 'moment';
 import IconButton from 'material-ui/IconButton';
 import CloseIcon from 'material-ui/svg-icons/navigation/close';
@@ -21,6 +20,7 @@ const ZoomerInner = (props) => {
     image,
     imageHolderStyle,
     onLogoClick,
+    onAvatarClick,
     onInfoActionClick,
     onExifActionClick,
   } = props;
@@ -43,7 +43,7 @@ const ZoomerInner = (props) => {
           <UserAvatar
             src={avatar}
             role="presentation"
-            onTouchTap={() => browserHistory.push(`/user/${image.user}`)}
+            onTouchTap={onAvatarClick}
           />
           <ImageDetail>
             <span>
@@ -71,12 +71,11 @@ const ZoomerInner = (props) => {
   );
 };
 
-ZoomerInner.displayName = 'ZoomerInner';
-
 ZoomerInner.propTypes = {
   image: PropTypes.object.isRequired,
   imageHolderStyle: PropTypes.object.isRequired,
   onLogoClick: PropTypes.func.isRequired,
+  onAvatarClick: PropTypes.func.isRequired,
   onInfoActionClick: PropTypes.func.isRequired,
   onExifActionClick: PropTypes.func.isRequired,
 };

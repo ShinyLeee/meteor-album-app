@@ -14,6 +14,12 @@ import SecondaryNavHeader from '/imports/ui/components/NavHeader/Secondary/Secon
 import Loader from '/imports/ui/components/Loader/Loader.jsx';
 
 export default class EmailsPage extends Component {
+  static propTypes = {
+    // Below Pass from React-Router
+    User: PropTypes.object.isRequired,
+    // Below Pass from Redux
+    snackBarOpen: PropTypes.func.isRequired,
+  }
 
   constructor(props) {
     super(props);
@@ -22,18 +28,14 @@ export default class EmailsPage extends Component {
       processMsg: '',
       email: '',
     };
-    this.handleEmailValueChange = this.handleEmailValueChange.bind(this);
-    this.handleSentVerifyEmail = this.handleSentVerifyEmail.bind(this);
-    this.handleAddEmail = this.handleAddEmail.bind(this);
-    this.handleLoaderTimeout = this.handleLoaderTimeout.bind(this);
   }
 
-  handleEmailValueChange(e) {
+  _handleEmailValueChange = (e) => {
     e.preventDefault();
     this.setState({ email: e.target.value });
   }
 
-  handleSentVerifyEmail(e) {
+  _handleSentVerifyEmail = (e) => {
     e.preventDefault();
     this.setState({ isProcessing: true, processMsg: '发送邮件中' });
     Meteor.callPromise('Accounts.sendVerifyEmail')
@@ -42,10 +44,9 @@ export default class EmailsPage extends Component {
       this.props.snackBarOpen('发送成功');
     })
     .catch((err) => {
+      console.log(err);
       this.setState({ isProcessing: false, processMsg: '' });
       this.props.snackBarOpen(err.reason || '发送失败');
-      console.log(err); // eslint-disable-line no-console
-      throw new Meteor.Error(err);
     });
   }
     /**
@@ -53,7 +54,7 @@ export default class EmailsPage extends Component {
      * @param {object}  e - onTouchTap event Object
      * @param {string} email - the email address in Menu item wait for remove
      */
-  handleRemoveEmail(e, email) {
+  _handleRemoveEmail = (e, email) => {
     e.preventDefault();
     this.setState({ isProcessing: true, processMsg: '解除绑定邮箱中' });
     Meteor.callPromise('Accounts.removeEmail', { email })
@@ -62,14 +63,13 @@ export default class EmailsPage extends Component {
       this.props.snackBarOpen('解除绑定邮箱成功');
     })
     .catch((err) => {
+      console.log(err);
       this.setState({ isProcessing: false, processMsg: '' });
       this.props.snackBarOpen(err.reason || '解除邮箱绑定失败');
-      console.log(err); // eslint-disable-line no-console
-      throw new Meteor.Error(err);
     });
   }
 
-  handleAddEmail(e) {
+  _handleAddEmail = (e) => {
     e.preventDefault();
     if (!this.state.email) {
       this.props.snackBarOpen('请输入新邮箱地址');
@@ -82,14 +82,13 @@ export default class EmailsPage extends Component {
       this.props.snackBarOpen('添加成功，请前往邮箱进行验证');
     })
     .catch((err) => {
+      console.log(err);
       this.setState({ isProcessing: false, processMsg: '' });
       this.props.snackBarOpen(err.reason || '更换邮箱失败');
-      console.log(err); // eslint-disable-line no-console
-      throw new Meteor.Error(err);
     });
   }
 
-  handleLoaderTimeout() {
+  _handleLoaderTimeout = () => {
     this.setState({ isProcessing: false, processMsg: '' });
     this.props.snackBarOpen('发送邮件失败');
   }
@@ -118,8 +117,8 @@ export default class EmailsPage extends Component {
           secondaryText={emailStatus}
           rightIconButton={
             <IconMenu iconButtonElement={<IconButton><MoreVertIcon color={grey400} /></IconButton>}>
-              { !email.verified && <MenuItem onTouchTap={this.handleSentVerifyEmail}>重新发送验证邮件</MenuItem> }
-              <MenuItem onTouchTap={(e) => this.handleRemoveEmail(e, email.address)}>解除绑定</MenuItem>
+              { !email.verified && <MenuItem onTouchTap={this._handleSentVerifyEmail}>重新发送验证邮件</MenuItem> }
+              <MenuItem onTouchTap={(e) => this._handleRemoveEmail(e, email.address)}>解除绑定</MenuItem>
             </IconMenu>
           }
           disabled
@@ -136,7 +135,7 @@ export default class EmailsPage extends Component {
           <Loader
             open={this.state.isProcessing}
             message={this.state.processMsg}
-            onTimeout={this.handleLoaderTimeout}
+            onTimeout={this._handleLoaderTimeout}
           />
           <div className="content__settingEmails">
             <section className="settingEmails__current">
@@ -156,14 +155,14 @@ export default class EmailsPage extends Component {
                 hintText="邮箱地址"
                 underlineShow={false}
                 value={this.state.email}
-                onChange={this.handleEmailValueChange}
+                onChange={this._handleEmailValueChange}
               />
             </section>
             <Divider />
             <section className="settingEmails__action">
               <p style={{ padding: '0 16px', fontSize: '12px' }}>邮箱用于登陆及修改密码等安全性操作，如若尚未绑定邮箱或仍未完成验证，请即刻完成邮箱绑定或验证，以保护账号安全。</p>
               <div style={{ margin: '18px 24px 0 0', textAlign: 'right' }}>
-                <RaisedButton label="下一步" onTouchTap={this.handleAddEmail} />
+                <RaisedButton label="下一步" onTouchTap={this._handleAddEmail} />
               </div>
             </section>
           </div>
@@ -173,11 +172,3 @@ export default class EmailsPage extends Component {
   }
 
 }
-
-EmailsPage.displayName = 'EmailsPage';
-
-EmailsPage.propTypes = {
-  User: PropTypes.object.isRequired,
-  // Below Pass from Redux
-  snackBarOpen: PropTypes.func.isRequired,
-};

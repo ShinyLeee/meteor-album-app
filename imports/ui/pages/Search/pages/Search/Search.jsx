@@ -1,28 +1,43 @@
 import { Meteor } from 'meteor/meteor';
 import React, { Component, PropTypes } from 'react';
-import { browserHistory } from 'react-router';
 import Paper from 'material-ui/Paper';
 import SearchBar from '/imports/ui/components/NavHeader/SearchBar/SearchBar.jsx';
 import Loading from '/imports/ui/components/Loader/Loading.jsx';
 import CollHolder from '/imports/ui/components/CollHolder/CollHolder.jsx';
 
 export default class SearchPage extends Component {
+  static defaultProps = {
+    dataIsReady: false,
+    users: [],
+    collections: [],
+  }
+
+  static propTypes = {
+    User: PropTypes.object, // not required bc guest can visit this page
+    // Below Pass from Database
+    dataIsReady: PropTypes.bool.isRequired,
+    users: PropTypes.array.isRequired,
+    collections: PropTypes.array.isRequired,
+    match: PropTypes.object.isRequired,
+    location: PropTypes.object.isRequired,
+    history: PropTypes.object.isRequired,
+  }
 
   constructor(props) {
     super(props);
     this.state = {
       searchText: '',
     };
-    this.handleSearchSubmit = this.handleSearchSubmit.bind(this);
   }
 
-  handleSearchSubmit(e) {
+  _handleSearchSubmit = (e) => {
+    const { history } = this.props;
     e.preventDefault();
-    browserHistory.push(`/search/${this.state.searchText}`);
+    history.push(`/search/${this.state.searchText}`);
   }
 
   renderContent() {
-    const { User, collections, users } = this.props;
+    const { User, collections, users, history } = this.props;
     return (
       <div className="content__search">
         <section className="search__collection">
@@ -56,7 +71,7 @@ export default class SearchPage extends Component {
                 <div
                   key={i}
                   className="user__content"
-                  onTouchTap={() => browserHistory.push(`/user/${user.username}`)}
+                  onTouchTap={() => history.push(`/user/${user.username}`)}
                 >
                   <div className="user__avatar">
                     <img src={user.profile.avatar} alt={user.username} />
@@ -74,13 +89,13 @@ export default class SearchPage extends Component {
   }
 
   render() {
-    const { dataIsReady } = this.props;
+    const { dataIsReady, history } = this.props;
     return (
       <div className="container deep">
         <SearchBar
-          onLeftIconTouchTap={() => browserHistory.goBack()}
+          onLeftIconTouchTap={() => history.goBack()}
           onChange={(e) => this.setState({ searchText: e.target.value })}
-          onSubmit={this.handleSearchSubmit}
+          onSubmit={this._handleSearchSubmit}
         />
         <main className="content deep">
           { dataIsReady
@@ -91,19 +106,3 @@ export default class SearchPage extends Component {
     );
   }
 }
-
-SearchPage.displayName = 'SearchPage';
-
-SearchPage.defaultProps = {
-  dataIsReady: false,
-  users: [],
-  collections: [],
-};
-
-SearchPage.propTypes = {
-  User: PropTypes.object, // not required bc guest can visit
-  // Below Pass from Database
-  dataIsReady: PropTypes.bool.isRequired,
-  users: PropTypes.array.isRequired,
-  collections: PropTypes.array.isRequired,
-};

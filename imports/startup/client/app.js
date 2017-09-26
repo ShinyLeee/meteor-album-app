@@ -1,7 +1,12 @@
+import React from 'react';
 import { Meteor } from 'meteor/meteor';
 import { render } from 'react-dom';
 import injectTapEventPlugin from 'react-tap-event-plugin';
-import renderRoutes from './routes.jsx';
+import App_Mobile from '/imports/ui/App.jsx';
+import App_PC from '/imports/ui/App_PC.jsx';
+import { platform } from '/imports/utils';
+
+const RootApp = platform().mobile ? App_Mobile : App_PC;
 
 // This is Use of Disabling User zooming the Page in IOS10
 const noScalable = () => {
@@ -24,5 +29,5 @@ const noScalable = () => {
 Meteor.startup(() => {
   noScalable();
   injectTapEventPlugin();
-  render(renderRoutes(), document.getElementById('app'));
+  render(<RootApp />, document.getElementById('app'));
 });

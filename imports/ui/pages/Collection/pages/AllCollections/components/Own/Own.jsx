@@ -5,7 +5,7 @@ import FlatButton from 'material-ui/FlatButton';
 import TextField from 'material-ui/TextField';
 import AddIcon from 'material-ui/svg-icons/content/add-circle-outline';
 import { insertCollection, lockCollection, removeCollection } from '/imports/api/collections/methods.js';
-import { getRandomInt } from '/imports/utils/utils.js';
+import { getRandomInt } from '/imports/utils';
 import CollHolder from '/imports/ui/components/CollHolder/CollHolder.jsx';
 import Loader from '/imports/ui/components/Loader/Loader.jsx';
 import {

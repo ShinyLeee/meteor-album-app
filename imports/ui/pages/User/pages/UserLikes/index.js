@@ -5,13 +5,12 @@ import { Images } from '/imports/api/images/image.js';
 
 import UserLikesPage from './UserLikes.jsx';
 
-const MeteorContainer = createContainer(({ params }) => {
+const MeteorContainer = createContainer(({ User, match }) => {
   // Define How many pictures render in the first time
   const limit = 5;
 
-  const { username } = params;
+  const { username } = match.params;
 
-  const User = Meteor.user();
   let isGuest = !User;  // if User is null, isGuest is true
 
   // if User exist and its name equal with params.username, isGuest is false
@@ -40,7 +39,9 @@ const MeteorContainer = createContainer(({ params }) => {
   };
 }, UserLikesPage);
 
+
 const mapStateToProps = (state) => ({
+  User: state.User,
   zoomerOpen: state.zoomer.open,
   zoomerImage: state.zoomer.image,
 });

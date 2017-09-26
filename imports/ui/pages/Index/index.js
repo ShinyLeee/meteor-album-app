@@ -1,7 +1,9 @@
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
-import { connect } from 'react-redux';
 import { Images } from '/imports/api/images/image.js';
+import { snackBarOpen } from '/imports/ui/redux/actions';
 
 import IndexPage from './Index.jsx';
 
@@ -30,5 +32,9 @@ const mapStateToProps = (state) => ({
   zoomerImage: state.zoomer.image,
 });
 
-export default connect(mapStateToProps)(MeteorContainer);
+const mapDispatchToProps = (dispatch) => bindActionCreators({
+  snackBarOpen,
+}, dispatch);
+
+export default connect(mapStateToProps, mapDispatchToProps)(MeteorContainer);
 

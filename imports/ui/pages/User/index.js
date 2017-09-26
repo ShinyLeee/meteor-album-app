@@ -5,12 +5,11 @@ import { connect } from 'react-redux';
 import { Collections } from '/imports/api/collections/collection.js';
 import { Images } from '/imports/api/images/image.js';
 
-import { snackBarOpen } from '../../redux/actions/index.js';
+import { userLogout, snackBarOpen } from '../../redux/actions/index.js';
 import UserPage from './User.jsx';
 
-const MeteorContainer = createContainer(({ params }) => {
-  const { username } = params;
-  const User = Meteor.user();
+const MeteorContainer = createContainer(({ User, match }) => {
+  const { username } = match.params;
   let isGuest = !User;  // if User is null, isGuest is true
 
   // if User exist and its name equal with params.username, isGuest is false
@@ -50,8 +49,13 @@ const MeteorContainer = createContainer(({ params }) => {
   };
 }, UserPage);
 
+const mapStateToProps = (state) => ({
+  User: state.User,
+});
+
 const mapDispatchToProps = (dispatch) => bindActionCreators({
+  userLogout,
   snackBarOpen,
 }, dispatch);
 
-export default connect(null, mapDispatchToProps)(MeteorContainer);
+export default connect(mapStateToProps, mapDispatchToProps)(MeteorContainer);

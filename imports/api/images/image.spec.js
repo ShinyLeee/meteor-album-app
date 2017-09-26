@@ -6,7 +6,7 @@ import { Factory } from 'meteor/dburles:factory';
 import { PublicationCollector } from 'meteor/johanbrook:publication-collector';
 import { assert, expect } from 'meteor/practicalmeteor:chai';
 import { Random } from 'meteor/random';
-import { limitStrLength } from '/imports/utils/utils.js';
+import { limitStrLength } from '/imports/utils';
 import {
   insertImage,
   removeImages,

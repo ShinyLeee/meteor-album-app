@@ -12,17 +12,58 @@ import {
   Title,
 } from './GroupLayout.style.js';
 
+const domain = Meteor.settings.public.imageDomain;
+
 export class JustifiedGroupLayout extends PureComponent {
+  static propTypes = {
+    isEditing: PropTypes.bool.isRequired,
+    filterType: PropTypes.oneOf(['day', 'month', 'year']).isRequired,
+    showGallery: PropTypes.bool.isRequired,
+    groupName: PropTypes.string.isRequired,
+    groupImages: PropTypes.array.isRequired,
+    total: PropTypes.number.isRequired,
+    // Below Pass from Redux
+    group: PropTypes.object.isRequired,
+    counter: PropTypes.number.isRequired,
+    photoSwipeOpen: PropTypes.func.isRequired,
+    selectGroupCounter: PropTypes.func.isRequired,
+    /**
+     * See docs: http://flickr.github.io/justified-layout/
+     */
+    containerWidth: PropTypes.number.isRequired,
+    containerPadding: PropTypes.number.isRequired,
+    boxSpacing: PropTypes.oneOfType([
+      React.PropTypes.object,
+      React.PropTypes.number,
+    ]),
+    fullWidthBreakoutRowCadence: PropTypes.oneOfType([
+      React.PropTypes.bool,
+      React.PropTypes.number,
+    ]),
+    targetRowHeight: PropTypes.number.isRequired,
+    targetRowHeightTolerance: PropTypes.number.isRequired,
+  }
+
+  static defaultProps = {
+    filterType: 'day',
+    showGallery: false,
+    containerWidth: document.body.clientWidth,
+    containerPadding: 0,
+    targetRowHeight: 180,
+    targetRowHeightTolerance: 0.25,
+    boxSpacing: 4,
+    fullWidthBreakoutRowCadence: false,
+  }
 
   constructor(props) {
     super(props);
     const geometry = this.generateGeo(props);
+    this._pixelRatio = window.devicePixelRatio;
     this.state = {
       isGroupSelect: false,
       geometry,
       pswpItems: props.showGallery ? this.generateItems(props, geometry) : undefined,
     };
-    this.handleToggleSelectGroup = this.handleToggleSelectGroup.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -101,14 +142,14 @@ export class JustifiedGroupLayout extends PureComponent {
   }
 
   generateItems(props, geometry) {
-    const { domain, containerWidth, devicePixelRatio, groupImages } = props;
+    const { containerWidth, groupImages } = props;
     const pswpItems = groupImages.map((image, i) => {
       const src = `${domain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
-      const realMWidth = Math.round(geometry.boxes[i].width * devicePixelRatio);
-      const realMHeight = Math.round(geometry.boxes[i].height * devicePixelRatio);
+      const realMWidth = Math.round(geometry.boxes[i].width * this._pixelRatio);
+      const realMHeight = Math.round(geometry.boxes[i].height * this._pixelRatio);
       // generate based on Qiniu imageView2 mode 3 API
       // more details see https://developer.qiniu.com/dora/api/basic-processing-images-imageview2
-      const minWidth = Math.round(containerWidth * devicePixelRatio);
+      const minWidth = Math.round(containerWidth * this._pixelRatio);
       const minHeight = Math.round((image.dimension[1] / image.dimension[0]) * minWidth);
       return ({
         _id: image._id,
@@ -121,7 +162,7 @@ export class JustifiedGroupLayout extends PureComponent {
     return pswpItems;
   }
 
-  handleToggleSelectGroup() {
+  _handleToggleSelectGroup = () => {
     const { groupName, isEditing, groupImages } = this.props;
     if (isEditing) {
       if (this.state.isGroupSelect) {
@@ -140,7 +181,7 @@ export class JustifiedGroupLayout extends PureComponent {
     }
   }
 
-  handleOpenGallery(i) {
+  _handleOpenGallery = (i) => {
     const { showGallery } = this.props;
     if (showGallery) {
       this.props.photoSwipeOpen(
@@ -186,7 +227,7 @@ export class JustifiedGroupLayout extends PureComponent {
 
     return (
       <Wrapper style={{ height: this.state.geometry.containerHeight }}>
-        <Title onTouchTap={this.handleToggleSelectGroup}>
+        <Title onTouchTap={this._handleToggleSelectGroup}>
           { isEditing && <JustifiedSelectIcon activate={this.state.isGroupSelect} /> }
           <h4>{groupTime}</h4>
           <span>{groupImages.length}</span>
@@ -202,7 +243,7 @@ export class JustifiedGroupLayout extends PureComponent {
               total={total}
               groupTotal={groupImages.length}
               ref={(node) => { this[`thumbnail${i}`] = node; }}
-              onImageClick={() => this.handleOpenGallery(i)}
+              onImageClick={() => this._handleOpenGallery(i)}
             />
           ))
         }
@@ -210,52 +251,6 @@ export class JustifiedGroupLayout extends PureComponent {
     );
   }
 }
-
-JustifiedGroupLayout.displayName = 'JustifiedGroupLayout';
-
-JustifiedGroupLayout.defaultProps = {
-  domain: Meteor.settings.public.imageDomain,
-  devicePixelRatio: window.devicePixelRatio,
-  filterType: 'day',
-  showGallery: false,
-  containerWidth: document.body.clientWidth,
-  containerPadding: 0,
-  targetRowHeight: 180,
-  targetRowHeightTolerance: 0.25,
-  boxSpacing: 4,
-  fullWidthBreakoutRowCadence: false,
-};
-
-JustifiedGroupLayout.propTypes = {
-  domain: PropTypes.string.isRequired,
-  devicePixelRatio: PropTypes.number.isRequired,
-  isEditing: PropTypes.bool.isRequired,
-  filterType: PropTypes.oneOf(['day', 'month', 'year']).isRequired,
-  showGallery: PropTypes.bool.isRequired,
-  groupName: PropTypes.string.isRequired,
-  groupImages: PropTypes.array.isRequired,
-  total: PropTypes.number.isRequired,
-  // Below Pass from Redux
-  group: PropTypes.object.isRequired,
-  counter: PropTypes.number.isRequired,
-  photoSwipeOpen: PropTypes.func.isRequired,
-  selectGroupCounter: PropTypes.func.isRequired,
-  /**
-   * See docs: http://flickr.github.io/justified-layout/
-   */
-  containerWidth: PropTypes.number.isRequired,
-  containerPadding: PropTypes.number.isRequired,
-  boxSpacing: PropTypes.oneOfType([
-    React.PropTypes.object,
-    React.PropTypes.number,
-  ]),
-  fullWidthBreakoutRowCadence: PropTypes.oneOfType([
-    React.PropTypes.bool,
-    React.PropTypes.number,
-  ]),
-  targetRowHeight: PropTypes.number.isRequired,
-  targetRowHeightTolerance: PropTypes.number.isRequired,
-};
 
 const mapStateToProps = (state) => ({
   group: state.selectCounter.group,

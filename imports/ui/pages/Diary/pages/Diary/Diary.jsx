@@ -2,7 +2,6 @@ import _ from 'lodash';
 import moment from 'moment';
 import { Meteor } from 'meteor/meteor';
 import React, { Component, PropTypes } from 'react';
-import { browserHistory } from 'react-router';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import IconButton from 'material-ui/IconButton';
 import ChevronLeftIcon from 'material-ui/svg-icons/navigation/chevron-left';
@@ -12,7 +11,20 @@ import Loading from '/imports/ui/components/Loader/Loading.jsx';
 import FloatButton from '/imports/ui/components/FloatButton/FloatButton.jsx';
 import DiaryHolder from '../../components/DiaryHolder/DiaryHolder.jsx';
 
+const sourceDomain = Meteor.settings.public.sourceDomain;
+
 export default class DiaryPage extends Component {
+  static propTypes = {
+    // Below Pass from React-Router
+    history: PropTypes.object.isRequired,
+    // Below Pass from Database and Redux
+    User: PropTypes.object,
+    dataIsReady: PropTypes.bool.isRequired,
+    date: PropTypes.instanceOf(Date).isRequired,
+    diarys: PropTypes.array.isRequired,
+    diaryOpen: PropTypes.func.isRequired,
+    snackBarOpen: PropTypes.func.isRequired,
+  }
 
   constructor(props) {
     super(props);
@@ -20,24 +32,23 @@ export default class DiaryPage extends Component {
       navTitle: undefined,
       iconColor: '#fff',
     };
-    this.handleScroll = this.handleScroll.bind(this);
   }
 
   componentDidMount() {
-    window.addEventListener('scroll', this.handleScroll, false);
+    window.addEventListener('scroll', this._handleScroll, false);
   }
 
   componentWillUnmount() {
-    window.removeEventListener('scroll', this.handleScroll, false);
+    window.removeEventListener('scroll', this._handleScroll, false);
   }
 
-  handleScroll() {
+  _handleScroll = () => {
     if (window.scrollY > 292) this.setState({ navTitle: '返回顶部', iconColor: '#222' });
     else this.setState({ navTitle: '', iconColor: '#fff' });
   }
 
   renderContent() {
-    const { sourceDomain, date, diarys } = this.props;
+    const { history, date, diarys } = this.props;
     const currentYear = date.getFullYear();
     const currentMonth = date.getMonth();
     return (
@@ -51,14 +62,14 @@ export default class DiaryPage extends Component {
             <IconButton
               style={{ padding: 0 }}
               iconStyle={{ width: '32px', height: '32px', color: '#fff' }}
-              onTouchTap={() => browserHistory.replace(`/diary?year=${currentYear - 1}`)}
+              onTouchTap={() => history.replace(`/diary?year=${currentYear - 1}`)}
             ><ChevronLeftIcon />
             </IconButton>
             <h1>{currentYear}</h1>
             <IconButton
               style={{ padding: 0 }}
               iconStyle={{ width: '32px', height: '32px', color: '#fff' }}
-              onTouchTap={() => browserHistory.replace(`/diary?year=${currentYear + 1}`)}
+              onTouchTap={() => history.replace(`/diary?year=${currentYear + 1}`)}
             ><ChevronRightIcon />
             </IconButton>
           </div>
@@ -68,7 +79,7 @@ export default class DiaryPage extends Component {
                 <span
                   key={i + 1}
                   className={currentMonth === i ? 'diary__month_select' : ''}
-                  onTouchTap={() => browserHistory.replace(`/diary?year=${currentYear}&month=${i + 1}`)}
+                  onTouchTap={() => history.replace(`/diary?year=${currentYear}&month=${i + 1}`)}
                 >
                   {i + 1}
                 </span>
@@ -112,17 +123,14 @@ export default class DiaryPage extends Component {
   }
 
   render() {
-    const {
-      navTitle,
-      iconColor,
-    } = this.state;
+    const { history } = this.props;
     return (
       <div className="container">
         <SecondaryNavHeader
           style={{ backgroundColor: 'transparent' }}
-          title={navTitle}
-          titleStyle={navTitle ? { color: '#222' } : {}}
-          iconColor={iconColor}
+          title={this.state.navTitle}
+          titleStyle={this.state.navTitle ? { color: '#222' } : null}
+          iconColor={this.state.iconColor}
         />
         <main className="content">
           {
@@ -132,26 +140,9 @@ export default class DiaryPage extends Component {
           }
           <DiaryHolder />
         </main>
-        <FloatButton onBtnClick={() => browserHistory.push('/diary/write')} />
+        <FloatButton onBtnClick={() => history.push('/diary/write')} />
       </div>
     );
   }
 
 }
-
-DiaryPage.displayName = 'DiaryPage';
-
-DiaryPage.defaultProps = {
-  sourceDomain: Meteor.settings.public.sourceDomain,
-};
-
-DiaryPage.propTypes = {
-  User: PropTypes.object,
-  sourceDomain: PropTypes.string.isRequired,
-  // Below Pass from Database and Redux
-  dataIsReady: PropTypes.bool.isRequired,
-  date: PropTypes.instanceOf(Date).isRequired,
-  diarys: PropTypes.array.isRequired,
-  diaryOpen: PropTypes.func.isRequired,
-  snackBarOpen: PropTypes.func.isRequired,
-};

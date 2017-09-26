@@ -1,5 +1,4 @@
 import React, { Component, PropTypes } from 'react';
-import { browserHistory } from 'react-router';
 import { Meteor } from 'meteor/meteor';
 import IconMenu from 'material-ui/IconMenu';
 import IconButton from 'material-ui/IconButton';
@@ -8,7 +7,7 @@ import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import { purple500 } from 'material-ui/styles/colors.js';
 import { Notes } from '/imports/api/notes/note.js';
 import { readNote, readAllNotes } from '/imports/api/notes/methods.js';
-import { makeCancelable } from '/imports/utils/utils.js';
+import { makeCancelable } from '/imports/utils';
 import Infinity from '/imports/ui/components/Infinity/Infinity.jsx';
 import SecondaryNavHeader from '/imports/ui/components/NavHeader/Secondary/Secondary.jsx';
 import EmptyHolder from '/imports/ui/components/EmptyHolder/EmptyHolder.jsx';
@@ -17,6 +16,18 @@ import BibleDialog from '/imports/ui/components/BibleDialog/BibleDialog.jsx';
 import NoteHolder from '/imports/ui/components/NoteHolder/NoteHolder.jsx';
 
 export default class NotePage extends Component {
+  static propTypes = {
+    // Below Pass from Database and Redux
+    User: PropTypes.object.isRequired,
+    dataIsReady: PropTypes.bool.isRequired,
+    limit: PropTypes.number.isRequired,
+    initialNotes: PropTypes.array.isRequired,
+    bibleDialogOpen: PropTypes.bool.isRequired,
+    bible: PropTypes.object, // only required when bibleDialogOpen true
+    snackBarOpen: PropTypes.func.isRequired,
+    // Below Pass from React-Router
+    history: PropTypes.object.isRequired,
+  }
 
   constructor(props) {
     super(props);
@@ -25,9 +36,6 @@ export default class NotePage extends Component {
       isLoading: false,
       notes: props.initialNotes,
     };
-    this.handleLoadNotes = this.handleLoadNotes.bind(this);
-    this.handleReadNote = this.handleReadNote.bind(this);
-    this.handleReadAll = this.handleReadAll.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -47,7 +55,7 @@ export default class NotePage extends Component {
     }
   }
 
-  handleLoadNotes() {
+  _handleLoadNotes = () => {
     const { limit } = this.props;
     const { notes } = this.state;
     const skip = notes.length;
@@ -63,14 +71,13 @@ export default class NotePage extends Component {
     });
 
     this.loadPromise = makeCancelable(loadPromise);
-    this.loadPromise
-      .promise
-      .then(() => {
-        this.setState({ isLoading: false });
-      })
-      .catch((err) => {
-        throw new Meteor.Error(err);
-      });
+    this.loadPromise.promise
+    .then(() => {
+      this.setState({ isLoading: false });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
   }
 
   /**
@@ -78,7 +85,7 @@ export default class NotePage extends Component {
    * @param {Object} e  - onTouchTap event object
    * @param {String} id - note id which has been read
    */
-  handleReadNote(e, id) {
+  _handleReadNote = (e, id) => {
     e.preventDefault();
     readNote.callPromise({ noteId: id })
     .then(() => {
@@ -89,13 +96,12 @@ export default class NotePage extends Component {
       this.setState({ notes: trueNotes });
     })
     .catch((err) => {
-      console.log(err); // eslint-disable-line no-console
+      console.log(err);
       this.props.snackBarOpen(err.reason || '发生未知错误');
-      throw new Meteor.Error(err);
     });
   }
 
-  handleReadAll() {
+  _handleReadAll = () => {
     if (this.state.notes.length === 0) {
       this.props.snackBarOpen('您没有未读的信息');
       return;
@@ -106,9 +112,8 @@ export default class NotePage extends Component {
       this.setState({ isProcessing: false, notes: [] });
     })
     .catch((err) => {
-      console.log(err); // eslint-disable-line no-console
+      console.log(err);
       this.props.snackBarOpen(err.reason || '发生未知错误');
-      throw new Meteor.Error(err);
     });
   }
 
@@ -118,6 +123,7 @@ export default class NotePage extends Component {
       User,
       bibleDialogOpen,
       bible,
+      history,
     } = this.props;
     return (
       <div className="container">
@@ -132,15 +138,15 @@ export default class NotePage extends Component {
             >
               <MenuItem
                 primaryText="全部标记为已读"
-                onTouchTap={this.handleReadAll}
+                onTouchTap={this._handleReadAll}
               />
               <MenuItem
                 primaryText="我发出的所有信息"
-                onTouchTap={() => browserHistory.push(`/note/${User.username}/sent`)}
+                onTouchTap={() => history.push(`/note/${User.username}/sent`)}
               />
               <MenuItem
                 primaryText="我收到的所有信息"
-                onTouchTap={() => browserHistory.push(`/note/${User.username}/received`)}
+                onTouchTap={() => history.push(`/note/${User.username}/received`)}
               />
             </IconMenu>
           }
@@ -154,7 +160,7 @@ export default class NotePage extends Component {
               : (
                 <div className="content__note">
                   <Infinity
-                    onInfinityLoad={this.handleLoadNotes}
+                    onInfinityLoad={this._handleLoadNotes}
                     isLoading={this.state.isLoading}
                     offsetToBottom={100}
                   >
@@ -166,7 +172,7 @@ export default class NotePage extends Component {
                             key={i}
                             avatar={senderObj.profile.avatar}
                             note={note}
-                            onReadBtnClick={(e) => this.handleReadNote(e, note._id)}
+                            onReadBtnClick={(e) => this._handleReadNote(e, note._id)}
                           />
                         );
                       })
@@ -186,16 +192,3 @@ export default class NotePage extends Component {
   }
 
 }
-
-NotePage.displayName = 'NotePage';
-
-NotePage.propTypes = {
-  User: PropTypes.object.isRequired,
-  // Below Pass from Database and Redux
-  dataIsReady: PropTypes.bool.isRequired,
-  limit: PropTypes.number.isRequired,
-  initialNotes: PropTypes.array.isRequired,
-  bibleDialogOpen: PropTypes.bool.isRequired,
-  bible: PropTypes.object, // only required when bibleDialogOpen true
-  snackBarOpen: PropTypes.func.isRequired,
-};

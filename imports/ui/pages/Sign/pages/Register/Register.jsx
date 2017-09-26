@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import React, { Component, PropTypes } from 'react';
-import { browserHistory } from 'react-router';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import { checkCode, useCode } from '/imports/api/codes/methods.js';
@@ -10,6 +9,13 @@ import signHOC from '../../components/signHOC.js';
 import styles from '../../sign.style.js';
 
 class RegisterPage extends Component {
+  static propTypes = {
+    userLogin: PropTypes.func.isRequired,
+    snackBarOpen: PropTypes.func.isRequired,
+    match: PropTypes.object.isRequired,
+    location: PropTypes.object.isRequired,
+    history: PropTypes.object.isRequired,
+  }
 
   constructor(props) {
     super(props);
@@ -17,11 +23,9 @@ class RegisterPage extends Component {
       isProcessing: false,
       processMsg: '',
     };
-    this.handleRegister = this.handleRegister.bind(this);
-    this.handleLoaderTimeout = this.handleLoaderTimeout.bind(this);
   }
 
-  handleRegister(e) {
+  _handleRegister = (e) => {
     e.preventDefault();
 
     const email = this.emailField.input.value;
@@ -50,7 +54,6 @@ class RegisterPage extends Component {
         throw new Meteor.Error(403, '此邀请码不存在或已被使用');
       }
       return Meteor.callPromise('Accounts.createUser', { username, email, password });
-      // return createUser.callPromise({ username, password });
     })
     .then(() => useCode.callPromise({ codeNo: code }))
     .then(() => {
@@ -58,19 +61,20 @@ class RegisterPage extends Component {
       return loginWithPassword(username, password);
     })
     .then(() => {
+      const userObj = Meteor.user();
       this.setState({ isProcessing: false, processMsg: '' });
-      browserHistory.replace('/');
+      this.props.userLogin(userObj);
+      this.props.history.replace('/');
       this.props.snackBarOpen('注册成功');
     })
     .catch((err) => {
+      console.log(err);
       this.setState({ isProcessing: false, processMsg: '' });
-      this.props.snackBarOpen(err.reason || '注册失败');
-      console.log(err); // eslint-disable-line no-console
-      throw new Meteor.Error(err);
+      this.props.snackBarOpen(`注册失败 ${err.reason}`);
     });
   }
 
-  handleLoaderTimeout() {
+  _handleLoaderTimeout = () => {
     this.setState({ isProcessing: false, processMsg: '' });
     this.props.snackBarOpen('发送邮件失败');
   }
@@ -83,7 +87,7 @@ class RegisterPage extends Component {
           <Loader
             open={this.state.isProcessing}
             message={this.state.processMsg}
-            onTimeout={this.handleLoaderTimeout}
+            onTimeout={this._handleLoaderTimeout}
           />
           <div className="content__register">
             <header className="register__logo">Gallery +</header>
@@ -122,7 +126,7 @@ class RegisterPage extends Component {
                 label="注册"
                 labelStyle={styles.label}
                 buttonStyle={styles.logBtn}
-                onTouchTap={this.handleRegister}
+                onTouchTap={this._handleRegister}
                 fullWidth
               />
               <div className="separator">或</div>
@@ -130,7 +134,7 @@ class RegisterPage extends Component {
                 label="已有账号?"
                 labelStyle={styles.label}
                 buttonStyle={styles.regBtn}
-                onTouchTap={() => browserHistory.push('/login')}
+                onTouchTap={() => this.props.history.push('/login')}
                 fullWidth
               />
             </section>
@@ -141,11 +145,5 @@ class RegisterPage extends Component {
   }
 
 }
-
-RegisterPage.displayName = 'RegisterPage';
-
-RegisterPage.propTypes = {
-  snackBarOpen: PropTypes.func.isRequired,
-};
 
 export default signHOC(RegisterPage);

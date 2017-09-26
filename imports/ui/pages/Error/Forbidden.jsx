@@ -1,11 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import React, { PropTypes } from 'react';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import PrimaryNavHeader from '../../components/NavHeader/Primary/Primary.jsx';
 
-const Forbidden = ({ User, location, sourceDomain }) => (
+const sourceDomain = Meteor.settings.public.sourceDomain;
+
+const Forbidden = ({ location }) => (
   <div className="container">
-    <PrimaryNavHeader User={User} />
+    <PrimaryNavHeader />
     <main className="content">
       <div className="content__error">
         <div className="error__container">
@@ -32,16 +34,8 @@ const Forbidden = ({ User, location, sourceDomain }) => (
   </div>
 );
 
-Forbidden.displayName = 'Forbidden';
-
-Forbidden.defaultProps = {
-  sourceDomain: Meteor.settings.public.sourceDomain,
-};
-
 Forbidden.propTypes = {
-  User: PropTypes.object,
   location: PropTypes.object,
-  sourceDomain: PropTypes.string.isRequired,
 };
 
 export default Forbidden;

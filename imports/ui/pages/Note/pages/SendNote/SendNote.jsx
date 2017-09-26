@@ -1,6 +1,4 @@
 import React, { Component, PropTypes } from 'react';
-import { browserHistory } from 'react-router';
-import { Meteor } from 'meteor/meteor';
 import Delta from 'quill-delta';
 import Avatar from 'material-ui/Avatar';
 import Chip from 'material-ui/Chip';
@@ -21,6 +19,17 @@ import Loading from '/imports/ui/components/Loader/Loading.jsx';
 import styles from './SendNote.style.js';
 
 export default class SendNotePage extends Component {
+  static propTypes = {
+    // Below Pass from Database
+    dataIsReady: PropTypes.bool.isRequired,
+    initialReceiver: PropTypes.object,
+    otherUsers: PropTypes.array.isRequired,
+    // Below Pass from Redux
+    User: PropTypes.object.isRequired,
+    snackBarOpen: PropTypes.func.isRequired,
+    // Below Pass from React-Router
+    history: PropTypes.object.isRequired,
+  }
 
   constructor(props) {
     super(props);
@@ -33,8 +42,6 @@ export default class SendNotePage extends Component {
       content: '',
       sendAt: new Date(),
     };
-    this.handleGoBack = this.handleGoBack.bind(this);
-    this.handleSentNote = this.handleSentNote.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -113,15 +120,15 @@ export default class SendNotePage extends Component {
     fileInput.click();
   }
 
-  handleGoBack() {
+  _handleGoBack = () => {
     if (this.state.content) {
       this.setState({ isAlertOpen: true });
       return;
     }
-    browserHistory.goBack();
+    this.props.history.goBack();
   }
 
-  handleSentNote() {
+  _handleSentNote = () => {
     if (!this.state.receiver) {
       this.props.snackBarOpen('请选择接受用户');
       return;
@@ -137,14 +144,13 @@ export default class SendNotePage extends Component {
     })
     .then(() => {
       // because go to another component so we do not need set inital state
-      browserHistory.goBack();
+      this.props.history.goBack();
       this.props.snackBarOpen('发送成功');
     })
     .catch((err) => {
+      console.log(err);
       this.setState({ isProcessing: false, processMsg: '' });
-      console.log(err); // eslint-disable-line no-console
-      this.props.snackBarOpen(err.reason || '发送失败');
-      throw new Meteor.Error(err);
+      this.props.snackBarOpen(`发送失败 ${err.reason}`);
     });
   }
 
@@ -208,8 +214,8 @@ export default class SendNotePage extends Component {
       <div className="container">
         <SecondaryNavHeader
           title="发送信息"
-          iconElementLeft={<IconButton onTouchTap={this.handleGoBack}><ArrowBackIcon /></IconButton>}
-          iconElementRight={<IconButton onTouchTap={this.handleSentNote}><SendIcon /></IconButton>}
+          iconElementLeft={<IconButton onTouchTap={this._handleGoBack}><ArrowBackIcon /></IconButton>}
+          iconElementRight={<IconButton onTouchTap={this._handleSentNote}><SendIcon /></IconButton>}
         />
         <main className="content">
           <Loader
@@ -233,7 +239,7 @@ export default class SendNotePage extends Component {
               />,
               <FlatButton
                 label="确认"
-                onTouchTap={() => browserHistory.goBack()}
+                onTouchTap={() => this.props.history.goBack()}
                 primary
               />,
             ]}
@@ -247,15 +253,3 @@ export default class SendNotePage extends Component {
     );
   }
 }
-
-SendNotePage.displayName = 'SendNotePage';
-
-SendNotePage.propTypes = {
-  User: PropTypes.object,
-  // Below Pass from Database
-  dataIsReady: PropTypes.bool.isRequired,
-  initialReceiver: PropTypes.object,
-  otherUsers: PropTypes.array.isRequired,
-  // Below Pass from Redux
-  snackBarOpen: PropTypes.func.isRequired,
-};

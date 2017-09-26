@@ -94,6 +94,7 @@ if (Meteor.isServer) {
     'Qiniu.getUptoken',
     'Qiniu.move',
     'Qiniu.remove',
+    'Qiniu.stat',
   ];
 
   // Only allow 2 operations per connection per 5 second

@@ -5,7 +5,7 @@ import { Meteor } from 'meteor/meteor';
 import { Factory } from 'meteor/dburles:factory';
 import { PublicationCollector } from 'meteor/johanbrook:publication-collector';
 import { assert, expect } from 'meteor/practicalmeteor:chai';
-import { getRandomInt, limitStrLength } from '/imports/utils/utils.js';
+import { getRandomInt, limitStrLength } from '/imports/utils';
 import { insertCollection, removeCollection, lockCollection, mutateCollectionCover } from './methods.js';
 import { Users, defaultUserProfile } from '../users/user.js';
 import { Images } from '../images/image.js';

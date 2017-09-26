@@ -1,4 +1,5 @@
 import moment from 'moment';
+import queryString from 'query-string';
 import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
 import { bindActionCreators } from 'redux';
@@ -9,8 +10,7 @@ import { diaryOpen, snackBarOpen } from '/imports/ui/redux/actions/index.js';
 import DiaryPage from './Diary.jsx';
 
 const MeteorContainer = createContainer(({ User, location }) => {
-  const { username } = User;
-  const { query } = location;
+  const query = queryString.parse(location.search);
 
   let start;
   let end;
@@ -25,15 +25,19 @@ const MeteorContainer = createContainer(({ User, location }) => {
   }
 
   const diaryHandler = Meteor.subscribe('Diarys.own');
-  const dataIsReady = diaryHandler.ready();
+  const dataIsReady = !!User && diaryHandler.ready();
 
-  const diarys = Diarys.find(
-    {
-      user: username,
-      createdAt: { $gte: start, $lt: end },
-    },
-    { sort: { createdAt: -1 } }
-  ).fetch();
+  let diarys = [];
+
+  if (User) {
+    diarys = Diarys.find(
+      {
+        user: User.username,
+        createdAt: { $gte: start, $lt: end },
+      },
+      { sort: { createdAt: -1 } }
+    ).fetch();
+  }
 
   return {
     dataIsReady,
@@ -42,9 +46,13 @@ const MeteorContainer = createContainer(({ User, location }) => {
   };
 }, DiaryPage);
 
+const mapStateToProps = (state) => ({
+  User: state.User,
+});
+
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   diaryOpen,
   snackBarOpen,
 }, dispatch);
 
-export default connect(null, mapDispatchToProps)(MeteorContainer);
+export default connect(mapStateToProps, mapDispatchToProps)(MeteorContainer);

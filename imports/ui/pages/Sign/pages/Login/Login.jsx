@@ -1,13 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import React, { Component, PropTypes } from 'react';
-import { browserHistory } from 'react-router';
 import CircularProgress from 'material-ui/CircularProgress';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
-import { validateEmail } from '/imports/utils/utils.js';
+import { validateEmail } from '/imports/utils';
 import PrimaryNavHeader from '/imports/ui/components/NavHeader/Primary/Primary.jsx';
 import Loader from '/imports/ui/components/Loader/Loader.jsx';
 import signHOC from '../../components/signHOC.js';
@@ -15,6 +14,12 @@ import styles from '../../sign.style.js';
 
 // TODO add Recaptch in this Login page component
 class LoginPage extends Component {
+  static propTypes = {
+    userLogin: PropTypes.func.isRequired,
+    snackBarOpen: PropTypes.func.isRequired,
+    location: PropTypes.object.isRequired,
+    history: PropTypes.object.isRequired,
+  }
 
   constructor(props) {
     super(props);
@@ -24,12 +29,19 @@ class LoginPage extends Component {
       resetDialog: false,
       email: '',
     };
-    this.handleLogin = this.handleLogin.bind(this);
-    this.handleSentResetEmail = this.handleSentResetEmail.bind(this);
-    this.handleLoaderTimeout = this.handleLoaderTimeout.bind(this);
   }
 
-  handleLogin() {
+  componentDidMount() {
+    const { location } = this.props;
+    if (
+      location.state !== undefined &&
+      location.state.message !== undefined
+    ) {
+      this.props.snackBarOpen(location.state.message);
+    }
+  }
+
+  _handleLogin = () => {
     const usr = this.usrInput.input.value;
     const pwd = this.pwdInput.input.value;
 
@@ -42,19 +54,20 @@ class LoginPage extends Component {
 
     loginWithPassword(usr, pwd)
     .then(() => {
+      const userObj = Meteor.user();
       this.setState({ isProcessing: false, processMsg: '' });
-      browserHistory.replace('/');
+      this.props.userLogin(userObj);
+      this.props.history.replace('/');
       this.props.snackBarOpen('登陆成功');
     })
     .catch((err) => {
+      console.log(err);
       this.setState({ isProcessing: false, processMsg: '' });
-      this.props.snackBarOpen(err.reason || '登录失败');
-      console.log(err); // eslint-disable-line no-console
-      throw new Meteor.Error(err);
+      this.props.snackBarOpen(`登录失败 ${err.reason}`);
     });
   }
 
-  handleSentResetEmail() {
+  _handleSentResetEmail = () => {
     const { email } = this.state;
 
     if (!validateEmail(email)) {
@@ -72,14 +85,13 @@ class LoginPage extends Component {
       this.props.snackBarOpen('发送重置密码邮件成功');
     })
     .catch((err) => {
+      console.log(err);
       this.setState({ isProcessing: false, processMsg: '', resetDialog: false, email: '' });
       this.props.snackBarOpen(err.reason || '发送重置密码邮件失败');
-      console.log(err); // eslint-disable-line no-console
-      throw new Meteor.Error(err);
     });
   }
 
-  handleLoaderTimeout() {
+  _handleLoaderTimeout = () => {
     this.setState({ isProcessing: false, processMsg: '' });
     this.props.snackBarOpen('发送邮件失败');
   }
@@ -92,7 +104,7 @@ class LoginPage extends Component {
           <Loader
             open={this.state.isProcessing}
             message={this.state.processMsg}
-            onTimeout={this.handleLoaderTimeout}
+            onTimeout={this._handleLoaderTimeout}
           />
           <div className="content__login">
             <header className="login__logo">Gallery +</header>
@@ -114,7 +126,7 @@ class LoginPage extends Component {
                 label="立即登录"
                 labelStyle={styles.label}
                 buttonStyle={styles.logBtn}
-                onTouchTap={this.handleLogin}
+                onTouchTap={this._handleLogin}
                 fullWidth
               />
               <div className="separator">或</div>
@@ -122,7 +134,7 @@ class LoginPage extends Component {
                 label="创建账号"
                 labelStyle={styles.label}
                 buttonStyle={styles.regBtn}
-                onTouchTap={() => browserHistory.push('/register')}
+                onTouchTap={() => this.props.history.push('/register')}
                 fullWidth
               />
             </section>
@@ -144,7 +156,7 @@ class LoginPage extends Component {
               />,
               <FlatButton
                 label="确认发送"
-                onTouchTap={this.handleSentResetEmail}
+                onTouchTap={this._handleSentResetEmail}
                 disabled={this.state.isProcessing}
                 primary
               />,
@@ -183,11 +195,5 @@ class LoginPage extends Component {
   }
 
 }
-
-LoginPage.displayName = 'LoginPage';
-
-LoginPage.propTypes = {
-  snackBarOpen: PropTypes.func.isRequired,
-};
 
 export default signHOC(LoginPage);

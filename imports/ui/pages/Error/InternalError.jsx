@@ -1,11 +1,13 @@
 import { Meteor } from 'meteor/meteor';
-import React, { PropTypes } from 'react';
-import { Link } from 'react-router';
+import React from 'react';
+import { Link } from 'react-router-dom';
 import PrimaryNavHeader from '../../components/NavHeader/Primary/Primary.jsx';
 
-const InternalError = ({ User, sourceDomain }) => (
+const sourceDomain = Meteor.settings.public.sourceDomain;
+
+const InternalError = () => (
   <div className="container">
-    <PrimaryNavHeader User={User} />
+    <PrimaryNavHeader />
     <main className="content">
       <div className="content__error">
         <div className="error__container">
@@ -31,16 +33,5 @@ const InternalError = ({ User, sourceDomain }) => (
     </main>
   </div>
 );
-
-InternalError.displayName = 'InternalError';
-
-InternalError.defaultProps = {
-  sourceDomain: Meteor.settings.public.sourceDomain,
-};
-
-InternalError.propTypes = {
-  User: PropTypes.object,
-  sourceDomain: PropTypes.string.isRequired,
-};
 
 export default InternalError;

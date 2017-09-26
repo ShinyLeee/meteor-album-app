@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import React, { Component, PropTypes } from 'react';
 import { Notes } from '/imports/api/notes/note.js';
-import { makeCancelable } from '/imports/utils/utils.js';
+import { makeCancelable } from '/imports/utils';
 import Infinity from '/imports/ui/components/Infinity/Infinity.jsx';
 import SecondaryNavHeader from '/imports/ui/components/NavHeader/Secondary/Secondary.jsx';
 import EmptyHolder from '/imports/ui/components/EmptyHolder/EmptyHolder.jsx';
@@ -10,6 +10,15 @@ import BibleDialog from '/imports/ui/components/BibleDialog/BibleDialog.jsx';
 import NoteHolder from '/imports/ui/components/NoteHolder/NoteHolder.jsx';
 
 export default class AllNotesPage extends Component {
+  static propTypes = {
+    // Below Pass from Database and Redux
+    User: PropTypes.object.isRequired,
+    dataIsReady: PropTypes.bool.isRequired,
+    limit: PropTypes.number.isRequired,
+    initialAllNotes: PropTypes.array.isRequired,
+    bibleDialogOpen: PropTypes.bool.isRequired,
+    bible: PropTypes.object, // only required when bibleDialogOpen true
+  }
 
   constructor(props) {
     super(props);
@@ -17,7 +26,6 @@ export default class AllNotesPage extends Component {
       isLoading: false,
       notes: props.initialAllNotes,
     };
-    this.handleLoadNotes = this.handleLoadNotes.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -37,7 +45,7 @@ export default class AllNotesPage extends Component {
     }
   }
 
-  handleLoadNotes() {
+  _handleLoadNotes = () => {
     const { limit } = this.props;
     const { notes } = this.state;
     const skip = notes.length;
@@ -53,14 +61,13 @@ export default class AllNotesPage extends Component {
     });
 
     this.loadPromise = makeCancelable(loadPromise);
-    this.loadPromise
-      .promise
-      .then(() => {
-        this.setState({ isLoading: false });
-      })
-      .catch((err) => {
-        throw new Meteor.Error(err);
-      });
+    this.loadPromise.promise
+    .then(() => {
+      this.setState({ isLoading: false });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
   }
 
   render() {
@@ -76,7 +83,7 @@ export default class AllNotesPage extends Component {
               : (
                 <div className="content__allNotes">
                   <Infinity
-                    onInfinityLoad={this.handleLoadNotes}
+                    onInfinityLoad={this._handleLoadNotes}
                     isLoading={this.state.isLoading}
                     offsetToBottom={100}
                   >
@@ -108,15 +115,3 @@ export default class AllNotesPage extends Component {
   }
 
 }
-
-AllNotesPage.displayName = 'AllNotesPage';
-
-AllNotesPage.propTypes = {
-  User: PropTypes.object.isRequired,
-  // Below Pass from Database and Redux
-  dataIsReady: PropTypes.bool.isRequired,
-  limit: PropTypes.number.isRequired,
-  initialAllNotes: PropTypes.array.isRequired,
-  bibleDialogOpen: PropTypes.bool.isRequired,
-  bible: PropTypes.object, // only required when bibleDialogOpen true
-};

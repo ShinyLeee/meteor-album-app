@@ -26,7 +26,7 @@ const MeteorContainer = createContainer(() => {
 }, RecyclePage);
 
 const mapStateToProps = (state) => ({
-  uptoken: state.uptoken,
+  User: state.User,
   selectImages: state.selectCounter.selectImages,
   counter: state.selectCounter.counter,
 });

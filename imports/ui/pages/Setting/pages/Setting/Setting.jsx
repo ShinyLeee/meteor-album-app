@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import axios from 'axios';
 import React, { Component, PropTypes } from 'react';
-import { browserHistory } from 'react-router';
 import { List, ListItem } from 'material-ui/List';
 import TextField from 'material-ui/TextField';
 import Subheader from 'material-ui/Subheader';
@@ -28,11 +27,22 @@ import styles from '../../Setting.style.js';
 
 let initialSettings;
 
+const domain = Meteor.settings.public.imageDomain;
+
 export default class SettingPage extends Component {
+  static propTypes = {
+    // Below Pass from Redux
+    User: PropTypes.object.isRequired,
+    token: PropTypes.string.isRequired,
+    snackBarOpen: PropTypes.func,
+    // Below Pass from React-Router
+    history: PropTypes.object.isRequired,
+  }
 
   constructor(props) {
     super(props);
     const initialUser = props.User;
+    this._uploadURL = window.location.protocol === 'https:' ? 'https://up.qbox.me/' : 'http://upload.qiniu.com';
     this.state = {
       location: 'setting',
       isProcessing: false,
@@ -49,14 +59,9 @@ export default class SettingPage extends Component {
       allowMsg: initialUser.profile.settings.allowMsg,
     };
     initialSettings = this.state;
-    this.handleDiscard = this.handleDiscard.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleSetCover = this.handleSetCover.bind(this);
-    this.handleSetAvatar = this.handleSetAvatar.bind(this);
-    this.handleLoaderTimeout = this.handleLoaderTimeout.bind(this);
   }
 
-  handleDiscard() {
+  _handleDiscard = () => {
     const { User } = this.props;
     const { avatar, cover } = this.state;
     const keys = [];
@@ -83,7 +88,7 @@ export default class SettingPage extends Component {
     this.setState(initialSettings);
   }
 
-  handleSubmit() {
+  _handleSubmit = () => {
     updateProfile.callPromise({
       nickname: this.state.nickname,
       intro: this.state.intro,
@@ -106,7 +111,7 @@ export default class SettingPage extends Component {
     });
   }
 
-  handleSetCover(e) {
+  _handleSetCover = (e) => {
     this.setState({
       isEditing: true,
       isProcessing: true,
@@ -119,11 +124,11 @@ export default class SettingPage extends Component {
     const formData = new FormData();
     formData.append('file', cover);
     formData.append('key', key);
-    formData.append('token', this.props.uptoken);
+    formData.append('token', this.props.token);
 
     axios({
       method: 'POST',
-      url: this.props.uploadURL,
+      url: this._uploadURL,
       data: formData,
     })
     .then(({ data }) => {
@@ -131,7 +136,7 @@ export default class SettingPage extends Component {
         isEditing: true,
         isProcessing: false,
         processMsg: '',
-        cover: `${this.props.domain}/${data.key}`,
+        cover: `${domain}/${data.key}`,
       });
       this.props.snackBarOpen('上传封面成功');
     })
@@ -146,7 +151,7 @@ export default class SettingPage extends Component {
     });
   }
 
-  handleSetAvatar(e) {
+  _handleSetAvatar = (e) => {
     this.setState({
       isEditing: true,
       isProcessing: true,
@@ -173,15 +178,15 @@ export default class SettingPage extends Component {
       const formData = new FormData();
       formData.append('file', avatar);
       formData.append('key', key);
-      formData.append('token', this.props.uptoken);
+      formData.append('token', this.props.token);
 
       axios({
         method: 'POST',
-        url: this.props.uploadURL,
+        url: this._uploadURL,
         data: formData,
       })
       .then(({ data }) => {
-        const avatarSrc = `${this.props.domain}/${data.key}?imageView2/1/w/240/h/240`;
+        const avatarSrc = `${domain}/${data.key}?imageView2/1/w/240/h/240`;
         this.setState({
           isEditing: true,
           isProcessing: false,
@@ -202,13 +207,13 @@ export default class SettingPage extends Component {
     }
   }
 
-  handleLoaderTimeout() {
+  _handleLoaderTimeout = () => {
     this.setState({ isProcessing: false, processMsg: '' });
     this.props.snackBarOpen('上传超时');
   }
 
   renderContent() {
-    const { User } = this.props;
+    const { User, history } = this.props;
     return (
       <div className="content__setting">
         <header className="setting__header">
@@ -220,7 +225,7 @@ export default class SettingPage extends Component {
                 style={{ display: 'none' }}
                 type="file"
                 ref={(ref) => { this.coverInput = ref; }}
-                onChange={this.handleSetCover}
+                onChange={this._handleSetCover}
               />
             </div>
           </div>
@@ -231,7 +236,7 @@ export default class SettingPage extends Component {
                 style={{ display: 'none' }}
                 type="file"
                 ref={(ref) => { this.avatarInput = ref; }}
-                onChange={this.handleSetAvatar}
+                onChange={this._handleSetAvatar}
               />
             </div>
           </div>
@@ -312,13 +317,13 @@ export default class SettingPage extends Component {
             <ListItem
               primaryText="我的邮箱"
               secondaryText="查看当前邮箱信息"
-              onTouchTap={() => browserHistory.push('/setting/emails')}
+              onTouchTap={() => history.push('/setting/emails')}
               disableKeyboardFocus
             />
             <ListItem
               primaryText="更改密码"
               secondaryText="通过当前密码或电子邮箱更换密码"
-              onTouchTap={() => browserHistory.push('/setting/password')}
+              onTouchTap={() => history.push('/setting/password')}
               disableKeyboardFocus
             />
           </List>
@@ -389,7 +394,7 @@ export default class SettingPage extends Component {
       />,
       <FlatButton
         label="确认"
-        onTouchTap={this.handleDiscard}
+        onTouchTap={this._handleDiscard}
         primary
       />,
     ];
@@ -407,7 +412,7 @@ export default class SettingPage extends Component {
                 </IconButton>
               }
               iconElementRight={
-                <IconButton onTouchTap={this.handleSubmit}>
+                <IconButton onTouchTap={this._handleSubmit}>
                   <DoneIcon />
                 </IconButton>
               }
@@ -421,7 +426,7 @@ export default class SettingPage extends Component {
           <Loader
             open={this.state.isProcessing}
             message={this.state.processMsg}
-            onTimeout={this.handleLoaderTimeout}
+            onTimeout={this._handleLoaderTimeout}
           />
           { User && this.renderContent() }
           <Dialog
@@ -440,19 +445,3 @@ export default class SettingPage extends Component {
   }
 
 }
-
-SettingPage.displayName = 'SettingPage';
-
-SettingPage.defaultProps = {
-  domain: Meteor.settings.public.imageDomain,
-  uploadURL: window.location.protocol === 'https:' ? 'https://up.qbox.me/' : 'http://upload.qiniu.com',
-};
-
-SettingPage.propTypes = {
-  User: PropTypes.object, // User uptoken and snackBarOpen not required bc logout
-  domain: PropTypes.string.isRequired,
-  uploadURL: PropTypes.string.isRequired,
-  // Below Pass from Redux
-  uptoken: PropTypes.string,
-  snackBarOpen: PropTypes.func,
-};

@@ -1,6 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import React, { Component, PropTypes } from 'react';
-import { browserHistory } from 'react-router';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import CNStrings from 'react-timeago/lib/language-strings/zh-CN';
 import buildFormatter from 'react-timeago/lib/formatters/buildFormatter';
@@ -11,6 +13,7 @@ import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 import { ListItem } from 'material-ui/List';
 import { insertComment, removeComment } from '/imports/api/comments/methods.js';
+import { snackBarOpen } from '/imports/ui/redux/actions/index.js';
 import {
   CommentsWrapper,
   CommentsSection,
@@ -21,9 +24,25 @@ import {
   PublishFooter,
 } from './CommentList.style.js';
 
+const sourceDomain = Meteor.settings.public.sourceDomain;
+
 const formatter = buildFormatter(CNStrings);
 
-export default class CommentList extends Component {
+class CommentList extends Component {
+  static propTypes = {
+    open: PropTypes.bool.isRequired,
+    discId: PropTypes.string.isRequired,
+    comments: PropTypes.array.isRequired,
+    // Below Pass from Redux
+    User: PropTypes.object, // not required bc guest can visit it
+    snackBarOpen: PropTypes.func.isRequired,
+    // Below Pass from React-Router
+    history: PropTypes.object.isRequired,
+  }
+
+  static defaultProps = {
+    open: false,
+  }
 
   constructor(props) {
     super(props);
@@ -31,30 +50,28 @@ export default class CommentList extends Component {
       pid: '',
       comment: '',
     };
-    this.handleCommentChange = this.handleCommentChange.bind(this);
-    this.handlePublishComment = this.handlePublishComment.bind(this);
   }
 
   get avatarSrc() {
-    const defaultAvatar = `${this.props.sourceDomain}/GalleryPlus/Default/default-avatar.jpg`;
+    const defaultAvatar = `${sourceDomain}/GalleryPlus/Default/default-avatar.jpg`;
     return this.props.User ? this.props.User.profile.avatar : defaultAvatar;
   }
 
-  handleCommentClick(e, comment) {
+  _handleCommentClick = (e, comment) => {
     e.preventDefault();
     this.setState({ [comment._id]: true, anchorEl: e.currentTarget });
   }
 
-  handleCommentChange(e) {
+  _handleCommentChange = (e) => {
     this.setState({ comment: e.target.value });
   }
 
-  handleReplyComment(e, comment) {
+  _handleReplyComment = (e, comment) => {
     e.preventDefault();
     this.setState({ pid: comment._id, comment: `回复@${comment.user}:` });
   }
 
-  handlePublishComment(e) {
+  _handlePublishComment = (e) => {
     e.preventDefault();
 
     const { User, discId } = this.props;
@@ -91,9 +108,8 @@ export default class CommentList extends Component {
       this.setState({ pid: '', comment: '' });
     })
     .catch((err) => {
-      console.log(err); // eslint-disable-line no-console
+      console.log(err);
       this.props.snackBarOpen('评论失败');
-      throw new Meteor.Error(err);
     });
   }
 
@@ -104,14 +120,13 @@ export default class CommentList extends Component {
       this.props.snackBarOpen('删除评论成功');
     })
     .catch((err) => {
-      console.log(err); // eslint-disable-line no-console
+      console.log(err);
       this.props.snackBarOpen('删除评论失败');
-      throw new Meteor.Error(err);
     });
   }
 
   renderCommentItem() {
-    const { User, comments } = this.props;
+    const { User, comments, history } = this.props;
     return comments.map((comment, i) => {
       const user = Meteor.users.findOne({ username: comment.user });
       return (
@@ -126,7 +141,7 @@ export default class CommentList extends Component {
             }
             secondaryText={<div dangerouslySetInnerHTML={{ __html: comment.content }} />}
             secondaryTextLines={2}
-            onTouchTap={(e) => this.handleCommentClick(e, comment)}
+            onTouchTap={(e) => this._handleCommentClick(e, comment)}
           />
           <Popover
             open={this.state[comment._id]}
@@ -138,11 +153,11 @@ export default class CommentList extends Component {
             <Menu>
               <MenuItem
                 primaryText="回复"
-                onTouchTap={(e) => this.handleReplyComment(e, comment)}
+                onTouchTap={(e) => this._handleReplyComment(e, comment)}
               />
               <MenuItem
                 primaryText="查看该用户"
-                onTouchTap={() => browserHistory.push(`/user/${comment.user}`)}
+                onTouchTap={() => history.push(`/user/${comment.user}`)}
               />
               {
                 (User && User.username) === comment.user &&
@@ -182,14 +197,14 @@ export default class CommentList extends Component {
                     value={this.state.comment}
                     hintText="发表评论..."
                     underlineShow={false}
-                    onChange={this.handleCommentChange}
+                    onChange={this._handleCommentChange}
                     multiLine
                   />
                 </div>
                 <PublishFooter>
                   <FlatButton
                     label="发布"
-                    onTouchTap={this.handlePublishComment}
+                    onTouchTap={this._handlePublishComment}
                   />
                 </PublishFooter>
               </PublishSection>
@@ -201,18 +216,12 @@ export default class CommentList extends Component {
   }
 }
 
-CommentList.displayName = 'CommentList';
+const mapStateToProps = (state) => ({
+  User: state.User,
+});
 
-CommentList.defaultProps = {
-  open: false,
-  sourceDomain: Meteor.settings.public.sourceDomain,
-};
+const mapDispatchToProps = (dispatch) => bindActionCreators({
+  snackBarOpen,
+}, dispatch);
 
-CommentList.propTypes = {
-  User: PropTypes.object, // not required bc guest can visit it
-  open: PropTypes.bool.isRequired,
-  sourceDomain: PropTypes.string.isRequired,
-  discId: PropTypes.string.isRequired,
-  comments: PropTypes.array.isRequired,
-  snackBarOpen: PropTypes.func.isRequired,
-};
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(CommentList));

@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import React, { Component, PropTypes } from 'react';
-import { browserHistory } from 'react-router';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import TextField from 'material-ui/TextField';
@@ -11,6 +10,12 @@ import ArrowBackIcon from 'material-ui/svg-icons/navigation/arrow-back';
 import CustomNavHeader from '/imports/ui/components/NavHeader/Custom/Custom.jsx';
 
 export default class ResetPasswordPage extends Component {
+  static propTypes = {
+    snackBarOpen: PropTypes.func.isRequired,
+    // Below From React-Router
+    location: PropTypes.object.isRequired,
+    history: PropTypes.object.isRequired,
+  }
 
   constructor(props) {
     super(props);
@@ -21,15 +26,13 @@ export default class ResetPasswordPage extends Component {
       newPwd: '',
       newPwd2: '',
     };
-    this.handleValueChange = this.handleValueChange.bind(this);
-    this.handleResetPassword = this.handleResetPassword.bind(this);
   }
 
-  handleValueChange(e) {
+  handleValueChange = (e) => {
     this.setState({ [e.target.name]: e.target.value });
   }
 
-  handleResetPassword(e) {
+  handleResetPassword = (e) => {
     e.preventDefault();
 
     const { location: { state: { token } } } = this.props;
@@ -52,7 +55,7 @@ export default class ResetPasswordPage extends Component {
     resetPassword(token, newPwd)
     .then(() => {
       this.setState({ isProcessing: false, processMsg: '' });
-      browserHistory.replace('/login');
+      this.props.history.replace('/login');
       this.props.snackBarOpen('修改密码成功');
     })
     .catch((err) => {
@@ -70,9 +73,8 @@ export default class ResetPasswordPage extends Component {
           title="修改密码"
           titleStyle={{ fontSize: '20px' }}
           iconElementLeft={
-            <IconButton
-              onTouchTap={() => this.setState({ isAlertOpen: true })}
-            ><ArrowBackIcon />
+            <IconButton onTouchTap={() => this.setState({ isAlertOpen: true })}>
+              <ArrowBackIcon />
             </IconButton>}
         />
         <main className="content">
@@ -116,7 +118,7 @@ export default class ResetPasswordPage extends Component {
                 />,
                 <FlatButton
                   label="确认"
-                  onTouchTap={() => browserHistory.replace('/')}
+                  onTouchTap={() => this.props.history.replace('/')}
                   primary
                 />,
               ]}
@@ -130,10 +132,3 @@ export default class ResetPasswordPage extends Component {
     );
   }
 }
-
-ResetPasswordPage.displayName = 'ResetPasswordPage';
-
-ResetPasswordPage.propTypes = {
-  location: PropTypes.object.isRequired,
-  snackBarOpen: PropTypes.func.isRequired,
-};

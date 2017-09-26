@@ -20,7 +20,29 @@ import Loader from '/imports/ui/components/Loader/Loader.jsx';
 import Loading from '/imports/ui/components/Loader/Loading.jsx';
 import PhotoSwipeHolder from './components/PhotoSwipeHolder/PhotoSwipeHolder.jsx';
 
+const domain = Meteor.settings.public.imageDomain;
+
 export default class CollectionPage extends Component {
+  static propTypes = {
+    initialAlertState: PropTypes.object.isRequired,
+    // Below Pass from database
+    dataIsReady: PropTypes.bool.isRequired,
+    isGuest: PropTypes.bool.isRequired,
+    curColl: PropTypes.object.isRequired,
+    otherColls: PropTypes.array.isRequired,
+    images: PropTypes.array.isRequired,
+    // Below Pass From Redux
+    User: PropTypes.object,
+    counter: PropTypes.number.isRequired,
+    selectImages: PropTypes.array.isRequired,
+    disableSelectAll: PropTypes.func.isRequired,
+    snackBarOpen: PropTypes.func.isRequired,
+    uploaderStart: PropTypes.func.isRequired,
+  }
+
+  static defaultProps = {
+    initialAlertState: { isAlertOpen: false, alertTitle: '', alertContent: '', action: '' },
+  }
 
   constructor(props) {
     super(props);
@@ -33,27 +55,21 @@ export default class CollectionPage extends Component {
       alertContent: '',
       action: '',
     };
-    this.handleQuitEditing = this.handleQuitEditing.bind(this);
-    this.handleOpenUploader = this.handleOpenUploader.bind(this);
-    this.handleShiftPhoto = this.handleShiftPhoto.bind(this);
-    this.handleSetCover = this.handleSetCover.bind(this);
-    this.handleRemovePhoto = this.handleRemovePhoto.bind(this);
-    this.handleOnTimeout = this.handleOnTimeout.bind(this);
   }
 
-  handleQuitEditing(e) {
+  _handleQuitEditing = (e) => {
     e.preventDefault();
     this.props.disableSelectAll();
     this.setState({ isEditing: false });
   }
 
-  handleOpenUploader() {
+  _handleOpenUploader = () => {
     const { curColl } = this.props;
     document.getElementById('Uploader').click();
     this.props.uploaderStart({ destination: curColl.name });
   }
 
-  handleShiftPhoto() {
+  _handleShiftPhoto = () => {
     const { curColl, selectImages } = this.props;
     const destColl = JSON.parse(this.state.destColl);
 
@@ -79,7 +95,7 @@ export default class CollectionPage extends Component {
         const data = rets[i].data;
         if (status !== 200) {
           moveStatus = [...moveStatus, i];
-          console.warn(status, data); // eslint-disable-line no-console
+          console.warn(status, data);
         }
       }
       if (moveStatus.length > 0) {
@@ -102,14 +118,13 @@ export default class CollectionPage extends Component {
       this.props.snackBarOpen(sucMsg);
     })
     .catch((err) => {
-      console.log(err); // eslint-disable-line no-console
+      console.log(err);
       this.props.snackBarOpen(err.reason || '转移照片失败');
-      throw new Meteor.Error(err);
     });
   }
 
-  handleSetCover() {
-    const { domain, selectImages, curColl } = this.props;
+  _handleSetCover = () => {
+    const { selectImages, curColl } = this.props;
     const curImg = selectImages[0];
     const cover = `${domain}/${curImg.user}/${curImg.collection}/${curImg.name}.${curImg.type}`;
     mutateCollectionCover.callPromise({
@@ -122,13 +137,12 @@ export default class CollectionPage extends Component {
       this.props.snackBarOpen('更换封面成功');
     })
     .catch((err) => {
-      console.log(err); // eslint-disable-line no-console
+      console.log(err);
       this.props.snackBarOpen(err.reason || '更换封面失败');
-      throw new Meteor.Error(err);
     });
   }
 
-  handleRemovePhoto() {
+  _handleRemovePhoto = () => {
     const { selectImages } = this.props;
     const selectImagesIds = _.map(selectImages, (image) => image._id);
     removeImagesToRecycle.callPromise({ selectImages: selectImagesIds })
@@ -138,9 +152,8 @@ export default class CollectionPage extends Component {
       this.props.snackBarOpen('删除相片成功');
     })
     .catch((err) => {
-      console.log(err); // eslint-disable-line no-console
+      console.log(err);
       this.props.snackBarOpen(err.reason || '删除相片失败');
-      throw new Meteor.Error(err);
     });
   }
 
@@ -246,7 +259,7 @@ export default class CollectionPage extends Component {
           ? (
             <SecondaryNavHeader
               title={counter ? `选择了${counter}张照片` : ''}
-              iconElementLeft={<IconButton onTouchTap={this.handleQuitEditing}><CloseIcon /></IconButton>}
+              iconElementLeft={<IconButton onTouchTap={this._handleQuitEditing}><CloseIcon /></IconButton>}
               iconElementRight={
                 <div>
                   <IconButton
@@ -278,7 +291,7 @@ export default class CollectionPage extends Component {
                   <div>
                     <IconButton
                       iconStyle={{ color: '#fff' }}
-                      onTouchTap={this.handleOpenUploader}
+                      onTouchTap={this._handleOpenUploader}
                     ><AddPhotoIcon />
                     </IconButton>
                     <IconButton
@@ -332,28 +345,3 @@ export default class CollectionPage extends Component {
   }
 
 }
-
-CollectionPage.displayName = 'CollectionPage';
-
-CollectionPage.defaultProps = {
-  domain: Meteor.settings.public.imageDomain,
-  initialAlertState: { isAlertOpen: false, alertTitle: '', alertContent: '', action: '' },
-};
-
-CollectionPage.propTypes = {
-  User: PropTypes.object,
-  domain: PropTypes.string.isRequired,
-  initialAlertState: PropTypes.object.isRequired,
-  // Below Pass from database
-  dataIsReady: PropTypes.bool.isRequired,
-  isGuest: PropTypes.bool.isRequired,
-  curColl: PropTypes.object.isRequired,
-  otherColls: PropTypes.array.isRequired,
-  images: PropTypes.array.isRequired,
-  // Below Pass From Redux
-  counter: PropTypes.number.isRequired,
-  selectImages: PropTypes.array.isRequired,
-  disableSelectAll: PropTypes.func.isRequired,
-  snackBarOpen: PropTypes.func.isRequired,
-  uploaderStart: PropTypes.func.isRequired,
-};

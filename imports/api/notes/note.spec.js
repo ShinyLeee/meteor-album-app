@@ -5,7 +5,7 @@ import { Meteor } from 'meteor/meteor';
 import { Factory } from 'meteor/dburles:factory';
 import { PublicationCollector } from 'meteor/johanbrook:publication-collector';
 import { assert, expect } from 'meteor/practicalmeteor:chai';
-import { limitStrLength } from '/imports/utils/utils.js';
+import { limitStrLength } from '/imports/utils';
 import { insertNote, readAllNotes, readNote } from './methods.js';
 import { Users } from '../users/user.js';
 import { Notes } from './note.js';

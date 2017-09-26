@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import React, { PureComponent, PropTypes } from 'react';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import { Images } from '/imports/api/images/image.js';
-import { makeCancelable } from '/imports/utils/utils.js';
+import { makeCancelable } from '/imports/utils';
 import SecondaryNavHeader from '/imports/ui/components/NavHeader/Secondary/Secondary.jsx';
 import Infinity from '/imports/ui/components/Infinity/Infinity.jsx';
 import Loading from '/imports/ui/components/Loader/Loading.jsx';
@@ -11,6 +11,18 @@ import ZoomerHolder from '/imports/ui/components/ZoomerHolder/ZoomerHolder.jsx';
 import ImageList from '/imports/ui/components/ImageList/ImageList.jsx';
 
 export default class UserLikesPage extends PureComponent {
+  static propTypes = {
+    User: PropTypes.object, // only required in only Owner page, etc.. Setting/Recycle/Note
+    // Below Pass from Database
+    limit: PropTypes.number.isRequired,
+    dataIsReady: PropTypes.bool.isRequired,
+    isGuest: PropTypes.bool.isRequired, // based on isGuest render different content
+    curUser: PropTypes.object.isRequired,
+    initUserLikedImages: PropTypes.array.isRequired,
+    // Below Pass from Redux
+    zoomerOpen: PropTypes.bool.isRequired,
+    zoomerImage: PropTypes.object, // zoomerImage only required when zoomerOpen is true
+  }
 
   constructor(props) {
     super(props);
@@ -18,8 +30,6 @@ export default class UserLikesPage extends PureComponent {
       isLoading: false,
       images: props.initUserLikedImages,
     };
-    this.handleLoadImages = this.handleLoadImages.bind(this);
-    this.handleRefreshImages = this.handleRefreshImages.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -39,7 +49,7 @@ export default class UserLikesPage extends PureComponent {
     }
   }
 
-  handleLoadImages() {
+  _handleLoadImages = () => {
     const { limit } = this.props;
     const { images } = this.state;
     const skip = images.length;
@@ -56,17 +66,16 @@ export default class UserLikesPage extends PureComponent {
     });
 
     this.loadPromise = makeCancelable(loadPromise);
-    this.loadPromise
-      .promise
-      .then(() => {
-        this.setState({ isLoading: false });
-      })
-      .catch((err) => {
-        throw new Meteor.Error(err);
-      });
+    this.loadPromise.promise
+    .then(() => {
+      this.setState({ isLoading: false });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
   }
 
-  handleRefreshImages() {
+  _handleRefreshImages = () => {
     // after like or unlike a image, we need to refresh the data
     const refreshedImages = Images.find(
       { private: false },
@@ -94,13 +103,13 @@ export default class UserLikesPage extends PureComponent {
         </ReactCSSTransitionGroup>
         <Infinity
           isLoading={this.state.isLoading}
-          onInfinityLoad={this.handleLoadImages}
+          onInfinityLoad={this._handleLoadImages}
           offsetToBottom={100}
         >
           <ImageList
             User={this.props.User}
             images={this.state.images}
-            onLikeOrUnlikeAction={this.handleRefreshImages}
+            onLikeOrUnlikeAction={this._handleRefreshImages}
           />
         </Infinity>
       </div>
@@ -125,18 +134,3 @@ export default class UserLikesPage extends PureComponent {
   }
 
 }
-
-UserLikesPage.displayName = 'UserLikesPage';
-
-UserLikesPage.propTypes = {
-  User: PropTypes.object, // only required in only Owner page, etc.. Setting/Recycle/Note
-  // Below Pass from Database
-  limit: PropTypes.number.isRequired,
-  dataIsReady: PropTypes.bool.isRequired,
-  isGuest: PropTypes.bool.isRequired, // based on isGuest render different content
-  curUser: PropTypes.object.isRequired,
-  initUserLikedImages: PropTypes.array.isRequired,
-  // Below Pass from Redux
-  zoomerOpen: PropTypes.bool.isRequired,
-  zoomerImage: PropTypes.object, // zoomerImage only required when zoomerOpen is true
-};

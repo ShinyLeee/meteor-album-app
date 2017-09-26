@@ -31,7 +31,7 @@ export const Cover = styled.section`
   width: 100%;
   height: 180px;
   backgroundColor: #eee;
-  & > img {
+  & img {
     width: 100%;
     height: 100%;
     object-fit: cover;  }
@@ -47,7 +47,7 @@ export const Avatar = styled.div`
   top: -18px;
   width: 26px;
   height: 26px;
-  & > img {
+  & img {
     width: 100%;
     height: 100%;
     border: 1px solid #fff;    

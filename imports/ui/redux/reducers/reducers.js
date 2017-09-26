@@ -1,20 +1,36 @@
 import _ from 'lodash';
+import * as types from '../constants/ActionTypes';
 
-export const uptoken = (state = '', action) => {
-  if (action.type === 'STORE_UPTOKEN') {
-    return action.uptoken;
+export const User = (state = null, action) => {
+  switch (action.type) {
+    case types.USER_LOGIN:
+      return {
+        ...action.data,
+      };
+    case types.USER_LOGOUT:
+      return null;
+    default: {
+      return state;
+    }
   }
-  if (action.type === 'CLEAR_UPTOKEN') {
-    return '';
+};
+
+export const uptoken = (state = null, action) => {
+  switch (action.type) {
+    case types.STORE_UPTOKEN:
+      return action.uptoken;
+    case types.CLEAR_UPTOKEN:
+      return null;
+    default:
+      return state;
   }
-  return state;
 };
 
 export const zoomer = (state = { open: false, image: null }, action) => {
   switch (action.type) {
-    case 'ZOOMER_OPEN':
+    case types.ZOOMER_OPEN:
       return { open: true, image: action.image };
-    case 'ZOOMER_CLOSE':
+    case types.ZOOMER_CLOSE:
       return { open: false, image: null };
     default:
       return state;
@@ -23,11 +39,11 @@ export const zoomer = (state = { open: false, image: null }, action) => {
 
 export const dialog = (state = { open: false, bible: null }, action) => {
   switch (action.type) {
-    case 'DIALOG_FETCH':
+    case types.DIALOG_FETCH:
       return { open: true, bible: null };
-    case 'DIALOG_OPEN':
+    case types.DIALOG_OPEN:
       return { open: true, bible: action.bible };
-    case 'DIALOG_CLOSE':
+    case types.DIALOG_CLOSE:
       return { open: false, bible: null };
     default:
       return state;
@@ -36,9 +52,9 @@ export const dialog = (state = { open: false, bible: null }, action) => {
 
 export const diary = (state = { open: false, diary: null }, action) => {
   switch (action.type) {
-    case 'DIARY_OPEN':
+    case types.DIARY_OPEN:
       return { open: true, diary: action.diary };
-    case 'DIARY_CLOSE':
+    case types.DIARY_CLOSE:
       return { open: false, diary: null };
     default:
       return state;
@@ -47,9 +63,9 @@ export const diary = (state = { open: false, diary: null }, action) => {
 
 export const photoSwipe = (state = { open: false, items: [], options: null }, action) => {
   switch (action.type) {
-    case 'PHOTOSWIPE_OPEN':
+    case types.PHOTOSWIPE_OPEN:
       return { open: true, items: action.items, options: action.options };
-    case 'PHOTOSWIPE_CLOSE':
+    case types.PHOTOSWIPE_CLOSE:
       return { open: false, items: [], options: null };
     default:
       return state;
@@ -58,9 +74,9 @@ export const photoSwipe = (state = { open: false, items: [], options: null }, ac
 
 export const uploader = (state = { open: false, destination: '' }, action) => {
   switch (action.type) {
-    case 'UPLOADER_START':
+    case types.UPLOADER_START:
       return Object.assign({}, { open: true }, action.uploader);
-    case 'UPLOADER_STOP':
+    case types.UPLOADER_STOP:
       return { open: false, destination: '' };
     default:
       return state;
@@ -71,9 +87,9 @@ export const snackBar = (state = null, action) => {
   const message = action.message;
   const config = action.config;
   switch (action.type) {
-    case 'SNACKBAR_OPEN':
+    case types.SNACKBAR_OPEN:
       return Object.assign({}, { open: true, message }, config);
-    case 'SNACKBAR_CLOSE':
+    case types.SNACKBAR_CLOSE:
       return null;
     default:
       return state;
@@ -106,7 +122,7 @@ export const selectCounter = (state = { selectImages: [], group: {}, counter: 0 
      *
      * Finally we create and return a new Object which contains counter group props
      */
-    case 'SELECT_COUNTER': {
+    case types.SELECT_COUNTER: {
       let selectImages;
       const nextImage = action.selectImages;
       const prevImages = state.selectImages;
@@ -153,7 +169,7 @@ export const selectCounter = (state = { selectImages: [], group: {}, counter: 0 
      * so we can not incre the whole groupTotal,
      * however the groupCounter = action.counter - state.group[action.group].
      */
-    case 'SELECT_GROUP_COUNTER': {
+    case types.SELECT_GROUP_COUNTER: {
       const groupCounter = action.counter;
 
       let selectImages;
@@ -198,10 +214,10 @@ export const selectCounter = (state = { selectImages: [], group: {}, counter: 0 
       return globalCounter;
     }
     // If select * , { selectImages: [...allImages], group: [...allGroups], counter: total
-    case 'ENABLE_SELECT_ALL':
+    case types.ENABLE_SELECT_ALL:
       // console.log(action.selectImages);
       return { selectImages: action.selectImages, group: action.group, counter: action.counter };
-    case 'DISABLE_SELECT_ALL':
+    case types.DISABLE_SELECT_ALL:
       return { selectImages: [], group: {}, counter: 0 };
     default:
       return state;
