@@ -1,21 +1,6 @@
 import styled from 'styled-components';
 import Paper from 'material-ui/Paper';
 
-export const inlineStyles = {
-  lockIcon: {
-    width: '17px',
-    height: '17px',
-    marginRight: '5px',
-    color: '#999',
-    verticalAlign: 'middle',
-  },
-  moreVertButton: {
-    position: 'absolute',
-    top: '12px',
-    right: 0,
-  },
-};
-
 export const Wrapper = styled(Paper)`
   display: inline-block;
   width: calc(50% - 2px);

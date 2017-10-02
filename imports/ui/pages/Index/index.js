@@ -5,7 +5,7 @@ import { createContainer } from 'meteor/react-meteor-data';
 import { Images } from '/imports/api/images/image.js';
 import { snackBarOpen } from '/imports/ui/redux/actions';
 
-import IndexPage from './Index.jsx';
+import IndexPage from './IndexPage';
 
 const MeteorContainer = createContainer(() => {
   // Define How many pictures render in the first time

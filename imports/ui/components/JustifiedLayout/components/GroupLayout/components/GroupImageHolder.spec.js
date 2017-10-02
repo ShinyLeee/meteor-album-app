@@ -14,7 +14,7 @@ if (Meteor.isClient) {
   import { chai } from 'meteor/practicalmeteor:chai';
   import { sinon } from 'meteor/practicalmeteor:sinon';
   import { getRandomArbitrary } from '/imports/utils';
-  import { GroupImageHolder } from './GroupImageHolder.jsx';
+  import { GroupImageHolder } from './GroupImageHolder.js';
   import { Wrapper } from './GroupImageHolder.style.js';
 
   const expect = chai.expect;

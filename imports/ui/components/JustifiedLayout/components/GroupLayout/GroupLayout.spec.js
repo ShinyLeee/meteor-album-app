@@ -12,7 +12,7 @@ if (Meteor.isClient) {
   import { shallow } from 'enzyme';
   import { chai } from 'meteor/practicalmeteor:chai';
   import { sinon } from 'meteor/practicalmeteor:sinon';
-  import { JustifiedGroupLayout } from './GroupLayout.jsx';
+  import { JustifiedGroupLayout } from './index.js';
   import { Title } from './GroupLayout.style.js';
 
   const expect = chai.expect;

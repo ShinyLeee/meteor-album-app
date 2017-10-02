@@ -7,8 +7,8 @@ import {
   disableSelectAll,
   snackBarOpen,
   uploaderStart,
-} from '/imports/ui/redux/actions/index.js';
-import CollectionPage from './Collection.jsx';
+} from '/imports/ui/redux/actions';
+import CollectionPage from './Collection';
 
 const MeteorContainer = createContainer(({ User, match }) => {
   const { username, cname } = match.params;

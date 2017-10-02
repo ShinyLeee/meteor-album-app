@@ -12,7 +12,7 @@ if (Meteor.isClient) {
   import { shallow } from 'enzyme';
   import { chai } from 'meteor/practicalmeteor:chai';
   import { sinon } from 'meteor/practicalmeteor:sinon';
-  import { GridImageHolder } from './GridImageHolder.jsx';
+  import { GridImageHolder } from './GridImageHolder.js';
   import { Wrapper } from './GridImageHolder.style.js';
 
   const expect = chai.expect;

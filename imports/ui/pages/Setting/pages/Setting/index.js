@@ -1,8 +1,8 @@
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
-import { snackBarOpen } from '/imports/ui/redux/actions/index.js';
-import SettingPage from './Setting.jsx';
+import { snackBarOpen } from '/imports/ui/redux/actions';
+import SettingPage from './Setting';
 
 const mapStateToProps = (state) => ({
   User: state.User,

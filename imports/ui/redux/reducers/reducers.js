@@ -83,14 +83,14 @@ export const uploader = (state = { open: false, destination: '' }, action) => {
   }
 };
 
-export const snackBar = (state = null, action) => {
+export const snackBar = (state = { open: false, message: null, config: null }, action) => {
   const message = action.message;
   const config = action.config;
   switch (action.type) {
     case types.SNACKBAR_OPEN:
       return Object.assign({}, { open: true, message }, config);
     case types.SNACKBAR_CLOSE:
-      return null;
+      return Object.assign({}, state, { open: false });
     default:
       return state;
   }

@@ -1,7 +1,7 @@
 import styled from 'styled-components';
-import HeartIcon from 'material-ui/svg-icons/action/favorite';
-import EyeIcon from 'material-ui/svg-icons/action/visibility';
-import CameraIcon from 'material-ui/svg-icons/image/camera';
+import HeartIcon from 'material-ui-icons/Favorite';
+import EyeIcon from 'material-ui-icons/Visibility';
+import CameraIcon from 'material-ui-icons/Camera';
 
 export const Wrapper = styled.div`
   position: fixed;
@@ -82,6 +82,7 @@ export const ImageDetail = styled.div`
 export const InfoHeader = styled.h4`
   margin: 6px 0;
   fontSize: 14px;
+  color: #999;
 `;
 
 export const InfoNumer = styled.span`
@@ -118,6 +119,7 @@ export const ExifLoader = styled.div`
 
 export const ExifInfo = styled.div`
   margin-bottom: 8px;
+  color: rgba(0, 0, 0, 0.6);
   & > span {
     color: #111;
   }

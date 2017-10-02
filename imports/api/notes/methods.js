@@ -19,6 +19,10 @@ export const insertNote = new ValidatedMethod({
     if (!this.userId) {
       throw new Meteor.Error('api.notes.insert.notLoggedIn');
     }
+    const receiver = Meteor.users.findOne({ username: note.receiver });
+    if (!receiver) {
+      throw new Meteor.Error('api.notes.insert.userNotFound', '接受用户不存在');
+    }
     return Notes.insert(note);
   },
 });

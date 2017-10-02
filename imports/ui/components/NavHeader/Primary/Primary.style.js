@@ -1,5 +1,9 @@
 import styled from 'styled-components';
 
+export const DrawerContent = styled.div`
+  width: 280px;
+`;
+
 export const DrawerProfile = styled.div`
   position: relative;
   height: 150px;

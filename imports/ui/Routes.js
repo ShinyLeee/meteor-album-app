@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import { connect } from 'react-redux';
 import { Switch, Route, Redirect } from 'react-router-dom';
 
@@ -11,32 +12,34 @@ import {
   isAllowVisitSpecColl,
 } from '/imports/utils/policies';
 
-import Login from './pages/Sign/pages/Login/Login.jsx';
-import Register from './pages/Sign/pages/Register/Register.jsx';
-import Index from './pages/Index/index.js';
-import User from './pages/User/index.js';
-import UserLikes from './pages/User/pages/UserLikes/index.js';
-import UserFans from './pages/User/pages/UserFans/index.js';
-import AllCollections from './pages/Collection/pages/AllCollections/index.js';
-import Colletion from './pages/Collection/pages/Collection/index.js';
-import Diary from './pages/Diary/pages/Diary/index.js';
-import WriteDiary from './pages/Diary/pages/Write/index.js';
-import Recycle from './pages/Recycle/index.js';
-import Setting from './pages/Setting/pages/Setting/index.js';
-import SettingEmails from './pages/Setting/pages/Emails/index.js';
-import SettingPassword from './pages/Setting/pages/Password/index.js';
-import Note from './pages/Note/pages/Note/index.js';
-import AllSentNotes from './pages/Note/pages/AllSentNotes/index.js';
-import AllNotes from './pages/Note/pages/AllNotes/index.js';
-import SendNote from './pages/Note/pages/SendNote/index.js';
-import Search from './pages/Search/pages/Search/index.js';
-import SearchResults from './pages/Search/pages/Results/index.js';
-import VerifyEmail from './pages/Account/pages/VerifyEmail/VerifyEmail.jsx';
-import ResetPassword from './pages/Account/pages/ResetPassword/index.js';
-import Construction from './pages/Error/Construction.jsx';
-import Forbidden from './pages/Error/Forbidden.jsx';
-import InternalError from './pages/Error/InternalError.jsx';
-import NotFound from './pages/Error/NotFound.jsx';
+import Login from './pages/Sign/pages/Login/Login';
+import Register from './pages/Sign/pages/Register/Register';
+import Index from './pages/Index';
+import User from './pages/User';
+import UserLikes from './pages/User/pages/UserLikes';
+import UserFans from './pages/User/pages/UserFans';
+import AllCollections from './pages/Collection/pages/AllCollections';
+import Colletion from './pages/Collection/pages/Collection';
+import Diary from './pages/Diary/pages/Diary';
+import WriteDiary from './pages/Diary/pages/Write';
+import Recycle from './pages/Recycle';
+import Setting from './pages/Setting/pages/Setting';
+import SettingEmails from './pages/Setting/pages/Emails';
+import SettingPassword from './pages/Setting/pages/Password';
+import Note from './pages/Note/pages/Note';
+import AllSentNotes from './pages/Note/pages/AllSentNotes';
+import AllNotes from './pages/Note/pages/AllNotes';
+import SendNote from './pages/Note/pages/SendNote';
+import Search from './pages/Search/pages/Search';
+import SearchResults from './pages/Search/pages/Results';
+import VerifyEmail from './pages/Account/pages/VerifyEmail';
+import ResetPassword from './pages/Account/pages/ResetPassword';
+import {
+  Construction,
+  Forbidden,
+  InternalError,
+  NotFound,
+} from './pages/Error';
 
 let AuthRoute = (props) => {
   const { policy, ...rest } = props;
@@ -66,7 +69,7 @@ const Routes = () => (
     <AuthRoute index={2} path="/diary" component={Diary} policy={isLogin} exact />
     <AuthRoute index={3} path="/diary/write" component={WriteDiary} policy={isLogin} />
     <AuthRoute index={2} path="/recycle" component={Recycle} policy={isLogin} />
-    <AuthRoute index={2} path="/setting" component={Setting} policy={isLogin} />
+    <AuthRoute index={2} path="/setting" component={Setting} policy={isLogin} exact />
     <AuthRoute index={3} path="/setting/emails" component={SettingEmails} policy={isLogin} />
     <AuthRoute index={3} path="/setting/password" component={SettingPassword} policy={isLogin} />
     <AuthRoute index={2} path="/note/:username" component={Note} policy={isOwner} exact />

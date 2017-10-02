@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import CircularProgress from 'material-ui/CircularProgress';
+import { CircularProgress } from 'material-ui/Progress';
 
 export const LoadingCircularProgress = styled(CircularProgress)`
   color: ${props => props.color};

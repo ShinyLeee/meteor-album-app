@@ -12,7 +12,7 @@ if (Meteor.isClient) {
   import { chai } from 'meteor/practicalmeteor:chai';
   // import { sinon } from 'meteor/practicalmeteor:sinon';
   import Dialog from 'material-ui/Dialog';
-  import Loader from './Loader.jsx';
+  import Loader from './CircleLoader';
 
   const expect = chai.expect;
 

@@ -4,8 +4,8 @@ import { createContainer } from 'meteor/react-meteor-data';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
-import { snackBarOpen } from '/imports/ui/redux/actions/index.js';
-import SendNotePage from './SendNote.jsx';
+import { snackBarOpen } from '/imports/ui/redux/actions';
+import SendNotePage from './SendNote';
 
 const MeteorContainer = createContainer(({ User, location }) => {
   const { receiver } = queryString.parse(location.search);
@@ -14,7 +14,7 @@ const MeteorContainer = createContainer(({ User, location }) => {
 
   const initialReceiver = receiver && Meteor.users.findOne({ username: receiver });
 
-  const otherUsers = Meteor.users.find({ _id: { $ne: User._id } }).fetch();
+  const otherUsers = Meteor.users.find({ _id: { $ne: User._id } }).fetch() || [];
 
   return {
     dataIsReady,

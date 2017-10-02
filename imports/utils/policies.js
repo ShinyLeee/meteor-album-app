@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import { Meteor } from 'meteor/meteor';
 import { Collections } from '/imports/api/collections/collection.js';
 
@@ -59,10 +60,10 @@ export const isOwner = ({ User, location, computedMatch: { params } }) => {
 export const isAllowVisitHome = ({ User, location, computedMatch: { params } }) => {
   const curUser = Meteor.users.findOne({ username: params.username });
   const isUserExist = !!curUser;
-  const isUserOwner = User.username === curUser.username;
+  const isUserOwner = _.get(User, 'username') === _.get(curUser, 'username');
 
   let ret = {
-    isAuthenticated: isUserExist && (isUserOwner || curUser.profile.settings.allowVisitHome),
+    isAuthenticated: isUserExist && (isUserOwner || _.get(curUser, 'profile.settings.allowVisitHome')),
   };
   if (!ret.isAuthenticated) {
     ret = Object.assign({}, ret, {
@@ -96,8 +97,8 @@ export const isAllowVisitAllColl = ({ User, location, computedMatch: { params } 
       },
     };
   } else if (
-    User.username === curUser.username ||
-    curUser.profile.settings.allowVisitColl
+    _.get(User, 'username') === _.get(curUser, 'username') ||
+    _.get(curUser, 'profile.settings.allowVisitColl')
   ) {
     return {
       isAuthenticated: true,
@@ -134,8 +135,8 @@ export const isAllowVisitSpecColl = ({ User, location, computedMatch: { params }
       },
     };
   } else if (
-    User.username === curUser.username ||
-    (curUser.profile.settings.allowVisitColl && !curColl.private)
+    _.get(User, 'username') === _.get(curUser, 'username') ||
+    (_.get(curUser, 'profile.settings.allowVisitColl') && !_.get(curColl, 'private'))
   ) {
     return {
       isAuthenticated: true,

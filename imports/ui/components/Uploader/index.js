@@ -6,7 +6,7 @@ import {
   snackBarOpen,
   uploaderStop,
 } from '/imports/ui/redux/actions';
-import Uploader from './Uploader.jsx';
+import Uploader from './Uploader';
 
 const mapStateToProps = (state) => ({
   User: state.User,

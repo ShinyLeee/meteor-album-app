@@ -11,7 +11,7 @@ if (Meteor.isClient) {
   import { shallow } from 'enzyme';
   import { chai } from 'meteor/practicalmeteor:chai';
   import { sinon } from 'meteor/practicalmeteor:sinon';
-  import Uploader from './Uploader.jsx';
+  import Uploader from './Uploader';
 
   const expect = chai.expect;
 

@@ -4,8 +4,8 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Notes } from '/imports/api/notes/note.js';
 
-import { snackBarOpen } from '/imports/ui/redux/actions/index.js';
-import NotePage from './Note.jsx';
+import { snackBarOpen } from '/imports/ui/redux/actions';
+import NotePage from './Note';
 
 const MeteorContainer = createContainer(({ match }) => {
   const { username } = match.params;

@@ -5,8 +5,8 @@ import { connect } from 'react-redux';
 import { Collections } from '/imports/api/collections/collection.js';
 import { Images } from '/imports/api/images/image.js';
 
-import { userLogout, snackBarOpen } from '../../redux/actions/index.js';
-import UserPage from './User.jsx';
+import { userLogout, snackBarOpen } from '/imports/ui/redux/actions';
+import UserPage from './User';
 
 const MeteorContainer = createContainer(({ User, match }) => {
   const { username } = match.params;

@@ -9,8 +9,8 @@ import {
   enableSelectAll,
   disableSelectAll,
   snackBarOpen,
-} from '../../redux/actions/index.js';
-import RecyclePage from './Recycle.jsx';
+} from '../../redux/actions';
+import RecyclePage from './Recycle';
 
 const MeteorContainer = createContainer(() => {
   const imageHandle = Meteor.subscribe('Images.recycle');

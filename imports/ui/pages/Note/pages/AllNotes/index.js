@@ -1,9 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
+import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Notes } from '/imports/api/notes/note.js';
 
-import AllNotesPage from './AllNotes.jsx';
+import { snackBarOpen } from '/imports/ui/redux/actions';
+import AllNotesPage from './AllNotes';
 
 const MeteorContainer = createContainer(({ match }) => {
   const { username } = match.params;
@@ -32,4 +34,8 @@ const mapStateToProps = (state) => ({
   bible: state.dialog.bible,
 });
 
-export default connect(mapStateToProps)(MeteorContainer);
+const mapDispatchToProps = (dispatch) => bindActionCreators({
+  snackBarOpen,
+}, dispatch);
+
+export default connect(mapStateToProps, mapDispatchToProps)(MeteorContainer);

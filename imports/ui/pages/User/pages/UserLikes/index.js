@@ -3,7 +3,7 @@ import { createContainer } from 'meteor/react-meteor-data';
 import { connect } from 'react-redux';
 import { Images } from '/imports/api/images/image.js';
 
-import UserLikesPage from './UserLikes.jsx';
+import UserLikesPage from './UserLikes';
 
 const MeteorContainer = createContainer(({ User, match }) => {
   // Define How many pictures render in the first time

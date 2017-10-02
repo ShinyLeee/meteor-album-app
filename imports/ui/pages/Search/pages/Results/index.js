@@ -4,7 +4,7 @@ import { Users } from '/imports/api/users/user.js';
 import { Collections } from '/imports/api/collections/collection.js';
 import { Notes } from '/imports/api/notes/note.js';
 
-import ResultsPage from './Results.jsx';
+import ResultsPage from './Results';
 
 const MeteorContainer = createContainer(({ match }) => {
   const query = match.params.query;

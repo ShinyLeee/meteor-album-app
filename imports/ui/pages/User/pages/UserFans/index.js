@@ -3,8 +3,8 @@ import { createContainer } from 'meteor/react-meteor-data';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
-import { snackBarOpen } from '/imports/ui/redux/actions/index.js';
-import UserFansPage from './UserFans.jsx';
+import { snackBarOpen } from '/imports/ui/redux/actions';
+import UserFansPage from './UserFans';
 
 const MeteorContainer = createContainer(({ User, match }) => {
   const { username } = match.params;

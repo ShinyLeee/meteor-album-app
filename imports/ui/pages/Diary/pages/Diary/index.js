@@ -6,8 +6,8 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Diarys } from '/imports/api/diarys/diary.js';
 
-import { diaryOpen, snackBarOpen } from '/imports/ui/redux/actions/index.js';
-import DiaryPage from './Diary.jsx';
+import { diaryOpen, snackBarOpen } from '/imports/ui/redux/actions';
+import DiaryPage from './Diary';
 
 const MeteorContainer = createContainer(({ User, location }) => {
   const query = queryString.parse(location.search);
