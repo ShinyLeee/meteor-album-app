@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { compose } from 'recompose';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { Meteor } from 'meteor/meteor';
@@ -12,8 +13,9 @@ import IconButton from 'material-ui/IconButton';
 import SearchIcon from 'material-ui-icons/Search';
 import NotificationIcon from 'material-ui-icons/Notifications';
 import { Notes } from '/imports/api/notes/note.js';
+import settings from '/imports/utils/settings';
 
-const sourceDomain = Meteor.settings.public.sourceDomain;
+const { sourceDomain } = settings;
 
 class RightContent extends Component {
   static propTypes = {
@@ -100,7 +102,7 @@ const styles = {
   },
 };
 
-const MeteorContainer = createContainer(({ User }) => {
+const RightContentContainer = createContainer(({ User }) => {
   if (User) {
     Meteor.subscribe('Notes.receiver');
     return {
@@ -116,4 +118,8 @@ const mapStateToProps = (state) => ({
   User: state.User,
 });
 
-export default withRouter(connect(mapStateToProps)(withStyles(styles)(MeteorContainer)));
+export default compose(
+  connect(mapStateToProps),
+  withStyles(styles),
+  withRouter,
+)(RightContentContainer);

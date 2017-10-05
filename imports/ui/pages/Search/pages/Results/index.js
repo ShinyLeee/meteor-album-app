@@ -6,7 +6,7 @@ import { Notes } from '/imports/api/notes/note.js';
 
 import ResultsPage from './Results';
 
-const MeteorContainer = createContainer(({ match }) => {
+const ResultsContainer = createContainer(({ match }) => {
   const query = match.params.query;
 
   const userHandler = Meteor.subscribe('Users.all');
@@ -34,4 +34,4 @@ const MeteorContainer = createContainer(({ match }) => {
   };
 }, ResultsPage);
 
-export default MeteorContainer;
+export default ResultsContainer;

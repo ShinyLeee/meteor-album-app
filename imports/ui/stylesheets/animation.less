@@ -8,11 +8,11 @@
   transition: opacity 200ms;
 }
 
-.fastIn-leave {
+.fastIn-exit {
   opacity: 1;
 }
 
-.fastIn-leave.fastIn-leave-active {
+.fastIn-exit.fastIn-exit-active {
   opacity: 0.01;
   transition: opacity 200ms;
 }
@@ -27,11 +27,11 @@
   transition: transform 375ms;
 }
 
-.slideToLeft-leave {
+.slideToLeft-exit {
   transform: translate3d(0, 0, 0);
 }
 
-.slideToLeft-leave.slideToLeft-leave-active {
+.slideToLeft-exit.slideToLeft-exit-active {
   transform: translate3d(-100%, 0, 0);
   transition: transform 375ms;
 }
@@ -46,31 +46,13 @@
   transition: transform 375ms;
 }
 
-.slideToRight-leave {
+.slideToRight-exit {
   transform: translate3d(0, 0, 0);
 }
 
-.slideToRight-leave.slideToRight-leave-active {
+.slideToRight-exit.slideToRight-exit-active {
   transform: translate3d(100%, 0, 0);
   transition: transform 375ms;
-}
-
-.slideDown-enter {
-  max-height : 0;
-}
-
-.slideDown-enter.slideDown-enter-active {
-  max-height: 500px;
-  transition : max-height 375ms;
-}
-
-.slideDown-leave {
-  max-height: 500px;
-}
-
-.slideDown-leave.slideDown-leave-active {
-  max-height: 0;
-  transition : max-height 375ms;
 }
 
 // for fade in image
@@ -92,29 +74,38 @@
   transition: opacity 375ms ease-in;
 }
 
-.zoomer-appear {
+.fade-exit {
+  opacity: 1;
+}
+
+.fade-exit.fade-exit-active {
+  opacity: 0.01;
+  transition: opacity 375ms ease-in;
+}
+
+.slide-appear {
   transform: translate3d(0, 100%, 0);
 }
 
-.zoomer-appear.zoomer-appear-active {
+.slide-appear.slide-appear-active {
   transform: translate3d(0, 0, 0);
   transition: transform 300ms;
 }
 
-.zoomer-enter {
+.slide-enter {
   transform: translate3d(0, 100%, 0);
 }
 
-.zoomer-enter.zoomer-enter-active {
+.slide-enter.slide-enter-active {
   transform: translate3d(0, 0, 0);
   transition: transform 300ms;
 }
 
-.zoomer-leave {
+.slide-exit {
   transform: translate3d(0, 0, 0);
 }
 
-.zoomer-leave.zoomer-leave-active {
+.slide-exit.slide-exit-active {
   transform: translate3d(0, 100%, 0);
   transition: transform 300ms;
 }

@@ -5,7 +5,7 @@ import { Users } from '/imports/api/users/user.js';
 import { Collections } from '/imports/api/collections/collection.js';
 import SearchPage from './Search';
 
-const MeteorContainer = createContainer(() => {
+const SearchContainer = createContainer(() => {
   const userHandler = Meteor.subscribe('Users.limit', 4);
   const collHandler = Meteor.subscribe('Collections.limit', 2);
   const dataIsReady = userHandler.ready() && collHandler.ready();
@@ -20,4 +20,4 @@ const MeteorContainer = createContainer(() => {
   };
 }, SearchPage);
 
-export default withRouter(MeteorContainer);
+export default withRouter(SearchContainer);

@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { withRouter, Link } from 'react-router-dom';
-import AppBar from 'material-ui/AppBar';
+import RootLayout from '/imports/ui/layouts/RootLayout';
+import { PrimaryNavHeader } from '/imports/ui/components/NavHeader';
 
 class VerifyEmailPage extends Component {
   static propTypes = {
@@ -18,22 +19,22 @@ class VerifyEmailPage extends Component {
     clearTimeout(this.autoRedirect);
   }
 
-  autoRedirect() {
+  autoRedirect = () => {
     this.props.history.replace('/');
   }
 
   render() {
     return (
-      <div className="container">
-        <AppBar title="GalleryPlus" />
-        <main className="content">
-          <div className="content__verifyEmail">
-            <h2>邮箱验证成功</h2>
-            <p>本页面将在2秒后自动跳转返回首页</p>
-            <p>若无反应请点击此<Link to="/">链接</Link>进行手动跳转</p>
-          </div>
-        </main>
-      </div>
+      <RootLayout
+        loading={false}
+        Topbar={<PrimaryNavHeader />}
+      >
+        <div className="content__verifyEmail">
+          <h2>邮箱验证成功</h2>
+          <p>本页面将在2秒后自动跳转返回首页</p>
+          <p>若无反应请点击此<Link to="/">链接</Link>进行手动跳转</p>
+        </div>
+      </RootLayout>
     );
   }
 }

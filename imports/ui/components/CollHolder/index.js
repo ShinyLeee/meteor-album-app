@@ -9,6 +9,7 @@ import DeleteIcon from 'material-ui-icons/Delete';
 import MoreVertIcon from 'material-ui-icons/MoreVert';
 import LockIcon from 'material-ui-icons/LockOutline';
 import LockOutIcon from 'material-ui-icons/LockOpen';
+import { rWidth } from '/imports/utils/responsive';
 import {
   Wrapper,
   Cover,
@@ -38,12 +39,6 @@ class CollHolder extends Component {
     showActions: false,
   }
 
-  constructor(props) {
-    super(props);
-    this._clienWidth = document.body.clientWidth;
-    this._pixelRatio = window.devicePixelRatio;
-  }
-
   state = {
     menuOpen: false,
     anchorEl: undefined,
@@ -61,8 +56,7 @@ class CollHolder extends Component {
       onToggleLock,
       onRemove,
     } = this.props;
-    const realDimension = Math.round(this._clienWidth * this._pixelRatio);
-    let fastSrc = `${coll.cover}?imageView2/2/w/${realDimension}`;
+    let fastSrc = `${coll.cover}?imageView2/2/w/${rWidth}`;
     if (coll.cover.indexOf('VF_ac') > 0) {
       fastSrc = coll.cover;
     }

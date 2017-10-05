@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 import { snackBarOpen } from '/imports/ui/redux/actions';
 import SendNotePage from './SendNote';
 
-const MeteorContainer = createContainer(({ User, location }) => {
+const SendNoteContainer = createContainer(({ User, location }) => {
   const { receiver } = queryString.parse(location.search);
   const userHandler = Meteor.subscribe('Users.all');
   const dataIsReady = userHandler.ready();
@@ -31,4 +31,4 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
   snackBarOpen,
 }, dispatch);
 
-export default connect(mapStateToProps, mapDispatchToProps)(MeteorContainer);
+export default connect(mapStateToProps, mapDispatchToProps)(SendNoteContainer);

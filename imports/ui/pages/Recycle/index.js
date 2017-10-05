@@ -12,7 +12,7 @@ import {
 } from '../../redux/actions';
 import RecyclePage from './Recycle';
 
-const MeteorContainer = createContainer(() => {
+const RecycleContainer = createContainer(() => {
   const imageHandle = Meteor.subscribe('Images.recycle');
   const dataIsReady = imageHandle.ready();
   const images = Images.find(
@@ -38,4 +38,4 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
   snackBarOpen,
 }, dispatch);
 
-export default connect(mapStateToProps, mapDispatchToProps)(MeteorContainer);
+export default connect(mapStateToProps, mapDispatchToProps)(RecycleContainer);

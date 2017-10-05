@@ -1,9 +1,9 @@
-import { Meteor } from 'meteor/meteor';
 import PropTypes from 'prop-types';
 import React from 'react';
+import settings from '/imports/utils/settings';
 import Slider from '/imports/ui/components/Slider';
 
-const domain = Meteor.settings.public.imageDomain;
+const { imageDomain } = settings;
 
 const TopImageSlider = ({ curUser, topImages }) => (
   <Slider
@@ -12,7 +12,7 @@ const TopImageSlider = ({ curUser, topImages }) => (
   >
     {
       topImages.map((image, i) => {
-        const src = `${domain}/${curUser.username}/${image.collection}/${image.name}.${image.type}`;
+        const src = `${imageDomain}/${curUser.username}/${image.collection}/${image.name}.${image.type}`;
         return (
           <div key={i} style={{ padding: '10px' }}>
             <img

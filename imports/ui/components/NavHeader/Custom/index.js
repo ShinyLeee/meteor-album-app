@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { compose } from 'recompose';
 import { withRouter } from 'react-router-dom';
 import { withStyles } from 'material-ui/styles';
 import AppBar from 'material-ui/AppBar';
@@ -14,17 +15,23 @@ class CustomNavHeader extends Component {
     title: PropTypes.string,
     Left: PropTypes.oneOfType([
       PropTypes.bool,
+      PropTypes.array,
       PropTypes.element,
     ]),
     Right: PropTypes.oneOfType([
       PropTypes.bool,
+      PropTypes.array,
       PropTypes.element,
     ]),
     style: PropTypes.object,
-    classnames: PropTypes.object,
+    classnames: PropTypes.object.isRequired,
     classes: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
     history: PropTypes.object.isRequired,
+  }
+
+  static defaultProps = {
+    classnames: {},
   }
 
   _handleTitleClick = () => {
@@ -79,6 +86,7 @@ const styles = {
   },
 };
 
-export default withRouter(
-  withStyles(styles)(CustomNavHeader)
-);
+export default compose(
+  withStyles(styles),
+  withRouter,
+)(CustomNavHeader);

@@ -1,13 +1,14 @@
-import { Meteor } from 'meteor/meteor';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import { vWidth, pixelRatio } from '/imports/utils/responsive';
+import settings from '/imports/utils/settings';
 import { photoSwipeOpen } from '/imports/ui/redux/actions';
 import GridLayout from '/imports/ui/components/GridLayout';
 import ConnectedGridImageHolder from './components/GridImageHolder';
 
-const domain = Meteor.settings.public.imageDomain;
+const { imageDomain } = settings;
 
 export class JustifiedGridLayout extends PureComponent {
   static propTypes = {
@@ -15,7 +16,6 @@ export class JustifiedGridLayout extends PureComponent {
     images: PropTypes.array.isRequired,
     showGallery: PropTypes.bool.isRequired,
     filterType: PropTypes.oneOf(['latest', 'oldest', 'popular']).isRequired,
-    // Below Pass From Redux
     photoSwipeOpen: PropTypes.func.isRequired,
   }
 
@@ -23,12 +23,6 @@ export class JustifiedGridLayout extends PureComponent {
     isEditing: false,
     showGallery: false,
     filterType: 'latest',
-  }
-
-  constructor(props) {
-    super(props);
-    this._clientWidth = document.body.clientWidth;
-    this._pixelRatio = window.devicePixelRatio;
   }
 
   state = {
@@ -49,11 +43,11 @@ export class JustifiedGridLayout extends PureComponent {
   generateItems(props) {
     const { images } = props;
     const pswpItems = images.map((image) => {
-      const realDimension = Math.round((this._clientWidth / 3) * this._pixelRatio);
-      const url = `${domain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
+      const realDimension = Math.round((vWidth / 3) * pixelRatio);
+      const url = `${imageDomain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
       // generate based on Qiniu imageView2 mode 3 API
       // more details see https://developer.qiniu.com/dora/api/basic-processing-images-imageview2
-      const minWidth = Math.round(this._clientWidth * this._pixelRatio);
+      const minWidth = Math.round(vWidth * pixelRatio);
       const minHeight = Math.round((image.dimension[1] / image.dimension[0]) * minWidth);
       return ({
         _id: image._id,

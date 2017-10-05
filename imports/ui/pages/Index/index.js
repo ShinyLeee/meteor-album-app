@@ -1,13 +1,15 @@
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import { compose } from 'recompose';
 import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
 import { Images } from '/imports/api/images/image.js';
+import withRedirect from '/imports/ui/hocs/withRedirect';
 import { snackBarOpen } from '/imports/ui/redux/actions';
 
 import IndexPage from './IndexPage';
 
-const MeteorContainer = createContainer(() => {
+const IndexContainer = createContainer(() => {
   // Define How many pictures render in the first time
   const limit = 5;
 
@@ -36,5 +38,7 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
   snackBarOpen,
 }, dispatch);
 
-export default connect(mapStateToProps, mapDispatchToProps)(MeteorContainer);
-
+export default compose(
+  connect(mapStateToProps, mapDispatchToProps),
+  withRedirect,
+)(IndexContainer);

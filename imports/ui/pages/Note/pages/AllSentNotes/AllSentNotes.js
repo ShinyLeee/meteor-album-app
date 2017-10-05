@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 import { Notes } from '/imports/api/notes/note.js';
 import { makeCancelable } from '/imports/utils';
 import RootLayout from '/imports/ui/layouts/RootLayout';
-import SecondaryNavHeader from '/imports/ui/components/NavHeader/Secondary';
+import { SecondaryNavHeader } from '/imports/ui/components/NavHeader';
 import Infinity from '/imports/ui/components/Infinity';
 import EmptyHolder from '/imports/ui/components/EmptyHolder';
 import BibleDialog from '/imports/ui/components/BibleDialog';

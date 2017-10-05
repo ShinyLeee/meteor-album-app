@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
-import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
+import { TransitionGroup } from 'react-transition-group';
 import { Images } from '/imports/api/images/image.js';
 import { makeCancelable } from '/imports/utils';
 import RootLayout from '/imports/ui/layouts/RootLayout';
-import PrimaryNavHeader from '/imports/ui/components/NavHeader/Primary';
+import SlideTransition from '/imports/ui/components/Transition/Slide';
+import { PrimaryNavHeader } from '/imports/ui/components/NavHeader';
 import Infinity from '/imports/ui/components/Infinity';
 import Recap from '/imports/ui/components/Recap';
 import ZoomerHolder from '/imports/ui/components/ZoomerHolder';
@@ -25,16 +26,6 @@ export default class IndexPage extends PureComponent {
   state = {
     isLoading: false,
     images: this.props.initialImages,
-  }
-
-  componentDidMount() {
-    const { location } = this.props;
-    if (
-      location.state !== undefined &&
-      location.state.message !== undefined
-    ) {
-      this.props.snackBarOpen(location.state.message);
-    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -77,6 +68,7 @@ export default class IndexPage extends PureComponent {
     })
     .catch((err) => {
       console.log(err);
+      this.props.snackBarOpen(`加载图片失败 ${err.reason}`);
     });
   }
 
@@ -105,13 +97,15 @@ export default class IndexPage extends PureComponent {
         {
           dataIsReady && (
             <div className="content__index">
-              <ReactCSSTransitionGroup
-                transitionName="zoomer"
-                transitionEnterTimeout={300}
-                transitionLeaveTimeout={300}
-              >
-                { zoomerOpen && <ZoomerHolder key={zoomerImage._id} image={zoomerImage} /> }
-              </ReactCSSTransitionGroup>
+              <TransitionGroup>
+                {
+                  zoomerOpen && (
+                    <SlideTransition>
+                      <ZoomerHolder image={zoomerImage} />
+                    </SlideTransition>
+                  )
+                }
+              </TransitionGroup>
               <Infinity
                 isLoading={this.state.isLoading}
                 onInfinityLoad={this._handleLoadImages}

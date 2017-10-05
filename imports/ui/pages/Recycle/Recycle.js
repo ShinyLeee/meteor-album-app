@@ -11,7 +11,7 @@ import blue from 'material-ui/colors/blue';
 import purple from 'material-ui/colors/purple';
 import { removeImages, recoveryImages } from '/imports/api/images/methods.js';
 import RootLayout from '/imports/ui/layouts/RootLayout';
-import SecondaryNavHeader from '/imports/ui/components/NavHeader/Secondary';
+import { SecondaryNavHeader } from '/imports/ui/components/NavHeader';
 import EmptyHolder from '/imports/ui/components/EmptyHolder';
 import { CircleLoader } from '/imports/ui/components/Loader';
 import JustifiedSelectIcon from '/imports/ui/components/JustifiedLayout/components/snippet/JustifiedSelectIcon.js';

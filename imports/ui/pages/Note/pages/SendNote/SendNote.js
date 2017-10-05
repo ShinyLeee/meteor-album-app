@@ -14,7 +14,7 @@ import ArrowBackIcon from 'material-ui-icons/ArrowBack';
 import SendIcon from 'material-ui-icons/Send';
 import { insertNote } from '/imports/api/notes/methods.js';
 import RootLayout from '/imports/ui/layouts/RootLayout';
-import SecondaryNavHeader from '/imports/ui/components/NavHeader/Secondary';
+import { SecondaryNavHeader } from '/imports/ui/components/NavHeader';
 import { QuillEditor } from '/imports/ui/components/Quill';
 // TODO
 // import DatePickerCN from '/imports/ui/components/SubMaterialUI/DatePickerCN.jsx';

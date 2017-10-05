@@ -1,16 +1,19 @@
 import { Meteor } from 'meteor/meteor';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { compose } from 'recompose';
 import { withStyles } from 'material-ui/styles';
 import Button from 'material-ui/Button';
 import Input from 'material-ui/Input';
 import purple from 'material-ui/colors/purple';
 import grey from 'material-ui/colors/grey';
 import { checkCode, useCode } from '/imports/api/codes/methods.js';
+import { userLogin, snackBarOpen } from '/imports/ui/redux/actions';
 import RootLayout from '/imports/ui/layouts/RootLayout';
-import PrimaryNavHeader from '/imports/ui/components/NavHeader/Primary';
+import { PrimaryNavHeader } from '/imports/ui/components/NavHeader';
 import { CircleLoader } from '/imports/ui/components/Loader';
-import signHOC from '../../components/signHOC.js';
 
 class RegisterPage extends Component {
   static propTypes = {
@@ -199,6 +202,12 @@ const styles = {
   },
 };
 
-export default signHOC(
-  withStyles(styles)(RegisterPage)
-);
+const mapDispatchToProps = (dispatch) => bindActionCreators({
+  userLogin,
+  snackBarOpen,
+}, dispatch);
+
+export default compose(
+  connect(null, mapDispatchToProps),
+  withStyles(styles),
+)(RegisterPage);

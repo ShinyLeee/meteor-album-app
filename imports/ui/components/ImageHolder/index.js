@@ -1,9 +1,10 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
+import { compose } from 'recompose';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
+import { TransitionGroup } from 'react-transition-group';
 import TimeAgo from 'react-timeago';
 import CNStrings from 'react-timeago/lib/language-strings/zh-CN';
 import buildFormatter from 'react-timeago/lib/formatters/buildFormatter';
@@ -18,16 +19,16 @@ import HeartIcon from 'material-ui-icons/Favorite';
 import EmptyHeartIcon from 'material-ui-icons/FavoriteBorder';
 import CommentIcon from 'material-ui-icons/ChatBubbleOutline';
 import { Comments } from '/imports/api/comments/comment.js';
+import { vWidth, rWidth } from '/imports/utils/responsive';
+import settings from '/imports/utils/settings';
+import FadeTransition from '/imports/ui/components/Transition/Fade';
 import CommentList from '/imports/ui/components/CommentList';
 import { snackBarOpen } from '/imports/ui/redux/actions';
-import {
-  Wrapper,
-  ActionButtonNum,
-} from './ImageHolder.style.js';
+import { Wrapper, ActionButtonNum } from './ImageHolder.style.js';
 
 const formatter = buildFormatter(CNStrings);
 
-const domain = Meteor.settings.public.imageDomain;
+const { imageDomain } = settings;
 
 class ImageHolder extends Component {
   static propTypes = {
@@ -36,11 +37,9 @@ class ImageHolder extends Component {
     onUnlikeClick: PropTypes.func.isRequired,
     onMediaClick: PropTypes.func.isRequired,
     classes: PropTypes.object.isRequired,
-    // Below Pass from Database and Redux
     User: PropTypes.object, // not required bc guest can visit it
     comments: PropTypes.array.isRequired,
     snackBarOpen: PropTypes.func.isRequired,
-    // Below Pass from React-Router
     history: PropTypes.object.isRequired,
   }
 
@@ -48,13 +47,8 @@ class ImageHolder extends Component {
     comments: [],
   }
 
-  constructor(props) {
-    super(props);
-    this._clientWidth = document.body.clientWidth;
-    this._pixelRatio = window.devicePixelRatio;
-    this.state = {
-      isCommentOpen: false,
-    };
+  state = {
+    isCommentOpen: false,
   }
 
   _handleMediaTouch = () => {
@@ -83,13 +77,12 @@ class ImageHolder extends Component {
     const avatar = imageOwner && imageOwner.profile.avatar;
 
     // get image src
-    const url = `${domain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
-    const retinaWidth = Math.round(this._clientWidth * this._pixelRatio);
+    const url = `${imageDomain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
 
     // realHeight for lazyload
-    const realHeight = Math.round((image.dimension[1] / image.dimension[0]) * this._clientWidth);
+    const realHeight = Math.round((image.dimension[1] / image.dimension[0]) * vWidth);
 
-    const imageSrc = `${url}?imageView2/2/w/${retinaWidth}`;
+    const imageSrc = `${url}?imageView2/2/w/${rWidth}`;
 
     const isLiked = User && image.liker.indexOf(User.username) > -1;
 
@@ -105,19 +98,15 @@ class ImageHolder extends Component {
             height={realHeight}
             once
           >
-            <ReactCSSTransitionGroup
-              transitionName="fade"
-              transitionAppear
-              transitionAppearTimeout={375}
-              transitionEnterTimeout={375}
-              transitionLeave={false}
-            >
-              <CardMedia
-                style={{ height: realHeight, backgroundColor: image.color }}
-                image={imageSrc}
-                onClick={this._handleMediaTouch}
-              />
-            </ReactCSSTransitionGroup>
+            <TransitionGroup>
+              <FadeTransition>
+                <CardMedia
+                  style={{ height: realHeight, backgroundColor: image.color }}
+                  image={imageSrc}
+                  onClick={this._handleMediaTouch}
+                />
+              </FadeTransition>
+            </TransitionGroup>
           </LazyLoad>
           <CardActions>
             {
@@ -157,7 +146,7 @@ class ImageHolder extends Component {
   }
 }
 
-const MeteorContainer = createContainer(({ image }) => {
+const ImageHolderContainer = createContainer(({ image }) => {
   // discussion_id from comment
   const discId = image._id;
 
@@ -182,13 +171,18 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
 }, dispatch);
 
 const styles = {
-  icon: { color: 'rgba(0, 0, 0, 0.87)' },
+  icon: {
+    color: 'rgba(0, 0, 0, 0.87)',
+  },
 
-  heartIcon: { color: '#f15151' },
+  heartIcon: {
+    color: '#f15151',
+  },
 };
 
-export default withRouter(
-  connect(mapStateToProps, mapDispatchToProps)(
-    withStyles(styles)(MeteorContainer)
-  )
-);
+export default compose(
+  connect(mapStateToProps, mapDispatchToProps),
+  withStyles(styles),
+  withRouter,
+)(ImageHolderContainer);
+

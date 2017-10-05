@@ -1,6 +1,11 @@
-/* route /index */
+/* route / */
 .content__index {
-  background-color: #ededed;
+  background-color: #eee;
+}
+
+/* route /accounts/verifyEmail */
+.content__verifyEmail {
+  padding-top: 128px;
 }
 
 /* route /login, /register */
@@ -291,6 +296,26 @@
     color: #444;
   }
 }
+
+/* route /setting/emails */
+.content__settingEmails {
+  & .settingEmails__action > p {
+    padding: 0 16px;
+    font-size: 12px;
+  }
+  & .settingEmails__action > div {
+    margin: 18px 24px 0 0;
+    text-align: right;
+  }
+}
+
+/* route /setting/password */
+.content__settingPassword {
+  & > .settingPassword__button {
+    padding: 22px 0;
+    text-align: center;
+  }
+} 
 
 /* route /note, /note/:username/received, /note/:username/sent */
 .content__note, .content__allNotes, .content__allSentNotes {

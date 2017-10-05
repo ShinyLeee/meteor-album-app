@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import React, { Component } from 'react';
-import PrimaryNavHeader from '/imports/ui/components/NavHeader/Primary';
+import { vHeight } from '/imports/utils/responsive';
+import { PrimaryNavHeader } from '/imports/ui/components/NavHeader';
 import { LinearLoader } from '/imports/ui/components/Loader';
 
 export default class RootLayout extends Component {
@@ -17,11 +18,6 @@ export default class RootLayout extends Component {
     loading: true,
   }
 
-  constructor(props) {
-    super(props);
-    this._clientHeight = document.body.clientHeight;
-  }
-
   render() {
     const { deep, loading, children, Topbar } = this.props;
     return (
@@ -31,7 +27,7 @@ export default class RootLayout extends Component {
         }
         <main
           className={classNames('content', { deep })}
-          style={{ minHeight: this._clientHeight - 64 }}
+          style={{ minHeight: vHeight - 64 }}
         >
           { children }
           {

@@ -1,36 +1,33 @@
-import { Meteor } from 'meteor/meteor';
-import { Accounts } from 'meteor/accounts-base';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
+import { withStyles } from 'material-ui/styles';
 import Button from 'material-ui/Button';
-import TextField from 'material-ui/TextField';
-import SecondaryNavHeader from '/imports/ui/components/NavHeader/Secondary';
+import Input from 'material-ui/Input';
+import RootLayout from '/imports/ui/layouts/RootLayout';
+import { SecondaryNavHeader } from '/imports/ui/components/NavHeader';
 import { CircleLoader } from '/imports/ui/components/Loader';
 
-export default class PasswordPage extends Component {
+class PasswordPage extends Component {
   static propTypes = {
-    // Below Pass from Redux
+    classes: PropTypes.object.isRequired,
     snackBarOpen: PropTypes.func.isRequired,
   }
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      isProcessing: false,
-      processMsg: '',
-      oldPwd: '',
-      newPwd: '',
-      newPwd2: '',
-    };
+  state = {
+    isProcessing: false,
+    processMsg: '',
+    oldPwd: '',
+    newPwd: '',
+    newPwd2: '',
   }
 
   _handleValueChange = (e) => {
     this.setState({ [e.target.name]: e.target.value });
   }
 
-  _handlePasswordChange = (e) => {
-    e.preventDefault();
-
+  _handlePasswordChange = () => {
     const { oldPwd, newPwd, newPwd2 } = this.state;
 
     if (!oldPwd || !newPwd || !newPwd2) {
@@ -56,7 +53,7 @@ export default class PasswordPage extends Component {
     .catch((err) => {
       console.log(err);
       this.setState({ isProcessing: false, processMsg: '' });
-      this.props.snackBarOpen(err.reason || '修改密码失败');
+      this.props.snackBarOpen(`修改密码失败 ${err.reason}`);
     });
   }
 
@@ -66,48 +63,48 @@ export default class PasswordPage extends Component {
   }
 
   renderContent() {
+    const { classes } = this.props;
     return (
       <div className="content__settingPassword">
         <section className="settingPassword__form">
-          <TextField
+          <Input
+            className={classes.input}
             name="oldPwd"
-            hintText="当前密码"
-            hintStyle={{ left: '12px' }}
-            inputStyle={{ textIndent: '12px' }}
+            placeholder="当前密码"
             type="password"
             value={this.state.oldPwd}
             onChange={this._handleValueChange}
+            disableUnderline
             fullWidth
-          /><br />
-          <TextField
+          />
+          <Input
+            className={classes.input}
             name="newPwd"
-            hintText="新密码"
-            hintStyle={{ left: '12px' }}
-            inputStyle={{ textIndent: '12px' }}
+            placeholder="新密码"
             type="password"
             value={this.state.newPwd}
             onChange={this._handleValueChange}
+            disableUnderline
             fullWidth
-          /><br />
-          <TextField
+          />
+          <Input
+            className={classes.input}
             name="newPwd2"
-            hintText="确认密码"
-            hintStyle={{ left: '12px' }}
-            inputStyle={{ textIndent: '12px' }}
+            placeholder="确认密码"
             type="password"
             value={this.state.newPwd2}
             onChange={this._handleValueChange}
+            disableUnderline
             fullWidth
-          /><br />
+          />
         </section>
-        <section className="settingPassword__button" style={{ padding: '22px 0', textAlign: 'center' }}>
+        <section className="settingPassword__button">
           <Button
-            label="确认修改"
-            labelColor="#fff"
-            backgroundColor="#0077d9"
+            color="primary"
             onClick={this._handlePasswordChange}
             raised
-          />
+          >确认修改
+          </Button>
         </section>
       </div>
     );
@@ -115,18 +112,30 @@ export default class PasswordPage extends Component {
 
   render() {
     return (
-      <div className="container">
-        <SecondaryNavHeader title="修改密码" />
-        <main className="content">
-          <CircleLoader
-            open={this.state.isProcessing}
-            message={this.state.processMsg}
-            onTimeout={this._handleTimeout}
-          />
-          { this.renderContent() }
-        </main>
-      </div>
+      <RootLayout
+        loading={false}
+        Topbar={<SecondaryNavHeader title="修改密码" />}
+      >
+        <CircleLoader
+          open={this.state.isProcessing}
+          message={this.state.processMsg}
+          onTimeout={this._handleLoaderTimeout}
+        />
+        { this.renderContent() }
+      </RootLayout>
     );
   }
 
 }
+
+const styles = {
+  input: {
+    display: 'flex',
+    alignItems: 'flex-end',
+    height: 48,
+    paddingLeft: 14,
+    borderBottom: '1px solid #e0e0e0',
+  },
+};
+
+export default withStyles(styles)(PasswordPage);

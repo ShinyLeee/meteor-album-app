@@ -10,7 +10,7 @@ import ArrowBackIcon from 'material-ui-icons/ArrowBack';
 import DoneIcon from 'material-ui-icons/Done';
 import { insertDiary } from '/imports/api/diarys/methods.js';
 import RootLayout from '/imports/ui/layouts/RootLayout';
-import SecondaryNavHeader from '/imports/ui/components/NavHeader/Secondary';
+import { SecondaryNavHeader } from '/imports/ui/components/NavHeader';
 import { QuillEditor } from '/imports/ui/components/Quill';
 import { CircleLoader } from '/imports/ui/components/Loader';
 

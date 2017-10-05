@@ -1,13 +1,13 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Link, withRouter } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import settings from '/imports/utils/settings';
 import RootLayout from '/imports/ui/layouts/RootLayout';
 import { PrimaryNavHeader } from '../../components/NavHeader';
 
 const { sourceDomain } = settings;
 
-class Forbidden extends Component {
+export default class Forbidden extends Component {
   static propTypes = {
     location: PropTypes.object.isRequired,
   }
@@ -44,5 +44,3 @@ class Forbidden extends Component {
     );
   }
 }
-
-export default withRouter(Forbidden);

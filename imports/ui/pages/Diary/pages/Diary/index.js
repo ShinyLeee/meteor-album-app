@@ -9,7 +9,7 @@ import { Diarys } from '/imports/api/diarys/diary.js';
 import { diaryOpen, snackBarOpen } from '/imports/ui/redux/actions';
 import DiaryPage from './Diary';
 
-const MeteorContainer = createContainer(({ User, location }) => {
+const DiaryContainer = createContainer(({ User, location }) => {
   const query = queryString.parse(location.search);
 
   let start;
@@ -55,4 +55,4 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
   snackBarOpen,
 }, dispatch);
 
-export default connect(mapStateToProps, mapDispatchToProps)(MeteorContainer);
+export default connect(mapStateToProps, mapDispatchToProps)(DiaryContainer);

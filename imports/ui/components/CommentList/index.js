@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
+import { compose } from 'recompose';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import TimeAgo from 'react-timeago';
@@ -19,6 +20,7 @@ import List, {
   ListItemText,
 } from 'material-ui/List';
 import { insertComment, removeComment } from '/imports/api/comments/methods.js';
+import settings from '/imports/utils/settings';
 import { snackBarOpen } from '/imports/ui/redux/actions/index.js';
 import {
   CommentsWrapper,
@@ -30,7 +32,7 @@ import {
   PublishFooter,
 } from './CommentList.style.js';
 
-const sourceDomain = Meteor.settings.public.sourceDomain;
+const { sourceDomain } = settings;
 
 const formatter = buildFormatter(CNStrings);
 
@@ -223,8 +225,8 @@ const styles = {
   },
 };
 
-export default withRouter(
-  connect(mapStateToProps, mapDispatchToProps)(
-    withStyles(styles)(CommentList)
-  )
-);
+export default compose(
+  connect(mapStateToProps, mapDispatchToProps),
+  withStyles(styles),
+  withRouter,
+)(CommentList);

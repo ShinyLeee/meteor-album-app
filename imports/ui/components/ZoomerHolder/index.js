@@ -1,16 +1,18 @@
-import { Meteor } from 'meteor/meteor';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
+import { compose } from 'recompose';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { withStyles } from 'material-ui/styles';
 import { CircularProgress } from 'material-ui/Progress';
 import Dialog, { DialogContent } from 'material-ui/Dialog';
 import { incView } from '/imports/api/images/methods.js';
-import { zoomerClose, snackBarOpen } from '../../redux/actions';
+import settings from '/imports/utils/settings';
+import { rWidth } from '/imports/utils/responsive';
+import { zoomerClose, snackBarOpen } from '/imports/ui/redux/actions';
 import ZoomerInner from './components/ZoomerInner';
 import {
   Wrapper,
@@ -23,7 +25,7 @@ import {
   ExifInfo,
 } from './ZoomerHolder.style.js';
 
-const domain = Meteor.settings.public.imageDomain;
+const { imageDomain } = settings;
 
 class ZoomerHolder extends Component {
   static propTypes = {
@@ -34,16 +36,11 @@ class ZoomerHolder extends Component {
     history: PropTypes.object.isRequired,
   }
 
-  constructor(props) {
-    super(props);
-    this._clientWidth = document.body.clientWidth;
-    this._pixelRatio = window.devicePixelRatio;
-    this.state = {
-      infoDialog: false,
-      exifDialog: false,
-      isLoading: false,
-      exif: {},
-    };
+  state = {
+    infoDialog: false,
+    exifDialog: false,
+    isLoading: false,
+    exif: {},
   }
 
   componentDidMount() {
@@ -60,7 +57,7 @@ class ZoomerHolder extends Component {
 
   get imgSrc() {
     const { image } = this.props;
-    return `${domain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
+    return `${imageDomain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
   }
 
   disableMobileScroll(e) {
@@ -110,9 +107,8 @@ class ZoomerHolder extends Component {
     const { exif } = this.state;
 
     const imgSrc = this.imgSrc;
-    const realDimension = Math.round(this._clientWidth * this._pixelRatio);
-    const preSrc = `${imgSrc}?imageView2/2/w/${realDimension}`;
-    const trueSrc = `${imgSrc}?imageView2/3/w/${realDimension}`;
+    const preSrc = `${imgSrc}?imageView2/2/w/${rWidth}`;
+    const trueSrc = `${imgSrc}?imageView2/3/w/${rWidth}`;
     // double quote for special character see: https://www.w3.org/TR/CSS2/syndata.html#value-def-uri
     const imageHolderStyle = { backgroundImage: `url("${trueSrc}"),url("${preSrc}")` };
     return (
@@ -209,12 +205,10 @@ const styles = {
   dialog: {
     width: '75%',
   },
-
-
 };
 
-export default withRouter(
-  connect(null, mapDispatchToProps)(
-    withStyles(styles)(ZoomerHolder)
-  )
-);
+export default compose(
+  connect(null, mapDispatchToProps),
+  withStyles(styles),
+  withRouter,
+)(ZoomerHolder);

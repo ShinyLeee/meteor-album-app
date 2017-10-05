@@ -1,18 +1,20 @@
-import { Meteor } from 'meteor/meteor';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import LazyLoad from 'react-lazyload';
-import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
-import { selectCounter } from '/imports/ui/redux/actions/index.js';
+import { TransitionGroup } from 'react-transition-group';
+import { vWidth, pixelRatio } from '/imports/utils/responsive';
+import settings from '/imports/utils/settings';
+import { selectCounter } from '/imports/ui/redux/actions';
+import FadeTransition from '/imports/ui/components/Transition/Fade';
 import JustifiedImageBackground from '../../snippet/JustifiedImageBackground.js';
 import {
   Wrapper,
   SelectableImage,
 } from './GridImageHolder.style.js';
 
-const domain = Meteor.settings.public.imageDomain;
+const { imageDomain } = settings;
 
 export class GridImageHolder extends PureComponent {
   static propTypes = {
@@ -26,12 +28,6 @@ export class GridImageHolder extends PureComponent {
 
   static defaultProps = {
     isEditing: false,
-  }
-
-  constructor(props) {
-    super(props);
-    this._clientWidth = document.body.clientWidth;
-    this._pixelRatio = window.devicePixelRatio;
   }
 
   state = {
@@ -80,9 +76,9 @@ export class GridImageHolder extends PureComponent {
 
   render() {
     const { isEditing, image } = this.props;
-    const realDimension = this._clientWidth / 3;
-    const retinaDimension = Math.round(realDimension * this._pixelRatio);
-    const url = `${domain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
+    const realDimension = vWidth / 3;
+    const retinaDimension = Math.round(realDimension * pixelRatio);
+    const url = `${imageDomain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
     const imageSrc = `${url}?imageView2/1/w/${retinaDimension}`;
     return (
       <Wrapper
@@ -97,20 +93,16 @@ export class GridImageHolder extends PureComponent {
           height={Math.round(realDimension)}
           once
         >
-          <ReactCSSTransitionGroup
-            transitionName="fade"
-            transitionAppear
-            transitionAppearTimeout={375}
-            transitionEnterTimeout={375}
-            transitionLeave={false}
-          >
-            <SelectableImage
-              src={imageSrc}
-              alt={image.name}
-              isSelect={this.state.isSelect}
-              innerRef={(node) => { this.image = node; }}
-            />
-          </ReactCSSTransitionGroup>
+          <TransitionGroup>
+            <FadeTransition>
+              <SelectableImage
+                src={imageSrc}
+                alt={image.name}
+                isSelect={this.state.isSelect}
+                innerRef={(node) => { this.image = node; }}
+              />
+            </FadeTransition>
+          </TransitionGroup>
         </LazyLoad>
       </Wrapper>
     );

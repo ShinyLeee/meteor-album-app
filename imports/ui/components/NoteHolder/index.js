@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { compose } from 'recompose';
 import { withRouter } from 'react-router-dom';
 import TimeAgo from 'react-timeago';
 import CNStrings from 'react-timeago/lib/language-strings/zh-CN';
@@ -128,6 +129,7 @@ const styles = theme => ({
   },
 });
 
-export default withRouter(
-  withStyles(styles)(NoteHolder)
-);
+export default compose(
+  withStyles(styles),
+  withRouter,
+)(NoteHolder);

@@ -1,6 +1,6 @@
 /* eslint-disable class-methods-use-this */
-import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { delay, now, getEmptyPoint, isValidPoint, isClickableElement } from './helper';
 import {
   MAX_TAP_OFFSET,
@@ -20,7 +20,19 @@ import {
  */
 
 export default function withGesture(ListenedComponent) {
-  class Gesture extends Component {
+  return class Gesture extends Component {
+    static propTypes = {
+      onTap: PropTypes.func,
+      onDoubleTap: PropTypes.func,
+      onPanStart: PropTypes.func,
+      onPan: PropTypes.func,
+      onPanEnd: PropTypes.func,
+      onSwipe: PropTypes.func,
+      onPinchStart: PropTypes.func,
+      onPinch: PropTypes.func,
+      onPinchEnd: PropTypes.func,
+    }
+
     constructor(props) {
       super(props);
       this.isBound = false;
@@ -232,19 +244,5 @@ export default function withGesture(ListenedComponent) {
         />
       );
     }
-  }
-
-  Gesture.propTypes = {
-    onTap: PropTypes.func,
-    onDoubleTap: PropTypes.func,
-    onPanStart: PropTypes.func,
-    onPan: PropTypes.func,
-    onPanEnd: PropTypes.func,
-    onSwipe: PropTypes.func,
-    onPinchStart: PropTypes.func,
-    onPinch: PropTypes.func,
-    onPinchEnd: PropTypes.func,
   };
-
-  return Gesture;
 }

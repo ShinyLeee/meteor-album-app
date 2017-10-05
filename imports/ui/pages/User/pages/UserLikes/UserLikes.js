@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
-import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
+import { TransitionGroup } from 'react-transition-group';
 import { Images } from '/imports/api/images/image.js';
 import { makeCancelable } from '/imports/utils';
 import RootLayout from '/imports/ui/layouts/RootLayout';
-import SecondaryNavHeader from '/imports/ui/components/NavHeader/Secondary';
+import SlideTransition from '/imports/ui/components/Transition/Slide';
+import { SecondaryNavHeader } from '/imports/ui/components/NavHeader';
 import Infinity from '/imports/ui/components/Infinity';
 import EmptyHolder from '/imports/ui/components/EmptyHolder';
 import ZoomerHolder from '/imports/ui/components/ZoomerHolder';
@@ -21,14 +22,12 @@ export default class UserLikesPage extends PureComponent {
     initUserLikedImages: PropTypes.array.isRequired,
     zoomerOpen: PropTypes.bool.isRequired,
     zoomerImage: PropTypes.object, // zoomerImage only required when zoomerOpen is true
+    snackBarOpen: PropTypes.func.isRequired,
   }
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      isLoading: false,
-      images: props.initUserLikedImages,
-    };
+  state = {
+    isLoading: false,
+    images: this.props.initUserLikedImages,
   }
 
   componentWillReceiveProps(nextProps) {
@@ -71,6 +70,7 @@ export default class UserLikesPage extends PureComponent {
     })
     .catch((err) => {
       console.log(err);
+      this.props.snackBarOpen(`加载图片失败 ${err.reason}`);
     });
   }
 
@@ -94,13 +94,15 @@ export default class UserLikesPage extends PureComponent {
     }
     return (
       <div className="content__userLiked">
-        <ReactCSSTransitionGroup
-          transitionName="zoomer"
-          transitionEnterTimeout={300}
-          transitionLeaveTimeout={300}
-        >
-          { zoomerOpen && <ZoomerHolder key={zoomerImage._id} image={zoomerImage} /> }
-        </ReactCSSTransitionGroup>
+        <TransitionGroup>
+          {
+            zoomerOpen && (
+              <SlideTransition>
+                <ZoomerHolder image={zoomerImage} />
+              </SlideTransition>
+            )
+          }
+        </TransitionGroup>
         <Infinity
           isLoading={this.state.isLoading}
           onInfinityLoad={this._handleLoadImages}

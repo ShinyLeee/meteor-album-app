@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import Paper from 'material-ui/Paper';
 import RootLayout from '/imports/ui/layouts/RootLayout';
-import SearchBar from '/imports/ui/components/NavHeader/SearchBar';
+import { SearchBar } from '/imports/ui/components/NavHeader';
 import CollHolder from '/imports/ui/components/CollHolder';
 
 export default class SearchPage extends Component {

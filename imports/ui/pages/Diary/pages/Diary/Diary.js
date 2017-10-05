@@ -1,18 +1,19 @@
 import _ from 'lodash';
 import moment from 'moment';
-import { Meteor } from 'meteor/meteor';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
+import { TransitionGroup } from 'react-transition-group';
 import IconButton from 'material-ui/IconButton';
 import ChevronLeftIcon from 'material-ui-icons/ChevronLeft';
 import ChevronRightIcon from 'material-ui-icons/ChevronRight';
+import FadeTransition from '/imports/ui/components/Transition/Fade';
 import RootLayout from '/imports/ui/layouts/RootLayout';
-import SecondaryNavHeader from '/imports/ui/components/NavHeader/Secondary';
+import { SecondaryNavHeader } from '/imports/ui/components/NavHeader';
+import settings from '/imports/utils/settings';
 import FloatButton from '/imports/ui/components/FloatButton';
 import DiaryHolder from '../../components/DiaryHolder';
 
-const sourceDomain = Meteor.settings.public.sourceDomain;
+const { sourceDomain } = settings;
 
 export default class DiaryPage extends Component {
   static propTypes = {
@@ -87,35 +88,30 @@ export default class DiaryPage extends Component {
           </div>
         </header>
         <div className="diary__body">
-          {
-            diarys.map((diary, i) => {
-              const diaryTime = moment(diary.updatedAt).format('YYYY.MM.DD A HH:mm');
-              const activeDiary = diary;
-              activeDiary.time = diaryTime;
-              return (
-                <ReactCSSTransitionGroup
-                  key={i}
-                  transitionName="fade"
-                  transitionAppear
-                  transitionAppearTimeout={375}
-                  transitionEnterTimeout={375}
-                  transitionLeave={false}
-                >
-                  <article key={i} className="diary__item">
-                    <header className="diary__title">
-                      <h3>{diary.title}</h3>
-                    </header>
-                    <article className="diary__content" onClick={() => this.props.diaryOpen(activeDiary)}>
-                      {diary.outline}
+          <TransitionGroup>
+            {
+              diarys.map((diary) => {
+                const diaryTime = moment(diary.updatedAt).format('YYYY.MM.DD A HH:mm');
+                const activeDiary = diary;
+                activeDiary.time = diaryTime;
+                return (
+                  <FadeTransition key={diary._id} exit={false}>
+                    <article className="diary__item">
+                      <header className="diary__title">
+                        <h3>{diary.title}</h3>
+                      </header>
+                      <article className="diary__content" onClick={() => this.props.diaryOpen(activeDiary)}>
+                        {diary.outline}
+                      </article>
+                      <footer className="diary__footer">
+                        <time className="diary__time" dateTime={diaryTime}>{diaryTime}</time>
+                      </footer>
                     </article>
-                    <footer className="diary__footer">
-                      <time className="diary__time" dateTime={diaryTime}>{diaryTime}</time>
-                    </footer>
-                  </article>
-                </ReactCSSTransitionGroup>
-              );
-            })
-          }
+                  </FadeTransition>
+                );
+              })
+            }
+          </TransitionGroup>
         </div>
       </div>
     );

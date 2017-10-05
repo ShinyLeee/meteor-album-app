@@ -42,7 +42,9 @@ class PhotoSwipeHolder extends Component {
   _handleGalleryClose = () => {
     const { items } = this.props;
     const { viewedIndexes } = this.state;
-    if (viewedIndexes.length === 0) return;
+    if (viewedIndexes.length === 0) {
+      return;
+    }
     const imageIds = viewedIndexes.map((index) => items[index]._id);
     this.setState({ viewedIndexes: [] });
     this.props.photoSwipeClose();

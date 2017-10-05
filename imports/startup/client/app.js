@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import React from 'react';
 import { render } from 'react-dom';
-import 'react-tap-event-plugin';
 import App_Mobile from '/imports/ui/App';
 import App_PC from '/imports/ui/App_PC';
 import { platform } from '/imports/utils';

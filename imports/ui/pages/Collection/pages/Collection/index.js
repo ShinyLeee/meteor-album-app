@@ -10,7 +10,7 @@ import {
 } from '/imports/ui/redux/actions';
 import CollectionPage from './Collection';
 
-const MeteorContainer = createContainer(({ User, match }) => {
+const CollectionContainer = createContainer(({ User, match }) => {
   const { username, cname } = match.params;
 
   let isGuest = !User;  // if User is null, isGuest is true
@@ -55,4 +55,4 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
   uploaderStart,
 }, dispatch);
 
-export default connect(mapStateToProps, mapDispatchToProps)(MeteorContainer);
+export default connect(mapStateToProps, mapDispatchToProps)(CollectionContainer);

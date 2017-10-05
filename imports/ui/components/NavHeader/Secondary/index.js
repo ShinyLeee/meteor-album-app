@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { compose } from 'recompose';
 import { withRouter } from 'react-router-dom';
 import { withStyles } from 'material-ui/styles';
 import AppBar from 'material-ui/AppBar';
@@ -96,5 +97,7 @@ const styles = {
   },
 };
 
-
-export default withRouter(withStyles(styles)(SecondaryNavHeader));
+export default compose(
+  withStyles(styles),
+  withRouter,
+)(SecondaryNavHeader);

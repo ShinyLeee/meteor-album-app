@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
+import { compose } from 'recompose';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { withStyles } from 'material-ui/styles';
@@ -20,7 +21,8 @@ import SettingsIcon from 'material-ui-icons/Settings';
 import ArrowDropdownIcon from 'material-ui-icons/ArrowDropDown';
 import purple from 'material-ui/colors/purple';
 import teal from 'material-ui/colors/teal';
-import { userLogout, snackBarOpen } from '/imports/ui/redux/actions/index.js';
+import settings from '/imports/utils/settings';
+import { userLogout, snackBarOpen } from '/imports/ui/redux/actions';
 import {
   DrawerContent,
   DrawerProfile,
@@ -31,7 +33,7 @@ import {
 
 const noop = () => {};
 
-const sourceDomain = Meteor.settings.public.sourceDomain;
+const { sourceDomain } = settings;
 
 class NavHeaderDrawer extends Component {
   static propTypes = {
@@ -140,7 +142,7 @@ class NavHeaderDrawer extends Component {
                 <ExploreIcon />
               </ListItemIcon>
               <ListItemText
-                classes={indexPage && { text: classes.purple }}
+                classes={indexPage ? { text: classes.purple } : {}}
                 primary="探索"
               />
             </ListItem>
@@ -152,7 +154,7 @@ class NavHeaderDrawer extends Component {
                 <UserIcon />
               </ListItemIcon>
               <ListItemText
-                classes={userPage && { text: classes.teal }}
+                classes={userPage ? { text: classes.teal } : {}}
                 primary="主页"
               />
             </ListItem>
@@ -220,13 +222,17 @@ const styles = {
     height: 54,
   },
 
-  purple: { color: purple[500] },
+  purple: {
+    color: purple[500],
+  },
 
-  teal: { color: teal[500] },
+  teal: {
+    color: teal[500],
+  },
 };
 
-export default withRouter(
-  connect(mapStateToProps, mapDispatchToProps)(
-    withStyles(styles)(NavHeaderDrawer)
-  )
-);
+export default compose(
+  connect(mapStateToProps, mapDispatchToProps),
+  withStyles(styles),
+  withRouter,
+)(NavHeaderDrawer);

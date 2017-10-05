@@ -1,9 +1,9 @@
-import { Meteor } from 'meteor/meteor';
 import PropTypes from 'prop-types';
 import React from 'react';
+import settings from '/imports/utils/settings';
 import { Wrapper, Inner, Header, Info } from './EmptyHolder.style.js';
 
-const source = `${Meteor.settings.public.sourceDomain}/GalleryPlus/Default/empty.png`;
+const source = `${settings.sourceDomain}/GalleryPlus/Default/empty.png`;
 
 const EmptyHolder = ({ header, mainInfo, secInfo }) => (
   <Wrapper>

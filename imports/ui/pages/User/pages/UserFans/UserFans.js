@@ -9,7 +9,7 @@ import Button from 'material-ui/Button';
 import blue from 'material-ui/colors/blue';
 import RootLayout from '/imports/ui/layouts/RootLayout';
 import { followUser, unFollowUser } from '/imports/api/users/methods.js';
-import SecondaryNavHeader from '/imports/ui/components/NavHeader/Secondary';
+import { SecondaryNavHeader } from '/imports/ui/components/NavHeader';
 
 class UserFansPage extends PureComponent {
   static propTypes = {
@@ -23,12 +23,9 @@ class UserFansPage extends PureComponent {
     classes: PropTypes.object.isRequired,
   }
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      wholeFans: props.initialFans,
-      fans: props.initialFans,
-    };
+  state = {
+    wholeFans: this.props.initialFans,
+    fans: this.props.initialFans,
   }
 
   componentWillReceiveProps(nextProps) {

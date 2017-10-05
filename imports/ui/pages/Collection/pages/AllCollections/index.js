@@ -3,12 +3,13 @@ import { createContainer } from 'meteor/react-meteor-data';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Collections } from '/imports/api/collections/collection.js';
+import settings from '/imports/utils/settings';
 import { snackBarOpen } from '/imports/ui/redux/actions';
 import AllCollectionsPage from './AllCollections';
 
-const preCurUser = Meteor.settings.public.preCurUser;
+const { preCurUser } = settings;
 
-const MeteorContainer = createContainer(({ User, match }) => {
+const AllCollectionContainer = createContainer(({ User, match }) => {
   const { username } = match.params;
 
   let isGuest = !User;  // if User is null, isGuest is true
@@ -51,4 +52,4 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
   snackBarOpen,
 }, dispatch);
 
-export default connect(mapStateToProps, mapDispatchToProps)(MeteorContainer);
+export default connect(mapStateToProps, mapDispatchToProps)(AllCollectionContainer);

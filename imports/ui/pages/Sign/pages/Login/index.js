@@ -2,6 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { compose } from 'recompose';
 import { withStyles } from 'material-ui/styles';
 import { CircularProgress } from 'material-ui/Progress';
 import Dialog from 'material-ui/Dialog';
@@ -10,10 +13,11 @@ import Input from 'material-ui/Input';
 import purple from 'material-ui/colors/purple';
 import grey from 'material-ui/colors/grey';
 import { validateEmail } from '/imports/utils';
+import { userLogin, snackBarOpen } from '/imports/ui/redux/actions';
+import withRedirect from '/imports/ui/hocs/withRedirect';
 import RootLayout from '/imports/ui/layouts/RootLayout';
-import PrimaryNavHeader from '/imports/ui/components/NavHeader/Primary';
+import { PrimaryNavHeader } from '/imports/ui/components/NavHeader';
 import { CircleLoader } from '/imports/ui/components/Loader';
-import signHOC from '../../components/signHOC.js';
 
 // TODO add Recaptch in this Login page component
 class LoginPage extends Component {
@@ -32,16 +36,6 @@ class LoginPage extends Component {
     email: '',
     account: '',
     password: '',
-  }
-
-  componentDidMount() {
-    const { location } = this.props;
-    if (
-      location.state !== undefined &&
-      location.state.message !== undefined
-    ) {
-      this.props.snackBarOpen(location.state.message);
-    }
   }
 
   _handleChange(key, value) {
@@ -245,4 +239,13 @@ const styles = {
   },
 };
 
-export default signHOC(withStyles(styles)(LoginPage));
+const mapDispatchToProps = (dispatch) => bindActionCreators({
+  userLogin,
+  snackBarOpen,
+}, dispatch);
+
+export default compose(
+  connect(null, mapDispatchToProps),
+  withStyles(styles),
+  withRedirect,
+)(LoginPage);

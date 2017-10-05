@@ -10,10 +10,10 @@ import SettingsIcon from 'material-ui-icons/Settings';
 import ExitToAppIcon from 'material-ui-icons/ExitToApp';
 import teal from 'material-ui/colors/teal';
 import { followUser, unFollowUser } from '/imports/api/users/methods.js';
+import { vWidth, rWidth } from '/imports/utils/responsive';
 import RootLayout from '/imports/ui/layouts/RootLayout';
-import PrimaryNavHeader from '/imports/ui/components/NavHeader/Primary';
-import SecondaryNavHeader from '/imports/ui/components/NavHeader/Secondary';
-import TopImageSlider from './components/TopImageSlider';
+import { PrimaryNavHeader, SecondaryNavHeader } from '/imports/ui/components/NavHeader';
+import TopImageSlider from '../../components/TopImageSlider';
 
 const teal500 = teal[500];
 
@@ -30,12 +30,6 @@ class UserPage extends Component {
     classes: PropTypes.object.isRequired,
     userLogout: PropTypes.func.isRequired,
     snackBarOpen: PropTypes.func.isRequired,
-  }
-
-  constructor(props) {
-    super(props);
-    this._clientWidth = document.body.clientWidth;
-    this._pixelRatio = window.devicePixelRatio;
   }
 
   state = {
@@ -121,8 +115,7 @@ class UserPage extends Component {
 
     // sort by likers length --> for TopImageSlider component
     const topImages = unOrderedImages.sort((p, n) => n.liker.length - p.liker.length);
-    const realDimension = Math.round(this._clientWidth * this._pixelRatio);
-    const preCover = `${curUser.profile.cover}?imageView2/2/w/${realDimension}`;
+    const preCover = `${curUser.profile.cover}?imageView2/2/w/${rWidth}`;
     const trueCover = `${curUser.profile.cover}`;
     return (
       <div className="content__user">
@@ -137,7 +130,7 @@ class UserPage extends Component {
           <div className="main__profile">
             <div
               className="main__content"
-              style={{ left: `${(document.body.clientWidth - 120) / 2}px` }}
+              style={{ left: `${(vWidth - 120) / 2}px` }}
             >
               <div className="main__avatar">
                 <img src={curUser.profile.avatar} alt={curUser.username} />

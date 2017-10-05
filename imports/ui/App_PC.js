@@ -1,8 +1,8 @@
 import _ from 'lodash';
-import { Meteor } from 'meteor/meteor';
 import React from 'react';
+import settings from '/imports/utils/settings';
 
-const sourceDomain = Meteor.settings.public.sourceDomain;
+const { sourceDomain } = settings;
 
 const PC = () => (
   <div className="pc">

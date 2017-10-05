@@ -15,10 +15,11 @@ export default class Slider extends Component {
     this.sliderWidth = undefined; // visible slider width
     this.singleWidth = undefined; // single slider width
     this._x = null; // current x coordinate
-    this.state = {
-      deltaX: 0,
-      sliders: [],
-    };
+  }
+
+  state = {
+    deltaX: 0,
+    sliders: [],
   }
 
   componentDidMount() {

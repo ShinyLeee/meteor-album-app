@@ -416,8 +416,7 @@ class SettingPage extends Component {
           this.state.isEditing
           ? (
             <CustomNavHeader
-              style={{ backgroundColor: blue500 }}
-              classnames={{ content: classes.navHeader__content }}
+              classnames={{ root: classes.navheader__root, content: classes.navheader__content }}
               title={this.state.isProcessing ? '上传图片中' : '修改设置中'}
               Left={
                 <IconButton color="contrast" onClick={() => this.setState({ isAlertOpen: true })}>
@@ -462,7 +461,11 @@ const styles = {
     color: '#fff',
   },
 
-  navHeader__content: {
+  navheader__root: {
+    backgroundColor: blue500,
+  },
+
+  navheader__content: {
     color: '#fff',
   },
 };

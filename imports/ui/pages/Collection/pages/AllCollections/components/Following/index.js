@@ -9,11 +9,8 @@ export default class FollowedCollection extends Component {
     colls: PropTypes.array.isRequired,
   }
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      colls: this.generateColls(props),
-    };
+  state = {
+    colls: this.generateColls(this.props),
   }
 
   componentWillReceiveProps(nextProps) {

@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import withGesture from '../../../utils/gesture';
+import withGesture from '/imports/ui/hocs/withGesture';
 
 export const Wrapper = styled.div`
   position: relative;

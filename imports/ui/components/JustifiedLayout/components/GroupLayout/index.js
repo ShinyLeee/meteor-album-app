@@ -1,10 +1,11 @@
 import _ from 'lodash';
-import { Meteor } from 'meteor/meteor';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import justifiedLayout from 'justified-layout';
+import { pixelRatio } from '/imports/utils/responsive';
+import settings from '/imports/utils/settings';
 import { photoSwipeOpen, selectGroupCounter } from '/imports/ui/redux/actions';
 import ConnectedGroupImageHolder from './components/GroupImageHolder';
 import JustifiedSelectIcon from '../snippet/JustifiedSelectIcon';
@@ -13,7 +14,7 @@ import {
   Title,
 } from './GroupLayout.style.js';
 
-const domain = Meteor.settings.public.imageDomain;
+const { imageDomain } = settings;
 
 export class JustifiedGroupLayout extends PureComponent {
   static propTypes = {
@@ -56,15 +57,10 @@ export class JustifiedGroupLayout extends PureComponent {
     fullWidthBreakoutRowCadence: false,
   }
 
-  constructor(props) {
-    super(props);
-    const geometry = this.generateGeo(props);
-    this._pixelRatio = window.devicePixelRatio;
-    this.state = {
-      isGroupSelect: false,
-      geometry,
-      pswpItems: props.showGallery ? this.generateItems(props, geometry) : undefined,
-    };
+  state = {
+    isGroupSelect: false,
+    geometry: this.generateGeo(this.props),
+    pswpItems: this.props.showGallery ? this.generateItems(this.props, this.generateGeo(this.props)) : undefined,
   }
 
   componentWillReceiveProps(nextProps) {
@@ -145,12 +141,12 @@ export class JustifiedGroupLayout extends PureComponent {
   generateItems(props, geometry) {
     const { containerWidth, groupImages } = props;
     const pswpItems = groupImages.map((image, i) => {
-      const src = `${domain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
-      const realMWidth = Math.round(geometry.boxes[i].width * this._pixelRatio);
-      const realMHeight = Math.round(geometry.boxes[i].height * this._pixelRatio);
+      const src = `${imageDomain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
+      const realMWidth = Math.round(geometry.boxes[i].width * pixelRatio);
+      const realMHeight = Math.round(geometry.boxes[i].height * pixelRatio);
       // generate based on Qiniu imageView2 mode 3 API
       // more details see https://developer.qiniu.com/dora/api/basic-processing-images-imageview2
-      const minWidth = Math.round(containerWidth * this._pixelRatio);
+      const minWidth = Math.round(containerWidth * pixelRatio);
       const minHeight = Math.round((image.dimension[1] / image.dimension[0]) * minWidth);
       return ({
         _id: image._id,

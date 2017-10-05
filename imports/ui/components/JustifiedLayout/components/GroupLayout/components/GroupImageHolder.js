@@ -1,16 +1,18 @@
 import _ from 'lodash';
-import { Meteor } from 'meteor/meteor';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import LazyLoad from 'react-lazyload';
-import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
+import { TransitionGroup } from 'react-transition-group';
+import { pixelRatio } from '/imports/utils/responsive';
+import settings from '/imports/utils/settings';
 import { selectCounter } from '/imports/ui/redux/actions';
+import FadeTransition from '/imports/ui/components/Transition/Fade';
 import JustifiedImageBackground from '../../snippet/JustifiedImageBackground';
 import { Wrapper, SelectableImage } from './GroupImageHolder.style.js';
 
-const domain = Meteor.settings.public.imageDomain;
+const { imageDomain } = settings;
 
 export class GroupImageHolder extends PureComponent {
   static propTypes = {
@@ -21,15 +23,9 @@ export class GroupImageHolder extends PureComponent {
     total: PropTypes.number.isRequired,
     groupTotal: PropTypes.number,
     onImageClick: PropTypes.func,
-    // Below Pass from Redux
     group: PropTypes.object.isRequired,
     counter: PropTypes.number.isRequired,
     selectCounter: PropTypes.func.isRequired,
-  }
-
-  constructor(props) {
-    super(props);
-    this._pixelRatio = window.devicePixelRatio;
   }
 
   state = {
@@ -94,9 +90,9 @@ export class GroupImageHolder extends PureComponent {
       dimension,
       image,
     } = this.props;
-    const url = `${domain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
-    const retinaWidth = Math.round(dimension.width * this._pixelRatio);
-    const retinaHeight = Math.round(dimension.height * this._pixelRatio);
+    const url = `${imageDomain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
+    const retinaWidth = Math.round(dimension.width * pixelRatio);
+    const retinaHeight = Math.round(dimension.height * pixelRatio);
     const imageSrc = `${url}?imageView2/1/w/${retinaWidth}/h/${retinaHeight}`;
     const imageHolderStyle = {
       left: `${dimension.left}px`,
@@ -115,20 +111,16 @@ export class GroupImageHolder extends PureComponent {
           height={dimension.height}
           once
         >
-          <ReactCSSTransitionGroup
-            transitionName="fade"
-            transitionAppear
-            transitionAppearTimeout={375}
-            transitionEnterTimeout={375}
-            transitionLeave={false}
-          >
-            <SelectableImage
-              src={imageSrc}
-              alt={image.name}
-              isSelect={this.state.isSelect}
-              innerRef={(node) => { this.image = node; }}
-            />
-          </ReactCSSTransitionGroup>
+          <TransitionGroup>
+            <FadeTransition>
+              <SelectableImage
+                src={imageSrc}
+                alt={image.name}
+                isSelect={this.state.isSelect}
+                innerRef={(node) => { this.image = node; }}
+              />
+            </FadeTransition>
+          </TransitionGroup>
         </LazyLoad>
       </Wrapper>
     );

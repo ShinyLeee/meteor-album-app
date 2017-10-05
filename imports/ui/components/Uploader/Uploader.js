@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import uuid from 'node-uuid';
 import { insertImage } from '/imports/api/images/methods.js';
+import settings from '/imports/utils/settings';
 import {
   Wrapper,
   Inner,
@@ -15,7 +16,7 @@ import {
   Progress,
 } from './Uploader.style.js';
 
-const domain = Meteor.settings.public.imageDomain;
+const { imageDomain } = settings;
 
 const initialState = {
   pace: 0,               // Current File Uploading Progress
@@ -31,7 +32,6 @@ export default class Uploader extends Component {
     multiple: PropTypes.bool.isRequired,
     onBeforeUpload: PropTypes.func,
     onAfterUpload: PropTypes.func,
-    // Below Pass from Redux
     User: PropTypes.object.isRequired,
     token: PropTypes.string,
     open: PropTypes.bool.isRequired,
@@ -52,8 +52,9 @@ export default class Uploader extends Component {
     this._cancelFn = undefined;
     this._allowedFiles = ['image/jpeg', 'image/png', 'image/gif'];
     this._uploadURL = window.location.protocol === 'https:' ? 'https://up.qbox.me/' : 'http://upload.qiniu.com';
-    this.state = initialState;
   }
+
+  state = initialState
 
   componentDidMount() {
     Meteor.callPromise('Qiniu.getUptoken')
@@ -241,7 +242,7 @@ export default class Uploader extends Component {
       createdAt: new Date(),
       updatedAt: new Date(),
     };
-    const imageURL = encodeURI(`${domain}/${image.user}/${image.collection}/${image.name}.${image.type}`);
+    const imageURL = encodeURI(`${imageDomain}/${image.user}/${image.collection}/${image.name}.${image.type}`);
 
     const getImageAve = () => axios.get(`${imageURL}?imageAve`);
     const getImageExif = () => axios.get(`${imageURL}?exif`);

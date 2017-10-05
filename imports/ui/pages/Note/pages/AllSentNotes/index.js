@@ -7,7 +7,7 @@ import { Notes } from '/imports/api/notes/note.js';
 import { snackBarOpen } from '/imports/ui/redux/actions';
 import AllSentNotes from './AllSentNotes';
 
-const MeteorContainer = createContainer(({ match }) => {
+const AllSentNotesContainer = createContainer(({ match }) => {
   const { username } = match.params;
   // Define How many notes render in the first time
   const limit = 5;
@@ -37,4 +37,4 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
   snackBarOpen,
 }, dispatch);
 
-export default connect(mapStateToProps, mapDispatchToProps)(MeteorContainer);
+export default connect(mapStateToProps, mapDispatchToProps)(AllSentNotesContainer);
