@@ -8,11 +8,11 @@ import {
 } from '/imports/ui/redux/actions';
 import Uploader from './Uploader';
 
-const mapStateToProps = (state) => ({
-  User: state.User,
-  token: state.uptoken,
-  open: state.uploader.open,
-  destination: state.uploader.destination,
+const mapStateToProps = ({ sessions, portals }) => ({
+  User: sessions.User,
+  token: sessions.uptoken,
+  open: portals.uploader.open,
+  destination: portals.uploader.destination,
 });
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({

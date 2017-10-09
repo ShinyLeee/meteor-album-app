@@ -168,7 +168,6 @@ const IMAGES_METHODS = _.map([
   shiftImages,
   likeImage,
   unlikeImage,
-  incView,
 ], 'name');
 
 if (Meteor.isServer) {

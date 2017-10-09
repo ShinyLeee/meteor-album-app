@@ -1,25 +1,13 @@
 import { combineReducers } from 'redux';
 import {
-  User,
-  uptoken,
-  zoomer,
-  dialog,
-  diary,
-  photoSwipe,
-  uploader,
-  snackBar,
+  sessions,
+  portals,
   selectCounter,
 } from './reducers';
 
 const reducers = combineReducers({
-  User,
-  uptoken,
-  zoomer,
-  dialog,
-  diary,
-  photoSwipe,
-  uploader,
-  snackBar,
+  sessions,
+  portals,
   selectCounter,
 });
 

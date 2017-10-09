@@ -14,10 +14,12 @@ export const Wrapper = styled.div`
 
 export const Body = styled.div`
   min-height: 100%;
+  margin-top: 64px;
 `;
 
 export const Article = styled.article`
-  padding-top: 16px;
+  margin: 0;
+  padding: 0;
 `;
 
 export const Footer = styled.footer`

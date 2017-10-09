@@ -44,6 +44,22 @@ class CollHolder extends Component {
     anchorEl: undefined,
   }
 
+  _handleRequestClose = () => {
+    this.setState({ menuOpen: false });
+  }
+
+  _handleToggleLock = () => {
+    const { coll } = this.props;
+    this._handleRequestClose();
+    this.props.onToggleLock(coll);
+  }
+
+  _handleToggleRemove = () => {
+    const { coll } = this.props;
+    this._handleRequestClose();
+    this.props.onRemove(coll);
+  }
+
   render() {
     const {
       coll,
@@ -52,9 +68,6 @@ class CollHolder extends Component {
       showDetails,
       showActions,
       classes,
-      // onCheck,
-      onToggleLock,
-      onRemove,
     } = this.props;
     let fastSrc = `${coll.cover}?imageView2/2/w/${rWidth}`;
     if (coll.cover.indexOf('VF_ac') > 0) {
@@ -90,8 +103,6 @@ class CollHolder extends Component {
               <div>
                 <IconButton
                   className={classes.moreVertBtn}
-                  aria-label="More"
-                  aria-haspopup="true"
                   onClick={(e) => this.setState({ menuOpen: true, anchorEl: e.currentTarget })}
                 >
                   <MoreVertIcon />
@@ -99,20 +110,20 @@ class CollHolder extends Component {
                 <Menu
                   open={this.state.menuOpen}
                   anchorEl={this.state.anchorEl}
-                  onRequestClose={() => this.setState({ menuOpen: false })}
+                  onRequestClose={this._handleRequestClose}
                 >
                   {/* <MenuItem
                     leftIcon={<InfoIcon />}
                     primaryText="查看信息"
                     onClick={() => onCheck(coll)}
                   />*/}
-                  <MenuItem className={classes.menuItem} onClick={() => onToggleLock(coll)}>
+                  <MenuItem className={classes.menuItem} onClick={this._handleToggleLock}>
                     <IconButton className={classes.menuBtn}>
                       { coll.private ? <LockOutIcon /> : <LockIcon />}
                     </IconButton>
                     { coll.private ? '公开相册' : ' 加密相册' }
                   </MenuItem>
-                  <MenuItem className={classes.menuItem} onClick={() => onRemove(coll)}>
+                  <MenuItem className={classes.menuItem} onClick={this._handleToggleRemove}>
                     <IconButton className={classes.menuBtn}>
                       <DeleteIcon />
                     </IconButton>

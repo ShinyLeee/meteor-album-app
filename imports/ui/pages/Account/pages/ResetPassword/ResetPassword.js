@@ -1,21 +1,24 @@
-import { Meteor } from 'meteor/meteor';
-import { Accounts } from 'meteor/accounts-base';
+import _ from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
 import { withStyles } from 'material-ui/styles';
-import Dialog from 'material-ui/Dialog';
 import Button from 'material-ui/Button';
 import Input from 'material-ui/Input';
 import IconButton from 'material-ui/IconButton';
 import ArrowBackIcon from 'material-ui-icons/ArrowBack';
 import blue from 'material-ui/colors/blue';
 import RootLayout from '/imports/ui/layouts/RootLayout';
+import { ModalActions } from '/imports/ui/components/Modal';
 import { CustomNavHeader } from '/imports/ui/components/NavHeader';
 
 const blue500 = blue[500];
 
 class ResetPasswordPage extends Component {
   static propTypes = {
+    modalOpen: PropTypes.func.isRequired,
+    modalClose: PropTypes.func.isRequired,
     snackBarOpen: PropTypes.func.isRequired,
     classes: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
@@ -23,7 +26,6 @@ class ResetPasswordPage extends Component {
   }
 
   state = {
-    isAlertOpen: false,
     isProcessing: false,
     processMsg: '',
     newPwd: '',
@@ -35,8 +37,15 @@ class ResetPasswordPage extends Component {
   }
 
   _handleResetPassword = () => {
-    const { location: { state: { token } } } = this.props;
+    const { location } = this.props;
     const { newPwd, newPwd2 } = this.state;
+
+    const token = _.get(location, 'state.token');
+
+    if (!token) {
+      this.props.snackBarOpen('token不存在，请从邮箱所提供链接进入');
+      return;
+    }
 
     if (!newPwd || !newPwd2) {
       this.props.snackBarOpen('请输入必填项');
@@ -62,6 +71,21 @@ class ResetPasswordPage extends Component {
       console.log(err);
       this.setState({ isProcessing: false, processMsg: '' });
       this.props.snackBarOpen(`修改密码失败 ${err.reason}`);
+    });
+  }
+
+  _handleOpenModal = () => {
+    this.props.modalOpen({
+      content: '是否确认离开此页面？',
+      actions: (
+        <ModalActions
+          sClick={this.props.modalClose}
+          pClick={() => {
+            this.props.history.replace('/');
+            this.props.modalClose();
+          }}
+        />
+      ),
     });
   }
 
@@ -91,7 +115,7 @@ class ResetPasswordPage extends Component {
             fullWidth
           /><br />
         </section>
-        <section className="resetPassword__button" style={{ padding: '22px 0', textAlign: 'center' }}>
+        <section className="resetPassword__button">
           <Button
             color="primary"
             onClick={this._handleResetPassword}
@@ -113,7 +137,7 @@ class ResetPasswordPage extends Component {
             classnames={{ root: classes.navheader__root, content: classes.navheader__content }}
             title="修改密码"
             Left={
-              <IconButton color="contrast" onClick={() => this.setState({ isAlertOpen: true })}>
+              <IconButton color="contrast" onClick={this._handleOpenModal}>
                 <ArrowBackIcon />
               </IconButton>
             }
@@ -121,23 +145,6 @@ class ResetPasswordPage extends Component {
         }
       >
         { this.renderContent() }
-        <Dialog
-          actions={[
-            <Button
-              label="取消"
-              onClick={() => this.setState({ isAlertOpen: false })}
-              primary
-            />,
-            <Button
-              label="确认"
-              onClick={() => this.props.history.replace('/')}
-              primary
-            />,
-          ]}
-          open={this.state.isAlertOpen}
-          onRequestClose={() => this.setState({ isAlertOpen: false })}
-        >是否确认离开此页面？
-        </Dialog>
       </RootLayout>
     );
   }

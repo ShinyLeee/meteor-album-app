@@ -1,56 +1,51 @@
-import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 import { Meteor } from 'meteor/meteor';
-import { createContainer } from 'meteor/react-meteor-data';
+import { withTracker } from 'meteor/react-meteor-data';
 import { MuiThemeProvider } from 'material-ui/styles';
-import '/node_modules/quill/dist/quill.snow.css';
-import './components/Quill/Quill.css';
+import Modal from '/imports/ui/components/Modal';
+import SnackBar from '/imports/ui/components/SnackBar';
+import Uploader from '/imports/ui/components/Uploader';
 import theme from './theme';
-import RootLayout from './layouts/RootLayout';
-import ConnectedSnackBar from './components/SnackBar';
-import ConnectedUploader from './components/Uploader';
-import { userLogin } from './redux/actions';
-import reducers from './redux/reducers';
+import Store from './redux/store';
+import { appInit, userLogin } from './redux/actions';
+import { InternalError } from './pages/Error';
 import Routes from './Routes';
-
-const Store = createStore(reducers);
 
 export class App extends Component {
   static propTypes = {
     User: PropTypes.object,
-    userIsReady: PropTypes.bool.isRequired,
   }
 
-  shouldComponentUpdate(nextProps) {
-    return this.props.User !== nextProps.User ||
-    this.props.userIsReady !== nextProps.userIsReady;
+  state = {
+    error: false,
+  }
+
+  componentDidCatch() {
+    this.setState({ error: true });
   }
 
   render() {
-    const {
-      User,
-      userIsReady,
-    } = this.props;
-
+    const { User } = this.props;
     return (
       <Provider store={Store}>
         <MuiThemeProvider theme={theme}>
           <Router>
             {
-              userIsReady
+              !this.state.error
               ? (
-                <div>
-                  <ConnectedSnackBar />
-
+                <div className="router">
                   <Routes />
 
-                  { User && <ConnectedUploader multiple /> }
+                  {/* Portals */}
+                  <Modal />
+                  <SnackBar />
+                  { User && <Uploader multiple />}
                 </div>
               )
-              : <RootLayout dataIsReady={false} />
+              : <InternalError location={{}} />
             }
           </Router>
         </MuiThemeProvider>
@@ -60,18 +55,17 @@ export class App extends Component {
 
 }
 
-export default createContainer(() => {
-  let userIsReady = true;
+export default withTracker(() => {
   const User = Meteor.user();
-  if (typeof User === 'undefined' || User) {
-    userIsReady = !!User;
-  }
+
   const state = Store.getState();
-  if (!state.User && User) {
+  if (!state.sessions.User && User) {
+    if (state.sessions.initializing) {
+      Store.dispatch(appInit());
+    }
     Store.dispatch(userLogin(User));
   }
   return {
     User,
-    userIsReady,
   };
-}, App);
+})(App);

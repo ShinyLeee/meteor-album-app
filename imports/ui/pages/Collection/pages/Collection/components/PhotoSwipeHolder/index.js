@@ -65,10 +65,10 @@ class PhotoSwipeHolder extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  open: state.photoSwipe.open,
-  items: state.photoSwipe.items,
-  options: state.photoSwipe.options,
+const mapStateToProps = ({ portals }) => ({
+  open: portals.photoSwipe.open,
+  items: portals.photoSwipe.items,
+  options: portals.photoSwipe.options,
 });
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({

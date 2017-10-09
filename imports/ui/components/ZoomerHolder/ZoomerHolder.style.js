@@ -79,32 +79,36 @@ export const ImageDetail = styled.div`
   }
 `;
 
+export const Info = styled.div`
+  padding: 6px 0;
+`;
+
 export const InfoHeader = styled.h4`
   margin: 6px 0;
-  fontSize: 14px;
+  font-size: 14px;
   color: #999;
 `;
 
 export const InfoNumer = styled.span`
-  marginLeft: 2px;
-  fontWeight: 700;
-  fontSize: 28px;
+  margin-left: 2px;
+  font-weight: 700;
+  font-size: 28px;
   color: #222;
 `;
 
 export const StyledHeartIcon = styled(HeartIcon)`
-  marginRight: 8px;
-  verticalAlign: bottom;
+  margin-right: 8px;
+  vertical-align: bottom;
 `;
 
 export const StyledEyeIcon = styled(EyeIcon)`
-  marginRight: 8px;
-  verticalAlign: bottom;
+  margin-right: 8px;
+  vertical-align: bottom;
 `;
 
 export const StyledCameraIcon = styled(CameraIcon)`
-  marginRight: 8px;
-  verticalAlign: bottom;
+  margin-ight: 8px;
+  vertical-align: bottom;
 `;
 
 export const ExifLoader = styled.div`

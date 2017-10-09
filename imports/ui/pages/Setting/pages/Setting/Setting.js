@@ -12,7 +12,6 @@ import List, {
   ListSubheader,
 } from 'material-ui/List';
 import TextField from 'material-ui/TextField';
-import Dialog from 'material-ui/Dialog';
 import Divider from 'material-ui/Divider';
 import Checkbox from 'material-ui/Checkbox';
 import Switch from 'material-ui/Switch';
@@ -31,6 +30,7 @@ import settings from '/imports/utils/settings';
 import { updateProfile } from '/imports/api/users/methods.js';
 import RootLayout from '/imports/ui/layouts/RootLayout';
 import { CustomNavHeader, SecondaryNavHeader } from '/imports/ui/components/NavHeader';
+import { ModalActions } from '/imports/ui/components/Modal';
 import { CircleLoader } from '/imports/ui/components/Loader';
 
 const blue500 = blue['500'];
@@ -47,7 +47,9 @@ class SettingPage extends Component {
     token: PropTypes.string.isRequired,
     classes: PropTypes.object.isRequired,
     history: PropTypes.object.isRequired,
-    snackBarOpen: PropTypes.func,
+    modalOpen: PropTypes.func.isRequired,
+    modalClose: PropTypes.func.isRequired,
+    snackBarOpen: PropTypes.func.isRequired,
   }
 
   constructor(props) {
@@ -58,7 +60,6 @@ class SettingPage extends Component {
       isProcessing: false,
       processMsg: '',
       isEditing: false,
-      isAlertOpen: false,
       cover: initialUser.profile.cover,
       avatar: initialUser.profile.avatar,
       nickname: initialUser.profile.nickname || '',
@@ -95,6 +96,7 @@ class SettingPage extends Component {
         (err) => err && console.log(err)
       );
     }
+    this.props.modalClose();
     this.setState(initialSettings);
   }
 
@@ -123,7 +125,6 @@ class SettingPage extends Component {
 
   _handleSetCover = (e) => {
     const { User, token } = this.props;
-    e.preventDefault();
     this.setState({
       isEditing: true,
       isProcessing: true,
@@ -163,7 +164,6 @@ class SettingPage extends Component {
   }
 
   _handleSetAvatar = (e) => {
-    e.preventDefault();
     this.setState({
       isEditing: true,
       isProcessing: true,
@@ -216,6 +216,19 @@ class SettingPage extends Component {
         this.props.snackBarOpen(`上传头像失败 ${err}`);
       });
     }
+  }
+
+  _handleOpenModal = () => {
+    this.props.modalOpen({
+      title: '提示',
+      content: '您还有尚未保存的设置，是否确认退出？',
+      actions: (
+        <ModalActions
+          sClick={this.props.modalClose}
+          pClick={this._handleDiscard}
+        />
+      ),
+    });
   }
 
   _handleLoaderTimeout = () => {
@@ -396,19 +409,6 @@ class SettingPage extends Component {
 
   render() {
     const { User, classes } = this.props;
-    const actions = [
-      <Button
-        label="取消"
-        onClick={() => this.setState({ isAlertOpen: false })}
-        keyboardFocused
-        primary
-      />,
-      <Button
-        label="确认"
-        onClick={this._handleDiscard}
-        primary
-      />,
-    ];
     return (
       <RootLayout
         loading={!User}
@@ -419,7 +419,7 @@ class SettingPage extends Component {
               classnames={{ root: classes.navheader__root, content: classes.navheader__content }}
               title={this.state.isProcessing ? '上传图片中' : '修改设置中'}
               Left={
-                <IconButton color="contrast" onClick={() => this.setState({ isAlertOpen: true })}>
+                <IconButton color="contrast" onClick={this._handleOpenModal}>
                   <ArrowBackIcon />
                 </IconButton>
               }
@@ -439,16 +439,6 @@ class SettingPage extends Component {
           onTimeout={this._handleLoaderTimeout}
         />
         { User && this.renderContent() }
-        <Dialog
-          title="提示"
-          titleStyle={{ border: 'none' }}
-          actions={actions}
-          actionsContainerStyle={{ border: 'none' }}
-          open={this.state.isAlertOpen}
-          autoScrollBodyContent
-          modal
-        >您还有尚未保存的设置，是否确认退出？
-        </Dialog>
       </RootLayout>
     );
   }

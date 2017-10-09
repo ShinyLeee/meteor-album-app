@@ -1,8 +1,20 @@
-import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import Quill from 'quill';
 
 export default class QuillShower extends Component {
+  static propTypes = {
+    className: PropTypes.string.isRequired,
+    theme: PropTypes.oneOf(['snow', 'bubble']).isRequired,
+    modules: PropTypes.object.isRequired,
+    content: PropTypes.object.isRequired,
+  }
+
+  static defaultProps = {
+    className: 'component__QuillShower',
+    theme: 'snow',
+    modules: { toolbar: false },
+  }
 
   constructor(props) {
     super(props);
@@ -44,18 +56,3 @@ export default class QuillShower extends Component {
     );
   }
 }
-
-QuillShower.displayName = 'QuillShower';
-
-QuillShower.defaultProps = {
-  className: 'component__QuillShower',
-  theme: 'snow',
-  modules: { toolbar: false },
-};
-
-QuillShower.propTypes = {
-  className: PropTypes.string.isRequired,
-  theme: PropTypes.oneOf(['snow', 'bubble']).isRequired,
-  modules: PropTypes.object.isRequired,
-  content: PropTypes.object.isRequired,
-};

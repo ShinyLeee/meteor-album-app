@@ -1,13 +1,14 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { CircularProgress } from 'material-ui/Progress';
+import { withStyles } from 'material-ui/styles';
 import Dialog from 'material-ui/Dialog';
-import { LoaderContent, LoaderProgress, LoaderMessage } from './Loader.style.js';
+import { CircularProgress } from 'material-ui/Progress';
 
-export default class Loader extends Component {
+class Loader extends Component {
   static propTypes = {
     open: PropTypes.bool.isRequired,
     message: PropTypes.string.isRequired,
+    classes: PropTypes.object.isRequired,
     timeout: PropTypes.number.isRequired,
     onTimeout: PropTypes.func,
   }
@@ -37,8 +38,11 @@ export default class Loader extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (prevState.open !== this.state.open) {
-      if (this.state.open) this.setTimeoutTimer();
-      else clearTimeout(this.timeoutFn);
+      if (this.state.open) {
+        this.setTimeoutTimer();
+      } else {
+        clearTimeout(this.timeoutFn);
+      }
     }
   }
 
@@ -51,27 +55,53 @@ export default class Loader extends Component {
 
     if (timeout > 0) {
       this.timeoutFn = setTimeout(() => {
-        if (this.props.onTimeout) this.props.onTimeout();
+        if (this.props.onTimeout) {
+          this.props.onTimeout();
+        }
         this.setState({ open: false, message: '' });
       }, timeout);
     }
   }
 
   render() {
-    return this.state.open && (
-      <div>
-        <Dialog
-          open={this.state.open}
-          modal
-        >
-          <LoaderContent>
-            <LoaderProgress>
-              <CircularProgress size={30} />
-            </LoaderProgress>
-            <LoaderMessage>{this.state.message}</LoaderMessage>
-          </LoaderContent>
-        </Dialog>
-      </div>
+    const { classes } = this.props;
+    return (
+      <Dialog
+        classes={{ paper: classes.dialog }}
+        open={this.state.open}
+      >
+        <CircularProgress
+          classes={{ root: classes.progress, circle: classes.circle }}
+          size={30}
+        />
+        <p className={classes.message}>{this.state.message}</p>
+      </Dialog>
     );
   }
 }
+
+const styles = {
+  dialog: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '75%',
+    height: 88,
+  },
+
+  progress: {
+    color: 'rgb(63, 81, 181)',
+    marginRight: 36,
+  },
+
+  circle: {
+    strokeWidth: 2.5,
+  },
+
+  message: {
+    fontSize: 14,
+    color: '#222',
+  },
+};
+
+export default withStyles(styles)(Loader);

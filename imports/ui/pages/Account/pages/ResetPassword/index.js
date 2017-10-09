@@ -1,10 +1,12 @@
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
-import { snackBarOpen } from '/imports/ui/redux/actions/index.js';
+import { modalOpen, modalClose, snackBarOpen } from '/imports/ui/redux/actions';
 import ResetPassword from './ResetPassword';
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
+  modalOpen,
+  modalClose,
   snackBarOpen,
 }, dispatch);
 

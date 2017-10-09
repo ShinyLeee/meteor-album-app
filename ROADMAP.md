@@ -12,7 +12,8 @@
   - [x] Upgrade react-transition-group from v1 to v2  
   - [x] Upgrade all React related package compatible with React 16  
   - [x] Upgrade React from 15.4.2 to 16 [[Need to wait react-meteor-data@0.2.14 published]](https://github.com/meteor/react-packages/pull/232)
-  - [ ] Adopt React 16 feature (createPortal / error boundaries)
+  - [x] Adopt React 16 feature (createPortal / error boundaries)
+  - [x] Migrate createContainer to withTracker(react-meteor-data)
   - [ ] Adopt React-loadable and make use of dynamic import(Code Splitting)
   - [ ] Improve route transition animation perf in low end device by use code splitting and [React-Loadable](https://github.com/thejameskyle/react-loadable)
   - [ ] Service Worker ?

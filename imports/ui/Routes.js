@@ -38,7 +38,7 @@ AuthRoute.propTypes = {
 };
 
 AuthRoute = connect(
-  (state) => ({ User: state.User })
+  ({ sessions }) => ({ User: sessions.User })
 )(AuthRoute);
 
 const Routes = () => (

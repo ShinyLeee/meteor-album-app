@@ -1,8 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { bindActionCreators } from 'redux';
-import { compose } from 'recompose';
+import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import TimeAgo from 'react-timeago';
@@ -183,9 +182,13 @@ class CommentList extends Component {
         unmountOnExit
       >
         <CommentsWrapper>
-          <CommentsSection>
-            { comments.length > 0 && this.renderCommentItem() }
-          </CommentsSection>
+          {
+            comments.length > 0 && (
+              <CommentsSection>
+                {this.renderCommentItem()}
+              </CommentsSection>
+            )
+          }
           <PublishSection>
             <PublishContent>
               <Avatar src={this.avatarSrc} />
@@ -210,8 +213,8 @@ class CommentList extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  User: state.User,
+const mapStateToProps = ({ sessions }) => ({
+  User: sessions.User,
 });
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({

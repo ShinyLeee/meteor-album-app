@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { bindActionCreators } from 'redux';
-import { compose } from 'recompose';
+import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { TransitionGroup } from 'react-transition-group';
@@ -10,7 +9,7 @@ import CNStrings from 'react-timeago/lib/language-strings/zh-CN';
 import buildFormatter from 'react-timeago/lib/formatters/buildFormatter';
 import LazyLoad from 'react-lazyload';
 import { Meteor } from 'meteor/meteor';
-import { createContainer } from 'meteor/react-meteor-data';
+import { withTracker } from 'meteor/react-meteor-data';
 import { withStyles } from 'material-ui/styles';
 import Avatar from 'material-ui/Avatar';
 import Card, { CardHeader, CardActions, CardMedia } from 'material-ui/Card';
@@ -146,24 +145,8 @@ class ImageHolder extends Component {
   }
 }
 
-const ImageHolderContainer = createContainer(({ image }) => {
-  // discussion_id from comment
-  const discId = image._id;
-
-  Meteor.subscribe('Comments.inImage', discId);
-
-  const comments = Comments.find(
-    { discussion_id: discId, type: 'image' },
-    { sort: { createdAt: -1 } }
-  ).fetch();
-
-  return {
-    comments,
-  };
-}, ImageHolder);
-
-const mapStateToProps = (state) => ({
-  User: state.User,
+const mapStateToProps = ({ sessions }) => ({
+  User: sessions.User,
 });
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
@@ -184,5 +167,17 @@ export default compose(
   connect(mapStateToProps, mapDispatchToProps),
   withStyles(styles),
   withRouter,
-)(ImageHolderContainer);
+  withTracker(({ image }) => {
+    // discussion_id from comment
+    const discId = image._id;
+    Meteor.subscribe('Comments.inImage', discId);
+    const comments = Comments.find(
+      { discussion_id: discId, type: 'image' },
+      { sort: { createdAt: -1 } }
+    ).fetch();
+    return {
+      comments,
+    };
+  })
+)(ImageHolder);
 

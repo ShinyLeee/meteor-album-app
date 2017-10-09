@@ -5,7 +5,6 @@ import Delta from 'quill-delta';
 // import Avatar from 'material-ui/Avatar';
 // import Chip from 'material-ui/Chip';
 import { withStyles } from 'material-ui/styles';
-import Dialog from 'material-ui/Dialog';
 import Divider from 'material-ui/Divider';
 import Button from 'material-ui/Button';
 import Input from 'material-ui/Input';
@@ -15,6 +14,7 @@ import SendIcon from 'material-ui-icons/Send';
 import { insertNote } from '/imports/api/notes/methods.js';
 import RootLayout from '/imports/ui/layouts/RootLayout';
 import { SecondaryNavHeader } from '/imports/ui/components/NavHeader';
+import { ModalActions } from '/imports/ui/components/Modal';
 import { QuillEditor } from '/imports/ui/components/Quill';
 // TODO
 // import DatePickerCN from '/imports/ui/components/SubMaterialUI/DatePickerCN.jsx';
@@ -27,6 +27,8 @@ class SendNotePage extends Component {
     initialReceiver: PropTypes.object,
     otherUsers: PropTypes.array.isRequired,
     User: PropTypes.object.isRequired,
+    modalOpen: PropTypes.func.isRequired,
+    modalClose: PropTypes.func.isRequired,
     snackBarOpen: PropTypes.func.isRequired,
     history: PropTypes.object.isRequired,
     classes: PropTypes.object.isRequired,
@@ -39,7 +41,6 @@ class SendNotePage extends Component {
   state = {
     isProcessing: false,
     processMsg: '',
-    isAlertOpen: false,
     receiver: '',
     title: '',
     content: '',
@@ -124,14 +125,25 @@ class SendNotePage extends Component {
 
   _handleGoBack = () => {
     if (this.state.content) {
-      this.setState({ isAlertOpen: true });
+      this.props.modalOpen({
+        title: '提示',
+        content: '您还有未发送的内容，是否确认退出？',
+        actions: (
+          <ModalActions
+            sClick={this.props.modalClose}
+            pClick={() => {
+              this.props.modalClose();
+              this.props.history.goBack();
+            }}
+          />
+        ),
+      });
       return;
     }
     this.props.history.goBack();
   }
 
   _handleSentNote = () => {
-    console.log(this.state.receiver);
     if (!this.state.receiver) {
       this.props.snackBarOpen('请选择接受用户');
       return;
@@ -220,7 +232,7 @@ class SendNotePage extends Component {
   }
 
   render() {
-    const { dataIsReady, history } = this.props;
+    const { dataIsReady } = this.props;
     return (
       <RootLayout
         loading={!dataIsReady}
@@ -237,27 +249,6 @@ class SendNotePage extends Component {
           message={this.state.processMsg}
         />
         { dataIsReady && this.renderContent() }
-        <Dialog
-          title="提示"
-          titleStyle={{ border: 'none' }}
-          actions={[
-            <Button
-              label="取消"
-              onClick={() => this.setState({ isAlertOpen: false })}
-              keyboardFocused
-              primary
-            />,
-            <Button
-              label="确认"
-              onClick={() => history.goBack()}
-              primary
-            />,
-          ]}
-          actionsContainerStyle={{ border: 'none' }}
-          open={this.state.isAlertOpen}
-          modal={false}
-        >您还有未发送的内容，是否确认退出？
-        </Dialog>
       </RootLayout>
     );
   }

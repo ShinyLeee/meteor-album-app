@@ -1,102 +1,156 @@
 import _ from 'lodash';
 import * as types from '../constants/ActionTypes';
+import initState from '../store/initState';
 
-export const User = (state = null, action) => {
+export const sessions = (state = initState.sessions, action) => {
   switch (action.type) {
+    case types.APP_INIT:
+      return {
+        ...state,
+        initializing: false,
+      };
     case types.USER_LOGIN:
       return {
-        ...action.data,
+        ...state,
+        User: action.user,
       };
     case types.USER_LOGOUT:
-      return null;
+      return {
+        ...state,
+        User: null,
+      };
+    case types.STORE_UPTOKEN:
+      return {
+        ...state,
+        uptoken: action.uptoken,
+      };
+    case types.CLEAR_UPTOKEN:
+      return {
+        ...state,
+        uptoken: '',
+      };
     default: {
       return state;
     }
   }
 };
 
-export const uptoken = (state = null, action) => {
+export const portals = (state = initState.portals, action) => {
   switch (action.type) {
-    case types.STORE_UPTOKEN:
-      return action.uptoken;
-    case types.CLEAR_UPTOKEN:
-      return null;
-    default:
-      return state;
-  }
-};
-
-export const zoomer = (state = { open: false, image: null }, action) => {
-  switch (action.type) {
+    case types.MODAL_OPEN:
+      return {
+        ...state,
+        modal: {
+          open: true,
+          title: action.title,
+          content: action.content,
+          actions: action.actions,
+          ops: action.ops,
+        },
+      };
+    case types.MODAL_CLOSE:
+      return {
+        ...state,
+        modal: {
+          ...state.modal,
+          open: false,
+        },
+      };
     case types.ZOOMER_OPEN:
-      return { open: true, image: action.image };
+      return {
+        ...state,
+        zoomer: {
+          open: true,
+          image: action.image,
+        },
+      };
     case types.ZOOMER_CLOSE:
-      return { open: false, image: null };
-    default:
-      return state;
-  }
-};
-
-export const dialog = (state = { open: false, bible: null }, action) => {
-  switch (action.type) {
+      return {
+        ...state,
+        zoomer: initState.portals.zoomer,
+      };
     case types.DIALOG_FETCH:
-      return { open: true, bible: null };
+      return {
+        ...state,
+        dialog: {
+          open: true,
+          content: null,
+        },
+      };
     case types.DIALOG_OPEN:
-      return { open: true, bible: action.bible };
+      return {
+        ...state,
+        dialog: {
+          open: true,
+          content: action.content,
+        },
+      };
     case types.DIALOG_CLOSE:
-      return { open: false, bible: null };
-    default:
-      return state;
-  }
-};
-
-export const diary = (state = { open: false, diary: null }, action) => {
-  switch (action.type) {
+      return {
+        ...state,
+        dialog: initState.portals.dialog,
+      };
     case types.DIARY_OPEN:
-      return { open: true, diary: action.diary };
+      return {
+        ...state,
+        diary: {
+          open: true,
+          content: action.content,
+        },
+      };
     case types.DIARY_CLOSE:
-      return { open: false, diary: null };
-    default:
-      return state;
-  }
-};
-
-export const photoSwipe = (state = { open: false, items: [], options: null }, action) => {
-  switch (action.type) {
+      return {
+        ...state,
+        diary: initState.portals.diary,
+      };
     case types.PHOTOSWIPE_OPEN:
-      return { open: true, items: action.items, options: action.options };
+      return {
+        ...state,
+        photoSwipe: {
+          open: true,
+          items: action.items,
+          ops: action.ops,
+        },
+      };
     case types.PHOTOSWIPE_CLOSE:
-      return { open: false, items: [], options: null };
-    default:
-      return state;
-  }
-};
-
-export const uploader = (state = { open: false, destination: '' }, action) => {
-  switch (action.type) {
+      return {
+        ...state,
+        photoSwipe: initState.portals.photoSwipe,
+      };
     case types.UPLOADER_START:
-      return Object.assign({}, { open: true }, action.uploader);
+      return {
+        ...state,
+        uploader: {
+          open: true,
+          dest: action.dest,
+        },
+      };
     case types.UPLOADER_STOP:
-      return { open: false, destination: '' };
-    default:
-      return state;
-  }
-};
-
-export const snackBar = (state = { open: false, message: null, config: null }, action) => {
-  const message = action.message;
-  const config = action.config;
-  switch (action.type) {
+      return {
+        ...state,
+        uploader: initState.portals.uploader,
+      };
     case types.SNACKBAR_OPEN:
-      return Object.assign({}, { open: true, message }, config);
+      return {
+        ...state,
+        snackBar: {
+          open: true,
+          message: action.message,
+          config: action.config,
+        },
+      };
     case types.SNACKBAR_CLOSE:
-      return Object.assign({}, state, { open: false });
-    default:
+      return {
+        ...state,
+        snackBar: initState.portals.snackBar,
+      };
+    default: {
       return state;
+    }
   }
 };
 
-export const selectCounter = (state = { selectImages: [], group: {}, counter: 0 }, action) => {
+export const selectCounter = (state = initState.selectCounter, action) => {
   switch (action.type) {
     /**
      * Return the new gloabl counter and group state, when select or cancel one photo

@@ -1,9 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { bindActionCreators } from 'redux';
+import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
-import { compose } from 'recompose';
 import { withStyles } from 'material-ui/styles';
 import Button from 'material-ui/Button';
 import Input from 'material-ui/Input';

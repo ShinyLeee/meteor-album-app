@@ -15,7 +15,7 @@ import {
   ActionSection,
   UserAvatar,
   ImageDetail,
-} from '../../ZoomerHolder.style.js';
+} from '../ZoomerHolder.style.js';
 
 const ZoomerInner = (props) => {
   const {

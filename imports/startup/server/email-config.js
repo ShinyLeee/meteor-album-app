@@ -10,7 +10,7 @@ Meteor.startup(() => {
     port: 465,
   };
 
-  process.env.MAIL_URL = `smtp://${encodeURIComponent(smtp.username)}:${encodeURIComponent(smtp.password)}@${encodeURIComponent(smtp.server)}:${smtp.port}`;
+  process.env.MAIL_URL = `smtps://${encodeURIComponent(smtp.username)}:${encodeURIComponent(smtp.password)}@${encodeURIComponent(smtp.server)}:${smtp.port}`;
 
   // Configures "reset password account" email link
   Accounts.urls.resetPassword = (token) => `${domain}/#/reset-password/${token}`;

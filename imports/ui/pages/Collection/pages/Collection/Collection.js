@@ -4,9 +4,8 @@ import React, { Component } from 'react';
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 import IconButton from 'material-ui/IconButton';
-import Dialog from 'material-ui/Dialog';
-import Button from 'material-ui/Button';
 import Radio, { RadioGroup } from 'material-ui/Radio';
+import { FormControlLabel } from 'material-ui/Form';
 import AddPhotoIcon from 'material-ui-icons/AddToPhotos';
 import EditIcon from 'material-ui-icons/Edit';
 import CloseIcon from 'material-ui-icons/Close';
@@ -18,15 +17,19 @@ import { mutateCollectionCover } from '/imports/api/collections/methods.js';
 import settings from '/imports/utils/settings';
 import RootLayout from '/imports/ui/layouts/RootLayout';
 import { SecondaryNavHeader } from '/imports/ui/components/NavHeader';
+import { ModalActions } from '/imports/ui/components/Modal';
 import ConnectedJustified from '/imports/ui/components/JustifiedLayout';
 import { CircleLoader } from '/imports/ui/components/Loader';
 import PhotoSwipeHolder from './components/PhotoSwipeHolder';
 
-const { domain } = settings;
+const { imageDomain } = settings;
+
+const modalState = {
+  destName: null,
+};
 
 export default class CollectionPage extends Component {
   static propTypes = {
-    initialAlertState: PropTypes.object.isRequired,
     dataIsReady: PropTypes.bool.isRequired,
     isGuest: PropTypes.bool.isRequired,
     curColl: PropTypes.object.isRequired,
@@ -36,22 +39,16 @@ export default class CollectionPage extends Component {
     counter: PropTypes.number.isRequired,
     selectImages: PropTypes.array.isRequired,
     disableSelectAll: PropTypes.func.isRequired,
+    modalOpen: PropTypes.func.isRequired,
+    modalClose: PropTypes.func.isRequired,
     snackBarOpen: PropTypes.func.isRequired,
     uploaderStart: PropTypes.func.isRequired,
-  }
-
-  static defaultProps = {
-    initialAlertState: { isAlertOpen: false, alertTitle: '', alertContent: '', action: '' },
   }
 
   state = {
     isProcessing: false,
     processMsg: '',
     isEditing: false,
-    isAlertOpen: false,
-    alertTitle: '',
-    alertContent: '',
-    action: '',
   }
 
   _handleQuitEditing = () => {
@@ -66,12 +63,14 @@ export default class CollectionPage extends Component {
   }
 
   _handleShiftPhoto = () => {
-    const { curColl, selectImages } = this.props;
-    const destColl = JSON.parse(this.state.destColl);
+    const { curColl, selectImages, otherColls } = this.props;
+
+    this.props.modalClose();
+    this.setState({ isProcessing: true, processMsg: '处理中' });
 
     const keys = _.map(selectImages, (image) => {
       const srcKey = `${image.user}/${curColl.name}/${image.name}.${image.type}`;
-      const destKey = `${image.user}/${destColl.name}/${image.name}.${image.type}`;
+      const destKey = `${image.user}/${modalState.destName}/${image.name}.${image.type}`;
       return {
         src: srcKey,
         dest: destKey,
@@ -100,7 +99,8 @@ export default class CollectionPage extends Component {
       }
       return { sucMsg, sucMovedImgIds };
     })
-    .then((related) => { // eslint-disable-line
+    .then((related) => {
+      const destColl = _.find(otherColls, (coll) => coll.name === modalState.destName);
       return shiftImages.callPromise({
         selectImages: related.sucMovedImgIds,
         dest: destColl.name,
@@ -122,7 +122,11 @@ export default class CollectionPage extends Component {
   _handleSetCover = () => {
     const { selectImages, curColl } = this.props;
     const curImg = selectImages[0];
-    const cover = `${domain}/${curImg.user}/${curImg.collection}/${curImg.name}.${curImg.type}`;
+    const cover = `${imageDomain}/${curImg.user}/${curImg.collection}/${curImg.name}.${curImg.type}`;
+
+    this.props.modalClose();
+    this.setState({ isProcessing: true, processMsg: '处理中' });
+
     mutateCollectionCover.callPromise({
       collId: curColl._id,
       cover,
@@ -140,8 +144,11 @@ export default class CollectionPage extends Component {
 
   _handleRemovePhoto = () => {
     const { selectImages } = this.props;
-    const selectImagesIds = _.map(selectImages, (image) => image._id);
-    removeImagesToRecycle.callPromise({ selectImages: selectImagesIds })
+
+    this.props.modalClose();
+    this.setState({ isProcessing: true, processMsg: '处理中' });
+
+    removeImagesToRecycle.callPromise({ selectImages: _.map(selectImages, (image) => image._id) })
     .then(() => {
       this.props.disableSelectAll();
       this.setState({ isProcessing: false, processMsg: '' });
@@ -158,92 +165,119 @@ export default class CollectionPage extends Component {
     this.props.snackBarOpen('请求超时，请重试');
   }
 
-  /**
-   * setState based on action
-   * @param {String} action - One of ShiftPhoto / SetCover / RemovePhoto
-   */
-  openAlert(action) {
-    const { otherColls, selectImages } = this.props;
-    let alertTitle;
-    let alertContent;
-    if (selectImages.length === 0) {
-      this.props.snackBarOpen('您还未选择照片');
+  openShiftModal = () => {
+    const { selectImages, otherColls } = this.props;
+    if (selectImages.length < 1) {
+      this.props.snackBarOpen('请选择要转移的照片');
       return;
     }
-    if (action === 'ShiftPhoto') {
-      const radios = [];
-      for (let i = 0; i < otherColls.length; i++) {
-        const collName = otherColls[i].name;
-        const collStat = otherColls[i].private;
-        radios.push(
-          <Radio
-            key={i}
-            value={JSON.stringify({ name: collName, private: collStat })}
-            label={collName}
-            style={{ marginTop: '16px' }}
-          />
-        );
-      }
-      alertTitle = '移动至以下相册';
-      alertContent = (
-        <RadioGroup
-          name="collection"
-          defaultSelected={this.state.destColl}
-          onChange={(e) => this.setState({ destColl: e.target.value })}
-        >{radios}
-        </RadioGroup>
-      );
-    }
-    if (action === 'SetCover') {
-      if (selectImages.length > 1) {
-        this.props.snackBarOpen('只能选择一张照片作为封面');
-        return;
-      }
-      alertContent = '是否确认将其设置为封面';
-    }
-    if (action === 'RemovePhoto') {
-      alertContent = '是否确认删除所选照片？';
-    }
-    this.setState({ isAlertOpen: true, alertTitle, alertContent, action });
-  }
-
-  triggerDialogAction(action) {
-    const newState = Object.assign({}, this.props.initialAlertState, { isProcessing: true, processMsg: '处理中' });
-    this.setState(newState);
-    this[`handle${action}`]();
-  }
-
-  renderEditingNavHeader() {
-    const { counter } = this.props;
-    return (
-      <SecondaryNavHeader
-        title={counter ? `选择了${counter}张照片` : ''}
-        Left={<IconButton color="contrast" onClick={this._handleQuitEditing}><CloseIcon /></IconButton>}
-        Right={
-          <div>
-            <IconButton
-              color="contrast"
-              onClick={() => this.openAlert('ShiftPhoto')}
-            ><ShiftIcon />
-            </IconButton>
-            <IconButton
-              color="contrast"
-              onClick={() => this.openAlert('SetCover')}
-            ><SetCoverIcon />
-            </IconButton>
-            <IconButton
-              color="contrast"
-              onClick={() => this.openAlert('RemovePhoto')}
-            ><RemoveIcon />
-            </IconButton>
-          </div>
-        }
+    const radios = _.map(otherColls, (coll, i) => (
+      <FormControlLabel
+        key={i}
+        value={coll.name}
+        label={coll.name}
+        control={<Radio />}
       />
-    );
+    ));
+
+    const showModal = () => {
+      const defaultValue = _.get(otherColls, '[0].name');
+      modalState.destName = defaultValue;
+      this.props.modalOpen({
+        title: '移动至以下相册',
+        content: (
+          <RadioGroup
+            name="collection"
+            value={modalState.destName || defaultValue}
+            onChange={(e, value) => {
+              modalState.destName = value;
+              showModal();
+            }}
+          >{radios}
+          </RadioGroup>
+        ),
+        actions: (
+          <ModalActions
+            sClick={() => {
+              this.props.modalClose();
+              modalState.destName = null;
+            }}
+            pClick={() => {
+              this._handleShiftPhoto();
+              modalState.destName = null;
+            }}
+          />
+        ),
+      });
+    };
+    showModal();
+  }
+
+  openSetCoverModal = () => {
+    const { selectImages } = this.props;
+    if (selectImages.length !== 1) {
+      this.props.snackBarOpen('请选择一张照片');
+      return;
+    }
+    this.props.modalOpen({
+      title: '提示',
+      content: '是否确认将其设置为封面',
+      actions: (
+        <ModalActions
+          sClick={this.props.modalClose}
+          pClick={this._handleSetCover}
+        />
+      ),
+    });
+  }
+
+  openRemoveModal = () => {
+    const { selectImages } = this.props;
+    if (selectImages.length < 1) {
+      this.props.snackBarOpen('请选择要删除的照片');
+      return;
+    }
+    this.props.modalOpen({
+      title: '提示',
+      content: '是否确认删除所选照片？',
+      actions: (
+        <ModalActions
+          sClick={this.props.modalClose}
+          pClick={this._handleRemovePhoto}
+        />
+      ),
+    });
   }
 
   renderNavHeader() {
-    const { isGuest, curColl } = this.props;
+    const { isGuest, curColl, counter } = this.props;
+    if (this.state.isEditing) {
+      return (
+        <SecondaryNavHeader
+          title={counter ? `选择了${counter}张照片` : ''}
+          Left={<IconButton color="contrast" onClick={this._handleQuitEditing}><CloseIcon /></IconButton>}
+          Right={
+            <div>
+              <IconButton
+                color="contrast"
+                onClick={this.openShiftModal}
+              ><ShiftIcon />
+              </IconButton>
+              <IconButton
+                color="contrast"
+                onClick={this.openSetCoverModal}
+              ><SetCoverIcon />
+              </IconButton>
+              <IconButton
+                color="contrast"
+                onClick={this.openRemoveModal}
+              ><RemoveIcon />
+              </IconButton>
+            </div>
+          }
+        />
+      );
+    }
     return (
       <SecondaryNavHeader
         title={curColl.name}
@@ -300,11 +334,11 @@ export default class CollectionPage extends Component {
   }
 
   render() {
-    const { dataIsReady, initialAlertState } = this.props;
+    const { dataIsReady } = this.props;
     return (
       <RootLayout
         loading={!dataIsReady}
-        Topbar={this.state.isEditing ? this.renderEditingNavHeader() : this.renderNavHeader()}
+        Topbar={this.renderNavHeader()}
       >
         <CircleLoader
           open={this.state.isProcessing}
@@ -313,28 +347,6 @@ export default class CollectionPage extends Component {
         />
         { dataIsReady && this.renderContent() }
         <PhotoSwipeHolder />
-        <Dialog
-          title={this.state.alertTitle}
-          titleStyle={{ border: 'none' }}
-          actions={[
-            <Button
-              label="取消"
-              onClick={() => this.setState(initialAlertState)}
-              primary
-            />,
-            <Button
-              label="确认"
-              onClick={() => this.triggerDialogAction(this.state.action)}
-              primary
-            />,
-          ]}
-          actionsContainerStyle={{ border: 'none' }}
-          open={this.state.isAlertOpen}
-          onRequestClose={() => this.setState(initialAlertState)}
-          autoScrollBodyContent
-        >
-          {this.state.alertContent}
-        </Dialog>
       </RootLayout>
     );
   }

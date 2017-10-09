@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { compose } from 'recompose';
+import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { Meteor } from 'meteor/meteor';
-import { createContainer } from 'meteor/react-meteor-data';
+import { withTracker } from 'meteor/react-meteor-data';
 import { withStyles } from 'material-ui/styles';
 import Avatar from 'material-ui/Avatar';
 import Badge from 'material-ui/Badge';
@@ -102,24 +102,20 @@ const styles = {
   },
 };
 
-const RightContentContainer = createContainer(({ User }) => {
-  if (User) {
-    Meteor.subscribe('Notes.receiver');
-    return {
-      noteNum: Notes.find({ isRead: false }).count(),
-    };
-  }
-  return {
-    noteNum: 0,
-  };
-}, RightContent);
-
-const mapStateToProps = (state) => ({
-  User: state.User,
+const mapStateToProps = ({ sessions }) => ({
+  User: sessions.User,
 });
 
 export default compose(
   connect(mapStateToProps),
   withStyles(styles),
   withRouter,
-)(RightContentContainer);
+  withTracker(({ User }) => {
+    if (User) {
+      Meteor.subscribe('Notes.receiver');
+    }
+    return {
+      noteNum: User ? Notes.find({ isRead: false }).count() : 0,
+    };
+  }),
+)(RightContent);

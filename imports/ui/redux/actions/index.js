@@ -1,8 +1,12 @@
 import * as types from '../constants/ActionTypes';
 
-export const userLogin = (data) => ({
+export const appInit = () => ({
+  type: types.APP_INIT,
+});
+
+export const userLogin = (user) => ({
   type: types.USER_LOGIN,
-  data,
+  user,
 });
 
 export const userLogout = () => ({
@@ -16,6 +20,18 @@ export const storeUptoken = (uptoken) => ({
 
 export const clearUptoken = () => ({
   type: types.CLEAR_UPTOKEN,
+});
+
+export const modalOpen = ({ title, content, actions, ops }) => ({
+  type: types.MODAL_OPEN,
+  title,
+  content,
+  actions,
+  ops,
+});
+
+export const modalClose = () => ({
+  type: types.MODAL_CLOSE,
 });
 
 export const zoomerOpen = (image) => ({

@@ -30,7 +30,7 @@ export default class InternalError extends Component {
             <p className="error__info">服务器内部发生错误</p>
             {
               (location.state && location.state.message)
-              ? (<p className="error__info">{location.state.message}</p>)
+              ? <p className="error__info">{location.state.message}</p>
               : (
                 <p className="error__info">
                   请检查地址是否输入正确&nbsp;

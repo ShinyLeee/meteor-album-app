@@ -1,11 +1,34 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { bindActionCreators } from 'redux';
+import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
+import { withStyles } from 'material-ui/styles';
 import Snackbar from 'material-ui/Snackbar';
-import { snackBarClose } from '../../redux/actions/index.js';
+import Portal from '../Portal';
+import { snackBarClose } from '../../redux/actions';
 
 class SnackBar extends Component {
+  static propTypes = {
+    open: PropTypes.bool.isRequired,
+    message: PropTypes.string,
+    autoHideDuration: PropTypes.number,
+    snackBarClose: PropTypes.func.isRequired,
+    classes: PropTypes.object.isRequired,
+    /**
+     * config
+     *
+     * @param {object} props: All Snackbar props except
+     * open、message and autoHideDuration
+     *
+     * See https://material-ui-1dab0.firebaseapp.com/api/snackbar/
+     */
+    config: PropTypes.object,
+  }
+
+  static defaultProps = {
+    open: false,
+    autoHideDuration: 2500,
+  }
 
   state = {
     open: false,
@@ -26,9 +49,10 @@ class SnackBar extends Component {
   }
 
   renderDefault() {
-    const { autoHideDuration } = this.props;
+    const { autoHideDuration, classes } = this.props;
     return (
       <Snackbar
+        classes={{ root: classes.root }}
         open={this.state.open}
         message={this.state.message}
         autoHideDuration={autoHideDuration}
@@ -53,42 +77,31 @@ class SnackBar extends Component {
   render() {
     const { config } = this.props;
     return (
-      <div>
+      <Portal name="SnackBar">
         { config ? this.renderCustom() : this.renderDefault() }
-      </div>
+      </Portal>
     );
   }
 }
 
-SnackBar.defaultProps = {
-  open: false,
-  autoHideDuration: 2500,
-};
-
-SnackBar.propTypes = {
-  open: PropTypes.bool.isRequired,
-  message: PropTypes.string,
-  autoHideDuration: PropTypes.number,
-  snackBarClose: PropTypes.func.isRequired,
-  /**
-   * config
-   *
-   * @param {object} props: All Snackbar props except
-   * open、message and autoHideDuration
-   *
-   * See https://material-ui-1dab0.firebaseapp.com/api/snackbar/
-   */
-  config: PropTypes.object,
-};
-
-const mapStateToProps = ({ snackBar }) => ({
-  open: snackBar.open,
-  message: snackBar.message,
-  config: snackBar.config,
+const mapStateToProps = ({ portals }) => ({
+  open: portals.snackBar.open,
+  message: portals.snackBar.message,
+  config: portals.snackBar.config,
 });
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   snackBarClose,
 }, dispatch);
 
-export default connect(mapStateToProps, mapDispatchToProps)(SnackBar);
+const styles = {
+  root: {
+    width: 'calc(100vw - 48px)',
+    maxWidth: 300,
+  },
+};
+
+export default compose(
+  connect(mapStateToProps, mapDispatchToProps),
+  withStyles(styles),
+)(SnackBar);

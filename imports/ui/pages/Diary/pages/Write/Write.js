@@ -1,16 +1,15 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { withStyles } from 'material-ui/styles';
-import Dialog from 'material-ui/Dialog';
 import Divider from 'material-ui/Divider';
 import Input from 'material-ui/Input';
-import Button from 'material-ui/Button';
 import IconButton from 'material-ui/IconButton';
 import ArrowBackIcon from 'material-ui-icons/ArrowBack';
 import DoneIcon from 'material-ui-icons/Done';
 import { insertDiary } from '/imports/api/diarys/methods.js';
 import RootLayout from '/imports/ui/layouts/RootLayout';
 import { SecondaryNavHeader } from '/imports/ui/components/NavHeader';
+import { ModalActions } from '/imports/ui/components/Modal';
 import { QuillEditor } from '/imports/ui/components/Quill';
 import { CircleLoader } from '/imports/ui/components/Loader';
 
@@ -19,13 +18,14 @@ class WriteDiaryPage extends Component {
     classes: PropTypes.object.isRequired,
     history: PropTypes.object.isRequired,
     User: PropTypes.object.isRequired,
+    modalOpen: PropTypes.func.isRequired,
+    modalClose: PropTypes.func.isRequired,
     snackBarOpen: PropTypes.func.isRequired,
   }
 
   state = {
     isProcessing: false,
     processMsg: '',
-    isAlertOpen: false,
     title: '',
     outline: '',
     content: '',
@@ -45,9 +45,20 @@ class WriteDiaryPage extends Component {
   }
 
   _handleGoBack = () => {
-    const { history } = this.props;
     if (this.state.content) {
-      this.setState({ isAlertOpen: true });
+      this.props.modalOpen({
+        title: '提示',
+        content: '您还有未保存的日记内容，是否确认退出？',
+        actions: (
+          <ModalActions
+            sClick={this.props.modalClose}
+            pClick={() => {
+              this.props.modalClose();
+              this.props.history.goBack();
+            }}
+          />
+        ),
+      });
       return;
     }
     history.goBack();
@@ -129,28 +140,6 @@ class WriteDiaryPage extends Component {
           message={this.state.processMsg}
         />
         { this.renderContent() }
-        <Dialog
-          title="提示"
-          titleStyle={{ border: 'none' }}
-          actions={[
-            <Button
-              label="取消"
-              onClick={() => this.setState({ isAlertOpen: false })}
-              keyboardFocused
-              primary
-            />,
-            <Button
-              label="确认"
-              onClick={() => history.goBack()}
-              primary
-            />,
-          ]}
-          actionsContainerStyle={{ border: 'none' }}
-          open={this.state.isAlertOpen}
-          modal
-        >
-          您还有未保存的日记内容，是否确认退出？
-        </Dialog>
       </RootLayout>
     );
   }

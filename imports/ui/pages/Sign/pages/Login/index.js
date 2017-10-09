@@ -2,27 +2,44 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { bindActionCreators } from 'redux';
+import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
-import { compose } from 'recompose';
 import { withStyles } from 'material-ui/styles';
-import { CircularProgress } from 'material-ui/Progress';
-import Dialog from 'material-ui/Dialog';
 import Button from 'material-ui/Button';
 import Input from 'material-ui/Input';
 import purple from 'material-ui/colors/purple';
 import grey from 'material-ui/colors/grey';
 import { validateEmail } from '/imports/utils';
-import { userLogin, snackBarOpen } from '/imports/ui/redux/actions';
+import { userLogin, modalOpen, modalClose, snackBarOpen } from '/imports/ui/redux/actions';
 import withRedirect from '/imports/ui/hocs/withRedirect';
 import RootLayout from '/imports/ui/layouts/RootLayout';
 import { PrimaryNavHeader } from '/imports/ui/components/NavHeader';
+import { ModalActions } from '/imports/ui/components/Modal';
 import { CircleLoader } from '/imports/ui/components/Loader';
+
+const modalState = {
+  email: '',
+};
+
+// eslint-disable-next-line react/prop-types
+const ModalContent = ({ className, onChange }) => (
+  <Input
+    className={className}
+    name="email"
+    placeholder="邮箱地址"
+    value={modalState.email}
+    onChange={onChange}
+    disableUnderline
+    fullWidth
+  />
+);
 
 // TODO add Recaptch in this Login page component
 class LoginPage extends Component {
   static propTypes = {
     userLogin: PropTypes.func.isRequired,
+    modalOpen: PropTypes.func.isRequired,
+    modalClose: PropTypes.func.isRequired,
     snackBarOpen: PropTypes.func.isRequired,
     location: PropTypes.object.isRequired,
     history: PropTypes.object.isRequired,
@@ -32,15 +49,24 @@ class LoginPage extends Component {
   state = {
     isProcessing: false,
     processMsg: '',
-    resetDialog: false,
-    email: '',
     account: '',
     password: '',
   }
 
-  _handleChange(key, value) {
+  shouldComponentUpdate(nextProps, nextState) {
+    return JSON.stringify(this.state) !== JSON.stringify(nextState);
+  }
+
+  _handleChange = (e) => {
+    const name = e.target.name;
+    const value = e.target.value;
+    if (name === 'email') {
+      modalState.email = value;
+      this._handleOpenModal();
+      return;
+    }
     this.setState({
-      [key]: value,
+      [name]: value,
     });
   }
 
@@ -72,32 +98,60 @@ class LoginPage extends Component {
   }
 
   _handleSentResetEmail = () => {
-    const { email } = this.state;
+    const email = modalState.email;
 
     if (!validateEmail(email)) {
       this.props.snackBarOpen('请输入正确的邮箱地址');
       return;
     }
 
+    this.props.modalClose();
     this.setState({ isProcessing: true, processMsg: '发送邮件中' });
 
     const forgotPassword = Meteor.wrapPromise(Accounts.forgotPassword);
 
     forgotPassword({ email })
     .then(() => {
-      this.setState({ isProcessing: false, processMsg: '', resetDialog: false, email: '' });
-      this.props.snackBarOpen('发送重置密码邮件成功');
+      this.setState({ isProcessing: false, processMsg: '' });
+      this.props.snackBarOpen('发送成功');
     })
     .catch((err) => {
       console.log(err);
-      this.setState({ isProcessing: false, processMsg: '', resetDialog: false, email: '' });
-      this.props.snackBarOpen(`发送重置密码邮件失败 ${err.reason}`);
+      this.setState({ isProcessing: false, processMsg: '' });
+      this.props.snackBarOpen(`发送失败 ${err.reason}`);
+    });
+  }
+
+  _handleOpenModal = () => {
+    const { classes } = this.props;
+    this.props.modalOpen({
+      title: '重置密码',
+      content: (
+        <ModalContent
+          className={classes.input}
+          onChange={this._handleChange}
+        />
+      ),
+      actions: (
+        <ModalActions
+          primary="确认发送"
+          pClick={() => {
+            this._handleSentResetEmail();
+            modalState.email = '';
+          }}
+          sClick={() => {
+            this.props.modalClose();
+            modalState.email = '';
+          }}
+        />
+      ),
+      ops: { ignoreBackdropClick: true },
     });
   }
 
   _handleLoaderTimeout = () => {
     this.setState({ isProcessing: false, processMsg: '' });
-    this.props.snackBarOpen('发送邮件失败');
+    this.props.snackBarOpen('发送邮件超时');
   }
 
   renderContent() {
@@ -107,21 +161,21 @@ class LoginPage extends Component {
         <header className="login__logo">Gallery +</header>
         <section className="login__form">
           <Input
-            id="account"
             className={classes.input}
+            name="account"
             placeholder="体验账号: guest"
             value={this.state.account}
-            onChange={(evt) => this._handleChange('account', evt.target.value)}
+            onChange={this._handleChange}
             disableUnderline
             fullWidth
           />
           <Input
-            id="account"
             className={classes.input}
+            name="password"
             type="password"
             placeholder="密码: guest001"
             value={this.state.password}
-            onChange={(evt) => this._handleChange('password', evt.target.value)}
+            onChange={this._handleChange}
             disableUnderline
             fullWidth
           />
@@ -143,7 +197,7 @@ class LoginPage extends Component {
         </section>
         <footer
           className="login__footer"
-          onClick={() => this.setState({ resetDialog: true })}
+          onClick={this._handleOpenModal}
         >忘记密码?
         </footer>
       </div>
@@ -162,59 +216,23 @@ class LoginPage extends Component {
           onTimeout={this._handleLoaderTimeout}
         />
         { this.renderContent() }
-        <Dialog
-          title="重置密码"
-          titleStyle={{ border: 'none' }}
-          actions={[
-            <Button
-              label="取消"
-              onClick={() => this.setState({ resetDialog: false })}
-              disabled={this.state.isProcessing}
-              primary
-            />,
-            <Button
-              label="确认发送"
-              onClick={this._handleSentResetEmail}
-              disabled={this.state.isProcessing}
-              primary
-            />,
-          ]}
-          actionsContainerStyle={{ border: 'none' }}
-          open={this.state.resetDialog}
-          modal
-        >
-          {
-            this.state.isProcessing
-            ? (
-              <div style={{ textAlign: 'center' }}>
-                <CircularProgress
-                  style={{ verticalAlign: 'bottom' }}
-                  size={30}
-                />
-                <span style={{ marginLeft: 24 }}>发送邮件中...</span>
-              </div>
-            )
-            : (
-              <Input
-                name="email"
-                hintText="邮箱地址"
-                value={this.state.email}
-                onChange={(e) => this.setState({ email: e.target.value })}
-                fullWidth
-              />
-            )
-          }
-        </Dialog>
       </RootLayout>
     );
   }
 
 }
 
+const mapDispatchToProps = (dispatch) => bindActionCreators({
+  userLogin,
+  modalOpen,
+  modalClose,
+  snackBarOpen,
+}, dispatch);
+
 const styles = {
   input: {
     display: 'flex',
-    alignItems: 'center',
+    alignItems: 'flex-end',
     height: 48,
     borderBottom: 'solid 1px #e0e0e0',
     padding: '0 6px',
@@ -238,11 +256,6 @@ const styles = {
     },
   },
 };
-
-const mapDispatchToProps = (dispatch) => bindActionCreators({
-  userLogin,
-  snackBarOpen,
-}, dispatch);
 
 export default compose(
   connect(null, mapDispatchToProps),

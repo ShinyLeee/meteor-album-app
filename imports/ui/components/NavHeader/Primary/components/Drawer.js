@@ -2,8 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import React, { Component } from 'react';
-import { bindActionCreators } from 'redux';
-import { compose } from 'recompose';
+import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { withStyles } from 'material-ui/styles';
@@ -207,8 +206,8 @@ class NavHeaderDrawer extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  User: state.User,
+const mapStateToProps = ({ sessions }) => ({
+  User: sessions.User,
 });
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({

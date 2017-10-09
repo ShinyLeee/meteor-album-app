@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { compose } from 'recompose';
+import { compose } from 'redux';
 import { withRouter } from 'react-router-dom';
 import { withStyles } from 'material-ui/styles';
 import AppBar from 'material-ui/AppBar';
@@ -47,45 +47,41 @@ class PrimaryNavHeader extends Component {
   render() {
     const { style, classes } = this.props;
     return (
-      <div>
-        <AppBar
-          className={classes.appbar}
-          style={style}
-          position="fixed"
-        >
-          <Toolbar className={classes.toolbar}>
-            {/* LeftContent */}
-            <LeftContent>
-              <IconButton
-                color="contrast"
-                aria-label="Menu"
-                onClick={this._handleToggleDrawer}
-              >
-                <MenuIcon />
-              </IconButton>
-            </LeftContent>
+      <AppBar
+        className={classes.appbar}
+        style={style}
+        position="fixed"
+      >
+        <Toolbar className={classes.toolbar}>
+          {/* LeftContent */}
+          <LeftContent>
+            <IconButton
+              color="contrast"
+              aria-label="Menu"
+              onClick={this._handleToggleDrawer}
+            ><MenuIcon />
+            </IconButton>
+            <Drawer
+              visible={this.state.drawer}
+              onRequestClose={this._handleRequestClose}
+            />
+          </LeftContent>
 
-            {/* Content */}
-            <Content>
-              <Typography
-                type="title"
-                color="inherit"
-                onClick={this._handleTitleClick}
-              >
-                Gallery +
-              </Typography>
-            </Content>
+          {/* Content */}
+          <Content>
+            <Typography
+              type="title"
+              color="inherit"
+              onClick={this._handleTitleClick}
+            >Gallery +
+            </Typography>
+          </Content>
 
-            {/* RightContent */}
-            <RightContent />
+          {/* RightContent */}
+          <RightContent />
 
-          </Toolbar>
-        </AppBar>
-        <Drawer
-          visible={this.state.drawer}
-          onRequestClose={this._handleRequestClose}
-        />
-      </div>
+        </Toolbar>
+      </AppBar>
     );
   }
 }

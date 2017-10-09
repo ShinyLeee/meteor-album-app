@@ -1,12 +1,14 @@
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { vHeight } from '/imports/utils/responsive';
-import { PrimaryNavHeader } from '/imports/ui/components/NavHeader';
 import { LinearLoader } from '/imports/ui/components/Loader';
 
-export default class RootLayout extends Component {
+class RootLayout extends Component {
   static propTypes = {
+    isAppReady: PropTypes.bool.isRequired,
+    User: PropTypes.object,
     deep: PropTypes.bool.isRequired,
     loading: PropTypes.bool.isRequired,
     children: PropTypes.any,
@@ -19,22 +21,25 @@ export default class RootLayout extends Component {
   }
 
   render() {
-    const { deep, loading, children, Topbar } = this.props;
+    const { deep, loading, children, Topbar, isAppReady } = this.props;
+    const isLoading = !isAppReady || loading;
     return (
       <div className="container">
-        {
-          loading ? <PrimaryNavHeader /> : Topbar
-        }
+        { Topbar }
         <main
           className={classNames('content', { deep })}
           style={{ minHeight: vHeight - 64 }}
         >
+          { isLoading && <LinearLoader /> }
           { children }
-          {
-            loading && <LinearLoader />
-          }
         </main>
       </div>
     );
   }
 }
+
+const mapStateToProps = ({ sessions }) => ({
+  isAppReady: !sessions.initializing,
+});
+
+export default connect(mapStateToProps)(RootLayout);

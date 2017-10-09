@@ -1,8 +1,26 @@
-import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import Quill from 'quill';
 
 export default class QuillEditor extends Component {
+  static propTypes = {
+    className: PropTypes.string.isRequired,
+    readOnly: PropTypes.bool.isRequired,
+    placeholder: PropTypes.string,
+    theme: PropTypes.oneOf(['snow', 'bubble']).isRequired,
+    modules: PropTypes.object.isRequired,
+    contentType: PropTypes.oneOf(['html', 'delta']).isRequired,
+    content: PropTypes.object,
+    onChange: PropTypes.func,
+  }
+
+  static defaultProps = {
+    className: 'component__QuillEditor',
+    readOnly: false,
+    theme: 'snow',
+    modules: { toolbar: false },
+    contentType: 'html',
+  }
 
   constructor(props) {
     super(props);
@@ -55,24 +73,3 @@ export default class QuillEditor extends Component {
     );
   }
 }
-
-QuillEditor.displayName = 'QuillEditor';
-
-QuillEditor.defaultProps = {
-  className: 'component__QuillEditor',
-  readOnly: false,
-  theme: 'snow',
-  modules: { toolbar: false },
-  contentType: 'html',
-};
-
-QuillEditor.propTypes = {
-  className: PropTypes.string.isRequired,
-  readOnly: PropTypes.bool.isRequired,
-  placeholder: PropTypes.string,
-  theme: PropTypes.oneOf(['snow', 'bubble']).isRequired,
-  modules: PropTypes.object.isRequired,
-  contentType: PropTypes.oneOf(['html', 'delta']).isRequired,
-  content: PropTypes.object,
-  onChange: PropTypes.func,
-};

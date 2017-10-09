@@ -1,9 +1,12 @@
+export const APP_INIT = 'APP_INIT';
 export const USER_LOGIN = 'USER_LOGIN';
 export const USER_LOGOUT = 'USER_LOGOUT';
 export const STORE_UPTOKEN = 'STORE_UPTOKEN';
 export const CLEAR_UPTOKEN = 'CLEAR_UPTOKEN';
 export const ZOOMER_OPEN = 'ZOOMER_OPEN';
 export const ZOOMER_CLOSE = 'ZOOMER_CLOSE';
+export const MODAL_OPEN = 'MODAL_OPEN';
+export const MODAL_CLOSE = 'MODAL_CLOSE';
 export const DIALOG_FETCH = 'DIALOG_FETCH';
 export const DIALOG_OPEN = 'DIALOG_OPEN';
 export const DIALOG_CLOSE = 'DIALOG_CLOSE';

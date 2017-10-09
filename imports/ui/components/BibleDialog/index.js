@@ -42,9 +42,9 @@ BibleDialog.propTypes = {
   bibleDialogClose: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = (state) => ({
-  open: state.dialog.open,
-  bible: state.dialog.bible,
+const mapStateToProps = ({ portals }) => ({
+  open: portals.dialog.open,
+  bible: portals.dialog.bible,
 });
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({

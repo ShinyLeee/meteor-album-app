@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
-import { createContainer } from 'meteor/react-meteor-data';
+import { withTracker } from 'meteor/react-meteor-data';
 import { Users } from '/imports/api/users/user.js';
 import { Collections } from '/imports/api/collections/collection.js';
 import { Notes } from '/imports/api/notes/note.js';
 
 import ResultsPage from './Results';
 
-const ResultsContainer = createContainer(({ match }) => {
+export default withTracker(({ match }) => {
   const query = match.params.query;
 
   const userHandler = Meteor.subscribe('Users.all');
@@ -32,6 +32,4 @@ const ResultsContainer = createContainer(({ match }) => {
     collections,
     notes,
   };
-}, ResultsPage);
-
-export default ResultsContainer;
+})(ResultsPage);

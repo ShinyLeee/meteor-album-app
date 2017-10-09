@@ -83,8 +83,8 @@ class ImageList extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  User: state.User,
+const mapStateToProps = ({ sessions }) => ({
+  User: sessions.User,
 });
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({

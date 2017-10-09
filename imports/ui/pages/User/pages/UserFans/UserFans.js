@@ -86,10 +86,10 @@ class UserFansPage extends PureComponent {
 
   renderFansList() {
     if (this.state.wholeFans.length === 0) {
-      return <div className="userFans__emptyItem">暂无关注者</div>;
+      return <p className="text-center">暂无关注者</p>;
     }
     if (this.state.fans.length === 0) {
-      return <div className="userFans__emptyItem">未找到用户</div>;
+      return <p className="text-center">未找到用户</p>;
     }
     return this.state.fans.map((fan, i) => {
       const fanObject = Meteor.users.findOne({ username: fan });

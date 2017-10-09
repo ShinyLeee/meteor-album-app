@@ -5,6 +5,7 @@ import React, { Component } from 'react';
 import uuid from 'node-uuid';
 import { insertImage } from '/imports/api/images/methods.js';
 import settings from '/imports/utils/settings';
+import Portal from '../Portal';
 import {
   Wrapper,
   Inner,
@@ -351,7 +352,7 @@ export default class Uploader extends Component {
     const { open, multiple, destination } = this.props;
     if (open && this.state.uploading) {
       return (
-        <div>
+        <Portal name="Uploader">
           <Wrapper>
             <Inner>
               <ThumbnailSection style={{ backgroundImage: `url(${this.state.thumbnail})` }} />
@@ -364,7 +365,7 @@ export default class Uploader extends Component {
               </DetailSection>
             </Inner>
           </Wrapper>
-        </div>
+        </Portal>
       );
     }
     return (

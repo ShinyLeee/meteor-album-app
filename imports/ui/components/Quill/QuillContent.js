@@ -4,7 +4,9 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { dialogFetch, dialogOpen, dialogClose, snackBarOpen } from '/imports/ui/redux/actions/index.js';
+import { dialogFetch, dialogOpen, dialogClose, snackBarOpen } from '/imports/ui/redux/actions';
+import '/node_modules/quill/dist/quill.snow.css';
+import './Quill.css';
 
 class QuillContent extends Component {
   static propTypes = {

@@ -8,6 +8,14 @@
   padding-top: 128px;
 }
 
+/* route /accounts/resetPassword */
+.content__resetPassword {
+  & > .resetPassword__button {
+    padding: 22px 0;
+    text-align: center;
+  }
+} 
+
 /* route /login, /register */
 .content__login, .content__register {
   width: 100%;
@@ -402,7 +410,7 @@
 /* route /search */
 .content__search {
   background-color: #eee;
-  overflow-x: hidden;
+  padding-top: 28px;
   & > .search__query {
     margin-top: 24px;
     text-indent: 18px;
@@ -413,8 +421,6 @@
 }
 
 .search__collection {
-  position: relative;
-  top: 28px;
   margin-bottom: 28px;
   & > .collection__header {
     margin-bottom: 8px;
@@ -434,8 +440,6 @@
 }
 
 .search__user {
-  position: relative;
-  top: 28px;
   margin-bottom: 28px;
   & > .user__header {
     margin-bottom: 8px;

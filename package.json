@@ -1,5 +1,5 @@
 {
-  "version": "1.4.0-rc.5",
+  "version": "1.4.0-rc.6",
   "name": "galleryplus",
   "private": true,
   "repository": "git@github.com:ShinyLeee/meteor-album-app.git",
@@ -43,7 +43,7 @@
     "react-transition-group": "^2.2.1",
     "recompose": "^0.25.1",
     "redux": "^3.6.0",
-    "styled-components": "^2.2.0",
+    "styled-components": "^2.2.1",
     "typeface-roboto": "0.0.35"
   },
   "devDependencies": {

@@ -2,8 +2,6 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Meteor } from 'meteor/meteor';
 import IconButton from 'material-ui/IconButton';
-import Dialog from 'material-ui/Dialog';
-import Button from 'material-ui/Button';
 import CloseIcon from 'material-ui-icons/Close';
 import RecoveryIcon from 'material-ui-icons/Replay';
 import RemoveIcon from 'material-ui-icons/Delete';
@@ -12,6 +10,7 @@ import purple from 'material-ui/colors/purple';
 import { removeImages, recoveryImages } from '/imports/api/images/methods.js';
 import RootLayout from '/imports/ui/layouts/RootLayout';
 import { SecondaryNavHeader } from '/imports/ui/components/NavHeader';
+import { ModalActions } from '/imports/ui/components/Modal';
 import EmptyHolder from '/imports/ui/components/EmptyHolder';
 import { CircleLoader } from '/imports/ui/components/Loader';
 import JustifiedSelectIcon from '/imports/ui/components/JustifiedLayout/components/snippet/JustifiedSelectIcon.js';
@@ -30,6 +29,8 @@ export default class RecyclePage extends Component {
     selectCounter: PropTypes.func.isRequired,
     disableSelectAll: PropTypes.func.isRequired,
     enableSelectAll: PropTypes.func.isRequired,
+    modalOpen: PropTypes.func.isRequired,
+    modalClose: PropTypes.func.isRequired,
     snackBarOpen: PropTypes.func.isRequired,
   }
 
@@ -38,8 +39,6 @@ export default class RecyclePage extends Component {
     isProcessing: false,
     processMsg: '',
     isEditing: false,
-    recoveryAlert: false,
-    deleteAlert: false,
   }
 
   componentWillReceiveProps(nextProps) {
@@ -72,18 +71,30 @@ export default class RecyclePage extends Component {
     }
   }
 
-  _handleOpenAlert = (type) => {
+  _handleOpenModal = (type) => {
     const { selectImages } = this.props;
     if (selectImages.length === 0) {
       this.props.snackBarOpen('您尚未选择相片');
       return;
     }
-    this.setState({ [type]: true });
+
+    const isRecovery = type === 'recovery';
+    this.props.modalOpen({
+      title: '提示',
+      content: isRecovery ? '是否确认恢复所选照片' : '是否确认彻底删除所选照片？',
+      actions: (
+        <ModalActions
+          sClick={this.props.modalClose}
+          pClick={isRecovery ? this._handleRecoveryImgs : this._handleDeleteImgs}
+        />
+      ),
+    });
   }
 
   _handleRecoveryImgs = () => {
     const { selectImages } = this.props;
-    this.setState({ isProcessing: true, processMsg: '恢复相片中', recoveryAlert: false });
+    this.props.modalClose();
+    this.setState({ isProcessing: true, processMsg: '恢复相片中' });
     const selectImagesIds = selectImages.map((image) => image._id);
     recoveryImages.callPromise({ selectImages: selectImagesIds })
     .then(() => {
@@ -99,7 +110,8 @@ export default class RecyclePage extends Component {
 
   _handleDeleteImgs = () => {
     const { selectImages } = this.props;
-    this.setState({ isProcessing: true, processMsg: '删除相片中', deleteAlert: false });
+    this.props.modalClose();
+    this.setState({ isProcessing: true, processMsg: '删除相片中' });
     const selectImagesIds = selectImages.map((image) => image._id);
     const keys = selectImages.map((image) => {
       const key = `${image.user}/${image.collection}/${image.name}.${image.type}`;
@@ -156,18 +168,22 @@ export default class RecyclePage extends Component {
             style={{ backgroundColor: this.state.isEditing ? blue500 : purple500 }}
             title={counter ? `选择了${counter}张照片` : '回收站'}
             Left={this.state.isEditing && (
-              <IconButton onClick={this._handleQuitEditing}><CloseIcon /></IconButton>
+              <IconButton
+                color="contrast"
+                onClick={this._handleQuitEditing}
+              ><CloseIcon />
+              </IconButton>
             )}
             Right={
               <div>
                 <IconButton
                   color="contrast"
-                  onClick={() => this._handleOpenAlert('recoveryAlert')}
+                  onClick={() => this._handleOpenModal('recovery')}
                 ><RecoveryIcon />
                 </IconButton>
                 <IconButton
                   color="contrast"
-                  onClick={() => this._handleOpenAlert('deleteAlert')}
+                  onClick={() => this._handleOpenModal('delete')}
                 ><RemoveIcon />
                 </IconButton>
               </div>
@@ -180,46 +196,6 @@ export default class RecyclePage extends Component {
           message={this.state.processMsg}
         />
         { dataIsReady && this.renderContent() }
-        <Dialog
-          title="提示"
-          titleStyle={{ border: 'none' }}
-          actions={[
-            <Button
-              label="取消"
-              onClick={() => this.setState({ recoveryAlert: false })}
-              primary
-            />,
-            <Button
-              label="恢复"
-              onClick={this._handleRecoveryImgs}
-              primary
-            />,
-          ]}
-          actionsContainerStyle={{ border: 'none' }}
-          open={this.state.recoveryAlert}
-          onRequestClose={() => this.setState({ recoveryAlert: false })}
-        >是否确认恢复所选图片？
-        </Dialog>
-        <Dialog
-          title="提示"
-          titleStyle={{ border: 'none' }}
-          actions={[
-            <Button
-              label="取消"
-              onClick={() => this.setState({ deleteAlert: false })}
-              primary
-            />,
-            <Button
-              label="彻底删除"
-              onClick={this._handleDeleteImgs}
-              primary
-            />,
-          ]}
-          actionsContainerStyle={{ border: 'none' }}
-          open={this.state.deleteAlert}
-          onRequestClose={() => this.setState({ deleteAlert: false })}
-        >是否确认彻底删除所选图片？
-        </Dialog>
       </RootLayout>
     );
   }
