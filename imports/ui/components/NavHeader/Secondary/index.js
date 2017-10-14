@@ -9,7 +9,7 @@ import Typography from 'material-ui/Typography';
 import IconButton from 'material-ui/IconButton';
 import ArrowBackIcon from 'material-ui-icons/ArrowBack';
 import blue from 'material-ui/colors/blue';
-import scrollTo from '/imports/vendor/scrollTo.js';
+import scrollTo from '/imports/vendor/scrollTo';
 import { LeftContent, Content } from '../NavHeader.style';
 
 const blue500 = blue[500];
@@ -76,10 +76,12 @@ SecondaryNavHeader.propTypes = {
   iconStyle: PropTypes.object,
   title: PropTypes.string,
   Left: PropTypes.oneOfType([
+    PropTypes.array,
     PropTypes.bool,
     PropTypes.element,
   ]),
   Right: PropTypes.oneOfType([
+    PropTypes.array,
     PropTypes.bool,
     PropTypes.element,
   ]),

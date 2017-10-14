@@ -30,7 +30,7 @@ export default compose(
 
     const initialImages = Images.find(
       { private: false },
-      { sort: { createdAt: -1 }, limit }
+      { sort: { createdAt: -1 }, limit },
     ).fetch();
 
     return {
@@ -38,5 +38,5 @@ export default compose(
       dataIsReady,
       initialImages,
     };
-  })
+  }),
 )(IndexPage);

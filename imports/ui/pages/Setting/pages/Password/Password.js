@@ -5,9 +5,9 @@ import { Accounts } from 'meteor/accounts-base';
 import { withStyles } from 'material-ui/styles';
 import Button from 'material-ui/Button';
 import Input from 'material-ui/Input';
-import RootLayout from '/imports/ui/layouts/RootLayout';
+import ViewLayout from '/imports/ui/layouts/ViewLayout';
 import { SecondaryNavHeader } from '/imports/ui/components/NavHeader';
-import { CircleLoader } from '/imports/ui/components/Loader';
+import Loader from '/imports/ui/components/Loader';
 
 class PasswordPage extends Component {
   static propTypes = {
@@ -46,15 +46,15 @@ class PasswordPage extends Component {
     const logout = Meteor.wrapPromise(Meteor.logout);
 
     changePassword(oldPwd, newPwd)
-    .then(() => logout())
-    .then(() => {
-      this.props.snackBarOpen('修改密码成功，请重新登录');
-    })
-    .catch((err) => {
-      console.log(err);
-      this.setState({ isProcessing: false, processMsg: '' });
-      this.props.snackBarOpen(`修改密码失败 ${err.reason}`);
-    });
+      .then(() => logout())
+      .then(() => {
+        this.props.snackBarOpen('修改密码成功，请重新登录');
+      })
+      .catch((err) => {
+        console.log(err);
+        this.setState({ isProcessing: false, processMsg: '' });
+        this.props.snackBarOpen(`修改密码失败 ${err.reason}`);
+      });
   }
 
   _handleTimeout = () => {
@@ -112,20 +112,16 @@ class PasswordPage extends Component {
 
   render() {
     return (
-      <RootLayout
-        loading={false}
-        Topbar={<SecondaryNavHeader title="修改密码" />}
-      >
-        <CircleLoader
+      <ViewLayout Topbar={<SecondaryNavHeader title="修改密码" />}>
+        <Loader
           open={this.state.isProcessing}
           message={this.state.processMsg}
           onTimeout={this._handleLoaderTimeout}
         />
         { this.renderContent() }
-      </RootLayout>
+      </ViewLayout>
     );
   }
-
 }
 
 const styles = {

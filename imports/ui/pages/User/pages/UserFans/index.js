@@ -19,7 +19,7 @@ export default compose(
   withTracker(({ User, match }) => {
     const { username } = match.params;
 
-    let isGuest = !User;  // if User is null, isGuest is true
+    let isGuest = !User; // if User is null, isGuest is true
 
     // if User exist and its name equal with params.username, isGuest is false
     if (User && User.username === username) isGuest = false;

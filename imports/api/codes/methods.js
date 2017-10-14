@@ -33,7 +33,7 @@ export const useCode = new ValidatedMethod({
     }
     Codes.update(
       { no: codeNo, isUsed: false },
-      { $set: { isUsed: true, usedAt: new Date() } }
+      { $set: { isUsed: true, usedAt: new Date() } },
     );
   },
 });

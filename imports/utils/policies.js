@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { Meteor } from 'meteor/meteor';
-import { Collections } from '/imports/api/collections/collection.js';
+import { Collections } from '/imports/api/collections/collection';
 
 export const isLogin = ({ User, location }) => {
   let ret = {

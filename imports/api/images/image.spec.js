@@ -142,7 +142,7 @@ if (Meteor.isServer) {
               assert.equal(collections.collections.length, 1);
               assert.equal(collections.images.length, 3);
               done();
-            }
+            },
           );
         });
       });
@@ -250,11 +250,11 @@ if (Meteor.isServer) {
         it('[recoveryImages] should update deletedAt null after method call', () => {
           const newImg = Factory.create(
             'image',
-            { user: curUser.username, collection: collOne.name, deletedAt: new Date() }
+            { user: curUser.username, collection: collOne.name, deletedAt: new Date() },
           );
           const newImg2 = Factory.create(
             'image',
-            { user: curUser.username, collection: collOne.name, deletedAt: new Date() }
+            { user: curUser.username, collection: collOne.name, deletedAt: new Date() },
           );
           expect(Images.find({ deletedAt: { $ne: null } }).count()).to.equal(2);
 
@@ -266,11 +266,11 @@ if (Meteor.isServer) {
           const anotherColl = Factory.create('collection', { user: curUser.username, private: true });
           const newImg = Factory.create(
             'image',
-            { user: curUser.username, collection: collOne.name, deletedAt: new Date() }
+            { user: curUser.username, collection: collOne.name, deletedAt: new Date() },
           );
           const newImg2 = Factory.create(
             'image',
-            { user: curUser.username, collection: anotherColl.name, deletedAt: new Date() }
+            { user: curUser.username, collection: anotherColl.name, deletedAt: new Date() },
           );
           expect(Images.findOne(newImg._id).private).to.be.false;
           expect(Images.findOne(newImg2._id).private).to.be.false;
@@ -299,7 +299,7 @@ if (Meteor.isServer) {
 
           shiftImages._execute(
             { userId: curUser._id },
-            { selectImages: [imgId, newImg._id], dest: anotherColl.name, destPrivateStat: false }
+            { selectImages: [imgId, newImg._id], dest: anotherColl.name, destPrivateStat: false },
           );
 
           expect(Images.find({ collection: collOne.name }).count()).to.equal(2, 'source collection should minus');
@@ -313,7 +313,7 @@ if (Meteor.isServer) {
 
           shiftImages._execute(
             { userId: curUser._id },
-            { selectImages: [imgId], dest: anotherColl.name, destPrivateStat: true }
+            { selectImages: [imgId], dest: anotherColl.name, destPrivateStat: true },
           );
 
           expect(Images.findOne(imgId).collection).to.equal(anotherColl.name);

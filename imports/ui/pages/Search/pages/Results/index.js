@@ -7,7 +7,7 @@ import { Notes } from '/imports/api/notes/note.js';
 import ResultsPage from './Results';
 
 export default withTracker(({ match }) => {
-  const query = match.params.query;
+  const { query } = match.params;
 
   const userHandler = Meteor.subscribe('Users.all');
   const collHandler = Meteor.subscribe('Collections.all');

@@ -31,15 +31,13 @@ export default compose(
   withTracker(({ User, match }) => {
     const { username, cname } = match.params;
 
-    let isGuest = !User;  // if User is null, isGuest is true
+    let isGuest = !User; // if User is null, isGuest is true
 
     // if User exist and its name equal with params.username, isGuest is false
     if (User && User.username === username) isGuest = false;
     else isGuest = true;
 
-    const collHandler = isGuest
-                        ? Meteor.subscribe('Collections.inUser', username)
-                        : Meteor.subscribe('Collections.own');
+    const collHandler = Meteor.subscribe('Collections.inUser', username);
     const imageHandler = Meteor.subscribe('Images.inCollection', { username, cname });
     const dataIsReady = collHandler.ready() && imageHandler.ready();
 
@@ -49,7 +47,7 @@ export default compose(
     // otherColls use for shift photos
     const otherColls = Collections.find(
       { name: { $ne: cname } },
-      { fields: { name: 1, private: 1 } }
+      { fields: { name: 1, private: 1 } },
     ).fetch();
 
     return {

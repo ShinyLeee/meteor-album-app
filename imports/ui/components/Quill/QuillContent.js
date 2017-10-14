@@ -1,19 +1,19 @@
 import _ from 'lodash';
-import axios from 'axios';
 import PropTypes from 'prop-types';
+import jsonp from 'jsonp';
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { dialogFetch, dialogOpen, dialogClose, snackBarOpen } from '/imports/ui/redux/actions';
+import { modalOpen, modalClose, snackBarOpen } from '/imports/ui/redux/actions';
+import { CircleLoader } from '/imports/ui/components/Loader';
 import '/node_modules/quill/dist/quill.snow.css';
 import './Quill.css';
 
 class QuillContent extends Component {
   static propTypes = {
     content: PropTypes.string.isRequired,
-    dialogFetch: PropTypes.func.isRequired,
-    dialogOpen: PropTypes.func.isRequired,
-    dialogClose: PropTypes.func.isRequired,
+    modalOpen: PropTypes.func.isRequired,
+    modalClose: PropTypes.func.isRequired,
     snackBarOpen: PropTypes.func.isRequired,
   }
 
@@ -23,7 +23,7 @@ class QuillContent extends Component {
       const href = a.href;
       const regex = /^https:\/\/getbible.net\/json\?/;
       if (href.search(regex) !== -1) {
-        a.addEventListener('click', this.anchorClick, false);
+        a.addEventListener('click', this._handleAnchorClick, false);
       }
     });
   }
@@ -33,43 +33,55 @@ class QuillContent extends Component {
       const href = a.href;
       const regex = /^https:\/\/getbible.net\/json\?/;
       if (href.search(regex) !== -1) {
-        a.removeEventListener('click', this.anchorClick, false);
+        a.removeEventListener('click', this._handleAnchorClick, false);
       }
     });
   }
 
-  anchorClick(e) {
+  _handleAnchorClick = (e) => {
     e.preventDefault();
 
     const url = e.target.href;
     const chapter = e.target.text;
 
-    this.props.dialogFetch();
-    axios({
-      method: 'GET',
-      url,
-    })
-    .then((data) => {
-      let verses = data.chapter || data.book[0].chapter;
-      verses = _.map(verses, (verse) => (
-        `<small>${verse.verse_nr}</small> ${verse.verse}`
-      ));
-      this.props.dialogOpen({ chapter, verses });
-    })
-    .catch((err) => {
-      this.props.dialogClose();
-      this.props.snackBarOpen(`获取失败 ${err.reason}`);
-      console.log(err);
+    this.renderModal({
+      content: (
+        <div className="flex-box">
+          <CircleLoader />
+          <p>获取中...</p>
+        </div>
+      ),
+    });
+    jsonp(url, null, (err, data) => {
+      if (err) {
+        console.log(err);
+        this.props.modalClose();
+        this.props.snackBarOpen(`获取失败 ${err}`);
+      } else {
+        let verses = data.chapter || data.book[0].chapter;
+        verses = _.map(verses, (verse) => (
+          `<small>${verse.verse_nr}</small> ${verse.verse}`
+        ));
+        this.renderModal({
+          title: chapter,
+          content: <div dangerouslySetInnerHTML={{ __html: verses }} />,
+        });
+      }
     });
   }
 
+  renderModal({ title, content }) {
+    this.props.modalOpen({ title, content });
+  }
+
   render() {
+    const { content } = this.props;
     return (
       <div className="ql-container ql-snow">
         <div
           className="ql-editor"
           ref={(node) => { this.content = node; }}
-          dangerouslySetInnerHTML={{ __html: this.props.content }}
+          dangerouslySetInnerHTML={{ __html: content }}
         />
       </div>
     );
@@ -77,9 +89,8 @@ class QuillContent extends Component {
 }
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
-  dialogFetch,
-  dialogOpen,
-  dialogClose,
+  modalOpen,
+  modalClose,
   snackBarOpen,
 }, dispatch);
 

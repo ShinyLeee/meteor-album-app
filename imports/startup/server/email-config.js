@@ -2,7 +2,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
 Meteor.startup(() => {
-  const domain = Meteor.settings.public.domain;
+  const { domain } = Meteor.settings.public;
   const smtp = {
     username: 'lshinylee@vip.qq.com',
     password: 'otbhblukwmhsbecj',

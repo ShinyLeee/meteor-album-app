@@ -46,10 +46,6 @@ class CommentList extends Component {
     classes: PropTypes.object.isRequired,
   }
 
-  static defaultProps = {
-    open: false,
-  }
-
   state = {
     pid: '',
     comment: '',
@@ -104,32 +100,32 @@ class CommentList extends Component {
     };
 
     insertComment.callPromise(newComment)
-    .then(() => {
-      this.setState({ pid: '', comment: '' });
-    })
-    .catch((err) => {
-      console.log(err);
-      this.props.snackBarOpen('评论失败');
-    });
+      .then(() => {
+        this.setState({ pid: '', comment: '' });
+      })
+      .catch((err) => {
+        console.log(err);
+        this.props.snackBarOpen('评论失败');
+      });
   }
 
   _handleRemoveComment(e, comment) {
     removeComment.callPromise({ commentId: comment._id })
-    .then(() => {
-      this.props.snackBarOpen('删除评论成功');
-    })
-    .catch((err) => {
-      console.log(err);
-      this.props.snackBarOpen('删除评论失败');
-    });
+      .then(() => {
+        this.props.snackBarOpen('删除评论成功');
+      })
+      .catch((err) => {
+        console.log(err);
+        this.props.snackBarOpen('删除评论失败');
+      });
   }
 
   renderCommentItem() {
     const { User, comments, history } = this.props;
-    return comments.map((comment, i) => {
+    return comments.map((comment) => {
       const user = Meteor.users.findOne({ username: comment.user });
       return (
-        <List key={i}>
+        <List key={comment._id}>
           <ListItem
             onClick={(e) => this._handleCommentClick(e, comment)}
             button

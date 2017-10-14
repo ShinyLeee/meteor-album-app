@@ -8,7 +8,7 @@ const source = `${settings.sourceDomain}/GalleryPlus/Default/empty.png`;
 const EmptyHolder = ({ header, mainInfo, secInfo }) => (
   <Wrapper>
     <Inner>
-      <img src={source} role="presentation" />
+      <img src={source} alt="" />
       <Header>{header}</Header>
       <Info>{mainInfo}</Info>
       <Info>{secInfo}</Info>
@@ -21,7 +21,7 @@ EmptyHolder.defaultProps = {
 };
 
 EmptyHolder.propTypes = {
-  header: PropTypes.string.isRequired,
+  header: PropTypes.string,
   mainInfo: PropTypes.string.isRequired,
   secInfo: PropTypes.string,
 };

@@ -23,7 +23,7 @@ import settings from '/imports/utils/settings';
 import FadeTransition from '/imports/ui/components/Transition/Fade';
 import CommentList from '/imports/ui/components/CommentList';
 import { snackBarOpen } from '/imports/ui/redux/actions';
-import { Wrapper, ActionButtonNum } from './ImageHolder.style.js';
+import { Wrapper, ActionButtonNum } from './ImageHolder.style';
 
 const formatter = buildFormatter(CNStrings);
 
@@ -38,12 +38,7 @@ class ImageHolder extends Component {
     classes: PropTypes.object.isRequired,
     User: PropTypes.object, // not required bc guest can visit it
     comments: PropTypes.array.isRequired,
-    snackBarOpen: PropTypes.func.isRequired,
     history: PropTypes.object.isRequired,
-  }
-
-  static defaultProps = {
-    comments: [],
   }
 
   state = {
@@ -173,11 +168,11 @@ export default compose(
     Meteor.subscribe('Comments.inImage', discId);
     const comments = Comments.find(
       { discussion_id: discId, type: 'image' },
-      { sort: { createdAt: -1 } }
+      { sort: { createdAt: -1 } },
     ).fetch();
     return {
       comments,
     };
-  })
+  }),
 )(ImageHolder);
 

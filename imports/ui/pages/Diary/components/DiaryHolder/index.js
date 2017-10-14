@@ -16,7 +16,7 @@ import SlideTransition from '/imports/ui/components/Transition/Slide';
 import { CustomNavHeader } from '/imports/ui/components/NavHeader';
 import { ModalActions } from '/imports/ui/components/Modal';
 import { QuillShower, QuillEditor } from '/imports/ui/components/Quill';
-import { CircleLoader } from '/imports/ui/components/Loader';
+import Loader from '/imports/ui/components/Loader';
 import {
   Wrapper,
   Body,
@@ -24,6 +24,17 @@ import {
   Footer,
   Time,
 } from './DiaryHolder.style.js';
+
+const quillConfig = {
+  toolbar: {
+    container: [
+      [{ header: [1, 2, false] }],
+      ['bold', { color: [] }, { align: [false, 'center', 'right'] }],
+      ['blockquote', 'code-block'],
+      ['link', 'image'],
+    ],
+  },
+};
 
 class DiaryHolder extends Component {
   static propTypes = {
@@ -55,19 +66,6 @@ class DiaryHolder extends Component {
     }
   }
 
-  get quillModulesConfig() {
-    return {
-      toolbar: {
-        container: [
-          [{ header: [1, 2, false] }],
-          ['bold', { color: [] }, { align: [false, 'center', 'right'] }],
-          ['blockquote', 'code-block'],
-          ['link', 'image'],
-        ],
-      },
-    };
-  }
-
   /**
    * @param {string} outline - plain text take from rich text
    * @param {object} content - Delta object from Quill.js
@@ -86,16 +84,16 @@ class DiaryHolder extends Component {
     this.setState({ isProcessing: true, processMsg: '删除日记中' });
 
     removeDiary.callPromise({ diaryId: diary._id })
-    .then(() => {
-      this.setState({ isProcessing: false, processMsg: '' });
-      this.props.diaryClose();
-      this.props.snackBarOpen('删除成功');
-    })
-    .catch((err) => {
-      console.log(err);
-      this.setState({ isProcessing: false, processMsg: '' });
-      this.props.snackBarOpen(`删除失败 ${err.reason}`);
-    });
+      .then(() => {
+        this.setState({ isProcessing: false, processMsg: '' });
+        this.props.diaryClose();
+        this.props.snackBarOpen('删除成功');
+      })
+      .catch((err) => {
+        console.log(err);
+        this.setState({ isProcessing: false, processMsg: '' });
+        this.props.snackBarOpen(`删除失败 ${err.reason}`);
+      });
   }
 
   _handleUpdateDiary = () => {
@@ -109,16 +107,16 @@ class DiaryHolder extends Component {
       outline: updatedOutline,
       content: updatedContent,
     })
-    .then(() => {
-      this.setState({ isProcessing: false, processMsg: '', isEditing: false, updatedOutline: '', updatedContent: '' });
-      this.props.diaryOpen(Diarys.findOne(diary._id));
-      this.props.snackBarOpen('修改成功');
-    })
-    .catch((err) => {
-      console.log(err);
-      this.setState({ isProcessing: false, processMsg: '' });
-      this.props.snackBarOpen(`修改失败 ${err.reason}`);
-    });
+      .then(() => {
+        this.setState({ isProcessing: false, processMsg: '', isEditing: false, updatedOutline: '', updatedContent: '' });
+        this.props.diaryOpen(Diarys.findOne(diary._id));
+        this.props.snackBarOpen('修改成功');
+      })
+      .catch((err) => {
+        console.log(err);
+        this.setState({ isProcessing: false, processMsg: '' });
+        this.props.snackBarOpen(`修改失败 ${err.reason}`);
+      });
   }
 
   _handleClose = (closeDiary = false) => () => {
@@ -204,7 +202,7 @@ class DiaryHolder extends Component {
             <SlideTransition>
               <Wrapper>
                 { this.renderNavHeader() }
-                <CircleLoader
+                <Loader
                   open={this.state.isProcessing}
                   message={this.state.processMsg}
                 />
@@ -214,7 +212,7 @@ class DiaryHolder extends Component {
                       this.state.isEditing
                       ? (
                         <QuillEditor
-                          modules={this.quillModulesConfig}
+                          modules={quillConfig}
                           onChange={this._handleDiaryChange}
                           contentType="delta"
                           content={diary.content}

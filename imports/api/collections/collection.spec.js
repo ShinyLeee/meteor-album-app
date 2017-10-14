@@ -6,11 +6,11 @@ import { Factory } from 'meteor/dburles:factory';
 import { PublicationCollector } from 'meteor/johanbrook:publication-collector';
 import { assert, expect } from 'meteor/practicalmeteor:chai';
 import { getRandomInt, limitStrLength } from '/imports/utils';
-import { insertCollection, removeCollection, lockCollection, mutateCollectionCover } from './methods.js';
-import { Users, defaultUserProfile } from '../users/user.js';
-import { Images } from '../images/image.js';
-import { Collections } from './collection.js';
-import { Comments } from '../comments/comment.js';
+import { insertCollection, removeCollection, lockCollection, mutateCollectionCover } from './methods';
+import { Users, defaultUserProfile } from '../users/user';
+import { Images } from '../images/image';
+import { Collections } from './collection';
+import { Comments } from '../comments/comment';
 
 Factory.define('collection', Collections, {
   name: () => limitStrLength(faker.hacker.noun(), 20),

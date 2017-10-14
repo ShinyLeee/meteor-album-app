@@ -5,7 +5,6 @@ import CollHolder from '/imports/ui/components/CollHolder';
 
 export default class FollowedCollection extends Component {
   static propTypes = {
-    curUser: PropTypes.object.isRequired,
     colls: PropTypes.array.isRequired,
   }
 
@@ -20,6 +19,7 @@ export default class FollowedCollection extends Component {
     }
   }
 
+  // eslint-disable-next-line class-methods-use-this
   generateColls(props) {
     return props.colls.map((coll) => {
       const newColl = coll;
@@ -33,9 +33,9 @@ export default class FollowedCollection extends Component {
     return (
       <div style={{ paddingBottom: '30px' }}>
         {
-          colls.map((coll, i) => (
+          colls.map((coll) => (
             <CollHolder
-              key={i}
+              key={coll._id}
               avatarSrc={coll.userAvatar}
               coll={coll}
               showUser

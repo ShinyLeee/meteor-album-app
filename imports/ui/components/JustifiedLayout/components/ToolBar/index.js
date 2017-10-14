@@ -117,7 +117,7 @@ JustifiedToolBar.propTypes = {
       return new Error(
         `Invalid prop \`${propName}\` of value \`${props[propName]}\` `
         + `supplied to \`${componentName}\`, expected one of ${JSON.stringify(allowedProps)}, `
-        + `when layoutType prop is ${props.layoutType}.`
+        + `when layoutType prop is ${props.layoutType}.`,
       );
     }
     return null;

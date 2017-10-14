@@ -76,7 +76,7 @@ export class JustifiedGridLayout extends PureComponent {
             const rect = img.getBoundingClientRect();
             return { x: rect.left, y: rect.top + pageYScroll, w: rect.width };
           },
-        }
+        },
       );
     }
   }
@@ -92,7 +92,7 @@ export class JustifiedGridLayout extends PureComponent {
         {
           filteredImages.map((image, i) => (
             <ConnectedGridImageHolder
-              key={i}
+              key={image._id}
               isEditing={isEditing}
               image={image}
               total={images.length}

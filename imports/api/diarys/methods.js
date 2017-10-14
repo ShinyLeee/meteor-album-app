@@ -32,7 +32,7 @@ export const updateDiary = new ValidatedMethod({
     }
     Diarys.update(
       { _id: diaryId },
-      { $set: { outline, content, updatedAt: new Date() } }
+      { $set: { outline, content, updatedAt: new Date() } },
     );
   },
 });

@@ -15,11 +15,11 @@ import SetCoverIcon from 'material-ui-icons/Wallpaper';
 import { removeImagesToRecycle, shiftImages } from '/imports/api/images/methods.js';
 import { mutateCollectionCover } from '/imports/api/collections/methods.js';
 import settings from '/imports/utils/settings';
-import RootLayout from '/imports/ui/layouts/RootLayout';
+import ViewLayout from '/imports/ui/layouts/ViewLayout';
 import { SecondaryNavHeader } from '/imports/ui/components/NavHeader';
 import { ModalActions } from '/imports/ui/components/Modal';
 import ConnectedJustified from '/imports/ui/components/JustifiedLayout';
-import { CircleLoader } from '/imports/ui/components/Loader';
+import Loader from '/imports/ui/components/Loader';
 import PhotoSwipeHolder from './components/PhotoSwipeHolder';
 
 const { imageDomain } = settings;
@@ -35,7 +35,6 @@ export default class CollectionPage extends Component {
     curColl: PropTypes.object.isRequired,
     otherColls: PropTypes.array.isRequired,
     images: PropTypes.array.isRequired,
-    User: PropTypes.object,
     counter: PropTypes.number.isRequired,
     selectImages: PropTypes.array.isRequired,
     disableSelectAll: PropTypes.func.isRequired,
@@ -78,45 +77,45 @@ export default class CollectionPage extends Component {
     });
 
     Meteor.callPromise('Qiniu.move', { keys })
-    .then((res) => {
-      const rets = res.results;
-      // Only shift images which are moved success in Qiniu
-      let moveStatus = [];
-      let sucMsg;
-      let sucMovedImgIds = _.map(selectImages, (image) => image._id);
+      .then((res) => {
+        const rets = res.results;
+        // Only shift images which are moved success in Qiniu
+        let moveStatus = [];
+        let sucMsg;
+        let sucMovedImgIds = _.map(selectImages, (image) => image._id);
 
-      for (let i = 0; i < rets.length; i++) {
-        const status = rets[i].code;
-        const data = rets[i].data;
-        if (status !== 200) {
-          moveStatus = [...moveStatus, i];
-          console.warn(status, data);
+        for (let i = 0; i < rets.length; i += 1) {
+          const status = rets[i].code;
+          const { data } = rets[i];
+          if (status !== 200) {
+            moveStatus = [...moveStatus, i];
+            console.warn(status, data);
+          }
         }
-      }
-      if (moveStatus.length > 0) {
-        sucMsg = '部分照片转移失败';
-        sucMovedImgIds = _.filter(sucMovedImgIds, (v, i) => _.indexOf(moveStatus, i) < 0);
-      }
-      return { sucMsg, sucMovedImgIds };
-    })
-    .then((related) => {
-      const destColl = _.find(otherColls, (coll) => coll.name === modalState.destName);
-      return shiftImages.callPromise({
-        selectImages: related.sucMovedImgIds,
-        dest: destColl.name,
-        destPrivateStat: destColl.private,
+        if (moveStatus.length > 0) {
+          sucMsg = '部分照片转移失败';
+          sucMovedImgIds = _.filter(sucMovedImgIds, (v, i) => _.indexOf(moveStatus, i) < 0);
+        }
+        return { sucMsg, sucMovedImgIds };
       })
-      .then(() => related.sucMsg || '转移照片成功');
-    })
-    .then((sucMsg) => {
-      this.props.disableSelectAll();
-      this.setState({ isProcessing: false, processMsg: '' });
-      this.props.snackBarOpen(sucMsg);
-    })
-    .catch((err) => {
-      console.log(err);
-      this.props.snackBarOpen(`转移照片失败 ${err.reason}`);
-    });
+      .then((related) => {
+        const destColl = _.find(otherColls, (coll) => coll.name === modalState.destName);
+        return shiftImages.callPromise({
+          selectImages: related.sucMovedImgIds,
+          dest: destColl.name,
+          destPrivateStat: destColl.private,
+        })
+          .then(() => related.sucMsg || '转移照片成功');
+      })
+      .then((sucMsg) => {
+        this.props.disableSelectAll();
+        this.setState({ isProcessing: false, processMsg: '' });
+        this.props.snackBarOpen(sucMsg);
+      })
+      .catch((err) => {
+        console.log(err);
+        this.props.snackBarOpen(`转移照片失败 ${err.reason}`);
+      });
   }
 
   _handleSetCover = () => {
@@ -131,15 +130,15 @@ export default class CollectionPage extends Component {
       collId: curColl._id,
       cover,
     })
-    .then(() => {
-      this.props.disableSelectAll();
-      this.setState({ isProcessing: false, processMsg: '' });
-      this.props.snackBarOpen('更换封面成功');
-    })
-    .catch((err) => {
-      console.log(err);
-      this.props.snackBarOpen(`更换封面失败 ${err.reason}`);
-    });
+      .then(() => {
+        this.props.disableSelectAll();
+        this.setState({ isProcessing: false, processMsg: '' });
+        this.props.snackBarOpen('更换封面成功');
+      })
+      .catch((err) => {
+        console.log(err);
+        this.props.snackBarOpen(`更换封面失败 ${err.reason}`);
+      });
   }
 
   _handleRemovePhoto = () => {
@@ -149,15 +148,15 @@ export default class CollectionPage extends Component {
     this.setState({ isProcessing: true, processMsg: '处理中' });
 
     removeImagesToRecycle.callPromise({ selectImages: _.map(selectImages, (image) => image._id) })
-    .then(() => {
-      this.props.disableSelectAll();
-      this.setState({ isProcessing: false, processMsg: '' });
-      this.props.snackBarOpen('删除相片成功');
-    })
-    .catch((err) => {
-      console.log(err);
-      this.props.snackBarOpen(`删除相片失败 ${err.reason}`);
-    });
+      .then(() => {
+        this.props.disableSelectAll();
+        this.setState({ isProcessing: false, processMsg: '' });
+        this.props.snackBarOpen('删除相片成功');
+      })
+      .catch((err) => {
+        console.log(err);
+        this.props.snackBarOpen(`删除相片失败 ${err.reason}`);
+      });
   }
 
   handleOnTimeout() {
@@ -336,19 +335,17 @@ export default class CollectionPage extends Component {
   render() {
     const { dataIsReady } = this.props;
     return (
-      <RootLayout
-        loading={!dataIsReady}
+      <ViewLayout
         Topbar={this.renderNavHeader()}
       >
-        <CircleLoader
+        <Loader
           open={this.state.isProcessing}
           message={this.state.processMsg}
           onTimeout={this.handleOnTimeout}
         />
         { dataIsReady && this.renderContent() }
         <PhotoSwipeHolder />
-      </RootLayout>
+      </ViewLayout>
     );
   }
-
 }

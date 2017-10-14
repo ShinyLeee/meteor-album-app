@@ -4,8 +4,8 @@ import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { CallPromiseMixin } from 'meteor/didericis:callpromise-mixin';
-import { Images } from '../images/image.js';
-import { Collections } from './collection.js';
+import { Images } from '../images/image';
+import { Collections } from './collection';
 
 /**
  * Method contains manipulate Images collection ,
@@ -67,12 +67,12 @@ export const lockCollection = new ValidatedMethod({
     }
     Collections.update(
       collId,
-      { $set: { private: !privateStat } }
+      { $set: { private: !privateStat } },
     );
     Images.update(
       { user: username, collection: collName },
       { $set: { private: !privateStat } },
-      { multi: true }
+      { multi: true },
     );
   },
 });
@@ -90,7 +90,7 @@ export const mutateCollectionCover = new ValidatedMethod({
     }
     Collections.update(
       collId,
-      { $set: { cover } }
+      { $set: { cover } },
     );
   },
 });

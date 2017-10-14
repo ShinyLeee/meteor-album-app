@@ -24,10 +24,8 @@ class CustomNavHeader extends Component {
       PropTypes.element,
     ]),
     style: PropTypes.object,
-    classnames: PropTypes.object.isRequired,
+    classnames: PropTypes.object,
     classes: PropTypes.object.isRequired,
-    location: PropTypes.object.isRequired,
-    history: PropTypes.object.isRequired,
   }
 
   static defaultProps = {

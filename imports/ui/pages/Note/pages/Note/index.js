@@ -7,10 +7,8 @@ import { Notes } from '/imports/api/notes/note.js';
 import { snackBarOpen } from '/imports/ui/redux/actions';
 import NotePage from './Note';
 
-const mapStateToProps = ({ sessions, portals }) => ({
+const mapStateToProps = ({ sessions }) => ({
   User: sessions.User,
-  bibleDialogOpen: portals.dialog.open,
-  bible: portals.dialog.bible,
 });
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
@@ -30,7 +28,7 @@ export default compose(
 
     const initialNotes = Notes.find(
       { receiver: username, isRead: { $ne: true } },
-      { sort: { sendAt: -1 }, limit }
+      { sort: { sendAt: -1 }, limit },
     ).fetch();
 
     return {

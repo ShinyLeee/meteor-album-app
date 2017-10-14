@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import Paper from 'material-ui/Paper';
-import RootLayout from '/imports/ui/layouts/RootLayout';
+import ViewLayout from '/imports/ui/layouts/ViewLayout';
 import { SearchBar } from '/imports/ui/components/NavHeader';
 import CollHolder from '/imports/ui/components/CollHolder';
 import NoteHolder from '/imports/ui/components/NoteHolder';
@@ -16,13 +16,6 @@ export default class SearchResultsPage extends Component {
     users: PropTypes.array.isRequired,
     collections: PropTypes.array.isRequired,
     notes: PropTypes.array.isRequired,
-  }
-
-  static defaultProps = {
-    dataIsReady: false,
-    users: [],
-    collections: [],
-    notes: [],
   }
 
   state = {
@@ -40,13 +33,13 @@ export default class SearchResultsPage extends Component {
     if (collections.length === 0) {
       return <p className="search__empty">未找到符合“{query}”的结果</p>;
     }
-    return collections.map((coll, i) => {
+    return collections.map((coll) => {
       let avatarSrc;
       if (User && (coll.user === User.username)) avatarSrc = User.profile.avatar;
       else avatarSrc = Meteor.users.findOne({ username: coll.user }).profile.avatar;
       return (
         <CollHolder
-          key={i}
+          key={coll._id}
           coll={coll}
           avatarSrc={avatarSrc}
         />
@@ -61,10 +54,12 @@ export default class SearchResultsPage extends Component {
     return (
       <Paper className="user__container">
         {
-          users.map((user, i) => (
+          users.map((user) => (
             <div
-              key={i}
+              key={user._id}
               className="user__content"
+              role="button"
+              tabIndex={-1}
               onClick={() => history.push(`/user/${user.username}`)}
             >
               <div className="user__avatar">
@@ -83,15 +78,17 @@ export default class SearchResultsPage extends Component {
   renderNoteResults() {
     const { notes, match } = this.props;
     const { query } = match.params;
-    if (notes.length === 0) return <p className="search__empty">未找到符合“{query}”的结果</p>;
+    if (notes.length === 0) {
+      return <p className="search__empty">未找到符合“{query}”的结果</p>;
+    }
     return (
       <div className="note__container">
         {
-          notes.map((note, i) => {
+          notes.map((note) => {
             const receiverObj = Meteor.users.findOne({ username: note.receiver });
             return (
               <NoteHolder
-                key={i}
+                key={note._id}
                 avatar={receiverObj && receiverObj.profile.avatar}
                 note={note}
                 isRead
@@ -108,7 +105,7 @@ export default class SearchResultsPage extends Component {
     return (
       <div className="content__search">
         <section className="search__query">
-          以下为"{query}"的搜索结果:
+          以下为&quot;{query}&quot;的搜索结果:
         </section>
         <section className="search__collection">
           <header className="collection__header">
@@ -135,7 +132,7 @@ export default class SearchResultsPage extends Component {
   render() {
     const { dataIsReady, history } = this.props;
     return (
-      <RootLayout
+      <ViewLayout
         deep
         loading={!dataIsReady}
         Topbar={
@@ -147,7 +144,7 @@ export default class SearchResultsPage extends Component {
         }
       >
         { dataIsReady && this.renderContent() }
-      </RootLayout>
+      </ViewLayout>
     );
   }
 }

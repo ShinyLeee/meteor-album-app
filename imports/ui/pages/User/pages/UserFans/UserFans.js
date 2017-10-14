@@ -7,7 +7,7 @@ import { withStyles } from 'material-ui/styles';
 import List, { ListItem, ListItemText } from 'material-ui/List';
 import Button from 'material-ui/Button';
 import blue from 'material-ui/colors/blue';
-import RootLayout from '/imports/ui/layouts/RootLayout';
+import ViewLayout from '/imports/ui/layouts/ViewLayout';
 import { followUser, unFollowUser } from '/imports/api/users/methods.js';
 import { SecondaryNavHeader } from '/imports/ui/components/NavHeader';
 
@@ -50,13 +50,13 @@ class UserFansPage extends PureComponent {
       targetName: fanObject.username,
     };
     api.callPromise(data)
-    .then(() => {
-      this.props.snackBarOpen(`${isFollowed ? '取消关注' : '关注'}成功`);
-    })
-    .catch((err) => {
-      console.log(err);
-      this.props.snackBarOpen(`${isFollowed ? '取消关注' : '关注'}失败 ${err.reason}`);
-    });
+      .then(() => {
+        this.props.snackBarOpen(`${isFollowed ? '取消关注' : '关注'}成功`);
+      })
+      .catch((err) => {
+        console.log(err);
+        this.props.snackBarOpen(`${isFollowed ? '取消关注' : '关注'}失败 ${err.reason}`);
+      });
   }
 
   renderListItem(fanObject) {
@@ -91,10 +91,10 @@ class UserFansPage extends PureComponent {
     if (this.state.fans.length === 0) {
       return <p className="text-center">未找到用户</p>;
     }
-    return this.state.fans.map((fan, i) => {
+    return this.state.fans.map((fan) => {
       const fanObject = Meteor.users.findOne({ username: fan });
       return (
-        <div key={i} className="userFans__listItem">
+        <div key={fan._id} className="userFans__listItem">
           { this.renderListItem(fanObject) }
           <Divider inset />
         </div>
@@ -105,8 +105,7 @@ class UserFansPage extends PureComponent {
   render() {
     const { isGuest, curUser, dataIsReady } = this.props;
     return (
-      <RootLayout
-        loading={!dataIsReady}
+      <ViewLayout
         Topbar={<SecondaryNavHeader title={isGuest ? `${curUser.username}的关注者` : '我的关注者'} />}
       >
         {
@@ -121,7 +120,7 @@ class UserFansPage extends PureComponent {
             </div>
           )
         }
-      </RootLayout>
+      </ViewLayout>
     );
   }
 }

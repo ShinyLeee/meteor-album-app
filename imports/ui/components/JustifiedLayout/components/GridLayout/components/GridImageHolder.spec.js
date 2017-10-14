@@ -1,4 +1,4 @@
-  /* eslint-disable
+/* eslint-disable
    react/jsx-filename-extension,
    no-unused-expressions,
    func-names,
@@ -35,7 +35,7 @@ if (Meteor.isClient) {
         total={6}
         counter={counter}
         {...actions}
-      />
+      />,
     );
     return {
       actions,

@@ -61,7 +61,7 @@ export class Justified extends PureComponent {
         const group = {};
         const allGroupImages = _.groupBy(
           images,
-          (image) => moment(image.shootAt).format('YYYYMMDD')
+          (image) => moment(image.shootAt).format('YYYYMMDD'),
         );
         _.forEach(allGroupImages, (value, key) => (group[key] = value.length));
         this.props.enableSelectAll({

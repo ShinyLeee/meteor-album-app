@@ -111,22 +111,22 @@ class ZoomerHolder extends Component {
       method: 'GET',
       url: `${this.imgSrc}?exif`,
     })
-    .then(({ data }) => {
+      .then(({ data }) => {
       // console.log(data);
-      this.props.modalOpen({
-        content: (
-          <ExifInfo
-            exif={data}
-            uploadDate={moment(image.createdAt).format('YYYY:MM:DD HH:mm:ss')}
-          />
-        ),
+        this.props.modalOpen({
+          content: (
+            <ExifInfo
+              exif={data}
+              uploadDate={moment(image.createdAt).format('YYYY:MM:DD HH:mm:ss')}
+            />
+          ),
+        });
+        this.setState({ exif: data });
+      })
+      .catch((err) => {
+        console.log(err);
+        this.props.snackBarOpen(`获取EXIF信息失败, ${err}`);
       });
-      this.setState({ exif: data });
-    })
-    .catch((err) => {
-      console.log(err);
-      this.props.snackBarOpen(`获取EXIF信息失败, ${err}`);
-    });
   }
 
   render() {

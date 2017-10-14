@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
-import { Images } from '/imports/api/images/image.js';
+import { Images } from '/imports/api/images/image';
 
 import {
   modalOpen,
@@ -36,7 +36,7 @@ export default compose(
     const dataIsReady = imageHandle.ready();
     const images = Images.find(
       { deletedAt: { $ne: null } },
-      { sort: { shootAt: -1 } }
+      { sort: { shootAt: -1 } },
     ).fetch();
     return {
       dataIsReady,

@@ -21,16 +21,12 @@ const formatter = buildFormatter(CNStrings);
 
 class NoteHolder extends Component {
   static propTypes = {
-    isRead: PropTypes.bool.isRequired,
+    isRead: PropTypes.bool,
     avatar: PropTypes.string.isRequired,
     note: PropTypes.object.isRequired,
     onRead: PropTypes.func, // Not required bc AllNotePage do not need read notes
     history: PropTypes.object.isRequired,
     classes: PropTypes.object.isRequired,
-  }
-
-  static defaultProps = {
-    isRead: false,
   }
 
   state = {

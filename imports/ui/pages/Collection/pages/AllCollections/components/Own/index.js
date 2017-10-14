@@ -13,7 +13,7 @@ import AddIcon from 'material-ui-icons/AddCircleOutline';
 import { insertCollection, lockCollection, removeCollection } from '/imports/api/collections/methods.js';
 import { getRandomInt } from '/imports/utils';
 import CollHolder from '/imports/ui/components/CollHolder';
-import { CircleLoader } from '/imports/ui/components/Loader';
+import Loader from '/imports/ui/components/Loader';
 import { modalOpen, modalClose, snackBarOpen } from '/imports/ui/redux/actions';
 
 const modalState = {
@@ -65,15 +65,15 @@ class OwnedCollection extends Component {
       createdAt: new Date(),
       updatedAt: new Date(),
     })
-    .then(() => {
-      this.setState({ isProcessing: false, processMsg: '' });
-      this.props.snackBarOpen('新建相册成功');
-    })
-    .catch((err) => {
-      console.log(err);
-      this.setState({ isProcessing: false, processMsg: '' });
-      this.props.snackBarOpen('新建相册失败');
-    });
+      .then(() => {
+        this.setState({ isProcessing: false, processMsg: '' });
+        this.props.snackBarOpen('新建相册成功');
+      })
+      .catch((err) => {
+        console.log(err);
+        this.setState({ isProcessing: false, processMsg: '' });
+        this.props.snackBarOpen('新建相册失败');
+      });
   }
 
   _handleRemoveCollection = (coll) => {
@@ -84,15 +84,15 @@ class OwnedCollection extends Component {
       username: curUser.username,
       collName: coll.name,
     })
-    .then(() => {
-      this.setState({ isProcessing: false, processMsg: '' });
-      this.props.snackBarOpen('删除相册成功');
-    })
-    .catch((err) => {
-      console.log(err);
-      this.setState({ isProcessing: false, processMsg: '' });
-      this.props.snackBarOpen(`删除相册失败 ${err.reason}`);
-    });
+      .then(() => {
+        this.setState({ isProcessing: false, processMsg: '' });
+        this.props.snackBarOpen('删除相册成功');
+      })
+      .catch((err) => {
+        console.log(err);
+        this.setState({ isProcessing: false, processMsg: '' });
+        this.props.snackBarOpen(`删除相册失败 ${err.reason}`);
+      });
   }
 
 
@@ -106,15 +106,15 @@ class OwnedCollection extends Component {
       collName: collection.name,
       privateStat: collection.private,
     })
-    .then(() => {
-      this.setState({ isProcessing: false, processMsg: '' });
-      this.props.snackBarOpen(`${msg}相册成功`);
-    })
-    .catch((err) => {
-      console.log(err);
-      this.setState({ isProcessing: false, processMsg: '' });
-      this.props.snackBarOpen(`${msg}相册失败 ${err.reason}`);
-    });
+      .then(() => {
+        this.setState({ isProcessing: false, processMsg: '' });
+        this.props.snackBarOpen(`${msg}相册成功`);
+      })
+      .catch((err) => {
+        console.log(err);
+        this.setState({ isProcessing: false, processMsg: '' });
+        this.props.snackBarOpen(`${msg}相册失败 ${err.reason}`);
+      });
   }
 
   _handleRemoveNameChange = (e, coll) => {
@@ -228,9 +228,9 @@ class OwnedCollection extends Component {
           )
         }
         {
-          colls.map((coll, i) => (
+          colls.map((coll) => (
             <CollHolder
-              key={i}
+              key={coll._id}
               coll={coll}
               avatarSrc={curUser.profile.avatar}
               onToggleLock={this._handleLockCollection}
@@ -240,7 +240,7 @@ class OwnedCollection extends Component {
             />
           ))
         }
-        <CircleLoader
+        <Loader
           open={this.state.isProcessing}
           message={this.state.processMsg}
           onTimeout={this._handleOnTimeout}
@@ -285,5 +285,5 @@ const styles = {
 
 export default compose(
   connect(null, mapDispatchToProps),
-  withStyles(styles)
+  withStyles(styles),
 )(OwnedCollection);

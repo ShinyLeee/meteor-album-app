@@ -133,7 +133,7 @@ export class JustifiedGroupLayout extends PureComponent {
         targetRowHeightTolerance,
         boxSpacing,
         fullWidthBreakoutRowCadence,
-      }
+      },
     );
     return geometry;
   }
@@ -193,7 +193,7 @@ export class JustifiedGroupLayout extends PureComponent {
             const rect = img.getBoundingClientRect();
             return { x: rect.left, y: rect.top + pageYScroll, w: rect.width };
           },
-        }
+        },
       );
     }
   }

@@ -19,7 +19,7 @@ if (Meteor.isClient) {
 
   const generateImages = (len) => {
     const images = [];
-    for (let i = 0; i < len; i++) {
+    for (let i = 0; i < len; i += 1) {
       images[i] = {
         user: faker.internet.userName(),
         collection: faker.random.word(),
@@ -45,7 +45,7 @@ if (Meteor.isClient) {
         group={group}
         counter={counter}
         {...actions}
-      />
+      />,
     );
     return {
       actions,

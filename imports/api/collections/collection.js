@@ -1,6 +1,6 @@
 import { Mongo } from 'meteor/mongo';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
-import { Images } from '../images/image.js';
+import { Images } from '../images/image';
 
 class CollectionCollection extends Mongo.Collection {
   insert(collection, cb) {
@@ -14,7 +14,7 @@ class CollectionCollection extends Mongo.Collection {
       const removeColl = this.findOne(selector);
       Images.find(
         { user: removeColl.user, collection: removeColl.name },
-        { fields: { _id: 1 } }
+        { fields: { _id: 1 } },
       ).forEach((image) => Images.remove(image._id));
     }
 
@@ -50,7 +50,7 @@ Collections.helpers({
   images() {
     return Images.find(
       { user: this.user, collection: this.name, deletedAt: null },
-      { sort: { createdAt: -1 } }
+      { sort: { createdAt: -1 } },
     );
   },
 });

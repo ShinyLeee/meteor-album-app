@@ -22,15 +22,15 @@ export default compose(
   withTracker(({ User, match }) => {
     const { username } = match.params;
 
-    let isGuest = !User;  // if User is null, isGuest is true
+    let isGuest = !User; // if User is null, isGuest is true
     // if User exist and its name equal with params.username, isGuest is false
     if (User && User.username === username) isGuest = false;
     else isGuest = true;
 
     const userHandler = Meteor.subscribe('Users.all');
     const collHandler = isGuest
-    ? Meteor.subscribe('Collections.inUser', username) && Meteor.subscribe('Collections.inUserFollowing', username)
-    : Meteor.subscribe('Collections.own') && Meteor.subscribe('Collections.ownFollowing');
+      ? Meteor.subscribe('Collections.inUser', username) && Meteor.subscribe('Collections.inUserFollowing', username)
+      : Meteor.subscribe('Collections.own') && Meteor.subscribe('Collections.ownFollowing');
 
     const dataIsReady = userHandler.ready() && collHandler.ready();
 

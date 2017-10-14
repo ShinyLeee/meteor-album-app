@@ -1,9 +1,5 @@
 import * as types from '../constants/ActionTypes';
 
-export const appInit = () => ({
-  type: types.APP_INIT,
-});
-
 export const userLogin = (user) => ({
   type: types.USER_LOGIN,
   user,
@@ -41,19 +37,6 @@ export const zoomerOpen = (image) => ({
 
 export const zoomerClose = () => ({
   type: types.ZOOMER_CLOSE,
-});
-
-export const dialogFetch = () => ({
-  type: types.DIALOG_FETCH,
-});
-
-export const dialogOpen = (bible) => ({
-  type: types.DIALOG_OPEN,
-  bible,
-});
-
-export const dialogClose = () => ({
-  type: types.DIALOG_CLOSE,
 });
 
 export const diaryOpen = (diary) => ({

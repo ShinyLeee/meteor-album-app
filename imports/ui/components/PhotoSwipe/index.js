@@ -8,7 +8,6 @@ import './pwsp.css';
 import events from './events.js';
 
 export default class ReactPhotoSwipe extends Component {
-
   constructor(props) {
     super(props);
     this.PhotoSwipe = undefined;

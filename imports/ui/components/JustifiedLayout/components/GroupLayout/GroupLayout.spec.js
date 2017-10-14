@@ -1,4 +1,4 @@
-  /* eslint-disable
+/* eslint-disable
    react/jsx-filename-extension,
    no-unused-expressions,
    func-names,
@@ -19,7 +19,7 @@ if (Meteor.isClient) {
 
   const generateImages = (len) => {
     const images = [];
-    for (let i = 0; i < len; i++) {
+    for (let i = 0; i < len; i += 1) {
       images[i] = {
         user: faker.internet.userName(),
         collection: faker.random.word(),
@@ -40,26 +40,26 @@ if (Meteor.isClient) {
     const component = shallow(
       <JustifiedGroupLayout
         isEditing
-        groupName={'2016-12-31'}
+        groupName="2016-12-31"
         groupImages={generateImages(4)}
         total={6}
         groupTotal={4}
         group={group}
         counter={counter}
         {...actions}
-      />
+      />,
     );
     const anotherComponent = shallow(
       <JustifiedGroupLayout
         isEditing
-        groupName={'2016-12-30'}
+        groupName="2016-12-30"
         groupImages={generateImages(2)}
         total={6}
         groupTotal={2}
         group={group}
         counter={counter}
         {...actions}
-      />
+      />,
     );
     return {
       actions,
@@ -80,7 +80,7 @@ if (Meteor.isClient) {
     it('should isGroupSelect state behave right when group\'s key change', () => {
       const { component, anotherComponent } = setup();
       expect(component.state('isGroupSelect'))
-      .to.equal(false, 'When group prop is {} -- empty Object');
+        .to.equal(false, 'When group prop is {} -- empty Object');
 
       component.setProps({ group: { '2016-12-31': 4 }, counter: 4 });
       anotherComponent.setProps({ group: { '2016-12-31': 4 }, counter: 4 });
@@ -96,7 +96,7 @@ if (Meteor.isClient) {
     it('should isGroupSelect state behave right when group\'s value change', () => {
       const { component, anotherComponent } = setup();
       expect(anotherComponent.state('isGroupSelect'))
-      .to.equal(false, 'Initial isGroupSelect state must be false');
+        .to.equal(false, 'Initial isGroupSelect state must be false');
 
       component.setProps({ group: { '2016-12-31': 4, '2016-12-30': 2 }, counter: 6 });
       anotherComponent.setProps({ group: { '2016-12-31': 4, '2016-12-30': 2 }, counter: 6 });

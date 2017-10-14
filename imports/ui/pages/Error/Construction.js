@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import settings from '/imports/utils/settings';
-import RootLayout from '/imports/ui/layouts/RootLayout';
+import ViewLayout from '/imports/ui/layouts/ViewLayout';
 import { PrimaryNavHeader } from '../../components/NavHeader';
 
 const { sourceDomain } = settings;
@@ -9,10 +9,7 @@ const { sourceDomain } = settings;
 export default class Construction extends Component {
   render() {
     return (
-      <RootLayout
-        loading={false}
-        Topbar={<PrimaryNavHeader />}
-      >
+      <ViewLayout Topbar={<PrimaryNavHeader />}>
         <div className="content__error">
           <div className="error__container">
             <h2 className="error__status">This Page is Under Construction</h2>
@@ -28,7 +25,7 @@ export default class Construction extends Component {
             </p>
           </div>
         </div>
-      </RootLayout>
+      </ViewLayout>
     );
   }
 }

@@ -7,11 +7,22 @@ import IconButton from 'material-ui/IconButton';
 import ArrowBackIcon from 'material-ui-icons/ArrowBack';
 import DoneIcon from 'material-ui-icons/Done';
 import { insertDiary } from '/imports/api/diarys/methods.js';
-import RootLayout from '/imports/ui/layouts/RootLayout';
+import ViewLayout from '/imports/ui/layouts/ViewLayout';
 import { SecondaryNavHeader } from '/imports/ui/components/NavHeader';
 import { ModalActions } from '/imports/ui/components/Modal';
 import { QuillEditor } from '/imports/ui/components/Quill';
-import { CircleLoader } from '/imports/ui/components/Loader';
+import Loader from '/imports/ui/components/Loader';
+
+const quillConfig = {
+  toolbar: {
+    container: [
+      [{ header: [1, 2, false] }],
+      ['bold', { color: [] }, { align: [false, 'center', 'right'] }],
+      ['blockquote', 'code-block'],
+      ['link', 'image'],
+    ],
+  },
+};
 
 class WriteDiaryPage extends Component {
   static propTypes = {
@@ -31,19 +42,6 @@ class WriteDiaryPage extends Component {
     content: '',
   }
 
-  get quillModulesConfig() {
-    return {
-      toolbar: {
-        container: [
-          [{ header: [1, 2, false] }],
-          ['bold', { color: [] }, { align: [false, 'center', 'right'] }],
-          ['blockquote', 'code-block'],
-          ['link', 'image'],
-        ],
-      },
-    };
-  }
-
   _handleGoBack = () => {
     if (this.state.content) {
       this.props.modalOpen({
@@ -61,7 +59,7 @@ class WriteDiaryPage extends Component {
       });
       return;
     }
-    history.goBack();
+    this.props.history.goBack();
   }
 
   _handleInsertDiary = () => {
@@ -80,16 +78,16 @@ class WriteDiaryPage extends Component {
       createdAt: new Date(),
       updatedAt: new Date(),
     })
-    .then(() => {
+      .then(() => {
       // because go to another component so we do not need set inital state
-      history.replace('/diary');
-      this.props.snackBarOpen('添加日记成功');
-    })
-    .catch((err) => {
-      console.log(err);
-      this.setState({ isProcessing: false, processMsg: '' });
-      this.props.snackBarOpen(`添加日记失败 ${err.reason}`);
-    });
+        history.replace('/diary');
+        this.props.snackBarOpen('添加日记成功');
+      })
+      .catch((err) => {
+        console.log(err);
+        this.setState({ isProcessing: false, processMsg: '' });
+        this.props.snackBarOpen(`添加日记失败 ${err.reason}`);
+      });
   }
 
   _handleTitleChange = (e) => {
@@ -115,7 +113,7 @@ class WriteDiaryPage extends Component {
         <Divider />
         <QuillEditor
           placeholder="内容"
-          modules={this.quillModulesConfig}
+          modules={quillConfig}
           contentType="delta"
           onChange={this._handleContentChange}
         />
@@ -125,8 +123,7 @@ class WriteDiaryPage extends Component {
 
   render() {
     return (
-      <RootLayout
-        loading={false}
+      <ViewLayout
         Topbar={
           <SecondaryNavHeader
             title="添加日记"
@@ -135,12 +132,12 @@ class WriteDiaryPage extends Component {
           />
         }
       >
-        <CircleLoader
+        <Loader
           open={this.state.isProcessing}
           message={this.state.processMsg}
         />
         { this.renderContent() }
-      </RootLayout>
+      </ViewLayout>
     );
   }
 }

@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import settings from '/imports/utils/settings';
-import RootLayout from '/imports/ui/layouts/RootLayout';
+import ViewLayout from '/imports/ui/layouts/ViewLayout';
 import { PrimaryNavHeader } from '../../components/NavHeader';
 
 const { sourceDomain } = settings;
@@ -15,10 +15,7 @@ export default class InternalError extends Component {
   render() {
     const { location } = this.props;
     return (
-      <RootLayout
-        loading={false}
-        Topbar={<PrimaryNavHeader />}
-      >
+      <ViewLayout Topbar={<PrimaryNavHeader />}>
         <div className="content__error">
           <div className="error__container">
             <h2 className="error__status">Error: 500 Unexpected Error</h2>
@@ -40,7 +37,7 @@ export default class InternalError extends Component {
             }
           </div>
         </div>
-      </RootLayout>
+      </ViewLayout>
     );
   }
 }

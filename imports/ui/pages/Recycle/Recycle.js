@@ -7,13 +7,13 @@ import RecoveryIcon from 'material-ui-icons/Replay';
 import RemoveIcon from 'material-ui-icons/Delete';
 import blue from 'material-ui/colors/blue';
 import purple from 'material-ui/colors/purple';
-import { removeImages, recoveryImages } from '/imports/api/images/methods.js';
-import RootLayout from '/imports/ui/layouts/RootLayout';
+import { removeImages, recoveryImages } from '/imports/api/images/methods';
+import ViewLayout from '/imports/ui/layouts/ViewLayout';
 import { SecondaryNavHeader } from '/imports/ui/components/NavHeader';
 import { ModalActions } from '/imports/ui/components/Modal';
 import EmptyHolder from '/imports/ui/components/EmptyHolder';
-import { CircleLoader } from '/imports/ui/components/Loader';
-import JustifiedSelectIcon from '/imports/ui/components/JustifiedLayout/components/snippet/JustifiedSelectIcon.js';
+import Loader from '/imports/ui/components/Loader';
+import JustifiedSelectIcon from '/imports/ui/components/JustifiedLayout/components/snippet/JustifiedSelectIcon';
 import ConnectedGridLayout from '/imports/ui/components/JustifiedLayout/components/GridLayout';
 
 const blue500 = blue['500'];
@@ -23,10 +23,8 @@ export default class RecyclePage extends Component {
   static propTypes = {
     dataIsReady: PropTypes.bool.isRequired,
     images: PropTypes.array.isRequired,
-    User: PropTypes.object.isRequired,
     selectImages: PropTypes.array.isRequired,
     counter: PropTypes.number.isRequired,
-    selectCounter: PropTypes.func.isRequired,
     disableSelectAll: PropTypes.func.isRequired,
     enableSelectAll: PropTypes.func.isRequired,
     modalOpen: PropTypes.func.isRequired,
@@ -97,15 +95,15 @@ export default class RecyclePage extends Component {
     this.setState({ isProcessing: true, processMsg: '恢复相片中' });
     const selectImagesIds = selectImages.map((image) => image._id);
     recoveryImages.callPromise({ selectImages: selectImagesIds })
-    .then(() => {
-      this.setState({ isProcessing: false, processMsg: '' });
-      this.props.snackBarOpen('恢复相片成功');
-      this.props.disableSelectAll();
-    })
-    .catch((err) => {
-      this.setState({ isProcessing: false, processMsg: '' });
-      this.props.snackBarOpen(`恢复相片失败 ${err.reason}`);
-    });
+      .then(() => {
+        this.setState({ isProcessing: false, processMsg: '' });
+        this.props.snackBarOpen('恢复相片成功');
+        this.props.disableSelectAll();
+      })
+      .catch((err) => {
+        this.setState({ isProcessing: false, processMsg: '' });
+        this.props.snackBarOpen(`恢复相片失败 ${err.reason}`);
+      });
   }
 
   _handleDeleteImgs = () => {
@@ -118,23 +116,23 @@ export default class RecyclePage extends Component {
       return key;
     });
     Meteor.callPromise('Qiniu.remove', { keys })
-    .then(() => removeImages.callPromise({ selectImages: selectImagesIds }))
-    .then(() => {
-      this.setState({ isProcessing: false, processMsg: '' });
-      this.props.snackBarOpen('删除相片成功');
-      this.props.disableSelectAll();
-    })
-    .catch((err) => {
-      console.log(err);
-      this.setState({ isProcessing: false, processMsg: '' });
-      this.props.snackBarOpen(`删除相片失败 ${err.reason}`);
-    });
+      .then(() => removeImages.callPromise({ selectImages: selectImagesIds }))
+      .then(() => {
+        this.setState({ isProcessing: false, processMsg: '' });
+        this.props.snackBarOpen('删除相片成功');
+        this.props.disableSelectAll();
+      })
+      .catch((err) => {
+        console.log(err);
+        this.setState({ isProcessing: false, processMsg: '' });
+        this.props.snackBarOpen(`删除相片失败 ${err.reason}`);
+      });
   }
 
   renderContent() {
     const { images } = this.props;
     if (images.length === 0) {
-      return (<EmptyHolder mainInfo="您的回收站是空的" />);
+      return <EmptyHolder mainInfo="您的回收站是空的" />;
     }
     return (
       <div className="content__recycle">
@@ -144,7 +142,12 @@ export default class RecyclePage extends Component {
         </header>
         <div className="recycle__content">
           <div className="recycle__toolbox">
-            <div className="recycle__toolbox_left" onClick={this._handleToggleSelectAll}>
+            <div
+              className="recycle__toolbox_left"
+              role="button"
+              tabIndex={-1}
+              onClick={this._handleToggleSelectAll}
+            >
               <JustifiedSelectIcon activate={this.state.isAllSelect} />
               <h4>选择全部</h4>
             </div>
@@ -161,8 +164,7 @@ export default class RecyclePage extends Component {
   render() {
     const { dataIsReady, counter } = this.props;
     return (
-      <RootLayout
-        loading={!dataIsReady}
+      <ViewLayout
         Topbar={
           <SecondaryNavHeader
             style={{ backgroundColor: this.state.isEditing ? blue500 : purple500 }}
@@ -174,30 +176,29 @@ export default class RecyclePage extends Component {
               ><CloseIcon />
               </IconButton>
             )}
-            Right={
-              <div>
-                <IconButton
-                  color="contrast"
-                  onClick={() => this._handleOpenModal('recovery')}
-                ><RecoveryIcon />
-                </IconButton>
-                <IconButton
-                  color="contrast"
-                  onClick={() => this._handleOpenModal('delete')}
-                ><RemoveIcon />
-                </IconButton>
-              </div>
-              }
+            Right={[
+              <IconButton
+                key="btn__Recovery"
+                color="contrast"
+                onClick={() => this._handleOpenModal('recovery')}
+              ><RecoveryIcon />
+              </IconButton>,
+              <IconButton
+                key="btn__delete"
+                color="contrast"
+                onClick={() => this._handleOpenModal('delete')}
+              ><RemoveIcon />
+              </IconButton>,
+            ]}
           />
         }
       >
-        <CircleLoader
+        <Loader
           open={this.state.isProcessing}
           message={this.state.processMsg}
         />
         { dataIsReady && this.renderContent() }
-      </RootLayout>
+      </ViewLayout>
     );
   }
-
 }

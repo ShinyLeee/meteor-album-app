@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { CircularProgress } from 'material-ui/Progress';
+import { CircleLoader } from '/imports/ui/components/Loader';
 import { on, off } from '/imports/utils/events.js';
 
 export default class Infinity extends Component {
@@ -14,14 +14,12 @@ export default class Infinity extends Component {
   }
 
   static defaultProps = {
-    isLoading: false,
     offsetToBottom: 0,
     beforeInfinityLoad: (
       <div className="text-center">
-        <CircularProgress size={30} />
+        <CircleLoader />
       </div>
     ),
-    onInfinityLoad: () => {},
   }
 
   constructor(props) {

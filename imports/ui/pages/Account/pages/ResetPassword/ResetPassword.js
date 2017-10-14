@@ -9,7 +9,7 @@ import Input from 'material-ui/Input';
 import IconButton from 'material-ui/IconButton';
 import ArrowBackIcon from 'material-ui-icons/ArrowBack';
 import blue from 'material-ui/colors/blue';
-import RootLayout from '/imports/ui/layouts/RootLayout';
+import ViewLayout from '/imports/ui/layouts/ViewLayout';
 import { ModalActions } from '/imports/ui/components/Modal';
 import { CustomNavHeader } from '/imports/ui/components/NavHeader';
 
@@ -62,16 +62,16 @@ class ResetPasswordPage extends Component {
     const resetPassword = Meteor.wrapPromise(Accounts.resetPassword);
 
     resetPassword(token, newPwd)
-    .then(() => {
-      this.setState({ isProcessing: false, processMsg: '' });
-      this.props.history.replace('/login');
-      this.props.snackBarOpen('修改密码成功');
-    })
-    .catch((err) => {
-      console.log(err);
-      this.setState({ isProcessing: false, processMsg: '' });
-      this.props.snackBarOpen(`修改密码失败 ${err.reason}`);
-    });
+      .then(() => {
+        this.setState({ isProcessing: false, processMsg: '' });
+        this.props.history.replace('/login');
+        this.props.snackBarOpen('修改密码成功');
+      })
+      .catch((err) => {
+        console.log(err);
+        this.setState({ isProcessing: false, processMsg: '' });
+        this.props.snackBarOpen(`修改密码失败 ${err.reason}`);
+      });
   }
 
   _handleOpenModal = () => {
@@ -130,8 +130,7 @@ class ResetPasswordPage extends Component {
   render() {
     const { classes } = this.props;
     return (
-      <RootLayout
-        loading={false}
+      <ViewLayout
         Topbar={
           <CustomNavHeader
             classnames={{ root: classes.navheader__root, content: classes.navheader__content }}
@@ -145,7 +144,7 @@ class ResetPasswordPage extends Component {
         }
       >
         { this.renderContent() }
-      </RootLayout>
+      </ViewLayout>
     );
   }
 }

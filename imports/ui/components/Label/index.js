@@ -6,16 +6,15 @@ const Label = ({ text, type, onLabelClick }) => (
   <div
     className="component__Label"
     style={Object.assign({}, styles.label, styles[type])}
+    role="button"
+    tabIndex={-1}
     onClick={onLabelClick}
   >
     <span>{text}</span>
   </div>
 );
 
-Label.displayName = 'Label';
-
 Label.defaultProps = {
-  text: 'Label',
   type: 'default',
 };
 

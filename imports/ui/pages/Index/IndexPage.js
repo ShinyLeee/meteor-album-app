@@ -4,7 +4,7 @@ import React, { PureComponent } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { Images } from '/imports/api/images/image.js';
 import { makeCancelable } from '/imports/utils';
-import RootLayout from '/imports/ui/layouts/RootLayout';
+import ViewLayout from '/imports/ui/layouts/ViewLayout';
 import SlideTransition from '/imports/ui/components/Transition/Slide';
 import { PrimaryNavHeader } from '/imports/ui/components/NavHeader';
 import Infinity from '/imports/ui/components/Infinity';
@@ -20,7 +20,6 @@ export default class IndexPage extends PureComponent {
     zoomerOpen: PropTypes.bool.isRequired,
     zoomerImage: PropTypes.object, // zoomerImage only required when zoomerOpen is true
     snackBarOpen: PropTypes.func.isRequired,
-    location: PropTypes.object.isRequired,
   }
 
   state = {
@@ -50,11 +49,12 @@ export default class IndexPage extends PureComponent {
     const { images } = this.state;
     const skip = images.length;
     this.setState({ isLoading: true });
+    // TODO
     const loadPromise = new Promise((resolve) => {
       Meteor.defer(() => {
         const newImages = Images.find(
           { private: false },
-          { sort: { createdAt: -1 }, limit, skip }
+          { sort: { createdAt: -1 }, limit, skip },
         ).fetch();
         const curImages = [...images, ...newImages];
         this.setState({ images: curImages }, () => resolve());
@@ -63,20 +63,20 @@ export default class IndexPage extends PureComponent {
 
     this.loadPromise = makeCancelable(loadPromise);
     this.loadPromise.promise
-    .then(() => {
-      this.setState({ isLoading: false });
-    })
-    .catch((err) => {
-      console.log(err);
-      this.props.snackBarOpen(`加载图片失败 ${err.reason}`);
-    });
+      .then(() => {
+        this.setState({ isLoading: false });
+      })
+      .catch((err) => {
+        console.log(err);
+        this.props.snackBarOpen(`加载图片失败 ${err.reason}`);
+      });
   }
 
   _handleRefreshImages = () => {
     // after like or unlike a image, we need to refresh the data
     const trueImages = Images.find(
       { private: false },
-      { sort: { createdAt: -1 }, limit: this.state.images.length }
+      { sort: { createdAt: -1 }, limit: this.state.images.length },
     ).fetch();
     this.setState({ images: trueImages });
   }
@@ -84,10 +84,7 @@ export default class IndexPage extends PureComponent {
   render() {
     const { dataIsReady, zoomerOpen, zoomerImage } = this.props;
     return (
-      <RootLayout
-        loading={!dataIsReady}
-        Topbar={<PrimaryNavHeader />}
-      >
+      <ViewLayout Topbar={<PrimaryNavHeader />}>
         <Recap
           title="Gallery"
           detailFir="Vivian的私人相册"
@@ -119,8 +116,7 @@ export default class IndexPage extends PureComponent {
             </div>
           )
         }
-      </RootLayout>
+      </ViewLayout>
     );
   }
-
 }

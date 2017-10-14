@@ -1,62 +1,44 @@
-import { bindActionCreators, compose } from 'redux';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Meteor } from 'meteor/meteor';
-import { withTracker } from 'meteor/react-meteor-data';
-import { Collections } from '/imports/api/collections/collection.js';
-import { Images } from '/imports/api/images/image.js';
+import teal from 'material-ui/colors/teal';
+import withLoadable from '/imports/ui/hocs/withLoadable';
+import ViewLayout from '/imports/ui/layouts/ViewLayout/Unstable';
+import { LinearLoader } from '/imports/ui/components/Loader';
+import { PrimaryNavHeader, SecondaryNavHeader } from '/imports/ui/components/NavHeader';
 
-import { userLogout, snackBarOpen } from '/imports/ui/redux/actions';
-import UserPage from './User';
+const teal500 = teal[500];
+
+const AsyncContent = withLoadable({
+  loader: () => import('./ContentContainer'),
+  loading: () => <LinearLoader style={{ top: 64 }} />,
+});
+
+class UserPage extends Component {
+  static propTypes = {
+    User: PropTypes.object,
+    match: PropTypes.object.isRequired,
+  }
+
+  render() {
+    const { User, match } = this.props;
+    const isOwner = !!User && (User.username === match.params.username);
+    return (
+      <ViewLayout
+        Topbar={
+          isOwner
+          ? <PrimaryNavHeader style={{ backgroundColor: teal500 }} />
+          : <SecondaryNavHeader title={`${match.params.username}的主页`} />
+        }
+      >
+        <AsyncContent isOwner={isOwner} />
+      </ViewLayout>
+    );
+  }
+}
 
 const mapStateToProps = ({ sessions }) => ({
   User: sessions.User,
 });
 
-const mapDispatchToProps = (dispatch) => bindActionCreators({
-  userLogout,
-  snackBarOpen,
-}, dispatch);
-
-export default compose(
-  connect(mapStateToProps, mapDispatchToProps),
-  withTracker(({ User, match }) => {
-    const { username } = match.params;
-    let isGuest = !User;  // if User is null, isGuest is true
-
-    // if User exist and its name equal with params.username, isGuest is false
-    if (User && User.username === username) isGuest = false;
-    else isGuest = true;
-
-    const userHandler = Meteor.subscribe('Users.all');
-    const imageHandler = Meteor.subscribe('Images.all');
-    const collHandler = isGuest
-                        ? Meteor.subscribe('Collections.inUser', username)
-                        : Meteor.subscribe('Collections.own');
-
-    let dataIsReady = false;
-    let unOrderedImages = [];
-    let likedCount = 0;
-    let collectionCount = 0;
-    const userIsReady = userHandler.ready();
-    const curUser = Meteor.users.findOne({ username }) || {};
-
-    if (userIsReady) {
-      dataIsReady = imageHandler.ready() && collHandler.ready();
-      collectionCount = Collections.find().count();
-      likedCount = Images.find({ liker: { $in: [curUser.username] } }).count();
-      unOrderedImages = Images.find(
-        { user: curUser.username },
-        { limit: 10 }
-      ).fetch();
-    }
-
-    return {
-      dataIsReady,
-      isGuest,
-      curUser,
-      unOrderedImages,
-      likedCount,
-      collectionCount,
-    };
-  }),
-)(UserPage);
+export default connect(mapStateToProps)(UserPage);

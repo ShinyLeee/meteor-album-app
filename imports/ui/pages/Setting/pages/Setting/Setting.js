@@ -17,7 +17,6 @@ import Checkbox from 'material-ui/Checkbox';
 import Switch from 'material-ui/Switch';
 import Avatar from 'material-ui/Avatar';
 import IconButton from 'material-ui/IconButton';
-import Button from 'material-ui/Button';
 import ArrowBackIcon from 'material-ui-icons/ArrowBack';
 import DoneIcon from 'material-ui-icons/Done';
 import CameraIcon from 'material-ui-icons/PhotoCamera';
@@ -28,10 +27,10 @@ import EmailIcon from 'material-ui-icons/Email';
 import blue from 'material-ui/colors/blue';
 import settings from '/imports/utils/settings';
 import { updateProfile } from '/imports/api/users/methods.js';
-import RootLayout from '/imports/ui/layouts/RootLayout';
+import ViewLayout from '/imports/ui/layouts/ViewLayout';
 import { CustomNavHeader, SecondaryNavHeader } from '/imports/ui/components/NavHeader';
 import { ModalActions } from '/imports/ui/components/Modal';
-import { CircleLoader } from '/imports/ui/components/Loader';
+import Loader from '/imports/ui/components/Loader';
 
 const blue500 = blue['500'];
 
@@ -56,7 +55,6 @@ class SettingPage extends Component {
     super(props);
     const initialUser = props.User;
     this.state = {
-      location: 'setting',
       isProcessing: false,
       processMsg: '',
       isEditing: false,
@@ -93,7 +91,7 @@ class SettingPage extends Component {
       Meteor.call(
         'Qiniu.remove',
         { keys },
-        (err) => err && console.log(err)
+        (err) => err && console.log(err),
       );
     }
     this.props.modalClose();
@@ -113,14 +111,14 @@ class SettingPage extends Component {
         allowMsg: this.state.allowMsg,
       },
     })
-    .then(() => {
-      this.props.snackBarOpen('设置保存成功');
-      this.setState({ isEditing: false });
-    })
-    .catch((err) => {
-      console.log(err);
-      this.props.snackBarOpen('设置保存失败');
-    });
+      .then(() => {
+        this.props.snackBarOpen('设置保存成功');
+        this.setState({ isEditing: false });
+      })
+      .catch((err) => {
+        console.log(err);
+        this.props.snackBarOpen('设置保存失败');
+      });
   }
 
   _handleSetCover = (e) => {
@@ -143,24 +141,24 @@ class SettingPage extends Component {
       url: uploadURL,
       data: formData,
     })
-    .then(({ data }) => {
-      this.setState({
-        isEditing: true,
-        isProcessing: false,
-        processMsg: '',
-        cover: `${domain}/${data.key}`,
+      .then(({ data }) => {
+        this.setState({
+          isEditing: true,
+          isProcessing: false,
+          processMsg: '',
+          cover: `${domain}/${data.key}`,
+        });
+        this.props.snackBarOpen('上传封面成功');
+      })
+      .catch((err) => {
+        console.log(err);
+        this.setState({
+          isEditing: false,
+          isProcessing: false,
+          processMsg: '',
+        });
+        this.props.snackBarOpen(`上传封面失败 ${err}`);
       });
-      this.props.snackBarOpen('上传封面成功');
-    })
-    .catch((err) => {
-      console.log(err);
-      this.setState({
-        isEditing: false,
-        isProcessing: false,
-        processMsg: '',
-      });
-      this.props.snackBarOpen(`上传封面失败 ${err}`);
-    });
   }
 
   _handleSetAvatar = (e) => {
@@ -196,25 +194,25 @@ class SettingPage extends Component {
         url: uploadURL,
         data: formData,
       })
-      .then(({ data }) => {
-        const avatarSrc = `${domain}/${data.key}?imageView2/1/w/240/h/240`;
-        this.setState({
-          isEditing: true,
-          isProcessing: false,
-          processMsg: '',
-          avatar: avatarSrc,
+        .then(({ data }) => {
+          const avatarSrc = `${domain}/${data.key}?imageView2/1/w/240/h/240`;
+          this.setState({
+            isEditing: true,
+            isProcessing: false,
+            processMsg: '',
+            avatar: avatarSrc,
+          });
+          this.props.snackBarOpen('上传头像成功');
+        })
+        .catch((err) => {
+          console.log(err);
+          this.setState({
+            isEditing: false,
+            isProcessing: false,
+            processMsg: '',
+          });
+          this.props.snackBarOpen(`上传头像失败 ${err}`);
         });
-        this.props.snackBarOpen('上传头像成功');
-      })
-      .catch((err) => {
-        console.log(err);
-        this.setState({
-          isEditing: false,
-          isProcessing: false,
-          processMsg: '',
-        });
-        this.props.snackBarOpen(`上传头像失败 ${err}`);
-      });
     }
   }
 
@@ -243,7 +241,12 @@ class SettingPage extends Component {
         <header className="setting__header">
           <div className="setting__cover" style={{ backgroundImage: `url("${this.state.cover}")` }}>
             <div className="setting__background" />
-            <div className="setting__uploader" onClick={() => this.coverInput.click()} >
+            <div
+              className="setting__uploader"
+              role="button"
+              tabIndex={-1}
+              onClick={() => this.coverInput.click()}
+            >
               <CameraIcon className={classes.icon__camera} />
               <input
                 style={{ display: 'none' }}
@@ -254,7 +257,12 @@ class SettingPage extends Component {
             </div>
           </div>
           <div className="setting__avatar">
-            <div className="setting__uploader" onClick={() => this.avatarInput.click()}>
+            <div
+              className="setting__uploader"
+              role="button"
+              tabIndex={-1}
+              onClick={() => this.avatarInput.click()}
+            >
               <Avatar src={this.state.avatar} size={60} />
               <input
                 style={{ display: 'none' }}
@@ -410,8 +418,7 @@ class SettingPage extends Component {
   render() {
     const { User, classes } = this.props;
     return (
-      <RootLayout
-        loading={!User}
+      <ViewLayout
         Topbar={
           this.state.isEditing
           ? (
@@ -433,16 +440,15 @@ class SettingPage extends Component {
           : <SecondaryNavHeader title="个人设置" />
         }
       >
-        <CircleLoader
+        <Loader
           open={this.state.isProcessing}
           message={this.state.processMsg}
           onTimeout={this._handleLoaderTimeout}
         />
         { User && this.renderContent() }
-      </RootLayout>
+      </ViewLayout>
     );
   }
-
 }
 
 const styles = {

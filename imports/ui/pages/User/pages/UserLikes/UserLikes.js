@@ -4,7 +4,7 @@ import React, { PureComponent } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { Images } from '/imports/api/images/image.js';
 import { makeCancelable } from '/imports/utils';
-import RootLayout from '/imports/ui/layouts/RootLayout';
+import ViewLayout from '/imports/ui/layouts/ViewLayout';
 import SlideTransition from '/imports/ui/components/Transition/Slide';
 import { SecondaryNavHeader } from '/imports/ui/components/NavHeader';
 import Infinity from '/imports/ui/components/Infinity';
@@ -56,7 +56,7 @@ export default class UserLikesPage extends PureComponent {
       Meteor.defer(() => {
         const newImages = Images.find(
           { private: false },
-          { sort: { createdAt: -1 }, limit, skip }
+          { sort: { createdAt: -1 }, limit, skip },
         ).fetch();
         const curImages = [...images, ...newImages];
         this.setState({ images: curImages }, () => resolve());
@@ -65,20 +65,20 @@ export default class UserLikesPage extends PureComponent {
 
     this.loadPromise = makeCancelable(loadPromise);
     this.loadPromise.promise
-    .then(() => {
-      this.setState({ isLoading: false });
-    })
-    .catch((err) => {
-      console.log(err);
-      this.props.snackBarOpen(`加载图片失败 ${err.reason}`);
-    });
+      .then(() => {
+        this.setState({ isLoading: false });
+      })
+      .catch((err) => {
+        console.log(err);
+        this.props.snackBarOpen(`加载图片失败 ${err.reason}`);
+      });
   }
 
   _handleRefreshImages = () => {
     // after like or unlike a image, we need to refresh the data
     const refreshedImages = Images.find(
       { private: false },
-      { sort: { createdAt: -1 }, limit: this.state.images.length }
+      { sort: { createdAt: -1 }, limit: this.state.images.length },
     ).fetch();
     this.setState({ images: refreshedImages });
   }
@@ -121,13 +121,11 @@ export default class UserLikesPage extends PureComponent {
   render() {
     const { isGuest, curUser, dataIsReady } = this.props;
     return (
-      <RootLayout
-        loading={!dataIsReady}
+      <ViewLayout
         Topbar={<SecondaryNavHeader title={isGuest ? `${curUser.username}喜欢的` : '我喜欢的'} />}
       >
         { dataIsReady && this.renderContent() }
-      </RootLayout>
+      </ViewLayout>
     );
   }
-
 }

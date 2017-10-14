@@ -8,8 +8,8 @@ export const now = Date.now || function legacy() {
 
 export const getEmptyPoint = double => (
   !double
-  ? { x: null, y: null }
-  : { x1: null, y1: null, x2: null, y2: null }
+    ? { x: null, y: null }
+    : { x1: null, y1: null, x2: null, y2: null }
 );
 
 export const isValidPoint = point => (point.x !== null && point.y !== null);

@@ -6,7 +6,7 @@ import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 if (Meteor.isServer) {
   import qiniu from 'qiniu';
 
-  const bucket = Meteor.settings.private.qiniu.bucket;
+  const { bucket } = Meteor.settings.private.qiniu;
 
   Meteor.methods({
     'Qiniu.getUptoken': function getUptoken() {

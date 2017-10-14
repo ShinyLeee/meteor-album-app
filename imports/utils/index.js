@@ -4,10 +4,10 @@ export const makeCancelable = (promise) => {
 
   const wrappedPromise = new Promise((resolve, reject) => {
     promise.then((val) => // eslint-disable-line no-confusing-arrow
-      hasCanceled_ ? reject({ isCanceled: true }) : resolve(val)
+      hasCanceled_ ? reject({ isCanceled: true }) : resolve(val), // eslint-disable-line prefer-promise-reject-errors
     );
     promise.catch((error) => // eslint-disable-line no-confusing-arrow
-      hasCanceled_ ? reject({ isCanceled: true }) : reject(error)
+      hasCanceled_ ? reject({ isCanceled: true }) : reject(error), // eslint-disable-line prefer-promise-reject-errors
     );
   });
 
@@ -39,7 +39,7 @@ export const platform = () => {
     iPad: u.indexOf('iPad') > -1, // 是否IPad
     webApp: u.indexOf('Safari') === -1, // 是否web程序，没有头部与底部
     weixin: u.indexOf('MicroMessenger') > -1, // 是否微信 （2015-01-22新增）
-    qq: u.match(/\sQQ/i) === ' qq', //是否QQ
+    qq: u.match(/\sQQ/i) === ' qq', // 是否QQ
   };
 };
 

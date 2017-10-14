@@ -61,7 +61,7 @@ Recap.propTypes = {
   title: PropTypes.string.isRequired,
   detailFir: PropTypes.string.isRequired,
   detailSec: PropTypes.string,
-  showIcon: PropTypes.bool.isRequired,
+  showIcon: PropTypes.bool,
 };
 
 export default Recap;

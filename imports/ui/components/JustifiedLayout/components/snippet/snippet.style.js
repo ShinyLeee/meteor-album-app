@@ -13,10 +13,10 @@ export const Background = styled.div`
   padding: 8px 24px 24px 8px;
   opacity: ${props => props.isEditing ? 1 : 0};
   background: ${
-    props => props.isSelect
+  props => props.isSelect
     ? 'none'
     : 'linear-gradient(180deg, rgba(0, 0, 0, 0.3) 0, transparent 30%, transparent 70%, rgba(0, 0, 0, 0.3))'
-  };
+};
   z-index: 1;
 `;
 

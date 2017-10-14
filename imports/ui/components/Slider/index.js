@@ -6,12 +6,13 @@ import { Wrapper, EnhancedSliderTracker } from './Slider.style';
 
 const FRICTION_LEVEL = 0.3;
 
-export default class Slider extends Component {
+const getWidth = (ele);
 
+export default class Slider extends Component {
   constructor(props) {
     super(props);
     this.bounds = undefined;
-    this.trackWidth = undefined;  // touch area width
+    this.trackWidth = undefined; // touch area width
     this.sliderWidth = undefined; // visible slider width
     this.singleWidth = undefined; // single slider width
     this._x = null; // current x coordinate
@@ -38,6 +39,7 @@ export default class Slider extends Component {
     }
   }
 
+  // eslint-disable-next-line class-methods-use-this
   getWidth(ele) {
     return ele ? (ele.getBoundingClientRect().width || ele.offsetWidth) : 0;
   }

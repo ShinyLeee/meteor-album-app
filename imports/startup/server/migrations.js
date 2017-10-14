@@ -41,7 +41,7 @@ Migrations.add({
     // Change all profile.followers value from uid to username
     Users.find().forEach((user) => {
       const uid = user._id;
-      const followers = user.profile.followers;
+      const { followers } = user.profile;
       if (followers.length === 0) return;
       followers.forEach((followerId, i) => {
         const followerName = Users.findOne(followerId).username;
@@ -56,7 +56,7 @@ Migrations.add({
       const likers = image.liker;
       if (likers.length === 0) return;
       likers.forEach((likerId, i) => {
-        const username = Users.findOne(likerId).username;
+        const { username } = Users.findOne(likerId);
         likers[i] = username;
       });
       imagesBulk.find({ _id: imageId }).updateOne({ $set: { liker: likers } });
@@ -69,7 +69,7 @@ Migrations.add({
     // Change all sender and receiver fields' value from uid to username
     Users.find().forEach((user) => {
       const uid = user._id;
-      const username = user.username;
+      const { username } = user;
       notesBulk.find({ sender: uid }).update({ $set: { sender: username } });
       notesBulk.find({ receiver: uid }).update({ $set: { receiver: username } });
     });
@@ -93,7 +93,7 @@ Migrations.add({
 
     Users.find().forEach((user) => {
       const uid = user._id;
-      const followers = user.profile.followers;
+      const { followers } = user.profile;
       if (followers.length === 0) return;
       followers.forEach((followerName, i) => {
         const followerId = Users.findOne({ username: followerName })._id;
@@ -115,7 +115,7 @@ Migrations.add({
 
     Users.find().forEach((user) => {
       const uid = user._id;
-      const username = user.username;
+      const { username } = user;
       notesBulk.find({ sender: username }).update({ $set: { sender: uid } });
       notesBulk.find({ receiver: username }).update({ $set: { receiver: uid } });
       imagesBulk.find({ user: username }).update({ $set: { uid } });
@@ -145,10 +145,10 @@ Migrations.add({
       try {
         const imageStat = HTTP.call('GET', url);
         imagesBulk.find({ _id: image._id })
-        .updateOne({
-          $unset: { download: 1, ratio: 1 },
-          $set: { dimension: [imageStat.data.width, imageStat.data.height] },
-        });
+          .updateOne({
+            $unset: { download: 1, ratio: 1 },
+            $set: { dimension: [imageStat.data.width, imageStat.data.height] },
+          });
       } catch (err) {
         console.log(err); // eslint-disable-line no-console
         throw new Meteor.Error(err);
@@ -181,14 +181,14 @@ Migrations.add({
     const imagesBulk = Images.rawCollection().initializeUnorderedBulkOp();
     usersBulk.find({}).update({ $set: { 'profile.following': [] } });
     Users.find().forEach((user) => {
-      const username = user.username;
-      const followers = user.profile.followers;
+      const { username } = user;
+      const { followers } = user.profile;
       if (followers.length === 0) {
         return;
       }
       followers.forEach((follower) => {
         usersBulk.find({ username: follower })
-        .updateOne({ $addToSet: { 'profile.following': username } });
+          .updateOne({ $addToSet: { 'profile.following': username } });
       });
     });
     Images.find().forEach((image) => {
@@ -196,7 +196,7 @@ Migrations.add({
       try {
         const imageStat = HTTP.call('GET', url);
         imagesBulk.find({ _id: image._id })
-        .updateOne({ $set: { color: `#${imageStat.data.RGB.split('0x')[1]}` } });
+          .updateOne({ $set: { color: `#${imageStat.data.RGB.split('0x')[1]}` } });
       } catch (err) {
         console.log(err); // eslint-disable-line no-console
         throw new Meteor.Error(err);
@@ -212,11 +212,11 @@ Migrations.add({
     const imagesBulk = Images.rawCollection().initializeUnorderedBulkOp();
     Users.find().forEach((user) => {
       usersBulk.find({ _id: user._id })
-      .updateOne({ $unset: { 'profile.following': 1 } });
+        .updateOne({ $unset: { 'profile.following': 1 } });
     });
     Images.find().forEach((image) => {
       imagesBulk.find({ _id: image._id })
-      .updateOne({ $unset: { color: 1 } });
+        .updateOne({ $unset: { color: 1 } });
     });
     const executeUsers = Meteor.wrapAsync(usersBulk.execute, usersBulk);
     const executeImages = Meteor.wrapAsync(imagesBulk.execute, imagesBulk);
@@ -238,7 +238,7 @@ Migrations.add({
       const url = encodeURI(`${domain}/${image.user}/${image.collection}/${image.name}.${image.type}?imageInfo`);
       try {
         const imageInfo = HTTP.call('GET', url);
-        const orientation = imageInfo.data.orientation;
+        const { orientation } = imageInfo.data;
         if (orientation === 'Right-top' || orientation === 'Left-bottom') {
           const newDimension = image.dimension.reverse();
           imagesBulk.find({ _id: image._id }).updateOne({ $set: { dimension: newDimension } });
@@ -260,7 +260,7 @@ Migrations.add({
       const url = encodeURI(`${domain}/${image.user}/${image.collection}/${image.name}.${image.type}?imageInfo`);
       try {
         const imageInfo = HTTP.call('GET', url);
-        const orientation = imageInfo.data.orientation;
+        const { orientation } = imageInfo.data;
         if (orientation === 'Right-top' || orientation === 'Left-bottom') {
           const newDimension = image.dimension.reverse();
           imagesBulk.find({ _id: image._id }).updateOne({ $set: { dimension: newDimension } });

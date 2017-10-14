@@ -1,34 +1,17 @@
 /* eslint-disable react/prop-types, import/no-mutable-exports */
 import React from 'react';
-import { withStyles } from 'material-ui/styles';
-import { CircularProgress } from 'material-ui/Progress';
+import { CircleLoader } from '/imports/ui/components/Loader';
 import {
   ExifLoader as Loader,
   ExifInfo as Info,
 } from '../ZoomerHolder.style.js';
 
-const styles = {
-  progress: {
-    color: 'rgb(63, 81, 181)',
-    marginRight: 36,
-  },
-
-  circle: {
-    strokeWidth: 2.5,
-  },
-};
-
-let ExifLoader = ({ classes }) => (
+const ExifLoader = () => (
   <Loader>
-    <CircularProgress
-      classes={{ root: classes.progress, circle: classes.circle }}
-      size={30}
-    />
+    <CircleLoader />
     <span>加载中</span>
   </Loader>
 );
-
-ExifLoader = withStyles(styles)(ExifLoader);
 
 const ExifInfo = ({ exif, uploadDate }) => (
   <div>

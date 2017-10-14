@@ -15,7 +15,10 @@ const PC = () => (
         _.times(6, (n) => (
           <div key={n + 1} className="pc__line">
             <div className="pc__img">
-              <img src={`${sourceDomain}/GalleryPlus/PC/${n + 1}.jpg?imageView2/1/w/180/h/210`} role="presentation" />
+              <img
+                src={`${sourceDomain}/GalleryPlus/PC/${n + 1}.jpg?imageView2/1/w/180/h/210`}
+                alt=""
+              />
             </div>
           </div>
         ))

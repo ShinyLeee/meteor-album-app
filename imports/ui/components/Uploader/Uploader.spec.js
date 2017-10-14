@@ -1,4 +1,4 @@
-  /* eslint-disable
+/* eslint-disable
    react/jsx-filename-extension,
    no-unused-expressions,
    func-names,
@@ -24,7 +24,7 @@ if (Meteor.isClient) {
       <Uploader
         open={open}
         {...actions}
-      />
+      />,
     );
     return {
       actions,
@@ -35,11 +35,11 @@ if (Meteor.isClient) {
   describe('Uploader', () => {
     it('should have correct initial state', function () {
       const initialState = {
-        pace: 0,               // Current File Uploading Progress
-        current: 0,           // Current Uploading file
-        total: 1,            // total Uploading files length
-        thumbnail: '',      // Current Uploading thumbnail
-        uploading: false,  // Is in Uploading Progress
+        pace: 0, // Current File Uploading Progress
+        current: 0, // Current Uploading file
+        total: 1, // total Uploading files length
+        thumbnail: '', // Current Uploading thumbnail
+        uploading: false, // Is in Uploading Progress
       };
       const { component } = setup();
       expect(component.state()).to.eql(initialState);

@@ -25,7 +25,7 @@ export default compose(
 
     const { username } = match.params;
 
-    let isGuest = !User;  // if User is null, isGuest is true
+    let isGuest = !User; // if User is null, isGuest is true
 
     // if User exist and its name equal with params.username, isGuest is false
     if (User && User.username === username) isGuest = false;
@@ -33,13 +33,13 @@ export default compose(
     else isGuest = true;
     const userHandler = Meteor.subscribe('Users.all');
     const imageHandler = isGuest
-                         ? Meteor.subscribe('Images.liked', username)
-                         : Meteor.subscribe('Images.liked');
+      ? Meteor.subscribe('Images.liked', username)
+      : Meteor.subscribe('Images.liked');
     const dataIsReady = userHandler.ready() && imageHandler.ready();
 
     const initUserLikedImages = Images.find(
       { private: false, liker: { $in: [username] } },
-      { sort: { createdAt: -1 }, limit }
+      { sort: { createdAt: -1 }, limit },
     ).fetch();
 
     const curUser = Meteor.users.findOne({ username }) || {};

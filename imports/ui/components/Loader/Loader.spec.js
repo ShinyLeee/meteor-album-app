@@ -1,4 +1,4 @@
-  /* eslint-disable
+/* eslint-disable
    react/jsx-filename-extension,
    no-unused-expressions,
    func-names,
@@ -12,7 +12,7 @@ if (Meteor.isClient) {
   import { chai } from 'meteor/practicalmeteor:chai';
   // import { sinon } from 'meteor/practicalmeteor:sinon';
   import Dialog from 'material-ui/Dialog';
-  import Loader from './CircleLoader';
+  import Loader from './Loader';
 
   const expect = chai.expect;
 
@@ -22,7 +22,7 @@ if (Meteor.isClient) {
         open={open}
         message={message}
         timeout={timeout}
-      />
+      />,
     );
     return {
       component,

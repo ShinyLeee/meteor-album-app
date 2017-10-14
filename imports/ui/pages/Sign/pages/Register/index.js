@@ -10,16 +10,14 @@ import purple from 'material-ui/colors/purple';
 import grey from 'material-ui/colors/grey';
 import { checkCode, useCode } from '/imports/api/codes/methods.js';
 import { userLogin, snackBarOpen } from '/imports/ui/redux/actions';
-import RootLayout from '/imports/ui/layouts/RootLayout';
+import ViewLayout from '/imports/ui/layouts/ViewLayout';
 import { PrimaryNavHeader } from '/imports/ui/components/NavHeader';
-import { CircleLoader } from '/imports/ui/components/Loader';
+import Loader from '/imports/ui/components/Loader';
 
 class RegisterPage extends Component {
   static propTypes = {
     userLogin: PropTypes.func.isRequired,
     snackBarOpen: PropTypes.func.isRequired,
-    match: PropTypes.object.isRequired,
-    location: PropTypes.object.isRequired,
     history: PropTypes.object.isRequired,
     classes: PropTypes.object.isRequired,
   }
@@ -58,29 +56,29 @@ class RegisterPage extends Component {
 
     this.setState({ isProcessing: true, processMsg: '创建账号中' });
     checkCode.callPromise({ codeNo: code })
-    .then((isExist) => {
-      if (!isExist) {
-        throw new Meteor.Error(403, '此邀请码不存在或已被使用');
-      }
-      return Meteor.callPromise('Accounts.createUser', { username, email, password });
-    })
-    .then(() => useCode.callPromise({ codeNo: code }))
-    .then(() => {
-      const loginWithPassword = Meteor.wrapPromise(Meteor.loginWithPassword);
-      return loginWithPassword(username, password);
-    })
-    .then(() => {
-      const userObj = Meteor.user();
-      this.setState({ isProcessing: false, processMsg: '' });
-      this.props.userLogin(userObj);
-      this.props.history.replace('/');
-      this.props.snackBarOpen('注册成功');
-    })
-    .catch((err) => {
-      console.log(err);
-      this.setState({ isProcessing: false, processMsg: '' });
-      this.props.snackBarOpen(`注册失败 ${err.reason}`);
-    });
+      .then((isExist) => {
+        if (!isExist) {
+          throw new Meteor.Error(403, '此邀请码不存在或已被使用');
+        }
+        return Meteor.callPromise('Accounts.createUser', { username, email, password });
+      })
+      .then(() => useCode.callPromise({ codeNo: code }))
+      .then(() => {
+        const loginWithPassword = Meteor.wrapPromise(Meteor.loginWithPassword);
+        return loginWithPassword(username, password);
+      })
+      .then(() => {
+        const userObj = Meteor.user();
+        this.setState({ isProcessing: false, processMsg: '' });
+        this.props.userLogin(userObj);
+        this.props.history.replace('/');
+        this.props.snackBarOpen('注册成功');
+      })
+      .catch((err) => {
+        console.log(err);
+        this.setState({ isProcessing: false, processMsg: '' });
+        this.props.snackBarOpen(`注册失败 ${err.reason}`);
+      });
   }
 
   _handleLoaderTimeout = () => {
@@ -159,17 +157,14 @@ class RegisterPage extends Component {
 
   render() {
     return (
-      <RootLayout
-        loading={false}
-        Topbar={<PrimaryNavHeader />}
-      >
-        <CircleLoader
+      <ViewLayout Topbar={<PrimaryNavHeader />}>
+        <Loader
           open={this.state.isProcessing}
           message={this.state.processMsg}
           onTimeout={this._handleLoaderTimeout}
         />
         { this.renderContent() }
-      </RootLayout>
+      </ViewLayout>
     );
   }
 }

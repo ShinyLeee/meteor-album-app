@@ -42,7 +42,6 @@ export class GridImageHolder extends PureComponent {
     }
     if (nextProps.counter === 0) {
       this.setState({ isSelect: false });
-      return;
     }
   }
 

@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
-import { Diarys } from '/imports/api/diarys/diary.js';
+import { Diarys } from '/imports/api/diarys/diary';
 
 import { diaryOpen, snackBarOpen } from '/imports/ui/redux/actions';
 import DiaryPage from './Diary';
@@ -46,7 +46,7 @@ export default compose(
           user: User.username,
           createdAt: { $gte: start, $lt: end },
         },
-        { sort: { createdAt: -1 } }
+        { sort: { createdAt: -1 } },
       ).fetch();
     }
 

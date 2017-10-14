@@ -49,7 +49,6 @@ class NavHeaderDrawer extends Component {
   state = {
     popover: false,
     popoverAnchor: undefined,
-    drawer: false,
   }
 
   get avatarSrc() {
@@ -71,14 +70,14 @@ class NavHeaderDrawer extends Component {
   _handleLogout = () => {
     const logoutPromise = Meteor.wrapPromise(Meteor.logout);
     logoutPromise()
-    .then(() => {
-      this.props.userLogout();
-      this.props.snackBarOpen('登出成功');
-    })
-    .catch(err => {
-      console.log(err);
-      this.props.snackBarOpen(`登出失败 ${err.reason}`);
-    });
+      .then(() => {
+        this.props.userLogout();
+        this.props.snackBarOpen('登出成功');
+      })
+      .catch(err => {
+        console.log(err);
+        this.props.snackBarOpen(`登出失败 ${err.reason}`);
+      });
   }
 
   _handleOpenPop = (e) => {

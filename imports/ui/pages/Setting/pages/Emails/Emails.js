@@ -10,9 +10,9 @@ import Menu, { MenuItem } from 'material-ui/Menu';
 import IconButton from 'material-ui/IconButton';
 import Input from 'material-ui/Input';
 import MoreVertIcon from 'material-ui-icons/MoreVert';
-import RootLayout from '/imports/ui/layouts/RootLayout';
+import ViewLayout from '/imports/ui/layouts/ViewLayout';
 import { SecondaryNavHeader } from '/imports/ui/components/NavHeader';
-import { CircleLoader } from '/imports/ui/components/Loader';
+import Loader from '/imports/ui/components/Loader';
 
 class EmailsPage extends Component {
   static propTypes = {
@@ -35,32 +35,32 @@ class EmailsPage extends Component {
   _handleSentVerifyEmail = () => {
     this.setState({ isProcessing: true, processMsg: '发送邮件中' });
     Meteor.callPromise('Accounts.sendVerifyEmail')
-    .then(() => {
-      this.setState({ isProcessing: false, processMsg: '' });
-      this.props.snackBarOpen('发送成功');
-    })
-    .catch((err) => {
-      console.log(err);
-      this.setState({ isProcessing: false, processMsg: '' });
-      this.props.snackBarOpen(`发送失败 ${err.reason}`);
-    });
+      .then(() => {
+        this.setState({ isProcessing: false, processMsg: '' });
+        this.props.snackBarOpen('发送成功');
+      })
+      .catch((err) => {
+        console.log(err);
+        this.setState({ isProcessing: false, processMsg: '' });
+        this.props.snackBarOpen(`发送失败 ${err.reason}`);
+      });
   }
-    /**
+  /**
      * Return the new gloabl counter and group state, when select or cancel one photo
      * @param {string} email - the email address in Menu item wait for remove
      */
   _handleRemoveEmail(email) {
     this.setState({ isProcessing: true, processMsg: '解除绑定邮箱中' });
     Meteor.callPromise('Accounts.removeEmail', { email })
-    .then(() => {
-      this.setState({ isProcessing: false, processMsg: '' });
-      this.props.snackBarOpen('解除绑定邮箱成功');
-    })
-    .catch((err) => {
-      console.log(err);
-      this.setState({ isProcessing: false, processMsg: '' });
-      this.props.snackBarOpen(`解除邮箱绑定失败 ${err.reason}`);
-    });
+      .then(() => {
+        this.setState({ isProcessing: false, processMsg: '' });
+        this.props.snackBarOpen('解除绑定邮箱成功');
+      })
+      .catch((err) => {
+        console.log(err);
+        this.setState({ isProcessing: false, processMsg: '' });
+        this.props.snackBarOpen(`解除邮箱绑定失败 ${err.reason}`);
+      });
   }
 
   _handleAddEmail = () => {
@@ -70,15 +70,15 @@ class EmailsPage extends Component {
     }
     this.setState({ isProcessing: true, processMsg: '发送验证邮件中' });
     Meteor.callPromise('Accounts.addEmail', { email: this.state.email })
-    .then(() => {
-      this.setState({ isProcessing: false, processMsg: '' });
-      this.props.snackBarOpen('添加成功，请前往邮箱进行验证');
-    })
-    .catch((err) => {
-      console.log(err);
-      this.setState({ isProcessing: false, processMsg: '' });
-      this.props.snackBarOpen(`更换邮箱失败 ${err.reason}`);
-    });
+      .then(() => {
+        this.setState({ isProcessing: false, processMsg: '' });
+        this.props.snackBarOpen('添加成功，请前往邮箱进行验证');
+      })
+      .catch((err) => {
+        console.log(err);
+        this.setState({ isProcessing: false, processMsg: '' });
+        this.props.snackBarOpen(`更换邮箱失败 ${err.reason}`);
+      });
   }
 
   _handleLoaderTimeout = () => {
@@ -165,20 +165,16 @@ class EmailsPage extends Component {
 
   render() {
     return (
-      <RootLayout
-        loading={false}
-        Topbar={<SecondaryNavHeader title="我的邮箱" />}
-      >
-        <CircleLoader
+      <ViewLayout Topbar={<SecondaryNavHeader title="我的邮箱" />}>
+        <Loader
           open={this.state.isProcessing}
           message={this.state.processMsg}
           onTimeout={this._handleLoaderTimeout}
         />
         { this.renderContent() }
-      </RootLayout>
+      </ViewLayout>
     );
   }
-
 }
 
 const styles = {

@@ -7,7 +7,7 @@ import IconButton from 'material-ui/IconButton';
 import ChevronLeftIcon from 'material-ui-icons/ChevronLeft';
 import ChevronRightIcon from 'material-ui-icons/ChevronRight';
 import FadeTransition from '/imports/ui/components/Transition/Fade';
-import RootLayout from '/imports/ui/layouts/RootLayout';
+import ViewLayout from '/imports/ui/layouts/ViewLayout';
 import { SecondaryNavHeader } from '/imports/ui/components/NavHeader';
 import settings from '/imports/utils/settings';
 import FloatButton from '/imports/ui/components/FloatButton';
@@ -18,17 +18,14 @@ const { sourceDomain } = settings;
 export default class DiaryPage extends Component {
   static propTypes = {
     history: PropTypes.object.isRequired,
-    User: PropTypes.object,
     dataIsReady: PropTypes.bool.isRequired,
     date: PropTypes.instanceOf(Date).isRequired,
     diarys: PropTypes.array.isRequired,
     diaryOpen: PropTypes.func.isRequired,
-    snackBarOpen: PropTypes.func.isRequired,
   }
 
   state = {
     navTitle: undefined,
-    iconColor: '#fff',
   }
 
   componentDidMount() {
@@ -78,6 +75,8 @@ export default class DiaryPage extends Component {
               _.times(12, (i) => (
                 <span
                   key={i + 1}
+                  role="button"
+                  tabIndex={-1}
                   className={currentMonth === i ? 'diary__month_select' : ''}
                   onClick={() => history.replace(`/diary?year=${currentYear}&month=${i + 1}`)}
                 >
@@ -120,8 +119,7 @@ export default class DiaryPage extends Component {
   render() {
     const { dataIsReady, history } = this.props;
     return (
-      <RootLayout
-        loading={!dataIsReady}
+      <ViewLayout
         Topbar={
           <SecondaryNavHeader
             style={{ backgroundColor: 'transparent' }}
@@ -134,8 +132,7 @@ export default class DiaryPage extends Component {
         { dataIsReady && this.renderContent() }
         <DiaryHolder />
         <FloatButton onClick={() => history.push('/diary/write')} />
-      </RootLayout>
+      </ViewLayout>
     );
   }
-
 }

@@ -12,10 +12,10 @@ import grey from 'material-ui/colors/grey';
 import { validateEmail } from '/imports/utils';
 import { userLogin, modalOpen, modalClose, snackBarOpen } from '/imports/ui/redux/actions';
 import withRedirect from '/imports/ui/hocs/withRedirect';
-import RootLayout from '/imports/ui/layouts/RootLayout';
+import ViewLayout from '/imports/ui/layouts/ViewLayout';
 import { PrimaryNavHeader } from '/imports/ui/components/NavHeader';
 import { ModalActions } from '/imports/ui/components/Modal';
-import { CircleLoader } from '/imports/ui/components/Loader';
+import Loader from '/imports/ui/components/Loader';
 
 const modalState = {
   email: '',
@@ -41,7 +41,6 @@ class LoginPage extends Component {
     modalOpen: PropTypes.func.isRequired,
     modalClose: PropTypes.func.isRequired,
     snackBarOpen: PropTypes.func.isRequired,
-    location: PropTypes.object.isRequired,
     history: PropTypes.object.isRequired,
     classes: PropTypes.object.isRequired,
   }
@@ -58,8 +57,7 @@ class LoginPage extends Component {
   }
 
   _handleChange = (e) => {
-    const name = e.target.name;
-    const value = e.target.value;
+    const { name, value } = e.target;
     if (name === 'email') {
       modalState.email = value;
       this._handleOpenModal();
@@ -83,22 +81,22 @@ class LoginPage extends Component {
     const loginWithPassword = Meteor.wrapPromise(Meteor.loginWithPassword);
 
     loginWithPassword(account, password)
-    .then(() => {
-      const userObj = Meteor.user();
-      this.setState({ isProcessing: false, processMsg: '' });
-      this.props.userLogin(userObj);
-      this.props.history.replace('/');
-      this.props.snackBarOpen('登陆成功');
-    })
-    .catch((err) => {
-      console.log(err);
-      this.setState({ isProcessing: false, processMsg: '' });
-      this.props.snackBarOpen(`登录失败 ${err.reason}`);
-    });
+      .then(() => {
+        const userObj = Meteor.user();
+        this.setState({ isProcessing: false, processMsg: '' });
+        this.props.userLogin(userObj);
+        this.props.history.replace('/');
+        this.props.snackBarOpen('登陆成功');
+      })
+      .catch((err) => {
+        console.log(err);
+        this.setState({ isProcessing: false, processMsg: '' });
+        this.props.snackBarOpen(`登录失败 ${err.reason}`);
+      });
   }
 
   _handleSentResetEmail = () => {
-    const email = modalState.email;
+    const { email } = modalState;
 
     if (!validateEmail(email)) {
       this.props.snackBarOpen('请输入正确的邮箱地址');
@@ -111,15 +109,15 @@ class LoginPage extends Component {
     const forgotPassword = Meteor.wrapPromise(Accounts.forgotPassword);
 
     forgotPassword({ email })
-    .then(() => {
-      this.setState({ isProcessing: false, processMsg: '' });
-      this.props.snackBarOpen('发送成功');
-    })
-    .catch((err) => {
-      console.log(err);
-      this.setState({ isProcessing: false, processMsg: '' });
-      this.props.snackBarOpen(`发送失败 ${err.reason}`);
-    });
+      .then(() => {
+        this.setState({ isProcessing: false, processMsg: '' });
+        this.props.snackBarOpen('发送成功');
+      })
+      .catch((err) => {
+        console.log(err);
+        this.setState({ isProcessing: false, processMsg: '' });
+        this.props.snackBarOpen(`发送失败 ${err.reason}`);
+      });
   }
 
   _handleOpenModal = () => {
@@ -206,20 +204,16 @@ class LoginPage extends Component {
 
   render() {
     return (
-      <RootLayout
-        loading={false}
-        Topbar={<PrimaryNavHeader />}
-      >
-        <CircleLoader
+      <ViewLayout Topbar={<PrimaryNavHeader />}>
+        <Loader
           open={this.state.isProcessing}
           message={this.state.processMsg}
           onTimeout={this._handleLoaderTimeout}
         />
         { this.renderContent() }
-      </RootLayout>
+      </ViewLayout>
     );
   }
-
 }
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({

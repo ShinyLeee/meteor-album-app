@@ -1,4 +1,4 @@
-  /* eslint-disable no-unused-expressions */
+/* eslint-disable no-unused-expressions */
 
 import { Meteor } from 'meteor/meteor';
 
@@ -28,7 +28,7 @@ if (Meteor.isClient) {
         };
         const returnValue = reducers.uploader(
           { open: false, destination: '' },
-          { type: 'UPLOADER_START', uploader }
+          { type: 'UPLOADER_START', uploader },
         );
         expect(returnValue.open).to.be.true;
         expect(returnValue.destination).to.equal(uploader.destination);

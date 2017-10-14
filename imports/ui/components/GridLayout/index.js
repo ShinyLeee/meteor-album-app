@@ -28,7 +28,6 @@ GridLayout.defaultProps = {
 GridLayout.propTypes = {
   columns: PropTypes.number,
   gap: PropTypes.number,
-  onTileClick: PropTypes.func,
   children: PropTypes.any.isRequired,
 };
 

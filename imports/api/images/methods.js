@@ -57,7 +57,7 @@ export const removeImagesToRecycle = new ValidatedMethod({
     Images.update(
       { _id: { $in: selectImages } },
       { $set: { deletedAt } },
-      { multi: true }
+      { multi: true },
     );
   },
 });
@@ -82,7 +82,7 @@ export const recoveryImages = new ValidatedMethod({
       const destPrivateStat = dest && dest.private;
       Images.update(
         { _id: imageId },
-        { $set: { deletedAt: null, private: destPrivateStat } }
+        { $set: { deletedAt: null, private: destPrivateStat } },
       );
     });
   },
@@ -109,7 +109,7 @@ export const shiftImages = new ValidatedMethod({
     Images.update(
       { _id: { $in: selectImages } },
       { $set: { collection: dest, private: destPrivateStat } },
-      { multi: true }
+      { multi: true },
     );
   },
 });
@@ -152,10 +152,10 @@ export const incView = new ValidatedMethod({
   }).validator({ clean: true, filter: false }),
   run({ imageIds }) {
     Images.update(
-    { _id: { $in: imageIds } },
-    { $inc: { view: 1 } },
-    { multi: true }
-  );
+      { _id: { $in: imageIds } },
+      { $inc: { view: 1 } },
+      { multi: true },
+    );
   },
 });
 

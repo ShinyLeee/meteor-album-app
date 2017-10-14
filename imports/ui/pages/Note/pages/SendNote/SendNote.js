@@ -6,19 +6,18 @@ import Delta from 'quill-delta';
 // import Chip from 'material-ui/Chip';
 import { withStyles } from 'material-ui/styles';
 import Divider from 'material-ui/Divider';
-import Button from 'material-ui/Button';
 import Input from 'material-ui/Input';
 import IconButton from 'material-ui/IconButton';
 import ArrowBackIcon from 'material-ui-icons/ArrowBack';
 import SendIcon from 'material-ui-icons/Send';
 import { insertNote } from '/imports/api/notes/methods.js';
-import RootLayout from '/imports/ui/layouts/RootLayout';
+import ViewLayout from '/imports/ui/layouts/ViewLayout';
 import { SecondaryNavHeader } from '/imports/ui/components/NavHeader';
 import { ModalActions } from '/imports/ui/components/Modal';
 import { QuillEditor } from '/imports/ui/components/Quill';
 // TODO
 // import DatePickerCN from '/imports/ui/components/SubMaterialUI/DatePickerCN.jsx';
-import { CircleLoader } from '/imports/ui/components/Loader';
+import Loader from '/imports/ui/components/Loader';
 import AutocompleteWrapper from './components/Autocomplete';
 
 class SendNotePage extends Component {
@@ -32,10 +31,6 @@ class SendNotePage extends Component {
     snackBarOpen: PropTypes.func.isRequired,
     history: PropTypes.object.isRequired,
     classes: PropTypes.object.isRequired,
-  }
-
-  static defaultProps = {
-    otherUsers: [],
   }
 
   state = {
@@ -90,8 +85,7 @@ class SendNotePage extends Component {
 
             const MAX_WIDTH = 800;
             const MAX_HEIGHT = 600;
-            let width = img.width;
-            let height = img.height;
+            let { width, height } = img;
 
             if (width > height) {
               if (width > MAX_WIDTH) {
@@ -113,7 +107,7 @@ class SendNotePage extends Component {
               .retain(range.index)
               .delete(range.length)
               .insert({ image: dataUrl })
-            , 'user');
+              , 'user');
           };
           reader.readAsDataURL(fileInput.files[0]);
         }
@@ -157,16 +151,16 @@ class SendNotePage extends Component {
       sendAt: new Date() || this.state.sendAt, // TODO remove Date Picker temporary
       createdAt: new Date(),
     })
-    .then(() => {
+      .then(() => {
       // because go to another component so we do not need set inital state
-      this.props.history.goBack();
-      this.props.snackBarOpen('发送成功');
-    })
-    .catch((err) => {
-      console.log(err);
-      this.setState({ isProcessing: false, processMsg: '' });
-      this.props.snackBarOpen(`发送失败 ${err.reason}`);
-    });
+        this.props.history.goBack();
+        this.props.snackBarOpen('发送成功');
+      })
+      .catch((err) => {
+        console.log(err);
+        this.setState({ isProcessing: false, processMsg: '' });
+        this.props.snackBarOpen(`发送失败 ${err.reason}`);
+      });
   }
 
   renderContent() {
@@ -234,8 +228,7 @@ class SendNotePage extends Component {
   render() {
     const { dataIsReady } = this.props;
     return (
-      <RootLayout
-        loading={!dataIsReady}
+      <ViewLayout
         Topbar={
           <SecondaryNavHeader
             title="发送信息"
@@ -244,12 +237,12 @@ class SendNotePage extends Component {
           />
         }
       >
-        <CircleLoader
+        <Loader
           open={this.state.isProcessing}
           message={this.state.processMsg}
         />
         { dataIsReady && this.renderContent() }
-      </RootLayout>
+      </ViewLayout>
     );
   }
 }

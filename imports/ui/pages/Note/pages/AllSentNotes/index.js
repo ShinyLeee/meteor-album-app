@@ -7,17 +7,12 @@ import { Notes } from '/imports/api/notes/note.js';
 import { snackBarOpen } from '/imports/ui/redux/actions';
 import AllSentNotes from './AllSentNotes';
 
-const mapStateToProps = ({ portals }) => ({
-  bibleDialogOpen: portals.dialog.open,
-  bible: portals.dialog.bible,
-});
-
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   snackBarOpen,
 }, dispatch);
 
 export default compose(
-  connect(mapStateToProps, mapDispatchToProps),
+  connect(null, mapDispatchToProps),
   withTracker(({ match }) => {
     const { username } = match.params;
     // Define How many notes render in the first time
@@ -29,8 +24,8 @@ export default compose(
 
     const initialAllSentNotes = Notes.find(
       { sender: username },
-      { sort: { sendAt: -1 }, limit }
-  ).fetch();
+      { sort: { sendAt: -1 }, limit },
+    ).fetch();
 
     return {
       dataIsReady,

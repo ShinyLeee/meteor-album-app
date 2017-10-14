@@ -4,11 +4,6 @@ import initState from '../store/initState';
 
 export const sessions = (state = initState.sessions, action) => {
   switch (action.type) {
-    case types.APP_INIT:
-      return {
-        ...state,
-        initializing: false,
-      };
     case types.USER_LOGIN:
       return {
         ...state,
@@ -68,27 +63,6 @@ export const portals = (state = initState.portals, action) => {
       return {
         ...state,
         zoomer: initState.portals.zoomer,
-      };
-    case types.DIALOG_FETCH:
-      return {
-        ...state,
-        dialog: {
-          open: true,
-          content: null,
-        },
-      };
-    case types.DIALOG_OPEN:
-      return {
-        ...state,
-        dialog: {
-          open: true,
-          content: action.content,
-        },
-      };
-    case types.DIALOG_CLOSE:
-      return {
-        ...state,
-        dialog: initState.portals.dialog,
       };
     case types.DIARY_OPEN:
       return {

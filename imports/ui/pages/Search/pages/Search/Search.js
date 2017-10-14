@@ -2,25 +2,16 @@ import { Meteor } from 'meteor/meteor';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import Paper from 'material-ui/Paper';
-import RootLayout from '/imports/ui/layouts/RootLayout';
+import ViewLayout from '/imports/ui/layouts/ViewLayout';
 import { SearchBar } from '/imports/ui/components/NavHeader';
 import CollHolder from '/imports/ui/components/CollHolder';
 
 export default class SearchPage extends Component {
-  static defaultProps = {
-    dataIsReady: false,
-    users: [],
-    collections: [],
-  }
-
   static propTypes = {
     User: PropTypes.object, // not required bc guest can visit this page
-    // Below Pass from Database
     dataIsReady: PropTypes.bool.isRequired,
     users: PropTypes.array.isRequired,
     collections: PropTypes.array.isRequired,
-    match: PropTypes.object.isRequired,
-    location: PropTypes.object.isRequired,
     history: PropTypes.object.isRequired,
   }
 
@@ -42,7 +33,7 @@ export default class SearchPage extends Component {
   }
 
   renderContent() {
-    const { User, collections, users, history } = this.props;
+    const { User, collections, users } = this.props;
     return (
       <div className="content__search">
         <section className="search__collection">
@@ -51,7 +42,7 @@ export default class SearchPage extends Component {
             {/* <a>展开</a> */}
           </header>
           {
-            collections.map((coll, i) => {
+            collections.map((coll) => {
               let avatarSrc;
               if (User && (coll.user === User.username)) {
                 avatarSrc = User.profile.avatar;
@@ -60,7 +51,7 @@ export default class SearchPage extends Component {
               }
               return (
                 <CollHolder
-                  key={i}
+                  key={coll._id}
                   coll={coll}
                   avatarSrc={avatarSrc}
                 />
@@ -75,11 +66,13 @@ export default class SearchPage extends Component {
           </header>
           <Paper className="user__container">
             {
-              users.map((user, i) => (
+              users.map((user) => (
                 <div
-                  key={i}
+                  key={user._id}
                   className="user__content"
-                  onClick={() => history.push(`/user/${user.username}`)}
+                  role="button"
+                  tabIndex={-1}
+                  onClick={() => this.props.history.push(`/user/${user.username}`)}
                 >
                   <div className="user__avatar">
                     <img src={user.profile.avatar} alt={user.username} />
@@ -99,7 +92,7 @@ export default class SearchPage extends Component {
   render() {
     const { dataIsReady, history } = this.props;
     return (
-      <RootLayout
+      <ViewLayout
         deep
         loading={!dataIsReady}
         Topbar={
@@ -111,7 +104,7 @@ export default class SearchPage extends Component {
         }
       >
         { dataIsReady && this.renderContent() }
-      </RootLayout>
+      </ViewLayout>
     );
   }
 }

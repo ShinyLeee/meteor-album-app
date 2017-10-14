@@ -20,11 +20,11 @@ import {
 const { imageDomain } = settings;
 
 const initialState = {
-  pace: 0,               // Current File Uploading Progress
-  current: 0,           // Current Uploading file
-  total: 1,            // total Uploading files length
-  thumbnail: '',      // Current Uploading thumbnail
-  uploading: false,  // Is in Uploading Progress
+  pace: 0, // Current File Uploading Progress
+  current: 0, // Current Uploading file
+  total: 1, // total Uploading files length
+  thumbnail: '', // Current Uploading thumbnail
+  uploading: false, // Is in Uploading Progress
 };
 
 // TODO 令该组件可最小化后台运行
@@ -36,7 +36,7 @@ export default class Uploader extends Component {
     User: PropTypes.object.isRequired,
     token: PropTypes.string,
     open: PropTypes.bool.isRequired,
-    destination: PropTypes.string,  // not required bc don't need it before Uploading
+    destination: PropTypes.string, // not required bc don't need it before Uploading
     storeUptoken: PropTypes.func.isRequired,
     clearUptoken: PropTypes.func.isRequired,
     snackBarOpen: PropTypes.func.isRequired,
@@ -59,14 +59,14 @@ export default class Uploader extends Component {
 
   componentDidMount() {
     Meteor.callPromise('Qiniu.getUptoken')
-    .then((res) => {
-      console.log('%c Meteor finish getUptoken', 'color: blue');
-      this.props.storeUptoken(res.uptoken);
-    })
-    .catch((err) => {
-      console.log(err);
-      this.props.snackBarOpen(`获取七牛云token失败 ${err}`);
-    });
+      .then((res) => {
+        console.log('%c Meteor finish getUptoken', 'color: blue');
+        this.props.storeUptoken(res.uptoken);
+      })
+      .catch((err) => {
+        console.log(err);
+        this.props.snackBarOpen(`获取七牛云token失败 ${err}`);
+      });
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -186,12 +186,12 @@ export default class Uploader extends Component {
       }),
       onUploadProgress: (evt) => this.uploadingFile(evt),
     })
-    .then(() => {
-      this.afterUploadFile(files, currentFile);
-    })
-    .catch((err) => {
-      this.finishUpload(err);
-    });
+      .then(() => {
+        this.afterUploadFile(files, currentFile);
+      })
+      .catch((err) => {
+        this.finishUpload(err);
+      });
   }
 
   /**
@@ -250,51 +250,51 @@ export default class Uploader extends Component {
 
     if (image.type === 'jpg') {
       axios.all([getImageAve(), getImageExif()])
-      .then(axios.spread((aveRes, exifRes) => {
-        image.color = `#${aveRes.data.RGB.split('0x')[1]}`;
-        const exif = exifRes.data;
-        const orientation = exif.Orientation;
-        const exifDate = exif.DateTimeOriginal || exif.DateTimeDigitized || exif.DateTime;
-        if (orientation) {
-          if (orientation.val === 'Right-top' || orientation.val === 'Left-bottom') {
-            image.dimension = image.dimension.reverse();
+        .then(axios.spread((aveRes, exifRes) => {
+          image.color = `#${aveRes.data.RGB.split('0x')[1]}`;
+          const exif = exifRes.data;
+          const orientation = exif.Orientation;
+          const exifDate = exif.DateTimeOriginal || exif.DateTimeDigitized || exif.DateTime;
+          if (orientation) {
+            if (orientation.val === 'Right-top' || orientation.val === 'Left-bottom') {
+              image.dimension = image.dimension.reverse();
+            }
           }
-        }
-        if (exifDate) {
-          const temp = exifDate.val.split(' ');
-          temp[0] = temp[0].split(':').join('-');
-          image.shootAt = new Date(`${temp[0]}T${temp[1]}`);
-        }
-        return insertImage.callPromise(image);
-      }))
-      .then(() => {
-        if (this.state.current === this.state.total) {
-          this.finishUpload(null);
-        } else {
+          if (exifDate) {
+            const temp = exifDate.val.split(' ');
+            temp[0] = temp[0].split(':').join('-');
+            image.shootAt = new Date(`${temp[0]}T${temp[1]}`);
+          }
+          return insertImage.callPromise(image);
+        }))
+        .then(() => {
+          if (this.state.current === this.state.total) {
+            this.finishUpload(null);
+          } else {
           // if have not upload all files, we need to call it again
-          this.beforeUpload(files, files[this.state.current]);
-        }
-      })
-      .catch((err) => {
-        this.finishUpload(err);
-      });
+            this.beforeUpload(files, files[this.state.current]);
+          }
+        })
+        .catch((err) => {
+          this.finishUpload(err);
+        });
     } else {
       getImageAve()
-      .then((res) => {
-        image.color = `#${res.data.RGB.split('0x')[1]}`;
-        return insertImage.callPromise(image);
-      })
-      .then(() => {
-        if (this.state.current === this.state.total) {
-          this.finishUpload(null);
-        } else {
+        .then((res) => {
+          image.color = `#${res.data.RGB.split('0x')[1]}`;
+          return insertImage.callPromise(image);
+        })
+        .then(() => {
+          if (this.state.current === this.state.total) {
+            this.finishUpload(null);
+          } else {
           // if have not upload all files, we need to call it again
-          this.beforeUpload(files, files[this.state.current]);
-        }
-      })
-      .catch((err) => {
-        this.finishUpload(err);
-      });
+            this.beforeUpload(files, files[this.state.current]);
+          }
+        })
+        .catch((err) => {
+          this.finishUpload(err);
+        });
     }
   }
 
@@ -333,7 +333,7 @@ export default class Uploader extends Component {
       if (this._cancelFn) {
         message = '您取消了上传';
       } else {
-        message = '上传失败';
+        message = `上传失败 ${err}`;
       }
       console.log(err);
     } else {

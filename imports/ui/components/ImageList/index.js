@@ -33,13 +33,13 @@ class ImageList extends Component {
       imageId: image._id,
       liker: User.username,
     })
-    .then(() => {
-      this.props.onLikeOrUnlikeAction();
-    })
-    .catch((err) => {
-      console.log(err);
-      this.props.snackBarOpen(err.reason || '发生未知错误');
-    });
+      .then(() => {
+        this.props.onLikeOrUnlikeAction();
+      })
+      .catch((err) => {
+        console.log(err);
+        this.props.snackBarOpen(err.reason || '发生未知错误');
+      });
   }
 
   _handleRemoveLiker = (image) => {
@@ -49,13 +49,13 @@ class ImageList extends Component {
       imageId: image._id,
       unliker: User.username,
     })
-    .then(() => {
-      this.props.onLikeOrUnlikeAction();
-    })
-    .catch((err) => {
-      console.log(err);
-      this.props.snackBarOpen(err.reason || '发生未知错误');
-    });
+      .then(() => {
+        this.props.onLikeOrUnlikeAction();
+      })
+      .catch((err) => {
+        console.log(err);
+        this.props.snackBarOpen(err.reason || '发生未知错误');
+      });
   }
 
   _handleZoomImage = (image) => {
@@ -68,9 +68,9 @@ class ImageList extends Component {
     return (
       <div>
         {
-          images.map((image, i) => (
+          images.map((image) => (
             <ImageHolder
-              key={i}
+              key={image._id}
               image={image}
               onLikeClick={this._handleAddLiker}
               onUnlikeClick={this._handleRemoveLiker}

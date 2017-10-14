@@ -1,7 +1,7 @@
 /* eslint-disable prefer-arrow-callback, meteor/audit-argument-checks */
 import { Meteor } from 'meteor/meteor';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
-import { Collections } from '../collection.js';
+import { Collections } from '../collection';
 
 Meteor.publish('Collections.all', function all() {
   return Collections.find({

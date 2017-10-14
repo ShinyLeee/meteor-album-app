@@ -5,7 +5,7 @@ export const once = (el, type, callback) => {
     return callback(event);
   };
 
-  for (let i = typeArray.length - 1; i >= 0; i--) {
+  for (let i = typeArray.length - 1; i >= 0; i -= 1) {
     this.on(el, typeArray[i], recursiveFunction);
   }
 };

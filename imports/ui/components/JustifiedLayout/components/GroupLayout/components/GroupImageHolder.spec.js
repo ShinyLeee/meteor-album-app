@@ -1,4 +1,4 @@
-  /* eslint-disable
+/* eslint-disable
    react/jsx-filename-extension,
    no-unused-expressions,
    func-names,
@@ -29,7 +29,7 @@ if (Meteor.isClient) {
 
   const generateGeometry = (len) => {
     const ratios = [];
-    for (let i = 0; i < len; i++) {
+    for (let i = 0; i < len; i += 1) {
       ratios[i] = getRandomArbitrary(0, 1.5).toFixed(1);
     }
     return justifiedLayout(ratios);
@@ -43,7 +43,7 @@ if (Meteor.isClient) {
       <GroupImageHolder
         key={1}
         isEditing
-        groupName={'2016-12-31'}
+        groupName="2016-12-31"
         image={image}
         dimension={generateGeometry(1)}
         total={6}
@@ -51,7 +51,7 @@ if (Meteor.isClient) {
         group={group}
         counter={counter}
         {...actions}
-      />
+      />,
     );
     return {
       actions,

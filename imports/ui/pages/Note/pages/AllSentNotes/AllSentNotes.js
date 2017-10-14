@@ -3,11 +3,10 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Notes } from '/imports/api/notes/note.js';
 import { makeCancelable } from '/imports/utils';
-import RootLayout from '/imports/ui/layouts/RootLayout';
+import ViewLayout from '/imports/ui/layouts/ViewLayout';
 import { SecondaryNavHeader } from '/imports/ui/components/NavHeader';
 import Infinity from '/imports/ui/components/Infinity';
 import EmptyHolder from '/imports/ui/components/EmptyHolder';
-import BibleDialog from '/imports/ui/components/BibleDialog';
 import NoteHolder from '/imports/ui/components/NoteHolder';
 
 export default class AllSentNotesPage extends Component {
@@ -15,8 +14,6 @@ export default class AllSentNotesPage extends Component {
     dataIsReady: PropTypes.bool.isRequired,
     limit: PropTypes.number.isRequired,
     initialAllSentNotes: PropTypes.array.isRequired,
-    bibleDialogOpen: PropTypes.bool.isRequired,
-    bible: PropTypes.object, // only required when bibleDialogOpen true
     snackBarOpen: PropTypes.func.isRequired,
   }
 
@@ -61,17 +58,16 @@ export default class AllSentNotesPage extends Component {
 
     this.loadPromise = makeCancelable(loadPromise);
     this.loadPromise.promise
-    .then(() => {
-      this.setState({ isLoading: false });
-    })
-    .catch((err) => {
-      console.log(err);
-      this.props.snackBarOpen(`加载信息失败 ${err.reason}`);
-    });
+      .then(() => {
+        this.setState({ isLoading: false });
+      })
+      .catch((err) => {
+        console.log(err);
+        this.props.snackBarOpen(`加载信息失败 ${err.reason}`);
+      });
   }
 
   renderContent() {
-    const { bibleDialogOpen, bible } = this.props;
     if (this.state.notes.length === 0) {
       return <EmptyHolder mainInfo="您还未发送过消息" />;
     }
@@ -83,11 +79,11 @@ export default class AllSentNotesPage extends Component {
           offsetToBottom={100}
         >
           {
-            this.state.notes.map((note, i) => {
+            this.state.notes.map((note) => {
               const receiverObj = Meteor.users.findOne({ username: note.receiver });
               return (
                 <NoteHolder
-                  key={i}
+                  key={note._id}
                   avatar={receiverObj && receiverObj.profile.avatar}
                   note={note}
                   isRead
@@ -96,10 +92,6 @@ export default class AllSentNotesPage extends Component {
             })
           }
         </Infinity>
-        <BibleDialog
-          open={bibleDialogOpen}
-          bible={bible}
-        />
       </div>
     );
   }
@@ -107,14 +99,12 @@ export default class AllSentNotesPage extends Component {
   render() {
     const { dataIsReady } = this.props;
     return (
-      <RootLayout
+      <ViewLayout
         deep={this.state.notes.length !== 0}
-        loading={!dataIsReady}
         Topbar={<SecondaryNavHeader title="我发出的全部消息" />}
       >
         { dataIsReady && this.renderContent() }
-      </RootLayout>
+      </ViewLayout>
     );
   }
-
 }

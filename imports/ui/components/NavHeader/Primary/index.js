@@ -9,7 +9,7 @@ import Typography from 'material-ui/Typography';
 import MenuIcon from 'material-ui-icons/Menu';
 import IconButton from 'material-ui/IconButton';
 import purple from 'material-ui/colors/purple';
-import scrollTo from '/imports/vendor/scrollTo.js';
+import scrollTo from '/imports/vendor/scrollTo';
 import Drawer from './components/Drawer';
 import RightContent from './components/RightContent';
 import { LeftContent, Content } from '../NavHeader.style';
@@ -18,6 +18,7 @@ const purple500 = purple['500'];
 
 class PrimaryNavHeader extends Component {
   static propTypes = {
+    onTitleClick: PropTypes.func,
     style: PropTypes.object,
     classes: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
@@ -33,6 +34,9 @@ class PrimaryNavHeader extends Component {
     scrollTo(0, 1500);
     if (location.pathname !== '/') {
       history.push('/');
+    }
+    if (this.props.onTitleClick) {
+      this.props.onTitleClick();
     }
   }
 

@@ -40,7 +40,7 @@ export const readAllNotes = new ValidatedMethod({
     Notes.update(
       { receiver, isRead: false },
       { $set: { isRead: true } },
-      { multi: true }
+      { multi: true },
     );
   },
 });
@@ -57,7 +57,7 @@ export const readNote = new ValidatedMethod({
     }
     Notes.update(
       noteId,
-      { $set: { isRead: true } }
+      { $set: { isRead: true } },
     );
   },
 });

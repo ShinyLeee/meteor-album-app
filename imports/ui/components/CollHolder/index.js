@@ -116,7 +116,7 @@ class CollHolder extends Component {
                     leftIcon={<InfoIcon />}
                     primaryText="查看信息"
                     onClick={() => onCheck(coll)}
-                  />*/}
+                  /> */}
                   <MenuItem className={classes.menuItem} onClick={this._handleToggleLock}>
                     <IconButton className={classes.menuBtn}>
                       { coll.private ? <LockOutIcon /> : <LockIcon />}

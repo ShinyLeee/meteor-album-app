@@ -5,14 +5,14 @@ import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 Meteor.publish('Users.all', function allUser() {
   return Meteor.users.find(
     {},
-    { fields: { username: 1, profile: 1 } }
+    { fields: { username: 1, profile: 1 } },
   );
 });
 
 Meteor.publish('Users.others', function otherUsers() {
   return Meteor.users.find(
     { _id: { $ne: this.userId } },
-    { fields: { username: 1, profile: 1 } }
+    { fields: { username: 1, profile: 1 } },
   );
 });
 
@@ -22,6 +22,6 @@ Meteor.publish('Users.limit', function limit(num) {
   }).validator({ clean: true, filter: false });
   return Meteor.users.find(
     {},
-    { limit: num, fields: { username: 1, profile: 1 } }
+    { limit: num, fields: { username: 1, profile: 1 } },
   );
 });

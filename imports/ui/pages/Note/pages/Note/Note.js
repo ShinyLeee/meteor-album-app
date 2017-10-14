@@ -12,12 +12,11 @@ import purple from 'material-ui/colors/purple';
 import { Notes } from '/imports/api/notes/note.js';
 import { readNote, readAllNotes } from '/imports/api/notes/methods.js';
 import { makeCancelable } from '/imports/utils';
-import RootLayout from '/imports/ui/layouts/RootLayout';
+import ViewLayout from '/imports/ui/layouts/ViewLayout';
 import { SecondaryNavHeader } from '/imports/ui/components/NavHeader';
 import Infinity from '/imports/ui/components/Infinity';
 import EmptyHolder from '/imports/ui/components/EmptyHolder';
 import { LinearLoader } from '/imports/ui/components/Loader';
-import BibleDialog from '/imports/ui/components/BibleDialog';
 import NoteHolder from '/imports/ui/components/NoteHolder';
 
 const purple500 = purple[500];
@@ -28,8 +27,6 @@ export default class NotePage extends Component {
     dataIsReady: PropTypes.bool.isRequired,
     limit: PropTypes.number.isRequired,
     initialNotes: PropTypes.array.isRequired,
-    bibleDialogOpen: PropTypes.bool.isRequired,
-    bible: PropTypes.object, // only required when bibleDialogOpen true
     snackBarOpen: PropTypes.func.isRequired,
     history: PropTypes.object.isRequired,
   }
@@ -75,13 +72,13 @@ export default class NotePage extends Component {
 
     this.loadPromise = makeCancelable(loadPromise);
     this.loadPromise.promise
-    .then(() => {
-      this.setState({ isLoading: false });
-    })
-    .catch((err) => {
-      console.log(err);
-      this.props.snackBarOpen(`加载信息失败 ${err.reason}`);
-    });
+      .then(() => {
+        this.setState({ isLoading: false });
+      })
+      .catch((err) => {
+        console.log(err);
+        this.props.snackBarOpen(`加载信息失败 ${err.reason}`);
+      });
   }
 
   /**
@@ -90,17 +87,17 @@ export default class NotePage extends Component {
    */
   _handleReadNote = (id) => {
     readNote.callPromise({ noteId: id })
-    .then(() => {
-      const trueNotes = Notes.find(
-        { isRead: { $ne: true } },
-        { sort: { sendAt: -1 }, limit: this.state.notes.length - 1 }
-      ).fetch();
-      this.setState({ notes: trueNotes });
-    })
-    .catch((err) => {
-      console.log(err);
-      this.props.snackBarOpen(`标记已读失败 ${err.reason}`);
-    });
+      .then(() => {
+        const trueNotes = Notes.find(
+          { isRead: { $ne: true } },
+          { sort: { sendAt: -1 }, limit: this.state.notes.length - 1 },
+        ).fetch();
+        this.setState({ notes: trueNotes });
+      })
+      .catch((err) => {
+        console.log(err);
+        this.props.snackBarOpen(`标记已读失败 ${err.reason}`);
+      });
   }
 
   _handleReadAll = () => {
@@ -111,13 +108,13 @@ export default class NotePage extends Component {
     }
     this.setState({ isProcessing: true });
     readAllNotes.callPromise({ receiver: User.username })
-    .then(() => {
-      this.setState({ isProcessing: false, notes: [] });
-    })
-    .catch((err) => {
-      console.log(err);
-      this.props.snackBarOpen(`标记已读失败 ${err.reason}`);
-    });
+      .then(() => {
+        this.setState({ isProcessing: false, notes: [] });
+      })
+      .catch((err) => {
+        console.log(err);
+        this.props.snackBarOpen(`标记已读失败 ${err.reason}`);
+      });
   }
 
   _handleOpenPopover = (e) => {
@@ -125,7 +122,6 @@ export default class NotePage extends Component {
   }
 
   renderContent() {
-    const { bibleDialogOpen, bible } = this.props;
     if (this.state.notes.length === 0) {
       return <EmptyHolder mainInfo="您还未收到消息" />;
     }
@@ -137,11 +133,11 @@ export default class NotePage extends Component {
           offsetToBottom={100}
         >
           {
-            this.state.notes.map((note, i) => {
+            this.state.notes.map((note) => {
               const senderObj = Meteor.users.findOne({ username: note.sender });
               return (
                 <NoteHolder
-                  key={i}
+                  key={note._id}
                   avatar={senderObj.profile.avatar}
                   note={note}
                   onRead={this._handleReadNote}
@@ -150,10 +146,6 @@ export default class NotePage extends Component {
             })
           }
         </Infinity>
-        <BibleDialog
-          open={bibleDialogOpen}
-          bible={bible}
-        />
       </div>
     );
   }
@@ -161,9 +153,8 @@ export default class NotePage extends Component {
   render() {
     const { dataIsReady, User, history } = this.props;
     return (
-      <RootLayout
+      <ViewLayout
         deep={this.state.notes.length !== 0}
-        loading={!dataIsReady}
         Topbar={
           <SecondaryNavHeader
             title="未读消息"
@@ -200,8 +191,7 @@ export default class NotePage extends Component {
             </ListItem>
           </List>
         </Popover>
-      </RootLayout>
+      </ViewLayout>
     );
   }
-
 }

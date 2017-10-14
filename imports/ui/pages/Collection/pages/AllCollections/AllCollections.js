@@ -5,7 +5,7 @@ import { withStyles } from 'material-ui/styles';
 import AppBar from 'material-ui/AppBar';
 import Tabs, { Tab } from 'material-ui/Tabs';
 import blue from 'material-ui/colors/blue';
-import RootLayout from '/imports/ui/layouts/RootLayout';
+import ViewLayout from '/imports/ui/layouts/ViewLayout';
 import { SecondaryNavHeader } from '/imports/ui/components/NavHeader';
 import OwnCollections from './components/Own';
 import FollowingCollections from './components/Following';
@@ -14,14 +14,12 @@ const blue500 = blue[500];
 
 class AllCollectionPage extends Component {
   static propTypes = {
-    User: PropTypes.object,
     dataIsReady: PropTypes.bool.isRequired,
     isGuest: PropTypes.bool.isRequired, // based on isGuest render different content
     curUser: PropTypes.object.isRequired,
     colls: PropTypes.array.isRequired,
     existCollNames: PropTypes.array, // not required bc only Owner use it
     classes: PropTypes.object.isRequired,
-    snackBarOpen: PropTypes.func.isRequired,
   }
 
   state = {
@@ -60,9 +58,8 @@ class AllCollectionPage extends Component {
   render() {
     const { isGuest, curUser, dataIsReady, classes } = this.props;
     return (
-      <RootLayout
+      <ViewLayout
         deep
-        loading={!dataIsReady}
         Topbar={<SecondaryNavHeader title={isGuest ? `${curUser.username}的相册` : '我的相册'} />}
       >
         <AppBar className={classes.appbar} position="fixed" color="primary">
@@ -78,7 +75,7 @@ class AllCollectionPage extends Component {
           </Tabs>
         </AppBar>
         { dataIsReady && this.renderContent() }
-      </RootLayout>
+      </ViewLayout>
     );
   }
 }
