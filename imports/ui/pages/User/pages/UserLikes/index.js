@@ -1,55 +1,36 @@
-import { Meteor } from 'meteor/meteor';
-import { withTracker } from 'meteor/react-meteor-data';
-import { bindActionCreators, compose } from 'redux';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Images } from '/imports/api/images/image.js';
+import ViewLayout from '/imports/ui/layouts/ViewLayout';
+import SecondaryNavHeader from '/imports/ui/components/NavHeader/Secondary';
+import withLoadable from '/imports/ui/hocs/withLoadable';
 
-import { snackBarOpen } from '/imports/ui/redux/actions';
-import UserLikesPage from './UserLikes';
-
-const mapStateToProps = ({ sessions, portals }) => ({
-  User: sessions.User,
-  zoomerOpen: portals.zoomer.open,
-  zoomerImage: portals.zoomer.image,
+const AsyncUserLikesContent = withLoadable({
+  loader: () => import('./containers/UserLikesContentContainer'),
 });
 
-const mapDispatchToProps = (dispatch) => bindActionCreators({
-  snackBarOpen,
-}, dispatch);
+class UserLikesPage extends Component {
+  static propTypes = {
+    User: PropTypes.object,
+    match: PropTypes.object.isRequired,
+  }
 
-export default compose(
-  connect(mapStateToProps, mapDispatchToProps),
-  withTracker(({ User, match }) => {
-    // Define How many pictures render in the first time
-    const limit = 5;
+  render() {
+    const { User, match } = this.props;
+    const curUserName = match.params.username;
+    const isOwner = !!User && (User.username === curUserName);
+    return (
+      <ViewLayout
+        Topbar={<SecondaryNavHeader title={isOwner ? '我喜欢的' : `${curUserName}喜欢的`} />}
+      >
+        <AsyncUserLikesContent isOwner={isOwner} />
+      </ViewLayout>
+    );
+  }
+}
 
-    const { username } = match.params;
+const mapStateToProps = ({ sessions }) => ({
+  User: sessions.User,
+});
 
-    let isGuest = !User; // if User is null, isGuest is true
-
-    // if User exist and its name equal with params.username, isGuest is false
-    if (User && User.username === username) isGuest = false;
-
-    else isGuest = true;
-    const userHandler = Meteor.subscribe('Users.all');
-    const imageHandler = isGuest
-      ? Meteor.subscribe('Images.liked', username)
-      : Meteor.subscribe('Images.liked');
-    const dataIsReady = userHandler.ready() && imageHandler.ready();
-
-    const initUserLikedImages = Images.find(
-      { private: false, liker: { $in: [username] } },
-      { sort: { createdAt: -1 }, limit },
-    ).fetch();
-
-    const curUser = Meteor.users.findOne({ username }) || {};
-
-    return {
-      limit,
-      dataIsReady,
-      isGuest,
-      curUser,
-      initUserLikedImages,
-    };
-  }),
-)(UserLikesPage);
+export default connect(mapStateToProps)(UserLikesPage);

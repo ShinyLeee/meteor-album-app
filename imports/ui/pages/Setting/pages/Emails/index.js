@@ -1,15 +1,18 @@
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
+import React, { Component } from 'react';
+import ViewLayout from '/imports/ui/layouts/ViewLayout';
+import SecondaryNavHeader from '/imports/ui/components/NavHeader/Secondary';
+import withLoadable from '/imports/ui/hocs/withLoadable';
 
-import { snackBarOpen } from '/imports/ui/redux/actions';
-import SettingEmailsPage from './Emails';
-
-const mapStateToProps = ({ sessions }) => ({
-  User: sessions.User,
+const AsyncEmailsContent = withLoadable({
+  loader: () => import('./containers/ContentContainer'),
 });
 
-const mapDispatchToProps = (dispatch) => bindActionCreators({
-  snackBarOpen,
-}, dispatch);
-
-export default connect(mapStateToProps, mapDispatchToProps)(SettingEmailsPage);
+export default class EmailsPage extends Component {
+  render() {
+    return (
+      <ViewLayout Topbar={<SecondaryNavHeader title="我的邮箱" />}>
+        <AsyncEmailsContent />
+      </ViewLayout>
+    );
+  }
+}

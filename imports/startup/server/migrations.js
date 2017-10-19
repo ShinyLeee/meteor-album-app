@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 import { Migrations } from 'meteor/percolate:migrations';
-import { Users } from '/imports/api/users/user.js';
-import { Notes } from '/imports/api/notes/note.js';
-import { Images } from '/imports/api/images/image.js';
-import { Collections } from '/imports/api/collections/collection.js';
+import { Users } from '/imports/api/users/user';
+import { Notes } from '/imports/api/notes/note';
+import { Images } from '/imports/api/images/image';
+import { Collections } from '/imports/api/collections/collection';
 
 // TODO wrap Migration up / down as a Meteor method,
 // which I can control it in the Admin route.

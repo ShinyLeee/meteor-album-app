@@ -16,11 +16,11 @@ import {
   likeImage,
   unlikeImage,
   incView,
-} from './methods.js';
-import { Users } from '../users/user.js';
-import { Collections } from '../collections/collection.js';
-import { Images } from './image.js';
-import { Comments } from '../comments/comment.js';
+} from './methods';
+import { Users } from '../users/user';
+import { Collections } from '../collections/collection';
+import { Images } from './image';
+import { Comments } from '../comments/comment';
 
 Factory.define('image', Images, {
   user: () => limitStrLength(faker.internet.userName(), 20),
@@ -34,7 +34,7 @@ Factory.define('image', Images, {
 });
 
 if (Meteor.isServer) {
-  import './server/publications.js';
+  import './server/publications';
 
   describe('IMAGES API', () => {
     describe('factory', () => {

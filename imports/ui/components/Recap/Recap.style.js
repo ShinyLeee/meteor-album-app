@@ -5,6 +5,7 @@ export const Wrapper = styled.div`
   padding-bottom: 48px;
   text-align: center;
   color: #111;
+  background-color: #fff;
 `;
 
 export const Title = styled.h1`

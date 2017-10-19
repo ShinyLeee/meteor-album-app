@@ -6,9 +6,9 @@ import { Factory } from 'meteor/dburles:factory';
 import { PublicationCollector } from 'meteor/johanbrook:publication-collector';
 import { assert, expect } from 'meteor/practicalmeteor:chai';
 import { limitStrLength } from '/imports/utils';
-import { insertDiary, updateDiary, removeDiary } from './methods.js';
-import { Users } from '../users/user.js';
-import { Diarys } from './diary.js';
+import { insertDiary, updateDiary, removeDiary } from './methods';
+import { Users } from '../users/user';
+import { Diarys } from './diary';
 
 const deltaObj = {
   ops: [
@@ -26,7 +26,7 @@ Factory.define('diary', Diarys, {
 });
 
 if (Meteor.isServer) {
-  import './server/publications.js';
+  import './server/publications';
 
   describe('DIARYS API', () => {
     describe('factory', () => {

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { withStyles } from 'material-ui/styles';
+import Avatar from 'material-ui/Avatar';
 import IconButton from 'material-ui/IconButton';
 import Menu, { MenuItem } from 'material-ui/Menu';
 import DeleteIcon from 'material-ui-icons/Delete';
@@ -14,21 +15,19 @@ import {
   Wrapper,
   Cover,
   Info,
-  Avatar,
   CollName,
   UserName,
   Time,
-} from './CollHolder.style.js';
+} from './CollHolder.style';
 
 class CollHolder extends Component {
   static propTypes = {
     coll: PropTypes.object.isRequired,
     avatarSrc: PropTypes.string.isRequired,
-    showUser: PropTypes.bool.isRequired,
-    showDetails: PropTypes.bool.isRequired,
-    showActions: PropTypes.bool.isRequired,
+    showUser: PropTypes.bool,
+    showDetails: PropTypes.bool,
+    showActions: PropTypes.bool,
     classes: PropTypes.object.isRequired,
-    onCheck: PropTypes.func,
     onToggleLock: PropTypes.func,
     onRemove: PropTypes.func,
   }
@@ -69,27 +68,18 @@ class CollHolder extends Component {
       showActions,
       classes,
     } = this.props;
-    let fastSrc = `${coll.cover}?imageView2/2/w/${rWidth}`;
-    if (coll.cover.indexOf('VF_ac') > 0) {
-      fastSrc = coll.cover;
-    }
+    const fastSrc = coll.cover.indexOf('VF_ac') > 0
+      ? coll.cover
+      : `${coll.cover}?imageView2/2/w/${rWidth}`;
     return (
       <Wrapper>
         <Cover>
           <Link to={`/user/${coll.user}/collection/${coll.name}`}>
-            <img
-              src={fastSrc}
-              role="presentation"
-            />
+            <img src={fastSrc} alt="" />
           </Link>
         </Cover>
         <Info>
-          <Avatar>
-            <img
-              src={avatarSrc}
-              role="presentation"
-            />
-          </Avatar>
+          <Avatar classes={{ root: classes.avatar }} src={avatarSrc} alt="" />
           <CollName>{coll.name}</CollName>
           { showUser && <UserName>{coll.user}</UserName> }
           { showDetails && (
@@ -104,8 +94,7 @@ class CollHolder extends Component {
                 <IconButton
                   className={classes.moreVertBtn}
                   onClick={(e) => this.setState({ menuOpen: true, anchorEl: e.currentTarget })}
-                >
-                  <MoreVertIcon />
+                ><MoreVertIcon />
                 </IconButton>
                 <Menu
                   open={this.state.menuOpen}
@@ -140,6 +129,13 @@ class CollHolder extends Component {
 }
 
 const styles = {
+  avatar: {
+    position: 'absolute',
+    top: -18,
+    width: 26,
+    height: 26,
+  },
+
   lockIcon: {
     width: 17,
     height: 17,

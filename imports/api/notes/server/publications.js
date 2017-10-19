@@ -1,7 +1,7 @@
 /* eslint-disable prefer-arrow-callback, meteor/audit-argument-checks */
 import { Meteor } from 'meteor/meteor';
 // import { SimpleSchema } from 'meteor/aldeed:simple-schema';
-import { Notes } from '../note.js';
+import { Notes } from '../note';
 
 Meteor.publish('Notes.receiver', function receiverNotes() {
   const user = Meteor.users.findOne(this.userId);

@@ -1,59 +1,120 @@
-import moment from 'moment';
+import _ from 'lodash';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import queryString from 'query-string';
-import { Meteor } from 'meteor/meteor';
-import { withTracker } from 'meteor/react-meteor-data';
-import { bindActionCreators, compose } from 'redux';
-import { connect } from 'react-redux';
-import { Diarys } from '/imports/api/diarys/diary';
+import IconButton from 'material-ui/IconButton';
+import ChevronLeftIcon from 'material-ui-icons/ChevronLeft';
+import ChevronRightIcon from 'material-ui-icons/ChevronRight';
+import ViewLayout from '/imports/ui/layouts/ViewLayout';
+import SecondaryNavHeader from '/imports/ui/components/NavHeader/Secondary';
+import settings from '/imports/utils/settings';
+import withLoadable from '/imports/ui/hocs/withLoadable';
+import DataLoader from '/imports/ui/components/Loader/DataLoader';
+import {
+  DiaryHeader,
+  DiaryBackground,
+  DiaryYear,
+  DiaryYearText,
+  DiaryMonth,
+  DiaryMonthText,
+  DiaryMonthSelectedText,
+} from './styles/DiaryPage.style';
 
-import { diaryOpen, snackBarOpen } from '/imports/ui/redux/actions';
-import DiaryPage from './Diary';
-
-const mapStateToProps = ({ sessions }) => ({
-  User: sessions.User,
+const AsyncDiaryContent = withLoadable({
+  loader: () => import('./containers/ContentContainer'),
+  loading: DataLoader,
 });
 
-const mapDispatchToProps = (dispatch) => bindActionCreators({
-  diaryOpen,
-  snackBarOpen,
-}, dispatch);
+const { sourceDomain } = settings;
 
-export default compose(
-  connect(mapStateToProps, mapDispatchToProps),
-  withTracker(({ User, location }) => {
-    const query = queryString.parse(location.search);
+export default class DiaryPage extends Component {
+  static propTypes = {
+    history: PropTypes.object.isRequired,
+    location: PropTypes.object.isRequired,
+  }
 
-    let start;
-    let end;
+  state = {
+    navTitle: undefined,
+  }
 
-    if (Object.keys(query).length === 0) {
-      start = moment().startOf('month').toDate();
-      end = moment().endOf('month').toDate();
+  componentDidMount() {
+    window.addEventListener('scroll', this._handleScroll, false);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('scroll', this._handleScroll, false);
+  }
+
+  _handleScroll = () => {
+    if (window.scrollY > 292) {
+      this.setState({ navTitle: '返回顶部' });
     } else {
-      const date = moment(`${query.year}-${query.month || 1}`, 'YYYY-MM');
-      start = date.startOf('month').toDate();
-      end = date.endOf('month').toDate();
+      this.setState({ navTitle: undefined });
     }
+  }
 
-    const diaryHandler = Meteor.subscribe('Diarys.own');
-    const dataIsReady = !!User && diaryHandler.ready();
-
-    let diarys = [];
-
-    if (User) {
-      diarys = Diarys.find(
-        {
-          user: User.username,
-          createdAt: { $gte: start, $lt: end },
-        },
-        { sort: { createdAt: -1 } },
-      ).fetch();
+  render() {
+    let cYear;
+    let cMonth;
+    const query = queryString.parse(this.props.location.search);
+    if (Object.keys(query).length !== 0) {
+      cYear = +query.year;
+      cMonth = +query.month;
+    } else {
+      const date = new Date();
+      cYear = date.getFullYear();
+      cMonth = date.getMonth() + 1;
     }
+    return (
+      <ViewLayout
+        Topbar={
+          <SecondaryNavHeader
+            style={{ backgroundColor: 'transparent' }}
+            title={this.state.navTitle}
+            titleStyle={this.state.navTitle ? { color: '#222' } : null}
+            iconStyle={this.state.navTitle ? { color: '#222' } : { color: '#fff' }}
+          />
+        }
+      >
+        <DiaryHeader
+          style={{ backgroundImage: `url(${sourceDomain}/GalleryPlus/Default/default-diary.jpg)` }}
+        >
+          <DiaryBackground />
+          <DiaryYear>
+            <IconButton
+              color="contrast"
+              onClick={() => this.props.history.replace(`/diary?year=${cYear - 1}&month=${cMonth}`)}
+            ><ChevronLeftIcon />
+            </IconButton>
+            <DiaryYearText>{cYear}</DiaryYearText>
+            <IconButton
+              color="contrast"
+              onClick={() => this.props.history.replace(`/diary?year=${cYear + 1}&month=${cMonth}`)}
+            ><ChevronRightIcon />
+            </IconButton>
+          </DiaryYear>
+          <DiaryMonth>
+            {
+              _.times(12, (i) => {
+                const month = i + 1;
+                const props = {
+                  key: month,
+                  role: 'button',
+                  tabIndex: -1,
+                  onClick: () => this.props.history.replace(`/diary?year=${cYear}&month=${month}`),
+                };
+                if (cMonth === month) {
+                  return <DiaryMonthSelectedText {...props}>{month}</DiaryMonthSelectedText>;
+                }
+                return <DiaryMonthText {...props}>{month}</DiaryMonthText>;
+              })
+            }
+          </DiaryMonth>
+        </DiaryHeader>
 
-    return {
-      dataIsReady,
-      diarys,
-      date: start,
-    };
-  }),
-)(DiaryPage);
+        <AsyncDiaryContent />
+
+      </ViewLayout>
+    );
+  }
+}

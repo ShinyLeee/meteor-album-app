@@ -1,2 +1,2 @@
-export default from './pages/Collection';
-export CollectionAll from './pages/AllCollections';
+export default from './pages/Collection/containers/PageContainer';
+export AllCollectionsPage from './pages/AllCollections';

@@ -5,7 +5,7 @@ import PhotoSwipeUIDefault from 'photoswipe/dist/photoswipe-ui-default';
 import '/node_modules/photoswipe/dist/photoswipe.css';
 import '/node_modules/photoswipe/dist/default-skin/default-skin.css';
 import './pwsp.css';
-import events from './events.js';
+import events from './events';
 
 export default class ReactPhotoSwipe extends Component {
   constructor(props) {

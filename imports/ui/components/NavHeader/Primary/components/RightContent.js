@@ -12,7 +12,7 @@ import Button from 'material-ui/Button';
 import IconButton from 'material-ui/IconButton';
 import SearchIcon from 'material-ui-icons/Search';
 import NotificationIcon from 'material-ui-icons/Notifications';
-import { Notes } from '/imports/api/notes/note.js';
+import { Notes } from '/imports/api/notes/note';
 import settings from '/imports/utils/settings';
 
 const { sourceDomain } = settings;

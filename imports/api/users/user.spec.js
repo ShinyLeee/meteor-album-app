@@ -5,8 +5,8 @@ import { Factory } from 'meteor/dburles:factory';
 import { PublicationCollector } from 'meteor/johanbrook:publication-collector';
 import { assert, expect } from 'meteor/practicalmeteor:chai';
 import { limitStrLength } from '/imports/utils';
-import { updateProfile, followUser, unFollowUser } from './methods.js';
-import { Users, defaultUserProfile } from './user.js';
+import { updateProfile, followUser, unFollowUser } from './methods';
+import { Users, defaultUserProfile } from './user';
 
 Factory.define('user', Users, {
   username: () => limitStrLength(faker.internet.userName(), 20),
@@ -17,7 +17,7 @@ Factory.define('user', Users, {
 const sourceDomain = Meteor.settings.public.sourceDomain;
 
 if (Meteor.isServer) {
-  import './server/publications.js';
+  import './server/publications';
 
   describe('USERS API', () => {
     describe('factory', () => {

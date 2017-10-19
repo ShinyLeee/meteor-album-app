@@ -1,35 +1,53 @@
-import { Meteor } from 'meteor/meteor';
-import { withTracker } from 'meteor/react-meteor-data';
-import { Users } from '/imports/api/users/user.js';
-import { Collections } from '/imports/api/collections/collection.js';
-import { Notes } from '/imports/api/notes/note.js';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import ViewLayout from '/imports/ui/layouts/ViewLayout';
+import SearchBar from '/imports/ui/components/NavHeader/SearchBar';
+import withLoadable from '/imports/ui/hocs/withLoadable';
 
-import ResultsPage from './Results';
+const AsyncSearchResultsContent = withLoadable({
+  loader: () => import('./containers/ContentContainer'),
+});
 
-export default withTracker(({ match }) => {
-  const { query } = match.params;
 
-  const userHandler = Meteor.subscribe('Users.all');
-  const collHandler = Meteor.subscribe('Collections.all');
-  const noteHandler = Meteor.subscribe('Notes.receiver');
-  const dataIsReady = userHandler.ready() && collHandler.ready() && noteHandler.ready();
+export default class SearchResultsPage extends Component {
+  static propTypes = {
+    history: PropTypes.object.isRequired,
+  }
 
-  const regex = new RegExp(`^${query}`, 'i');
-  const noteRegex = new RegExp(query, 'i');
+  state = {
+    searchText: null,
+  }
 
-  const users = Users.find({ username: { $regex: regex } }).fetch();
-  const collections = Collections.find({
-    $or: [
-      { user: { $regex: regex }, private: false },
-      { name: { $regex: regex }, private: false },
-    ],
-  }).fetch();
-  const notes = Notes.find({ content: { $regex: noteRegex } }).fetch();
+  _handleGoBack = () => {
+    this.props.history.replace('/search');
+  }
 
-  return {
-    dataIsReady,
-    users,
-    collections,
-    notes,
-  };
-})(ResultsPage);
+  _handleSearchChange = (e) => {
+    this.setState({ searchText: e.target.value });
+  }
+
+
+  _handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (!this.state.searchText) {
+      return;
+    }
+    this.props.history.replace(`/search/${this.state.searchText}`);
+  }
+
+  render() {
+    return (
+      <ViewLayout
+        Topbar={
+          <SearchBar
+            onBack={this._handleGoBack}
+            onChange={this._handleSearchChange}
+            onSubmit={this._handleSearchSubmit}
+          />
+        }
+      >
+        <AsyncSearchResultsContent />
+      </ViewLayout>
+    );
+  }
+}

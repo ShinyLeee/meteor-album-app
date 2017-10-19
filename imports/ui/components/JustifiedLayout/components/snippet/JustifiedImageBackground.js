@@ -5,7 +5,7 @@ import {
   CircleSvg,
   BgdSvg,
   DoneSvg,
-} from './snippet.style.js';
+} from './snippet.style';
 
 const JustifiedImageBackground = (props) => {
   const { isEditing, isSelect } = props;

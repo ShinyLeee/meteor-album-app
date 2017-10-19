@@ -7,9 +7,9 @@ import { Factory } from 'meteor/dburles:factory';
 import { PublicationCollector } from 'meteor/johanbrook:publication-collector';
 import { assert, expect } from 'meteor/practicalmeteor:chai';
 import { limitStrLength } from '/imports/utils';
-import { insertComment, removeComment } from './methods.js';
-import { Users } from '../users/user.js';
-import { Comments } from './comment.js';
+import { insertComment, removeComment } from './methods';
+import { Users } from '../users/user';
+import { Comments } from './comment';
 
 Factory.define('comment', Comments, {
   user: () => limitStrLength(faker.internet.userName(), 20),
@@ -19,7 +19,7 @@ Factory.define('comment', Comments, {
 });
 
 if (Meteor.isServer) {
-  import './server/publications.js';
+  import './server/publications';
 
   describe('COMMENTS API', () => {
     describe('factory', () => {

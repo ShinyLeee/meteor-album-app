@@ -5,7 +5,7 @@ import React, { Component } from 'react';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import { incView } from '/imports/api/images/methods.js';
+import { incView } from '/imports/api/images/methods';
 import settings from '/imports/utils/settings';
 import { rWidth } from '/imports/utils/responsive';
 import { modalOpen, zoomerClose, snackBarOpen } from '/imports/ui/redux/actions';
@@ -20,7 +20,7 @@ import {
   StyledHeartIcon,
   StyledEyeIcon,
   StyledCameraIcon,
-} from './ZoomerHolder.style.js';
+} from './ZoomerHolder.style';
 
 const { imageDomain } = settings;
 

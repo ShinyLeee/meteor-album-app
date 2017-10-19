@@ -1,2 +1,2 @@
-export ResetPassword from './pages/ResetPassword';
-export VerifyEmail from './pages/VerifyEmail';
+export ResetPasswordPage from './pages/ResetPassword';
+export VerifyEmailPage from './pages/VerifyEmail';

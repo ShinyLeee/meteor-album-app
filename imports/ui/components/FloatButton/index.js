@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import Button from 'material-ui/Button';
 import AddIcon from 'material-ui-icons/Add';
-import { Wrapper } from './FloatButton.style.js';
+import { Wrapper } from './FloatButton.style';
 
 const FloatButton = ({ onClick }) => (
   <Wrapper>

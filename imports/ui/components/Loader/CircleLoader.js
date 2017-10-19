@@ -17,7 +17,6 @@ CircleLoader.propTypes = {
 const styles = {
   progress: {
     color: 'rgb(63, 81, 181)',
-    marginRight: 36,
   },
 
   circle: {

@@ -4,7 +4,7 @@ import { CircleLoader } from '/imports/ui/components/Loader';
 import {
   ExifLoader as Loader,
   ExifInfo as Info,
-} from '../ZoomerHolder.style.js';
+} from '../ZoomerHolder.style';
 
 const ExifLoader = () => (
   <Loader>

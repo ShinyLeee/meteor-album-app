@@ -4,7 +4,7 @@ import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { CallPromiseMixin } from 'meteor/didericis:callpromise-mixin';
-import { Comments } from './comment.js';
+import { Comments } from './comment';
 
 export const insertComment = new ValidatedMethod({
   name: 'comments.insert',

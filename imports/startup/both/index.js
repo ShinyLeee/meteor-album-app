@@ -1,2 +1,2 @@
-import './user-config.js';
-import './validate-config.js';
+import './user-config';
+import './validate-config';

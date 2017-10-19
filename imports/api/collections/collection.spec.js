@@ -21,7 +21,7 @@ Factory.define('collection', Collections, {
 });
 
 if (Meteor.isServer) {
-  import './server/publications.js';
+  import './server/publications';
 
   describe('COLLECTIONS API', () => {
     describe('factory', () => {

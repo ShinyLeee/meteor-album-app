@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import styles from './Label.style.js';
+import styles from './Label.style';
 
 const Label = ({ text, type, onLabelClick }) => (
   <div

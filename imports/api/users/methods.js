@@ -4,7 +4,7 @@ import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { CallPromiseMixin } from 'meteor/didericis:callpromise-mixin';
-import { Users } from './user.js';
+import { Users } from './user';
 
 /**
  * Validator Options

@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Route, Redirect } from 'react-router-dom';
-import { PageLoader } from '/imports/ui/components/Loader';
+import AppLoader from '/imports/ui/components/Loader/AppLoader';
 
 class AuthRoute extends Component {
   static propTypes = {
@@ -37,7 +37,7 @@ class AuthRoute extends Component {
     if (this.state.redirect) {
       return <Redirect to={{ pathname: '/login' }} />;
     }
-    return <PageLoader />;
+    return <AppLoader />;
   }
 }
 

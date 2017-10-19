@@ -12,8 +12,8 @@ if (Meteor.isClient) {
   import { shallow } from 'enzyme';
   import { chai } from 'meteor/practicalmeteor:chai';
   import { sinon } from 'meteor/practicalmeteor:sinon';
-  import { Justified } from './index.js';
-  // import ToolBar from './components/ToolBar/ToolBar.jsx';
+  import { Justified } from './index';
+  // import ToolBar from './components/ToolBar/ToolBar';
 
   const expect = chai.expect;
 

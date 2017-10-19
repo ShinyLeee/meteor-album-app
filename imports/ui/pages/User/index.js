@@ -1,3 +1,3 @@
 export default from './pages/User';
-export UserFans from './pages/UserFans';
-export UserLikes from './pages/UserLikes';
+export UserFansPage from './pages/UserFans';
+export UserLikesPage from './pages/UserLikes';

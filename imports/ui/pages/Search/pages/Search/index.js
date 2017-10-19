@@ -1,25 +1,46 @@
-import { compose } from 'redux';
-import { withRouter } from 'react-router-dom';
-import { Meteor } from 'meteor/meteor';
-import { withTracker } from 'meteor/react-meteor-data';
-import { Users } from '/imports/api/users/user.js';
-import { Collections } from '/imports/api/collections/collection.js';
-import SearchPage from './Search';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import ViewLayout from '/imports/ui/layouts/ViewLayout';
+import SearchBar from '/imports/ui/components/NavHeader/SearchBar';
+import withLoadable from '/imports/ui/hocs/withLoadable';
 
-export default compose(
-  withRouter,
-  withTracker(() => {
-    const userHandler = Meteor.subscribe('Users.limit', 4);
-    const collHandler = Meteor.subscribe('Collections.limit', 2);
-    const dataIsReady = userHandler.ready() && collHandler.ready();
+const AsyncSearchContent = withLoadable({
+  loader: () => import('./containers/ContentContainer'),
+});
 
-    const users = Users.find({}, { limit: 4 }).fetch();
-    const collections = Collections.find({ private: false }, { limit: 2 }).fetch();
+export default class SearchPage extends Component {
+  static propTypes = {
+    history: PropTypes.object.isRequired,
+  }
 
-    return {
-      dataIsReady,
-      users,
-      collections,
-    };
-  }),
-)(SearchPage);
+  state = {
+    searchText: null,
+  }
+
+  _handleSearchChange = (e) => {
+    this.setState({ searchText: e.target.value });
+  }
+
+  _handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (!this.state.searchText) {
+      return;
+    }
+    this.props.history.push(`/search/${this.state.searchText}`);
+  }
+
+  render() {
+    return (
+      <ViewLayout
+        Topbar={
+          <SearchBar
+            onChange={this._handleSearchChange}
+            onSubmit={this._handleSearchSubmit}
+          />
+        }
+      >
+        <AsyncSearchContent />
+      </ViewLayout>
+    );
+  }
+}

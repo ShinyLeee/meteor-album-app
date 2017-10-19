@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Wrapper, Child } from './GridLayout.style.js';
+import { Wrapper, Child } from './GridLayout.style';
 
 const GridLayout = ({ columns, gap, children }) => (
   <Wrapper margin={`${-gap / 2}px`}>

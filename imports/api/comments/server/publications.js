@@ -1,7 +1,7 @@
 /* eslint-disable prefer-arrow-callback, meteor/audit-argument-checks */
 import { Meteor } from 'meteor/meteor';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
-import { Comments } from '../comment.js';
+import { Comments } from '../comment';
 
 Meteor.publish('Comments.own', function ownComments() {
   const user = Meteor.users.findOne(this.userId);

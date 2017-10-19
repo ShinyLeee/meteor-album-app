@@ -1,2 +1,2 @@
 export default from './pages/Search';
-export SearchResults from './pages/Results';
+export SearchResultsPage from './pages/Results';

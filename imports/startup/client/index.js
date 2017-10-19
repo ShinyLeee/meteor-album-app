@@ -1,2 +1,2 @@
-import './app.js';
-import './accounts-config.js';
+import './app';
+import './accounts-config';

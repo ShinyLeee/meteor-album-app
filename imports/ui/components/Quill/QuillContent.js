@@ -5,7 +5,7 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { modalOpen, modalClose, snackBarOpen } from '/imports/ui/redux/actions';
-import { CircleLoader } from '/imports/ui/components/Loader';
+import ModalLoader from '/imports/ui/components/Modal/Common/ModalLoader';
 import '/node_modules/quill/dist/quill.snow.css';
 import './Quill.css';
 
@@ -39,19 +39,13 @@ class QuillContent extends Component {
   }
 
   _handleAnchorClick = (e) => {
+    this.renderLoadModal('获取中');
+
     e.preventDefault();
 
     const url = e.target.href;
     const chapter = e.target.text;
 
-    this.renderModal({
-      content: (
-        <div className="flex-box">
-          <CircleLoader />
-          <p>获取中...</p>
-        </div>
-      ),
-    });
     jsonp(url, null, (err, data) => {
       if (err) {
         console.log(err);
@@ -72,6 +66,13 @@ class QuillContent extends Component {
 
   renderModal({ title, content }) {
     this.props.modalOpen({ title, content });
+  }
+
+  renderLoadModal = (message, errMsg = '请求超时') => {
+    this.props.modalOpen({
+      content: <ModalLoader message={message} errMsg={errMsg} />,
+      ops: { ignoreBackdropClick: true },
+    });
   }
 
   render() {

@@ -15,7 +15,7 @@ import ReplyIcon from 'material-ui-icons/Reply';
 import ExpandMoreIcon from 'material-ui-icons/ExpandMore';
 import CheckBoxIcon from 'material-ui-icons/CheckBox';
 import { QuillContent } from '/imports/ui/components/Quill';
-import { Wrapper } from './NoteHolder.style.js';
+import { Wrapper } from './NoteHolder.style';
 
 const formatter = buildFormatter(CNStrings);
 

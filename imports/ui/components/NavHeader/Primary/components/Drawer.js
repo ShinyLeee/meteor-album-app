@@ -28,7 +28,7 @@ import {
   DrawerBackground,
   DrawerAvatar,
   DrawerEmail,
-} from '../Primary.style.js';
+} from '../Primary.style';
 
 const noop = () => {};
 
@@ -80,7 +80,7 @@ class NavHeaderDrawer extends Component {
       });
   }
 
-  _handleOpenPop = (e) => {
+  renderPopover = (e) => {
     this.setState({
       popover: true,
       popoverAnchor: e.currentTarget,
@@ -111,7 +111,7 @@ class NavHeaderDrawer extends Component {
                 <DrawerEmail>
                   <div>
                     <span>{(User.emails && User.emails[0].address) || User.username}</span>
-                    <div><ArrowDropdownIcon color="#fff" onClick={this._handleOpenPop} /></div>
+                    <div><ArrowDropdownIcon color="#fff" onClick={this.renderPopover} /></div>
                     <Popover
                       open={this.state.popover}
                       anchorEl={this.state.popoverAnchor}

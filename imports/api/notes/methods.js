@@ -4,7 +4,7 @@ import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { CallPromiseMixin } from 'meteor/didericis:callpromise-mixin';
-import { Notes } from './note.js';
+import { Notes } from './note';
 
 /**
  * Validator Options
@@ -23,7 +23,11 @@ export const insertNote = new ValidatedMethod({
     if (!receiver) {
       throw new Meteor.Error('api.notes.insert.userNotFound', '接受用户不存在');
     }
-    return Notes.insert(note);
+    const sender = Meteor.user().username;
+    return Notes.insert({
+      ...note,
+      sender,
+    });
   },
 });
 

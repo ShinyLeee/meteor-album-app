@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { likeImage, unlikeImage } from '/imports/api/images/methods.js';
+import { likeImage, unlikeImage } from '/imports/api/images/methods';
 
 import { zoomerOpen, snackBarOpen } from '/imports/ui/redux/actions';
 import ImageHolder from '../ImageHolder';
@@ -54,7 +54,7 @@ class ImageList extends Component {
       })
       .catch((err) => {
         console.log(err);
-        this.props.snackBarOpen(err.reason || '发生未知错误');
+        this.props.snackBarOpen(`发生未知错误 ${err.reason}`);
       });
   }
 

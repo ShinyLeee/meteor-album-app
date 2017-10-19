@@ -8,7 +8,7 @@ import { enableSelectAll, disableSelectAll } from '/imports/ui/redux/actions';
 import ConnectedGroupLayout from './components/GroupLayout';
 import ConnectedGridLayout from './components/GridLayout';
 import ToolBar from './components/ToolBar';
-import { Wrapper } from './Justified.style.js';
+import { Wrapper } from './Justified.style';
 
 export class Justified extends PureComponent {
   static propTypes = {
@@ -17,10 +17,6 @@ export class Justified extends PureComponent {
     counter: PropTypes.number.isRequired,
     enableSelectAll: PropTypes.func.isRequired,
     disableSelectAll: PropTypes.func.isRequired,
-  }
-
-  static defaultProps = {
-    isEditing: false,
   }
 
   state = {
@@ -63,7 +59,9 @@ export class Justified extends PureComponent {
           images,
           (image) => moment(image.shootAt).format('YYYYMMDD'),
         );
-        _.forEach(allGroupImages, (value, key) => (group[key] = value.length));
+        _.forEach(allGroupImages, (value, key) => {
+          group[key] = value.length;
+        });
         this.props.enableSelectAll({
           selectImages: images,
           group,
@@ -97,6 +95,7 @@ export class Justified extends PureComponent {
     }
   }
 
+  // eslint-disable-next-line class-methods-use-this
   generateAllGroupImages(images, filterType) {
     let formatStr;
     switch (filterType) {

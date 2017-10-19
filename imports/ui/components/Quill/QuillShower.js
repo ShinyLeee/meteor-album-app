@@ -1,6 +1,8 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import Quill from 'quill';
+import '/node_modules/quill/dist/quill.snow.css';
+import './Quill.css';
 
 export default class QuillShower extends Component {
   static propTypes = {

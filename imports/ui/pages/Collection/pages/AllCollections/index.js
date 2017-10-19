@@ -1,56 +1,81 @@
-import { Meteor } from 'meteor/meteor';
-import { withTracker } from 'meteor/react-meteor-data';
-import { bindActionCreators, compose } from 'redux';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Collections } from '/imports/api/collections/collection.js';
-import settings from '/imports/utils/settings';
-import { snackBarOpen } from '/imports/ui/redux/actions';
-import AllCollectionsPage from './AllCollections';
+import AppBar from 'material-ui/AppBar';
+import Tabs, { Tab } from 'material-ui/Tabs';
+import blue from 'material-ui/colors/blue';
+import ViewLayout from '/imports/ui/layouts/ViewLayout';
+import { SecondaryNavHeader } from '/imports/ui/components/NavHeader';
+// import withLoadable from '/imports/ui/hocs/withLoadable';
+// import Loading from './components/Loading';
+import Content from './components/Content';
 
-const { preCurUser } = settings;
+// const AsyncContent = withLoadable({
+//   loader: () => import('./components/Content'),
+//   loading: Loading,
+// });
+
+const styles = {
+  appbar: {
+    top: 64,
+    backgroundColor: blue[500],
+    boxShadow: 'none',
+  },
+};
+
+class AllCollectionPage extends Component {
+  static propTypes = {
+    User: PropTypes.object,
+    match: PropTypes.object.isRequired,
+  }
+
+  state = {
+    slideIndex: 0,
+  }
+
+  _handleViewIndex = (e, index) => {
+    this.setState({
+      slideIndex: index,
+    });
+  }
+
+  render() {
+    const { User, match } = this.props;
+    const curUserName = match.params.username;
+    const isOwner = !!User && (User.username === curUserName);
+    return (
+      <ViewLayout
+        deep
+        Topbar={
+          <SecondaryNavHeader
+            style={{ boxShadow: 'none' }}
+            title={isOwner ? '我的相册' : `${curUserName}的相册`}
+          />
+        }
+      >
+        <AppBar style={styles.appbar} position="fixed" color="primary">
+          <Tabs
+            value={this.state.slideIndex}
+            onChange={this._handleViewIndex}
+            indicatorColor="#fff"
+            textColor="inherit"
+            fullWidth
+          >
+            <Tab label={isOwner ? '我的' : `${curUserName}的`} value={0} />
+            <Tab label={isOwner ? '已关注' : `${curUserName}关注的`} value={1} />
+          </Tabs>
+        </AppBar>
+        <Content
+          slideIndex={this.state.slideIndex}
+          onViewChange={this._handleViewIndex}
+        />
+      </ViewLayout>
+    );
+  }
+}
 
 const mapStateToProps = ({ sessions }) => ({
   User: sessions.User,
 });
 
-const mapDispatchToProps = (dispatch) => bindActionCreators({
-  snackBarOpen,
-}, dispatch);
-
-export default compose(
-  connect(mapStateToProps, mapDispatchToProps),
-  withTracker(({ User, match }) => {
-    const { username } = match.params;
-
-    let isGuest = !User; // if User is null, isGuest is true
-    // if User exist and its name equal with params.username, isGuest is false
-    if (User && User.username === username) isGuest = false;
-    else isGuest = true;
-
-    const userHandler = Meteor.subscribe('Users.all');
-    const collHandler = isGuest
-      ? Meteor.subscribe('Collections.inUser', username) && Meteor.subscribe('Collections.inUserFollowing', username)
-      : Meteor.subscribe('Collections.own') && Meteor.subscribe('Collections.ownFollowing');
-
-    const dataIsReady = userHandler.ready() && collHandler.ready();
-
-    let colls;
-    let existCollNames;
-    const curUser = Meteor.users.findOne({ username }) || preCurUser;
-
-    if (!isGuest) {
-      colls = Collections.find({}, { sort: { createdAt: -1 } }).fetch();
-      existCollNames = Collections.find({ user: User.username }, { fields: { name: 1 } }).map(coll => coll.name);
-    } else {
-      colls = Collections.find({ private: false }, { sort: { createdAt: -1 } }).fetch();
-    }
-
-    return {
-      dataIsReady,
-      isGuest,
-      curUser,
-      colls,
-      existCollNames,
-    };
-  }),
-)(AllCollectionsPage);
+export default connect(mapStateToProps)(AllCollectionPage);

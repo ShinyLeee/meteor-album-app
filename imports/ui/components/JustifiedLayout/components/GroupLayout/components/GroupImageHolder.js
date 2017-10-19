@@ -10,7 +10,7 @@ import settings from '/imports/utils/settings';
 import { selectCounter } from '/imports/ui/redux/actions';
 import FadeTransition from '/imports/ui/components/Transition/Fade';
 import JustifiedImageBackground from '../../snippet/JustifiedImageBackground';
-import { Wrapper, SelectableImage } from './GroupImageHolder.style.js';
+import { Wrapper, SelectableImage } from './GroupImageHolder.style';
 
 const { imageDomain } = settings;
 

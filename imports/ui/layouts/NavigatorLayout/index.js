@@ -7,10 +7,14 @@ import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
 import Modal from '/imports/ui/components/Modal';
 import SnackBar from '/imports/ui/components/SnackBar';
-import Uploader from '/imports/ui/components/Uploader';
-import { PageLoader } from '/imports/ui/components/Loader';
+import AppLoader from '/imports/ui/components/Loader/AppLoader';
 import { userLogin } from '/imports/ui/redux/actions';
+import withLoadable from '/imports/ui/hocs/withLoadable';
 import Routes from './Routes';
+
+const AsyncUploader = withLoadable({
+  loader: () => import('/imports/ui/components/Uploader'),
+});
 
 class NavigatorLayout extends PureComponent {
   static propTypes = {
@@ -25,13 +29,13 @@ class NavigatorLayout extends PureComponent {
         {
           appIsReady
           ? <Router><Routes /></Router>
-          : <PageLoader />
+          : <AppLoader />
         }
 
         {/* Portals */}
         <Modal />
         <SnackBar />
-        { User && <Uploader multiple /> }
+        { User && <AsyncUploader multiple /> }
       </div>
     );
   }
@@ -54,7 +58,8 @@ export default compose(
       props.userLogin(User);
     }
 
-    let appIsReady = !!User;
+    let appIsReady = typeof User === 'object';
+
     const { pathname } = window.location;
 
     const userMatch = matchPath(pathname, '/user/:username');

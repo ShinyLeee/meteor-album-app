@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { Meteor } from 'meteor/meteor';
 import IconButton from 'material-ui/IconButton';
 import CloseIcon from 'material-ui-icons/Close';
@@ -9,64 +9,37 @@ import blue from 'material-ui/colors/blue';
 import purple from 'material-ui/colors/purple';
 import { removeImages, recoveryImages } from '/imports/api/images/methods';
 import ViewLayout from '/imports/ui/layouts/ViewLayout';
-import { SecondaryNavHeader } from '/imports/ui/components/NavHeader';
-import { ModalActions } from '/imports/ui/components/Modal';
-import EmptyHolder from '/imports/ui/components/EmptyHolder';
-import Loader from '/imports/ui/components/Loader';
-import JustifiedSelectIcon from '/imports/ui/components/JustifiedLayout/components/snippet/JustifiedSelectIcon';
-import ConnectedGridLayout from '/imports/ui/components/JustifiedLayout/components/GridLayout';
+import SecondaryNavHeader from '/imports/ui/components/NavHeader/Secondary';
+import { ModalActions, ModalLoader } from '/imports/ui/components/Modal';
+import withLoadable from '/imports/ui/hocs/withLoadable';
+
+const AsyncRecycleContent = withLoadable({
+  loader: () => import('./containers/ContentContainer'),
+});
 
 const blue500 = blue['500'];
 const purple500 = purple['500'];
 
-export default class RecyclePage extends Component {
+export default class RecyclePage extends PureComponent {
   static propTypes = {
-    dataIsReady: PropTypes.bool.isRequired,
-    images: PropTypes.array.isRequired,
     selectImages: PropTypes.array.isRequired,
     counter: PropTypes.number.isRequired,
     disableSelectAll: PropTypes.func.isRequired,
-    enableSelectAll: PropTypes.func.isRequired,
     modalOpen: PropTypes.func.isRequired,
     modalClose: PropTypes.func.isRequired,
     snackBarOpen: PropTypes.func.isRequired,
   }
 
   state = {
-    isAllSelect: false,
-    isProcessing: false,
-    processMsg: '',
     isEditing: false,
   }
 
   componentWillReceiveProps(nextProps) {
-    const { images } = this.props;
-    const { counter } = nextProps;
-    if (counter > 0) {
-      this.setState({ isEditing: true });
-      if (images.length === counter) this.setState({ isAllSelect: true });
-      else this.setState({ isAllSelect: false });
-    } else {
-      this.setState({ isEditing: false, isAllSelect: false });
-    }
+    this.setState({ isEditing: !!nextProps.counter });
   }
 
   _handleQuitEditing = () => {
     this.props.disableSelectAll();
-  }
-
-  _handleToggleSelectAll = () => {
-    const { images } = this.props;
-    if (this.state.isAllSelect) {
-      this.props.disableSelectAll();
-    } else {
-      const counter = images.length;
-      this.props.enableSelectAll({
-        selectImages: images,
-        group: { recycle: counter },
-        counter,
-      });
-    }
   }
 
   _handleOpenModal = (type) => {
@@ -92,16 +65,16 @@ export default class RecyclePage extends Component {
   _handleRecoveryImgs = () => {
     const { selectImages } = this.props;
     this.props.modalClose();
-    this.setState({ isProcessing: true, processMsg: '恢复相片中' });
+    this.renderLoadModal('恢复相片中');
     const selectImagesIds = selectImages.map((image) => image._id);
     recoveryImages.callPromise({ selectImages: selectImagesIds })
       .then(() => {
-        this.setState({ isProcessing: false, processMsg: '' });
+        this.props.modalClose();
         this.props.snackBarOpen('恢复相片成功');
         this.props.disableSelectAll();
       })
       .catch((err) => {
-        this.setState({ isProcessing: false, processMsg: '' });
+        this.props.modalClose();
         this.props.snackBarOpen(`恢复相片失败 ${err.reason}`);
       });
   }
@@ -109,7 +82,7 @@ export default class RecyclePage extends Component {
   _handleDeleteImgs = () => {
     const { selectImages } = this.props;
     this.props.modalClose();
-    this.setState({ isProcessing: true, processMsg: '删除相片中' });
+    this.renderLoadModal('删除相片中');
     const selectImagesIds = selectImages.map((image) => image._id);
     const keys = selectImages.map((image) => {
       const key = `${image.user}/${image.collection}/${image.name}.${image.type}`;
@@ -118,51 +91,26 @@ export default class RecyclePage extends Component {
     Meteor.callPromise('Qiniu.remove', { keys })
       .then(() => removeImages.callPromise({ selectImages: selectImagesIds }))
       .then(() => {
-        this.setState({ isProcessing: false, processMsg: '' });
+        this.props.modalClose();
         this.props.snackBarOpen('删除相片成功');
         this.props.disableSelectAll();
       })
       .catch((err) => {
         console.log(err);
-        this.setState({ isProcessing: false, processMsg: '' });
+        this.props.modalClose();
         this.props.snackBarOpen(`删除相片失败 ${err.reason}`);
       });
   }
 
-  renderContent() {
-    const { images } = this.props;
-    if (images.length === 0) {
-      return <EmptyHolder mainInfo="您的回收站是空的" />;
-    }
-    return (
-      <div className="content__recycle">
-        <header className="recycle__header">
-          <h2 className="recycle__title">回收站</h2>
-          <div className="recycle__desc">回收站中的内容会在 30 天后永久删除</div>
-        </header>
-        <div className="recycle__content">
-          <div className="recycle__toolbox">
-            <div
-              className="recycle__toolbox_left"
-              role="button"
-              tabIndex={-1}
-              onClick={this._handleToggleSelectAll}
-            >
-              <JustifiedSelectIcon activate={this.state.isAllSelect} />
-              <h4>选择全部</h4>
-            </div>
-          </div>
-          <ConnectedGridLayout
-            isEditing={this.state.isEditing}
-            images={images}
-          />
-        </div>
-      </div>
-    );
+  renderLoadModal = (message, errMsg = '请求超时') => {
+    this.props.modalOpen({
+      content: <ModalLoader message={message} errMsg={errMsg} />,
+      ops: { ignoreBackdropClick: true },
+    });
   }
 
   render() {
-    const { dataIsReady, counter } = this.props;
+    const { counter } = this.props;
     return (
       <ViewLayout
         Topbar={
@@ -193,11 +141,7 @@ export default class RecyclePage extends Component {
           />
         }
       >
-        <Loader
-          open={this.state.isProcessing}
-          message={this.state.processMsg}
-        />
-        { dataIsReady && this.renderContent() }
+        <AsyncRecycleContent />
       </ViewLayout>
     );
   }

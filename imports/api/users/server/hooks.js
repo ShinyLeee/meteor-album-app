@@ -1,5 +1,5 @@
 import { Accounts } from 'meteor/accounts-base';
-import { defaultUserProfile } from '../user.js';
+import { defaultUserProfile } from '../user';
 
 Accounts.onCreateUser((options, user) => {
   let curUser = user;

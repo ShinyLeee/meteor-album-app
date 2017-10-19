@@ -1,2 +1,2 @@
-import './hooks.js';
-import './publications.js';
+import './hooks';
+import './publications';

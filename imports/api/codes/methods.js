@@ -4,7 +4,7 @@ import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { CallPromiseMixin } from 'meteor/didericis:callpromise-mixin';
-import { Codes } from './code.js';
+import { Codes } from './code';
 
 export const checkCode = new ValidatedMethod({
   name: 'codes.check',

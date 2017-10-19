@@ -6,8 +6,6 @@ import { Wrapper, EnhancedSliderTracker } from './Slider.style';
 
 const FRICTION_LEVEL = 0.3;
 
-const getWidth = (ele);
-
 export default class Slider extends Component {
   constructor(props) {
     super(props);

@@ -18,9 +18,9 @@ import List, {
   ListItemAvatar,
   ListItemText,
 } from 'material-ui/List';
-import { insertComment, removeComment } from '/imports/api/comments/methods.js';
+import { insertComment, removeComment } from '/imports/api/comments/methods';
 import settings from '/imports/utils/settings';
-import { snackBarOpen } from '/imports/ui/redux/actions/index.js';
+import { snackBarOpen } from '/imports/ui/redux/actions/index';
 import {
   CommentsWrapper,
   CommentsSection,
@@ -29,7 +29,7 @@ import {
   PublishSection,
   PublishContent,
   PublishFooter,
-} from './CommentList.style.js';
+} from './CommentList.style';
 
 const { sourceDomain } = settings;
 

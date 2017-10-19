@@ -2,7 +2,7 @@ import _ from 'lodash';
 import { Meteor } from 'meteor/meteor';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
-import { Collections } from '/imports/api/collections/collection.js';
+import { Collections } from '/imports/api/collections/collection';
 
 if (Meteor.isServer) {
   Meteor.methods({

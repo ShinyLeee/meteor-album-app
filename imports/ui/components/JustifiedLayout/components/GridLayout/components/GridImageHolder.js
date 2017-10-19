@@ -8,11 +8,11 @@ import { vWidth, pixelRatio } from '/imports/utils/responsive';
 import settings from '/imports/utils/settings';
 import { selectCounter } from '/imports/ui/redux/actions';
 import FadeTransition from '/imports/ui/components/Transition/Fade';
-import JustifiedImageBackground from '../../snippet/JustifiedImageBackground.js';
+import JustifiedImageBackground from '../../snippet/JustifiedImageBackground';
 import {
   Wrapper,
   SelectableImage,
-} from './GridImageHolder.style.js';
+} from './GridImageHolder.style';
 
 const { imageDomain } = settings;
 
@@ -24,10 +24,6 @@ export class GridImageHolder extends PureComponent {
     onImageClick: PropTypes.func,
     counter: PropTypes.number.isRequired,
     selectCounter: PropTypes.func.isRequired,
-  }
-
-  static defaultProps = {
-    isEditing: false,
   }
 
   state = {

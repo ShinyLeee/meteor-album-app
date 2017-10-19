@@ -1,6 +1,6 @@
 import { Mongo } from 'meteor/mongo';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
-import { Comments } from '../comments/comment.js';
+import { Comments } from '../comments/comment';
 
 class ImagesCollection extends Mongo.Collection {
   insert(image, cb) {

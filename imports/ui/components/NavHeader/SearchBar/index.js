@@ -7,9 +7,9 @@ import AppBar from 'material-ui/AppBar';
 import Toolbar from 'material-ui/Toolbar';
 import IconButton from 'material-ui/IconButton';
 import ArrowBackIcon from 'material-ui-icons/ArrowBack';
-import { Form, Input } from './SearchBar.style.js';
+import { Form, Input } from './SearchBar.style';
 
-const SearchBar = ({ history, classes, onChange, onSubmit }) => (
+const SearchBar = ({ history, classes, onBack, onChange, onSubmit }) => (
   <AppBar
     className={classes.appbar}
     position="fixed"
@@ -19,9 +19,8 @@ const SearchBar = ({ history, classes, onChange, onSubmit }) => (
       <IconButton
         color="contrast"
         aria-label="Back"
-        onClick={() => history.goBack()}
-      >
-        <ArrowBackIcon />
+        onClick={() => (onBack && onBack()) || history.goBack()}
+      ><ArrowBackIcon />
       </IconButton>
 
       {/* Content */}
@@ -38,10 +37,11 @@ const SearchBar = ({ history, classes, onChange, onSubmit }) => (
 );
 
 SearchBar.propTypes = {
-  history: PropTypes.object.isRequired,
-  classes: PropTypes.object.isRequired,
+  onBack: PropTypes.func,
   onChange: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
+  history: PropTypes.object.isRequired,
+  classes: PropTypes.object.isRequired,
 };
 
 const styles = {

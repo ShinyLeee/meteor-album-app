@@ -1,40 +1,36 @@
-import { Meteor } from 'meteor/meteor';
-import { withTracker } from 'meteor/react-meteor-data';
-import { bindActionCreators, compose } from 'redux';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import ViewLayout from '/imports/ui/layouts/ViewLayout';
+import { SecondaryNavHeader } from '/imports/ui/components/NavHeader';
+import withLoadable from '/imports/ui/hocs/withLoadable';
 
-import { snackBarOpen } from '/imports/ui/redux/actions';
-import UserFansPage from './UserFans';
+const AsyncUserFansContent = withLoadable({
+  loader: () => import('./containers/UserFansContentContainer'),
+});
+
+class UserFansPage extends Component {
+  static propTypes = {
+    User: PropTypes.object,
+    match: PropTypes.object.isRequired,
+  }
+
+  render() {
+    const { User, match } = this.props;
+    const curUserName = match.params.username;
+    const isOwner = !!User && (User.username === curUserName);
+    return (
+      <ViewLayout
+        Topbar={<SecondaryNavHeader title={isOwner ? '我的关注者' : `${curUserName}的关注者`} />}
+      >
+        <AsyncUserFansContent isOwner={isOwner} />
+      </ViewLayout>
+    );
+  }
+}
 
 const mapStateToProps = ({ sessions }) => ({
   User: sessions.User,
 });
 
-const mapDispatchToProps = (dispatch) => bindActionCreators({
-  snackBarOpen,
-}, dispatch);
-
-export default compose(
-  connect(mapStateToProps, mapDispatchToProps),
-  withTracker(({ User, match }) => {
-    const { username } = match.params;
-
-    let isGuest = !User; // if User is null, isGuest is true
-
-    // if User exist and its name equal with params.username, isGuest is false
-    if (User && User.username === username) isGuest = false;
-    else isGuest = true;
-
-    const userHandler = Meteor.subscribe('Users.all');
-    const dataIsReady = userHandler.ready();
-    const curUser = Meteor.users.findOne({ username });
-    const initialFans = isGuest ? (curUser && curUser.profile.followers) : User.profile.followers;
-
-    return {
-      dataIsReady,
-      isGuest,
-      curUser,
-      initialFans,
-    };
-  }),
-)(UserFansPage);
+export default connect(mapStateToProps)(UserFansPage);

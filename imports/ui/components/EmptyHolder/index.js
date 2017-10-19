@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import settings from '/imports/utils/settings';
-import { Wrapper, Inner, Header, Info } from './EmptyHolder.style.js';
+import { Wrapper, Inner, Header, Info } from './EmptyHolder.style';
 
 const source = `${settings.sourceDomain}/GalleryPlus/Default/empty.png`;
 

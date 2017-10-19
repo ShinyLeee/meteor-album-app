@@ -12,7 +12,7 @@ import JustifiedSelectIcon from '../snippet/JustifiedSelectIcon';
 import {
   Wrapper,
   Title,
-} from './GroupLayout.style.js';
+} from './GroupLayout.style';
 
 const { imageDomain } = settings;
 

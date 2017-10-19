@@ -6,7 +6,7 @@ import IconButton from 'material-ui/IconButton';
 import CloseIcon from 'material-ui-icons/Close';
 import InfoIcon from 'material-ui-icons/Info';
 import TimelineIcon from 'material-ui-icons/Timeline';
-import { Users } from '/imports/api/users/user.js';
+import { Users } from '/imports/api/users/user';
 import {
   Inner,
   ZoomerImage,
@@ -15,7 +15,7 @@ import {
   ActionSection,
   UserAvatar,
   ImageDetail,
-} from '../ZoomerHolder.style.js';
+} from '../ZoomerHolder.style';
 
 const ZoomerInner = (props) => {
   const {

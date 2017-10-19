@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import classNames from 'classnames';
-import { CircleLoader, LinearLoader } from '/imports/ui/components/Loader';
+import CircleLoader from '/imports/ui/components/Loader/CircleLoader';
+import LinearLoader from '/imports/ui/components/Loader/LinearLoader';
 import { vHeight } from '/imports/utils/responsive';
 
 export default class ContentLayout extends Component {
@@ -10,6 +11,12 @@ export default class ContentLayout extends Component {
     loading: PropTypes.bool,
     loadingStyle: PropTypes.object,
     loadingType: PropTypes.oneOf(['Circle', 'Linear']),
+    content: PropTypes.oneOfType([
+      PropTypes.bool,
+      PropTypes.func,
+      PropTypes.element,
+    ]),
+    topbarHeight: PropTypes.number,
     children: PropTypes.any,
   }
 
@@ -18,6 +25,8 @@ export default class ContentLayout extends Component {
     loading: false,
     loadingStyle: null,
     loadingType: 'Linear',
+    content: false,
+    topbarHeight: 64,
   }
 
   renderLoader() {
@@ -32,14 +41,14 @@ export default class ContentLayout extends Component {
   }
 
   render() {
-    const { deep, children } = this.props;
+    const { deep, content, topbarHeight, children } = this.props;
     return (
       <main
         className={classNames('content', { deep })}
-        style={{ minHeight: vHeight - 64 }}
+        style={{ minHeight: vHeight - topbarHeight }}
       >
         { this.renderLoader() }
-        { children }
+        { content || children }
       </main>
     );
   }

@@ -17,7 +17,7 @@ import IconButton from 'material-ui/IconButton';
 import HeartIcon from 'material-ui-icons/Favorite';
 import EmptyHeartIcon from 'material-ui-icons/FavoriteBorder';
 import CommentIcon from 'material-ui-icons/ChatBubbleOutline';
-import { Comments } from '/imports/api/comments/comment.js';
+import { Comments } from '/imports/api/comments/comment';
 import { vWidth, rWidth } from '/imports/utils/responsive';
 import settings from '/imports/utils/settings';
 import FadeTransition from '/imports/ui/components/Transition/Fade';

@@ -3,7 +3,7 @@ import axios from 'axios';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import uuid from 'node-uuid';
-import { insertImage } from '/imports/api/images/methods.js';
+import { insertImage } from '/imports/api/images/methods';
 import settings from '/imports/utils/settings';
 import Portal from '../Portal';
 import {
@@ -15,7 +15,7 @@ import {
   DestMessage,
   StopButton,
   Progress,
-} from './Uploader.style.js';
+} from './Uploader.style';
 
 const { imageDomain } = settings;
 
@@ -30,12 +30,12 @@ const initialState = {
 // TODO 令该组件可最小化后台运行
 export default class Uploader extends Component {
   static propTypes = {
-    multiple: PropTypes.bool.isRequired,
+    multiple: PropTypes.bool,
     onBeforeUpload: PropTypes.func,
     onAfterUpload: PropTypes.func,
     User: PropTypes.object.isRequired,
     token: PropTypes.string,
-    open: PropTypes.bool.isRequired,
+    open: PropTypes.bool,
     destination: PropTypes.string, // not required bc don't need it before Uploading
     storeUptoken: PropTypes.func.isRequired,
     clearUptoken: PropTypes.func.isRequired,

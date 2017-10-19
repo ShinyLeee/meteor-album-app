@@ -2,7 +2,7 @@ import _ from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { CircleLoader } from '/imports/ui/components/Loader';
-import { on, off } from '/imports/utils/events.js';
+import { on, off } from '/imports/utils/events';
 
 export default class Infinity extends Component {
   static propTypes = {

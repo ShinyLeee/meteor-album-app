@@ -1,2 +1,2 @@
 export default from './pages/Diary';
-export DiaryWrite from './pages/Write';
+export DiaryWritePage from './pages/Write/containers/PageContainer';

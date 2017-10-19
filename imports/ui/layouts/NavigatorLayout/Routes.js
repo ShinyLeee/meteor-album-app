@@ -12,9 +12,17 @@ import {
   isAllowVisitSpecColl,
 } from '/imports/utils/policies';
 
-import UserPage from '/imports/ui/pages/User/pages/User';
-
-import withLoadable from '../../hocs/withLoadable';
+import IndexPage from '/imports/ui/pages/Index';
+import UserPage, { UserLikesPage, UserFansPage } from '/imports/ui/pages/User';
+import CollectionPage, { AllCollectionsPage } from '/imports/ui/pages/Collection';
+import DiaryPage, { DiaryWritePage } from '/imports/ui/pages/Diary';
+import RecyclePage from '/imports/ui/pages/Recycle';
+import SettingPage, { SettingEmailsPage, SettingPasswordPage } from '/imports/ui/pages/Setting';
+import NotesPage, { AllSentNotesPage, AllNotesPage, SendNotePage } from '/imports/ui/pages/Note';
+import { LoginPage, RegisterPage } from '/imports/ui/pages/Sign';
+import { ResetPasswordPage, VerifyEmailPage } from '/imports/ui/pages/Account';
+import SearchPage, { SearchResultsPage } from '/imports/ui/pages/Search';
+import { ConstructionPage, ForbiddenPage, InternalErrorPage, NotFoundPage } from '/imports/ui/pages/Error';
 
 // import AuthRoute from './AuthRoute';
 
@@ -40,7 +48,7 @@ export default function Routes() {
     <Switch>
       <Route
         path="/"
-        component={withLoadable({ loader: () => import('../../pages/Index') })}
+        component={IndexPage}
         exact
       />
       <AuthRoute
@@ -51,125 +59,125 @@ export default function Routes() {
       />
       <AuthRoute
         path="/user/:username/likes"
-        component={withLoadable({ loader: () => import('../../pages/User/pages/UserLikes') })}
+        component={UserLikesPage}
         policy={isAllowVisitHome}
       />
       <AuthRoute
         path="/user/:username/fans"
-        component={withLoadable({ loader: () => import('../../pages/User/pages/UserFans') })}
+        component={UserFansPage}
         policy={isAllowVisitHome}
       />
       <AuthRoute
         path="/user/:username/collection"
-        component={withLoadable({ loader: () => import('../../pages/Collection/pages/AllCollections') })}
+        component={AllCollectionsPage}
         policy={isAllowVisitAllColl}
         exact
       />
       <AuthRoute
         path="/user/:username/collection/:cname"
-        component={withLoadable({ loader: () => import('../../pages/Collection/pages/Collection') })}
+        component={CollectionPage}
         policy={isAllowVisitSpecColl}
       />
       <AuthRoute
         path="/diary"
-        component={withLoadable({ loader: () => import('../../pages/Diary/pages/Diary') })}
+        component={DiaryPage}
         policy={isLogin}
         exact
       />
       <AuthRoute
         path="/diary/write"
-        component={withLoadable({ loader: () => import('../../pages/Diary/pages/Write') })}
+        component={DiaryWritePage}
         policy={isLogin}
       />
       <AuthRoute
         path="/recycle"
-        component={withLoadable({ loader: () => import('../../pages/Recycle') })}
+        component={RecyclePage}
         policy={isLogin}
       />
       <AuthRoute
         path="/setting"
-        component={withLoadable({ loader: () => import('../../pages/Setting/pages/Setting') })}
+        component={SettingPage}
         policy={isLogin}
         exact
       />
       <AuthRoute
         path="/setting/emails"
-        component={withLoadable({ loader: () => import('../../pages/Setting/pages/Emails') })}
+        component={SettingEmailsPage}
         policy={isLogin}
       />
       <AuthRoute
         path="/setting/password"
-        component={withLoadable({ loader: () => import('../../pages/Setting/pages/Password') })}
+        component={SettingPasswordPage}
         policy={isLogin}
       />
       <AuthRoute
         path="/note/:username"
-        component={withLoadable({ loader: () => import('../../pages/Note/pages/Note') })}
+        component={NotesPage}
         policy={isOwner}
         exact
       />
       <AuthRoute
         path="/note/:username/sent"
-        component={withLoadable({ loader: () => import('../../pages/Note/pages/AllSentNotes') })}
+        component={AllSentNotesPage}
         policy={isOwner}
       />
       <AuthRoute
         path="/note/:username/received"
-        component={withLoadable({ loader: () => import('../../pages/Note/pages/AllNotes') })}
+        component={AllNotesPage}
         policy={isOwner}
       />
       <AuthRoute
         path="/sendNote"
-        component={withLoadable({ loader: () => import('../../pages/Note/pages/SendNote') })}
+        component={SendNotePage}
         policy={isLogin}
       />
       <Route
         path="/login"
-        component={withLoadable({ loader: () => import('../../pages/Sign/pages/Login') })}
+        component={LoginPage}
         policy={isLogout}
       />
       <AuthRoute
         path="/register"
-        component={withLoadable({ loader: () => import('../../pages/Sign/pages/Register') })}
+        component={RegisterPage}
         policy={isLogout}
       />
       <AuthRoute
         path="/accounts/resetPassword"
-        component={withLoadable({ loader: () => import('../../pages/Account/pages/ResetPassword') })}
+        component={ResetPasswordPage}
         policy={isLogout}
       />
       <Route
         path="/accounts/verifyEmail"
-        component={withLoadable({ loader: () => import('../../pages/Account/pages/VerifyEmail') })}
+        component={VerifyEmailPage}
       />
       <Route
         path="/search"
-        component={withLoadable({ loader: () => import('../../pages/Search/pages/Search') })}
+        component={SearchPage}
         exact
       />
       <Route
         path="/search/:query"
-        component={withLoadable({ loader: () => import('../../pages/Search/pages/Results') })}
+        component={SearchResultsPage}
       />
       <Route
         path="/memory"
-        component={withLoadable({ loader: () => import('../../pages/Error/Construction') })}
+        component={ConstructionPage}
       />
       <Route
         path="/403"
-        component={withLoadable({ loader: () => import('../../pages/Error/Forbidden') })}
+        component={ForbiddenPage}
       />
       <Route
         path="/404"
-        component={withLoadable({ loader: () => import('../../pages/Error/NotFound') })}
+        component={NotFoundPage}
       />
       <Route
         path="/500"
-        component={withLoadable({ loader: () => import('../../pages/Error/InternalError') })}
+        component={InternalErrorPage}
       />
       <Route
         path="*"
-        component={withLoadable({ loader: () => import('../../pages/Error/NotFound') })}
+        component={NotFoundPage}
       />
       <Redirect
         path="explore"

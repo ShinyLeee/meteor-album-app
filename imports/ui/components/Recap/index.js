@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import IconButton from 'material-ui/IconButton';
-import { Github, Wechat, Twitter, Instagram, Website } from '../SubMaterialUI/SvgIcons.js';
-import { Wrapper, Title, Detail, IconList } from './Recap.style.js';
+import { Github, Wechat, Twitter, Instagram, Website } from '../SubMaterialUI/SvgIcons';
+import { Wrapper, Title, Detail, IconList } from './Recap.style';
 
 const Recap = ({ title, detailFir, detailSec, showIcon }) => (
   <Wrapper>

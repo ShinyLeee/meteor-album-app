@@ -39,9 +39,9 @@ export const zoomerClose = () => ({
   type: types.ZOOMER_CLOSE,
 });
 
-export const diaryOpen = (diary) => ({
+export const diaryOpen = (content) => ({
   type: types.DIARY_OPEN,
-  diary,
+  content,
 });
 
 export const diaryClose = () => ({

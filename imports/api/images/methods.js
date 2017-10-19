@@ -1,12 +1,11 @@
 import _ from 'lodash';
-import moment from 'moment';
 import { Meteor } from 'meteor/meteor';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { CallPromiseMixin } from 'meteor/didericis:callpromise-mixin';
-import { Images } from './image.js';
-import { Collections } from '../collections/collection.js';
+import { Images } from './image';
+import { Collections } from '../collections/collection';
 
 export const insertImage = new ValidatedMethod({
   name: 'images.insert',
@@ -52,7 +51,8 @@ export const removeImagesToRecycle = new ValidatedMethod({
     if (!this.userId) {
       throw new Meteor.Error('api.images.removeToRecycle.notLoggedIn');
     }
-    const deletedAt = moment().add(1, 'M').toDate();
+    const date = new Date();
+    const deletedAt = date.setMonth(date.getMonth() + 1);
 
     Images.update(
       { _id: { $in: selectImages } },

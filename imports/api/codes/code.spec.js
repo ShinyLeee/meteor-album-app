@@ -4,8 +4,8 @@ import { Meteor } from 'meteor/meteor';
 import { Factory } from 'meteor/dburles:factory';
 import { Random } from 'meteor/random';
 import { assert, expect } from 'meteor/practicalmeteor:chai';
-import { checkCode, useCode } from './methods.js';
-import { Codes } from './code.js';
+import { checkCode, useCode } from './methods';
+import { Codes } from './code';
 
 Factory.define('code', Codes, {
   no: () => faker.random.number(),

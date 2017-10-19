@@ -15,29 +15,18 @@ export const Wrapper = styled(Paper)`
 export const Cover = styled.section`
   width: 100%;
   height: 180px;
-  backgroundColor: #eee;
+  background-color: #eee;
   & img {
     width: 100%;
     height: 100%;
-    object-fit: cover;  }
+    object-fit: cover;
+  }
 `;
 
 export const Info = styled.section`
   position: relative;
+  max-height: 65px;
   padding: 12px 28px 16px 12px
-`;
-
-export const Avatar = styled.div`
-  position: absolute;
-  top: -18px;
-  width: 26px;
-  height: 26px;
-  & img {
-    width: 100%;
-    height: 100%;
-    border: 1px solid #fff;    
-    border-radius: 50%;
-  }
 `;
 
 export const CollName = styled.div`

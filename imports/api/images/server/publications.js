@@ -1,8 +1,8 @@
 /* eslint-disable prefer-arrow-callback, meteor/audit-argument-checks */
 import { Meteor } from 'meteor/meteor';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
-import { Images } from '../image.js';
-import { Collections } from '../../collections/collection.js';
+import { Images } from '../image';
+import { Collections } from '../../collections/collection';
 
 Meteor.publish('Images.all', function images() {
   return Images.find({

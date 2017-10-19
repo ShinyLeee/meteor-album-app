@@ -6,9 +6,9 @@ import { Factory } from 'meteor/dburles:factory';
 import { PublicationCollector } from 'meteor/johanbrook:publication-collector';
 import { assert, expect } from 'meteor/practicalmeteor:chai';
 import { limitStrLength } from '/imports/utils';
-import { insertNote, readAllNotes, readNote } from './methods.js';
-import { Users } from '../users/user.js';
-import { Notes } from './note.js';
+import { insertNote, readAllNotes, readNote } from './methods';
+import { Users } from '../users/user';
+import { Notes } from './note';
 
 Factory.define('note', Notes, {
   title: () => limitStrLength(faker.hacker.noun(), 20),
@@ -20,7 +20,7 @@ Factory.define('note', Notes, {
 });
 
 if (Meteor.isServer) {
-  import './server/publications.js';
+  import './server/publications';
 
   describe('NOTES API', () => {
     describe('factory', () => {

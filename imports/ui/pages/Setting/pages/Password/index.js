@@ -1,11 +1,18 @@
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
+import React, { Component } from 'react';
+import ViewLayout from '/imports/ui/layouts/ViewLayout';
+import SecondaryNavHeader from '/imports/ui/components/NavHeader/Secondary';
+import withLoadable from '/imports/ui/hocs/withLoadable';
 
-import { snackBarOpen } from '/imports/ui/redux/actions';
-import SettingPasswordPage from './Password';
+const AsyncPasswordContent = withLoadable({
+  loader: () => import('./containers/ContentContainer'),
+});
 
-const mapDispatchToProps = (dispatch) => bindActionCreators({
-  snackBarOpen,
-}, dispatch);
-
-export default connect(null, mapDispatchToProps)(SettingPasswordPage);
+export default class PasswordPage extends Component {
+  render() {
+    return (
+      <ViewLayout Topbar={<SecondaryNavHeader title="修改密码" />}>
+        <AsyncPasswordContent />
+      </ViewLayout>
+    );
+  }
+}

@@ -16,7 +16,7 @@
   - [x] Migrate createContainer to withTracker(react-meteor-data)
   - [x] Adopt React-loadable and make use of dynamic import(Code Splitting)
   - [x] Upgrade devDependencies
-  - [ ] Switch to Component-based splitting
+  - [x] Switch to Component-based splitting
   - [ ] Improve route transition animation perf in low end device by use code splitting and [React-Loadable](https://github.com/thejameskyle/react-loadable)
   - [ ] Service Worker ?
   - [ ] Pass all unit tests

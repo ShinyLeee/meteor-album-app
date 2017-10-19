@@ -6,7 +6,7 @@ import ComfyIcon from 'material-ui-icons/ViewComfy';
 import CompactIcon from 'material-ui-icons/ViewCompact';
 import FilterIcon from 'material-ui-icons/FilterList';
 import JustifiedSelectIcon from '../snippet/JustifiedSelectIcon';
-import { Toolbar, ToolbarLeft, ToolbarRight } from './ToolBar.style.js';
+import { Toolbar, ToolbarLeft, ToolbarRight } from './ToolBar.style';
 
 const JustifiedToolBar = (props) => {
   const {
@@ -98,8 +98,6 @@ const JustifiedToolBar = (props) => {
   );
 };
 
-JustifiedToolBar.displayName = 'JustifiedToolBar';
-
 JustifiedToolBar.defaultProps = {
   layoutType: 'group',
   filterType: 'day',
@@ -108,7 +106,7 @@ JustifiedToolBar.defaultProps = {
 JustifiedToolBar.propTypes = {
   isEditing: PropTypes.bool.isRequired,
   isAllSelect: PropTypes.bool.isRequired,
-  layoutType: PropTypes.oneOf(['group', 'grid']).isRequired,
+  layoutType: PropTypes.oneOf(['group', 'grid']),
   filterType: (props, propName, componentName) => {
     let allowedProps;
     if (props.layoutType === 'group') allowedProps = ['day', 'month', 'year'];
