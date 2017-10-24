@@ -33,9 +33,10 @@ export default compose(
 
     const isOwner = !!User && (User.username === curUserName);
 
-    const collHandler = Meteor.subscribe('Collections.inUser', curUserName);
-    const imageHandler = Meteor.subscribe('Images.inCollection', { username: curUserName, cname: curCName });
-    const dataIsReady = collHandler.ready() && imageHandler.ready();
+    const collHandler = isOwner
+      ? Meteor.subscribe('Collections.own')
+      : Meteor.subscribe('Collections.inUser', curUserName);
+    const dataIsReady = collHandler.ready();
 
     // curColl is currentCollection use for lock/remove etc.
     const curColl = Collections.findOne({ name: curCName });

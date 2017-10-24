@@ -27,12 +27,11 @@ const modalState = {
 };
 
 const AsyncContent = withLoadable({
-  loader: () => import('./components/Content'),
+  loader: () => import('./containers/ContentContainer'),
 });
 
 export default class CollectionPage extends Component {
   static propTypes = {
-    dataIsReady: PropTypes.bool.isRequired,
     isOwner: PropTypes.bool.isRequired,
     curColl: PropTypes.object.isRequired,
     otherColls: PropTypes.array.isRequired,
@@ -58,7 +57,7 @@ export default class CollectionPage extends Component {
   _handleOpenUploader = () => {
     const { curColl } = this.props;
     document.getElementById('Uploader').click();
-    this.props.uploaderStart({ destination: curColl.name });
+    this.props.uploaderStart(curColl.name);
   }
 
   _handleShiftPhoto = () => {
@@ -253,7 +252,7 @@ export default class CollectionPage extends Component {
   }
 
   render() {
-    const { dataIsReady, isOwner, curColl, match, counter } = this.props;
+    const { isOwner, match, counter } = this.props;
     const curCollName = match.params.collName;
     return (
       <ViewLayout
@@ -307,11 +306,7 @@ export default class CollectionPage extends Component {
           )
         }
       >
-        <AsyncContent
-          dataIsReady={dataIsReady}
-          curColl={curColl}
-          isEditing={this.state.isEditing}
-        />
+        <AsyncContent isEditing={this.state.isEditing} />
       </ViewLayout>
     );
   }

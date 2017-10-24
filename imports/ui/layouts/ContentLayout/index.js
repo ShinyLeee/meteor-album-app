@@ -11,6 +11,7 @@ export default class ContentLayout extends Component {
     loading: PropTypes.bool,
     loadingStyle: PropTypes.object,
     loadingType: PropTypes.oneOf(['Circle', 'Linear']),
+    delay: PropTypes.bool,
     content: PropTypes.oneOfType([
       PropTypes.bool,
       PropTypes.func,
@@ -25,8 +26,24 @@ export default class ContentLayout extends Component {
     loading: false,
     loadingStyle: null,
     loadingType: 'Linear',
+    delay: false,
     content: false,
     topbarHeight: 64,
+  }
+
+  componentDidMount() {
+    this.setRootBackgroundColor(this.props.deep);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (this.props.deep !== nextProps.deep) {
+      this.setRootBackgroundColor(nextProps.deep);
+    }
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  setRootBackgroundColor(deep) {
+    document.body.className = deep ? 'deep' : '';
   }
 
   renderLoader() {
@@ -41,14 +58,25 @@ export default class ContentLayout extends Component {
   }
 
   render() {
-    const { deep, content, topbarHeight, children } = this.props;
+    const {
+      deep,
+      loading,
+      delay,
+      content,
+      topbarHeight,
+      children,
+    } = this.props;
     return (
       <main
         className={classNames('content', { deep })}
         style={{ minHeight: vHeight - topbarHeight }}
       >
         { this.renderLoader() }
-        { content || children }
+        {
+          delay
+          ? !loading && (content || children)
+          : (content || children)
+        }
       </main>
     );
   }

@@ -97,19 +97,18 @@ export default class UserFansContent extends PureComponent {
   render() {
     const { dataIsReady } = this.props;
     return (
-      <ContentLayout loading={!dataIsReady}>
-        {
-          dataIsReady && (
-            <div className="content__userFans">
-              <section className="userFans__search">
-                <input type="text" placeholder="搜索" onChange={this._handleSearchChange} />
-              </section>
-              <section className="userFans__list">
-                { this.renderFansList() }
-              </section>
-            </div>
-          )
-        }
+      <ContentLayout
+        loading={!dataIsReady}
+        delay
+      >
+        <div className="content__userFans">
+          <section className="userFans__search">
+            <input type="text" placeholder="搜索" onChange={this._handleSearchChange} />
+          </section>
+          <section className="userFans__list">
+            { this.renderFansList() }
+          </section>
+        </div>
       </ContentLayout>
     );
   }

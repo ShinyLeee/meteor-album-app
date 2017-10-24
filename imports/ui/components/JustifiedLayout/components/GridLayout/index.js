@@ -12,10 +12,10 @@ const { imageDomain } = settings;
 
 export class JustifiedGridLayout extends PureComponent {
   static propTypes = {
-    isEditing: PropTypes.bool.isRequired,
+    isEditing: PropTypes.bool,
     images: PropTypes.array.isRequired,
-    showGallery: PropTypes.bool.isRequired,
-    filterType: PropTypes.oneOf(['latest', 'oldest', 'popular']).isRequired,
+    showGallery: PropTypes.bool,
+    filterType: PropTypes.oneOf(['latest', 'oldest', 'popular']),
     photoSwipeOpen: PropTypes.func.isRequired,
   }
 
@@ -26,7 +26,6 @@ export class JustifiedGridLayout extends PureComponent {
   }
 
   state = {
-    isGroupSelect: false,
     pswpItems: this.props.showGallery ? this.generateItems(this.props) : undefined,
   }
 
@@ -40,6 +39,7 @@ export class JustifiedGridLayout extends PureComponent {
     }
   }
 
+  // eslint-disable-next-line class-methods-use-this
   generateItems(props) {
     const { images } = props;
     const pswpItems = images.map((image) => {

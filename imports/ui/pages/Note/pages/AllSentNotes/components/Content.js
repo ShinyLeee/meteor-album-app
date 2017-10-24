@@ -1,19 +1,17 @@
-import { Meteor } from 'meteor/meteor';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Notes } from '/imports/api/notes/note';
-import { makeCancelable } from '/imports/utils';
 import ContentLayout from '/imports/ui/layouts/ContentLayout';
-import Infinity from '/imports/ui/components/Infinity';
+import InfiniteNoteList from '/imports/ui/components/Infinity/NoteList';
 import EmptyHolder from '/imports/ui/components/EmptyHolder';
-import NoteHolder from '/imports/ui/components/NoteHolder';
 
 export default class AllSentNotesContent extends Component {
   static propTypes = {
+    User: PropTypes.object.isRequired,
     dataIsReady: PropTypes.bool.isRequired,
     limit: PropTypes.number.isRequired,
     notes: PropTypes.array.isRequired,
-    snackBarOpen: PropTypes.func.isRequired,
+    notesNum: PropTypes.number.isRequired,
   }
 
   state = {
@@ -22,8 +20,7 @@ export default class AllSentNotesContent extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    // When dataIsReady return true start setState
-    if (this.props.notes !== nextProps.notes) {
+    if (!this.props.dataIsReady && nextProps.dataIsReady) {
       this.setState({
         notes: nextProps.notes,
       });
@@ -31,80 +28,56 @@ export default class AllSentNotesContent extends Component {
   }
 
   componentWillUnmount() {
-    // If lifecyle is in componentWillUnmount,
-    // But if promise still in progress then Cancel the promise
-    if (this.loadPromise) {
-      this.loadPromise.cancel();
+    if (this._loadTimeout) {
+      clearTimeout(this._loadTimeout);
+      this._loadTimeout = null;
     }
   }
 
-  _handleLoadNotes = () => {
-    const { limit } = this.props;
+  _handleInfiniteLoad = () => {
+    this.setState({ isLoading: true });
+
+    const { User, limit } = this.props;
     const { notes } = this.state;
     const skip = notes.length;
-    this.setState({ isLoading: true });
-    const loadPromise = new Promise((resolve) => {
-      Meteor.defer(() => {
-        const newNotes = Notes.find({}, {
-          sort: { sendAt: -1 },
-          limit,
-          skip,
-        }).fetch();
-        const curNotes = [...notes, ...newNotes];
-        this.setState({ notes: curNotes }, () => resolve());
-      });
-    });
 
-    this.loadPromise = makeCancelable(loadPromise);
-    this.loadPromise.promise
-      .then(() => {
-        this.setState({ isLoading: false });
-      })
-      .catch((err) => {
-        console.log(err);
-        this.props.snackBarOpen(`加载信息失败 ${err.reason}`);
-      });
+    this._loadTimeout = setTimeout(() => {
+      const newNotes = Notes.find(
+        { sender: User.username },
+        { sort: { sendAt: -1 }, limit, skip },
+      ).fetch();
+      this.setState((prevState) => ({
+        isLoading: false,
+        notes: [...prevState.notes, ...newNotes],
+      }));
+    }, 300);
   }
 
   render() {
-    const { dataIsReady } = this.props;
+    const { dataIsReady, notesNum } = this.props;
     const isEmpty = this.state.notes.length === 0;
+    const isLoadAll = dataIsReady && this.state.notes.length === notesNum;
     return (
       <ContentLayout
         deep={!isEmpty}
         loading={!dataIsReady}
+        delay
       >
-        {
-          dataIsReady && (
-            <div className="content__allSentNotes">
-              {
-                isEmpty
-                ? <EmptyHolder mainInfo="您还未发送过消息" />
-                : (
-                  <Infinity
-                    onInfinityLoad={this._handleLoadNotes}
-                    isLoading={this.state.isLoading}
-                    offsetToBottom={100}
-                  >
-                    {
-                      this.state.notes.map((note) => {
-                        const receiverObj = Meteor.users.findOne({ username: note.receiver });
-                        return (
-                          <NoteHolder
-                            key={note._id}
-                            avatar={receiverObj && receiverObj.profile.avatar}
-                            note={note}
-                            isRead
-                          />
-                        );
-                      })
-                    }
-                  </Infinity>
-                )
-              }
-            </div>
-          )
-        }
+        <div className="content__allSentNotes">
+          {
+            isEmpty
+            ? <EmptyHolder mainInfo="您还未发送过消息" />
+            : (
+              <InfiniteNoteList
+                loading={this.state.isLoading}
+                notes={this.state.notes}
+                notesNum={notesNum}
+                disabled={isLoadAll}
+                onInfiniteLoad={this._handleInfiniteLoad}
+              />
+            )
+          }
+        </div>
       </ContentLayout>
     );
   }

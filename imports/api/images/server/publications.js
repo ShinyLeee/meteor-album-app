@@ -4,6 +4,13 @@ import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import { Images } from '../image';
 import { Collections } from '../../collections/collection';
 
+Meteor.publish('Images.specific', function specificImage(id) {
+  new SimpleSchema({
+    id: { type: String, label: '相片Id', regEx: SimpleSchema.RegEx.Id },
+  }).validator({ clean: true, filter: false });
+  return Images.find(id);
+});
+
 Meteor.publish('Images.all', function images() {
   return Images.find({
     private: false,

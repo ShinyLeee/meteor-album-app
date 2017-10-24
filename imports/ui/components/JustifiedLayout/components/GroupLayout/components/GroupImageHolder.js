@@ -4,7 +4,7 @@ import React, { PureComponent } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import LazyLoad from 'react-lazyload';
-import { TransitionGroup } from 'react-transition-group';
+import TransitionGroup from 'react-transition-group/TransitionGroup';
 import { pixelRatio } from '/imports/utils/responsive';
 import settings from '/imports/utils/settings';
 import { selectCounter } from '/imports/ui/redux/actions';

@@ -1,5 +1,8 @@
 import styled from 'styled-components';
 
 export const Wrapper = styled.div`
-  margin-bottom: 10px;
+  padding-bottom: 12px;
+  &:nth-last-child(3) {
+    padding-bottom: 0;
+  }
 `;

@@ -40,7 +40,7 @@ export const Message = styled.span`
   color: #888;
 `;
 
-export const DestMessage = styled.h4`
+export const Title = styled.h4`
   margin: 4px 0 6px 0;
   min-height: 24px;
   font-size: 16px;

@@ -10,7 +10,7 @@ import withLoadable from '/imports/ui/hocs/withLoadable';
 const teal500 = teal[500];
 
 const AsyncUserContent = withLoadable({
-  loader: () => import('./containers/UserContentContainer'),
+  loader: () => import('./containers/ContentContainer'),
 });
 
 class UserPage extends Component {

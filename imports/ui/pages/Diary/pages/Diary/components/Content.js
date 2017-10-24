@@ -19,9 +19,11 @@ export default class DiaryContent extends Component {
   render() {
     const { dataIsReady, diarys } = this.props;
     return (
-      <ContentLayout loading={!dataIsReady} loadingType="Circle" topbarHeight={260}>
-        <DiaryHolder />
-        <FloatButton onClick={() => this.props.history.push('/diary/write')} />
+      <ContentLayout
+        loading={!dataIsReady}
+        loadingType="Circle"
+        topbarHeight={260}
+      >
         <div className="content__diary">
           <TransitionGroup>
             {
@@ -47,6 +49,8 @@ export default class DiaryContent extends Component {
               })
             }
           </TransitionGroup>
+          <DiaryHolder />
+          <FloatButton onClick={() => this.props.history.push('/diary/write')} />
         </div>
       </ContentLayout>
     );

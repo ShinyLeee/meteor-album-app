@@ -62,3 +62,15 @@ export const limitStrLength = (str, limit) => {
 };
 
 export const noop = () => {};
+
+export const MIMEToExtension = (mime) => {
+  if (!mime || typeof mime !== 'string') {
+    return;
+  }
+  const db = {
+    'image/png': 'png',
+    'image/jpeg': 'jpg',
+    'image/gif': 'gif',
+  };
+  return db[mime];
+};

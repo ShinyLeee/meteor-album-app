@@ -6,7 +6,7 @@ import SecondaryNavHeader from '/imports/ui/components/NavHeader/Secondary';
 import withLoadable from '/imports/ui/hocs/withLoadable';
 
 const AsyncUserLikesContent = withLoadable({
-  loader: () => import('./containers/UserLikesContentContainer'),
+  loader: () => import('./containers/ContentContainer'),
 });
 
 class UserLikesPage extends Component {

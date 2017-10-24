@@ -96,6 +96,7 @@ export default class SearchResultsContent extends Component {
     return (
       <ContentLayout
         loading={!dataIsReady}
+        delay
         deep
       >
         <div className="content__search">

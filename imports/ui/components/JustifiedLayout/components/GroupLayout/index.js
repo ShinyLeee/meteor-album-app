@@ -19,8 +19,8 @@ const { imageDomain } = settings;
 export class JustifiedGroupLayout extends PureComponent {
   static propTypes = {
     isEditing: PropTypes.bool.isRequired,
-    filterType: PropTypes.oneOf(['day', 'month', 'year']).isRequired,
-    showGallery: PropTypes.bool.isRequired,
+    filterType: PropTypes.oneOf(['day', 'month', 'year']),
+    showGallery: PropTypes.bool,
     groupName: PropTypes.string.isRequired,
     groupImages: PropTypes.array.isRequired,
     total: PropTypes.number.isRequired,
@@ -32,18 +32,18 @@ export class JustifiedGroupLayout extends PureComponent {
     /**
      * See docs: http://flickr.github.io/justified-layout/
      */
-    containerWidth: PropTypes.number.isRequired,
-    containerPadding: PropTypes.number.isRequired,
-    boxSpacing: PropTypes.oneOfType([
+    containerWidth: PropTypes.number, // eslint-disable-line react/no-unused-prop-types
+    containerPadding: PropTypes.number, // eslint-disable-line react/no-unused-prop-types
+    boxSpacing: PropTypes.oneOfType([ // eslint-disable-line react/no-unused-prop-types
       PropTypes.object,
       PropTypes.number,
     ]),
-    fullWidthBreakoutRowCadence: PropTypes.oneOfType([
+    fullWidthBreakoutRowCadence: PropTypes.oneOfType([ // eslint-disable-line react/no-unused-prop-types
       PropTypes.bool,
       PropTypes.number,
     ]),
-    targetRowHeight: PropTypes.number.isRequired,
-    targetRowHeightTolerance: PropTypes.number.isRequired,
+    targetRowHeight: PropTypes.number, // eslint-disable-line react/no-unused-prop-types
+    targetRowHeightTolerance: PropTypes.number, // eslint-disable-line react/no-unused-prop-types
   }
 
   static defaultProps = {
@@ -107,6 +107,7 @@ export class JustifiedGroupLayout extends PureComponent {
     }
   }
 
+  // eslint-disable-next-line class-methods-use-this
   generateGeo(props) {
     const {
       groupImages,
@@ -138,6 +139,7 @@ export class JustifiedGroupLayout extends PureComponent {
     return geometry;
   }
 
+  // eslint-disable-next-line class-methods-use-this
   generateItems(props, geometry) {
     const { containerWidth, groupImages } = props;
     const pswpItems = groupImages.map((image, i) => {

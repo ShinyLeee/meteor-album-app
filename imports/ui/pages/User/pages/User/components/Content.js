@@ -104,17 +104,14 @@ export default class UserContent extends Component {
       topImages,
       classes,
     } = this.props;
-
-    const preCover = `${curUser.profile.cover}?imageView2/2/w/${rWidth}`;
-    const trueCover = `${curUser.profile.cover}`;
     return (
-      <ContentLayout loading={!dataIsReady}>
+      <ContentLayout loading={!dataIsReady} delay>
         <div className="content__user">
           { /* MAIN SECTION */ }
           <section className="user__main">
             <div
               className="main__cover"
-              style={{ backgroundImage: `url("${trueCover}"),url("${preCover}")` }}
+              style={{ backgroundImage: `url("${curUser.profile.cover}"),url("${curUser.profile.cover}?imageView2/2/w/${rWidth}")` }}
             >
               <div className="main__background" />
             </div>

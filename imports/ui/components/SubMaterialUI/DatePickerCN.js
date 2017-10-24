@@ -1,5 +1,5 @@
 import React from 'react';
-import DatePicker from 'material-ui/DatePicker';
+import DatePicker from 'material-ui/DatePicker'; // eslint-disable-line import/no-unresolved
 import warning from 'warning';
 
 const dayAbbreviation = ['日', '一', '二', '三', '四', '五', '六'];
@@ -39,7 +39,5 @@ const DatePickerCN = (props) => (
     locale="zh-CN"
   />
 );
-
-DatePickerCN.displayName = 'DatePickerCN';
 
 export default DatePickerCN;

@@ -1,6 +1,7 @@
+export const STORE_USER = 'STORE_USER';
+export const STORE_UPTOKEN = 'STORE_UPTOKEN';
 export const USER_LOGIN = 'USER_LOGIN';
 export const USER_LOGOUT = 'USER_LOGOUT';
-export const STORE_UPTOKEN = 'STORE_UPTOKEN';
 export const CLEAR_UPTOKEN = 'CLEAR_UPTOKEN';
 export const ZOOMER_OPEN = 'ZOOMER_OPEN';
 export const ZOOMER_CLOSE = 'ZOOMER_CLOSE';

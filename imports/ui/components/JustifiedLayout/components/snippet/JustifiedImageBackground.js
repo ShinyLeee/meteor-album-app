@@ -28,16 +28,14 @@ const JustifiedImageBackground = (props) => {
   );
 };
 
-JustifiedImageBackground.displayName = 'JustifiedImageBackground';
-
 JustifiedImageBackground.defaultProps = {
   isEditing: false,
   isSelect: false,
 };
 
 JustifiedImageBackground.propTypes = {
-  isEditing: PropTypes.bool.isRequired,
-  isSelect: PropTypes.bool.isRequired,
+  isEditing: PropTypes.bool,
+  isSelect: PropTypes.bool,
 };
 
 export default JustifiedImageBackground;

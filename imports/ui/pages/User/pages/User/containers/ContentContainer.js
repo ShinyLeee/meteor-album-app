@@ -8,7 +8,7 @@ import { Collections } from '/imports/api/collections/collection';
 import { Images } from '/imports/api/images/image';
 
 import { userLogout, snackBarOpen } from '/imports/ui/redux/actions';
-import UserContent from '../components/UserContent';
+import UserContent from '../components/Content';
 
 const mapStateToProps = ({ sessions }) => ({
   User: sessions.User,

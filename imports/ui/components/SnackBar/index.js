@@ -1,8 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { bindActionCreators, compose } from 'redux';
+import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { withStyles } from 'material-ui/styles';
 import Snackbar from 'material-ui/Snackbar';
 import Portal from '../Portal';
 import { snackBarClose } from '../../redux/actions';
@@ -13,7 +12,6 @@ class SnackBar extends Component {
     message: PropTypes.string,
     autoHideDuration: PropTypes.number,
     snackBarClose: PropTypes.func.isRequired,
-    classes: PropTypes.object.isRequired,
     /**
      * config
      *
@@ -26,7 +24,6 @@ class SnackBar extends Component {
   }
 
   static defaultProps = {
-    open: false,
     autoHideDuration: 2500,
   }
 
@@ -49,10 +46,9 @@ class SnackBar extends Component {
   }
 
   renderDefault() {
-    const { autoHideDuration, classes } = this.props;
+    const { autoHideDuration } = this.props;
     return (
       <Snackbar
-        classes={{ root: classes.root }}
         open={this.state.open}
         message={this.state.message}
         autoHideDuration={autoHideDuration}
@@ -94,14 +90,5 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
   snackBarClose,
 }, dispatch);
 
-const styles = {
-  root: {
-    width: 'calc(100vw - 48px)',
-    maxWidth: 300,
-  },
-};
+export default connect(mapStateToProps, mapDispatchToProps)(SnackBar);
 
-export default compose(
-  connect(mapStateToProps, mapDispatchToProps),
-  withStyles(styles),
-)(SnackBar);

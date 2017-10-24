@@ -6,10 +6,10 @@ import './Quill.css';
 
 export default class QuillShower extends Component {
   static propTypes = {
-    className: PropTypes.string.isRequired,
-    theme: PropTypes.oneOf(['snow', 'bubble']).isRequired,
-    modules: PropTypes.object.isRequired,
     content: PropTypes.object.isRequired,
+    className: PropTypes.string,
+    theme: PropTypes.oneOf(['snow', 'bubble']),
+    modules: PropTypes.object,
   }
 
   static defaultProps = {

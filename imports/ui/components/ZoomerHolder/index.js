@@ -5,13 +5,21 @@ import React, { Component } from 'react';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
+import TransitionGroup from 'react-transition-group/TransitionGroup';
+import SlideTransition from '/imports/ui/components/Transition/Slide';
 import { incView } from '/imports/api/images/methods';
 import settings from '/imports/utils/settings';
 import { rWidth } from '/imports/utils/responsive';
-import { modalOpen, zoomerClose, snackBarOpen } from '/imports/ui/redux/actions';
+import {
+  modalOpen,
+  modalClose,
+  zoomerClose,
+  snackBarOpen,
+} from '/imports/ui/redux/actions';
+import ModalLoader from '/imports/ui/components/Modal/Common/ModalLoader';
 import Portal from '../Portal';
 import Inner from './components/Inner';
-import { ExifLoader, ExifInfo } from './components/ExifModalContent';
+import { ExifInfo } from './components/ExifModalContent';
 import {
   Wrapper,
   Info,
@@ -26,23 +34,31 @@ const { imageDomain } = settings;
 
 class ZoomerHolder extends Component {
   static propTypes = {
-    image: PropTypes.object.isRequired,
+    visible: PropTypes.bool.isRequired,
+    image: PropTypes.object, // image only required when zoomerOpen is true
     modalOpen: PropTypes.func.isRequired,
+    modalClose: PropTypes.func.isRequired,
     snackBarOpen: PropTypes.func.isRequired,
     zoomerClose: PropTypes.func.isRequired,
     history: PropTypes.object.isRequired,
   }
 
   state = {
-    exif: {},
+    exif: Object.create(null),
   }
 
-  componentDidMount() {
-    // in mobile we need do more to disable scroll
-    document.body.addEventListener('touchmove', this.disableMobileScroll);
-
-    const { image } = this.props;
-    incView.call({ imageIds: [image._id] });
+  componentWillReceiveProps(nextProps) {
+    if (this.props.visible !== nextProps.visible) {
+      if (nextProps.visible) {
+      // in mobile we need do more to disable scroll
+        document.body.style.overflow = 'hidden';
+        document.body.addEventListener('touchmove', this.disableMobileScroll);
+        incView.call({ imageIds: [nextProps.image._id] });
+      } else {
+        document.body.style.overflow = '';
+        document.body.removeEventListener('touchmove', this.disableMobileScroll);
+      }
+    }
   }
 
   componentWillUnmount() {
@@ -51,24 +67,19 @@ class ZoomerHolder extends Component {
 
   get imgSrc() {
     const { image } = this.props;
-    return `${imageDomain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
+    const src = `${imageDomain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
+    const preSrc = `${src}?imageView2/2/w/${rWidth}`;
+    const realSrc = `${src}?imageView2/3/w/${rWidth}`;
+    // double quote for special character see: https://www.w3.org/TR/CSS2/syndata.html#value-def-uri
+    return `url("${realSrc}"),url("${preSrc}")`;
   }
 
+  // eslint-disable-next-line class-methods-use-this
   disableMobileScroll(e) {
     e.preventDefault(e);
   }
 
-  _handleCloseZoomer = () => {
-    document.body.style.overflow = '';
-    this.props.zoomerClose();
-  }
-
-  _handleAccessUser = () => {
-    const { history, image } = this.props;
-    history.push(`/user/${image.user}`);
-  }
-
-  _handleOpenInfoModal = () => {
+  renderInfoModal = () => {
     const { image } = this.props;
     this.props.modalOpen({
       content: [
@@ -89,7 +100,7 @@ class ZoomerHolder extends Component {
     });
   }
 
-  _handleOpenExifModal = () => {
+  renderExifModal = () => {
     const { image } = this.props;
     if (image.type !== 'jpg') {
       this.props.snackBarOpen('只有JPG图片存有EXIF信息');
@@ -106,13 +117,12 @@ class ZoomerHolder extends Component {
       });
       return;
     }
-    this.props.modalOpen({ content: <ExifLoader /> });
+    this.renderLoadModal('加载中');
     axios({
       method: 'GET',
       url: `${this.imgSrc}?exif`,
     })
       .then(({ data }) => {
-      // console.log(data);
         this.props.modalOpen({
           content: (
             <ExifInfo
@@ -125,42 +135,58 @@ class ZoomerHolder extends Component {
       })
       .catch((err) => {
         console.log(err);
-        this.props.snackBarOpen(`获取EXIF信息失败, ${err}`);
+        this.props.modalClose();
+        this.props.snackBarOpen(`获取EXIF信息失败 ${err}`);
       });
   }
 
-  render() {
-    const { image } = this.props;
+  renderLoadModal = (message, errMsg = '请求超时') => {
+    this.props.modalOpen({
+      content: <ModalLoader message={message} errMsg={errMsg} />,
+      ops: { ignoreBackdropClick: true },
+    });
+  }
 
-    const imgSrc = this.imgSrc;
-    const preSrc = `${imgSrc}?imageView2/2/w/${rWidth}`;
-    const trueSrc = `${imgSrc}?imageView2/3/w/${rWidth}`;
-    // double quote for special character see: https://www.w3.org/TR/CSS2/syndata.html#value-def-uri
-    const imageHolderStyle = { backgroundImage: `url("${trueSrc}"),url("${preSrc}")` };
+  render() {
+    const { visible, image } = this.props;
     return (
       <Portal name="ZoomHolder">
-        <Wrapper>
-          <Inner
-            image={image}
-            imageHolderStyle={imageHolderStyle}
-            onLogoClick={this._handleCloseZoomer}
-            onAvatarClick={this._handleAccessUser}
-            onInfoActionClick={this._handleOpenInfoModal}
-            onExifActionClick={this._handleOpenExifModal}
-          />
-        </Wrapper>
+        <TransitionGroup>
+          {
+            visible && (
+              <SlideTransition>
+                <Wrapper>
+                  <Inner
+                    image={image}
+                    imageHolderStyle={{ backgroundImage: this.imgSrc }}
+                    onLogoClick={this.props.zoomerClose}
+                    onAvatarClick={() => this.props.history.push(`/user/${image.user}`)}
+                    onInfoActionClick={this.renderInfoModal}
+                    onExifActionClick={this.renderExifModal}
+                  />
+                </Wrapper>
+              </SlideTransition>
+            )
+          }
+        </TransitionGroup>
       </Portal>
     );
   }
 }
 
+const mapStateToProps = ({ portals }) => ({
+  visible: portals.zoomer.open,
+  image: portals.zoomer.image,
+});
+
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   modalOpen,
+  modalClose,
   snackBarOpen,
   zoomerClose,
 }, dispatch);
 
 export default compose(
-  connect(null, mapDispatchToProps),
+  connect(mapStateToProps, mapDispatchToProps),
   withRouter,
 )(ZoomerHolder);

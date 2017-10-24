@@ -6,7 +6,7 @@ import { SecondaryNavHeader } from '/imports/ui/components/NavHeader';
 import withLoadable from '/imports/ui/hocs/withLoadable';
 
 const AsyncUserFansContent = withLoadable({
-  loader: () => import('./containers/UserFansContentContainer'),
+  loader: () => import('./containers/ContentContainer'),
 });
 
 class UserFansPage extends Component {

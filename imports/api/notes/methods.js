@@ -23,11 +23,7 @@ export const insertNote = new ValidatedMethod({
     if (!receiver) {
       throw new Meteor.Error('api.notes.insert.userNotFound', '接受用户不存在');
     }
-    const sender = Meteor.user().username;
-    return Notes.insert({
-      ...note,
-      sender,
-    });
+    return Notes.insert(note);
   },
 });
 
@@ -40,6 +36,10 @@ export const readAllNotes = new ValidatedMethod({
   run({ receiver }) {
     if (!this.userId) {
       throw new Meteor.Error('api.notes.readAll.notLoggedIn');
+    }
+    const unReadNotesNum = Notes.find({ receiver, isRead: { $ne: true } }).count();
+    if (unReadNotesNum === 0) {
+      throw new Meteor.Error('api.notes.readAll.emptyUnreadNotes', '您没有未读的消息');
     }
     Notes.update(
       { receiver, isRead: false },

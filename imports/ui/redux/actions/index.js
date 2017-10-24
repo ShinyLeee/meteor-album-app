@@ -1,22 +1,5 @@
+import { Meteor } from 'meteor/meteor';
 import * as types from '../constants/ActionTypes';
-
-export const userLogin = (user) => ({
-  type: types.USER_LOGIN,
-  user,
-});
-
-export const userLogout = () => ({
-  type: types.USER_LOGOUT,
-});
-
-export const storeUptoken = (uptoken) => ({
-  type: types.STORE_UPTOKEN,
-  uptoken,
-});
-
-export const clearUptoken = () => ({
-  type: types.CLEAR_UPTOKEN,
-});
 
 export const modalOpen = ({ title, content, actions, ops }) => ({
   type: types.MODAL_OPEN,
@@ -58,9 +41,9 @@ export const photoSwipeClose = () => ({
   type: types.PHOTOSWIPE_CLOSE,
 });
 
-export const uploaderStart = (uploader) => ({
+export const uploaderStart = (dest) => ({
   type: types.UPLOADER_START,
-  uploader,
+  dest,
 });
 
 export const uploaderStop = () => ({
@@ -101,3 +84,30 @@ export const enableSelectAll = (groupCounter) => ({
 export const disableSelectAll = () => ({
   type: types.DISABLE_SELECT_ALL,
 });
+
+export const storeUser = (user) => ({
+  type: types.STORE_USER,
+  user,
+});
+
+export const storeUptoken = (uptoken) => ({
+  type: types.STORE_UPTOKEN,
+  uptoken,
+});
+
+export const userLogin = (user) => async (dispatch) => {
+  dispatch(storeUser(user));
+  try {
+    const res = await Meteor.callPromise('Qiniu.getUptoken');
+    console.log('%c User Login', 'color: blue');
+    dispatch(storeUptoken(res.uptoken));
+  } catch (err) {
+    console.log(err);
+    dispatch(snackBarOpen(`获取七牛云token失败 ${err}`));
+  }
+};
+
+export const userLogout = () => ({
+  type: types.USER_LOGOUT,
+});
+

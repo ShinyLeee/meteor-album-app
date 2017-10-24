@@ -6,12 +6,12 @@ import './Quill.css';
 
 export default class QuillEditor extends Component {
   static propTypes = {
-    className: PropTypes.string.isRequired,
-    readOnly: PropTypes.bool.isRequired,
+    className: PropTypes.string,
+    readOnly: PropTypes.bool,
     placeholder: PropTypes.string,
-    theme: PropTypes.oneOf(['snow', 'bubble']).isRequired,
-    modules: PropTypes.object.isRequired,
-    contentType: PropTypes.oneOf(['html', 'delta']).isRequired,
+    theme: PropTypes.oneOf(['snow', 'bubble']),
+    modules: PropTypes.object,
+    contentType: PropTypes.oneOf(['html', 'delta']),
     content: PropTypes.object,
     onChange: PropTypes.func,
   }

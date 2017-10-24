@@ -10,7 +10,7 @@ import AutocompleteWrapper from './Autocomplete';
 export default class SendNoteContent extends Component {
   static propTypes = {
     dataIsReady: PropTypes.bool.isRequired,
-    initReceiver: PropTypes.object,
+    initReceiver: PropTypes.string,
     otherUsers: PropTypes.array.isRequired,
     classes: PropTypes.object.isRequired,
     onNoteChange: PropTypes.func.isRequired,
@@ -21,9 +21,10 @@ export default class SendNoteContent extends Component {
     title: '',
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (this.props.initReceiver !== nextProps.initReceiver) {
-      this.setState({ receiver: nextProps.initReceiver });
+  componentDidMount() {
+    const { initReceiver } = this.props;
+    if (initReceiver) {
+      this._handleReceiverChange(initReceiver);
     }
   }
 
@@ -123,33 +124,32 @@ export default class SendNoteContent extends Component {
   render() {
     const { dataIsReady, otherUsers, classes } = this.props;
     return (
-      <ContentLayout loading={!dataIsReady}>
-        {
-          dataIsReady && (
-            <div className="content__sendNote">
-              <AutocompleteWrapper
-                value={this.state.receiver}
-                data={otherUsers}
-                onChange={this._handleReceiverChange}
-                onComplete={this._handleReceiverChange}
-              />
-              <Divider />
-              <Input
-                className={classes.input}
-                placeholder="标题"
-                value={this.state.title}
-                onChange={this._handleTitleChange}
-                disableUnderline
-                fullWidth
-              /><Divider />
-              <QuillEditor
-                placeholder="内容"
-                modules={this.quillModulesConfig}
-                onChange={this._handleContentChange}
-              />
-            </div>
-          )
-        }
+      <ContentLayout
+        loading={!dataIsReady}
+        delay
+      >
+        <div className="content__sendNote">
+          <AutocompleteWrapper
+            value={this.state.receiver}
+            data={otherUsers}
+            onChange={this._handleReceiverChange}
+            onComplete={this._handleReceiverChange}
+          />
+          <Divider />
+          <Input
+            className={classes.input}
+            placeholder="标题"
+            value={this.state.title}
+            onChange={this._handleTitleChange}
+            disableUnderline
+            fullWidth
+          /><Divider />
+          <QuillEditor
+            placeholder="内容"
+            modules={this.quillModulesConfig}
+            onChange={this._handleContentChange}
+          />
+        </div>
       </ContentLayout>
     );
   }

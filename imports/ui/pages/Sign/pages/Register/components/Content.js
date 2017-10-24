@@ -61,9 +61,9 @@ export default class RegisterContent extends Component {
         return loginWithPassword(username, password);
       })
       .then(() => {
-        const userObj = Meteor.user();
+        const user = Meteor.user();
         this.props.modalClose();
-        this.props.userLogin(userObj);
+        this.props.userLogin(user);
         this.props.history.replace('/');
         this.props.snackBarOpen('注册成功');
       })

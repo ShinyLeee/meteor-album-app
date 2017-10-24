@@ -16,7 +16,6 @@ const AsyncNoteContent = withLoadable({
   loader: () => import('./containers/ContentContainer'),
 });
 
-
 export default class NotesPage extends Component {
   static propTypes = {
     User: PropTypes.object.isRequired,
@@ -35,35 +34,32 @@ export default class NotesPage extends Component {
     this.props.history.push(location);
   }
 
-  _handleReadAll = () => {
+  _handleReadAll = async () => {
     const { User } = this.props;
-    if (this.state.notes.length === 0) {
-      this.props.snackBarOpen('您没有未读的信息');
-      return;
+    this.setState({ popover: false });
+    try {
+      await this.renderLoadModal('标记已读中');
+      await readAllNotes.callPromise({ receiver: User.username });
+      this.props.modalClose();
+      this.props.snackBarOpen('标记已读成功');
+    } catch (err) {
+      console.log(err);
+      this.props.modalClose();
+      this.props.snackBarOpen(`标记已读失败 ${err.reason}`);
     }
-    this.renderLoadModal('标记已读中');
-    readAllNotes.callPromise({ receiver: User.username })
-      .then(() => {
-        this.props.modalClose();
-        this.setState({ notes: [] });
-      })
-      .catch((err) => {
-        console.log(err);
-        this.props.modalClose();
-        this.props.snackBarOpen(`标记已读失败 ${err.reason}`);
-      });
   }
 
   renderPopover = (e) => {
     this.setState({ popover: true, popoverAnchor: e.currentTarget });
   }
 
-  renderLoadModal = (message, errMsg = '请求超时') => {
+  renderLoadModal = (message, errMsg = '请求超时') => new Promise((resolve) => {
     this.props.modalOpen({
       content: <ModalLoader message={message} errMsg={errMsg} />,
       ops: { ignoreBackdropClick: true },
     });
-  }
+    setTimeout(() => resolve(), 275);
+  })
 
   render() {
     const { User } = this.props;

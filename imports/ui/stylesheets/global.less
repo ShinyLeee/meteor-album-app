@@ -9,17 +9,15 @@
   width: 100%;
   height: 100%;
   padding: 0;
-  &.deep {
-    background-color: #eee;
-  }
 }
 
 .content {
   min-height: 603px;
   margin-top: 64px;
-  &.deep {
-    background-color: #eee;
-  }
+}
+
+.deep {
+  background-color: #eee;
 }
 
 .flex-box {
@@ -32,12 +30,23 @@
   text-align: center;
 }
 
+.hide {
+  display: none;
+}
+
 .active {
   color: @color-font-prominent;
 }
 
 .highlight {
   color: @color-font-prominent;
+}
+
+.bottom {
+  padding: 12px 0;
+  font-size: 14px;
+  color: #333;
+  text-align: center;
 }
 
 .SearchBar__input::-webkit-input-placeholder {

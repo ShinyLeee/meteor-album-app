@@ -18,8 +18,8 @@ export default class SearchContent extends Component {
     const { dataIsReady, User, users, collections } = this.props;
     return (
       <ContentLayout
-        deep
         loading={!dataIsReady}
+        deep
       >
         <div className="content__search">
           <section className="search__collection">
@@ -28,13 +28,10 @@ export default class SearchContent extends Component {
               {/* <a>展开</a> */}
             </header>
             {
-              collections.map((coll) => {
-                let avatarSrc;
-                if (User && (coll.user === User.username)) {
-                  avatarSrc = User.profile.avatar;
-                } else {
-                  avatarSrc = Meteor.users.findOne({ username: coll.user }).profile.avatar;
-                }
+              dataIsReady && collections.map((coll) => {
+                const avatarSrc = User && (coll.user === User.username)
+                  ? User.profile.avatar
+                  : Meteor.users.findOne({ username: coll.user }).profile.avatar;
                 return (
                   <CollHolder
                     key={coll._id}
@@ -52,7 +49,7 @@ export default class SearchContent extends Component {
             </header>
             <Paper className="user__container">
               {
-                users.map((user) => (
+                dataIsReady && users.map((user) => (
                   <div
                     key={user._id}
                     className="user__content"

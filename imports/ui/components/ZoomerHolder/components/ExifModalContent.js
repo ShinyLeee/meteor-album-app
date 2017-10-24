@@ -1,17 +1,6 @@
 /* eslint-disable react/prop-types, import/no-mutable-exports */
 import React from 'react';
-import { CircleLoader } from '/imports/ui/components/Loader';
-import {
-  ExifLoader as Loader,
-  ExifInfo as Info,
-} from '../ZoomerHolder.style';
-
-const ExifLoader = () => (
-  <Loader>
-    <CircleLoader />
-    <span>加载中</span>
-  </Loader>
-);
+import { ExifInfo as Info } from '../ZoomerHolder.style';
 
 const ExifInfo = ({ exif, uploadDate }) => (
   <div>
@@ -47,7 +36,6 @@ const ExifInfo = ({ exif, uploadDate }) => (
 );
 
 export {
-  ExifLoader,
   ExifInfo,
 };
 

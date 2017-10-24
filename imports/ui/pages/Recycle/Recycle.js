@@ -10,7 +10,7 @@ import purple from 'material-ui/colors/purple';
 import { removeImages, recoveryImages } from '/imports/api/images/methods';
 import ViewLayout from '/imports/ui/layouts/ViewLayout';
 import SecondaryNavHeader from '/imports/ui/components/NavHeader/Secondary';
-import { ModalActions, ModalLoader } from '/imports/ui/components/Modal';
+import { ModalActions, ModalLoader } from '/imports/ui/components/Modal/Common';
 import withLoadable from '/imports/ui/hocs/withLoadable';
 
 const AsyncRecycleContent = withLoadable({

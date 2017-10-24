@@ -15,6 +15,7 @@ const AsyncSendNoteContent = withLoadable({
 
 export default class SendNotePage extends Component {
   static propTypes = {
+    User: PropTypes.object.isRequired,
     modalOpen: PropTypes.func.isRequired,
     modalClose: PropTypes.func.isRequired,
     snackBarOpen: PropTypes.func.isRequired,
@@ -44,12 +45,14 @@ export default class SendNotePage extends Component {
     insertNote.callPromise({
       title: note.title,
       content: note.content,
+      sender: this.props.User.username,
       receiver: note.receiver,
       sendAt: new Date() || note.sendAt, // TODO remove Date Picker temporary
       createdAt: new Date(),
     })
       .then(() => {
       // because go to another component so we do not need set inital state
+        this.props.modalClose();
         this.props.history.goBack();
         this.props.snackBarOpen('发送成功');
       })

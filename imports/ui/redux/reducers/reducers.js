@@ -4,25 +4,21 @@ import initState from '../store/initState';
 
 export const sessions = (state = initState.sessions, action) => {
   switch (action.type) {
-    case types.USER_LOGIN:
-      return {
-        ...state,
-        User: action.user,
-      };
     case types.USER_LOGOUT:
       return {
         ...state,
         User: null,
+        uptoken: null,
+      };
+    case types.STORE_USER:
+      return {
+        ...state,
+        User: action.user,
       };
     case types.STORE_UPTOKEN:
       return {
         ...state,
         uptoken: action.uptoken,
-      };
-    case types.CLEAR_UPTOKEN:
-      return {
-        ...state,
-        uptoken: '',
       };
     default: {
       return state;

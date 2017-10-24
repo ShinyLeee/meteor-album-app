@@ -4,7 +4,7 @@ import PrimaryNavHeader from '/imports/ui/components/NavHeader/Primary';
 import withLoadable from '/imports/ui/hocs/withLoadable';
 
 const AsyncIndexContent = withLoadable({
-  loader: () => import('./containers/IndexContent'),
+  loader: () => import('./containers/ContentContainer'),
 });
 
 export default class IndexPage extends Component {

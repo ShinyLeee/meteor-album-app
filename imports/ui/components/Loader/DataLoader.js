@@ -9,9 +9,15 @@ export const LoaderWrapper = styled.div`
   text-align: center;
 `;
 
-export default function DataLoader() {
+// eslint-disable-next-line react/prop-types
+export default function DataLoader({ bottom = false }) {
+  const bottomStyle = {
+    margin: 0,
+    paddingBottom: 20,
+    backgroundColor: '#eee',
+  };
   return (
-    <LoaderWrapper>
+    <LoaderWrapper style={bottom ? bottomStyle : null}>
       <CircleLoader />
     </LoaderWrapper>
   );

@@ -23,40 +23,33 @@ const getDuration = (images) => {
 export default class CollectionContent extends Component {
   static propTypes = {
     dataIsReady: PropTypes.bool.isRequired,
-    curColl: PropTypes.object.isRequired,
     isEditing: PropTypes.bool.isRequired,
+    images: PropTypes.array.isRequired,
+    match: PropTypes.object.isRequired,
   }
-
-  get images() {
-    return this.props.curColl.images().fetch();
-  }
-
 
   render() {
-    const { dataIsReady, curColl, isEditing } = this.props;
-    const images = this.images;
+    const { dataIsReady, images, isEditing, match } = this.props;
+    const { cname } = match.params;
     return (
       <ContentLayout
         loading={!dataIsReady}
+        delay
       >
-        {
-          dataIsReady && (
-            <div className="content__collPics">
-              <header className="collPics__header">
-                <h2 className="collPics__name">{curColl.name}</h2>
-                <div className="collPics__duration">{getDuration(images)}</div>
-              </header>
-              {
-              images.length > 0 && (
-                <ConnectedJustified
-                  isEditing={isEditing}
-                  images={images}
-                />
-              )
-            }
-            </div>
-          )
-        }
+        <div className="content__collPics">
+          <header className="collPics__header">
+            <h2 className="collPics__name">{cname}</h2>
+            <div className="collPics__duration">{getDuration(images)}</div>
+          </header>
+          {
+            images.length > 0 && (
+              <ConnectedJustified
+                isEditing={isEditing}
+                images={images}
+              />
+            )
+          }
+        </div>
         <PhotoSwipeHolder />
       </ContentLayout>
     );

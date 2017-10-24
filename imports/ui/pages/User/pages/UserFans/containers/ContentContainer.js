@@ -7,7 +7,7 @@ import { withStyles } from 'material-ui/styles';
 import blue from 'material-ui/colors/blue';
 
 import { snackBarOpen } from '/imports/ui/redux/actions';
-import UserFansPage from '../components/UserFansContent';
+import UserFansPage from '../components/Content';
 
 const mapStateToProps = ({ sessions }) => ({
   User: sessions.User,

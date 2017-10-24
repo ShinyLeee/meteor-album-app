@@ -17,6 +17,7 @@
   - [x] Adopt React-loadable and make use of dynamic import(Code Splitting)
   - [x] Upgrade devDependencies
   - [x] Switch to Component-based splitting
+  - [x] Adopt React-Infinite to improve infinite image and note list performance
   - [ ] Improve route transition animation perf in low end device by use code splitting and [React-Loadable](https://github.com/thejameskyle/react-loadable)
   - [ ] Service Worker ?
   - [ ] Pass all unit tests

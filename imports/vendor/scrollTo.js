@@ -10,7 +10,7 @@ window.requestAnimFrame = (function(){
 })();
 
 // main function
-export default function (scrollTargetY, speed, easing) {
+export default function (scrollTargetY, speed, easing, callback) {
     // scrollTargetY: the target scrollY property of the window
     // speed: time in pixels per second
     // easing: easing equation to use
@@ -18,7 +18,8 @@ export default function (scrollTargetY, speed, easing) {
     var scrollY = window.scrollY || document.documentElement.scrollTop,
         scrollTargetY = scrollTargetY || 0,
         speed = speed || 2000,
-        easing = easing || 'easeOutSine',
+        callback = (easing && typeof easing === 'function') ? easing : callback,
+        easing = (!easing || (easing && typeof easing === 'function')) ? 'easeOutSine' : easing,
         currentTime = 0;
 
     // min time .1, max time .8 seconds
@@ -53,6 +54,9 @@ export default function (scrollTargetY, speed, easing) {
             window.scrollTo(0, scrollY + ((scrollTargetY - scrollY) * t));
         } else {
             window.scrollTo(0, scrollTargetY);
+            if (callback) {
+                callback();
+            }
         }
     }
 

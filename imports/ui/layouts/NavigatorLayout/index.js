@@ -10,6 +10,7 @@ import SnackBar from '/imports/ui/components/SnackBar';
 import AppLoader from '/imports/ui/components/Loader/AppLoader';
 import { userLogin } from '/imports/ui/redux/actions';
 import withLoadable from '/imports/ui/hocs/withLoadable';
+import ScrollToTop from './ScrollToTop';
 import Routes from './Routes';
 
 const AsyncUploader = withLoadable({
@@ -28,14 +29,20 @@ class NavigatorLayout extends PureComponent {
       <div className="router">
         {
           appIsReady
-          ? <Router><Routes /></Router>
+          ? (
+            <Router>
+              <ScrollToTop>
+                <Routes />
+              </ScrollToTop>
+            </Router>
+          )
           : <AppLoader />
         }
 
         {/* Portals */}
         <Modal />
         <SnackBar />
-        { User && <AsyncUploader multiple /> }
+        { appIsReady && User && <AsyncUploader /> }
       </div>
     );
   }
