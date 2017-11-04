@@ -1,7 +1,12 @@
+import _ from 'lodash';
 import moment from 'moment';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { compose } from 'redux';
+import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { Meteor } from 'meteor/meteor';
+import { withTracker } from 'meteor/react-meteor-data';
 import { withStyles } from 'material-ui/styles';
 import Avatar from 'material-ui/Avatar';
 import IconButton from 'material-ui/IconButton';
@@ -23,7 +28,7 @@ import {
 class CollHolder extends Component {
   static propTypes = {
     coll: PropTypes.object.isRequired,
-    avatarSrc: PropTypes.string.isRequired,
+    owner: PropTypes.object.isRequired,
     showUser: PropTypes.bool,
     showDetails: PropTypes.bool,
     showActions: PropTypes.bool,
@@ -59,10 +64,14 @@ class CollHolder extends Component {
     this.props.onRemove(coll);
   }
 
+  renderPopover = (e) => {
+    this.setState({ menuOpen: true, anchorEl: e.currentTarget });
+  }
+
   render() {
     const {
       coll,
-      avatarSrc,
+      owner,
       showUser,
       showDetails,
       showActions,
@@ -79,7 +88,7 @@ class CollHolder extends Component {
           </Link>
         </Cover>
         <Info>
-          <Avatar classes={{ root: classes.avatar }} src={avatarSrc} alt="" />
+          <Avatar classes={{ root: classes.avatar }} src={_.get(owner, 'profile.avatar')} alt="" />
           <CollName>{coll.name}</CollName>
           { showUser && <UserName>{coll.user}</UserName> }
           { showDetails && (
@@ -89,38 +98,38 @@ class CollHolder extends Component {
             </div>
           ) }
           {
-            showActions && (
-              <div>
-                <IconButton
-                  className={classes.moreVertBtn}
-                  onClick={(e) => this.setState({ menuOpen: true, anchorEl: e.currentTarget })}
-                ><MoreVertIcon />
-                </IconButton>
-                <Menu
-                  open={this.state.menuOpen}
-                  anchorEl={this.state.anchorEl}
-                  onRequestClose={this._handleRequestClose}
-                >
-                  {/* <MenuItem
-                    leftIcon={<InfoIcon />}
-                    primaryText="查看信息"
-                    onClick={() => onCheck(coll)}
-                  /> */}
-                  <MenuItem className={classes.menuItem} onClick={this._handleToggleLock}>
-                    <IconButton className={classes.menuBtn}>
-                      { coll.private ? <LockOutIcon /> : <LockIcon />}
-                    </IconButton>
-                    { coll.private ? '公开相册' : ' 加密相册' }
-                  </MenuItem>
-                  <MenuItem className={classes.menuItem} onClick={this._handleToggleRemove}>
-                    <IconButton className={classes.menuBtn}>
-                      <DeleteIcon />
-                    </IconButton>
-                    删除相册
-                  </MenuItem>
-                </Menu>
-              </div>
-            )
+            showActions && [
+              <IconButton
+                key="actionBtn"
+                className={classes.moreVertBtn}
+                onClick={this.renderPopover}
+              ><MoreVertIcon />
+              </IconButton>,
+              <Menu
+                key="actionMenu"
+                open={this.state.menuOpen}
+                anchorEl={this.state.anchorEl}
+                onRequestClose={this._handleRequestClose}
+              >
+                {/* <MenuItem
+                leftIcon={<InfoIcon />}
+                primaryText="查看信息"
+                onClick={() => onCheck(coll)}
+              /> */}
+                <MenuItem className={classes.menuItem} onClick={this._handleToggleLock}>
+                  <IconButton className={classes.menuBtn}>
+                    { coll.private ? <LockOutIcon /> : <LockIcon />}
+                  </IconButton>
+                  { coll.private ? '公开相册' : ' 加密相册' }
+                </MenuItem>
+                <MenuItem className={classes.menuItem} onClick={this._handleToggleRemove}>
+                  <IconButton className={classes.menuBtn}>
+                    <DeleteIcon />
+                  </IconButton>
+                  删除相册
+                </MenuItem>
+              </Menu>,
+            ]
           }
         </Info>
       </Wrapper>
@@ -130,24 +139,23 @@ class CollHolder extends Component {
 
 const styles = {
   avatar: {
-    position: 'absolute',
-    top: -18,
     width: 26,
     height: 26,
+    marginTop: -26,
   },
 
   lockIcon: {
-    width: 17,
-    height: 17,
-    marginRight: 5,
+    width: 18,
+    height: 18,
+    marginRight: 6,
     color: '#999',
     verticalAlign: 'middle',
   },
 
   moreVertBtn: {
     position: 'absolute',
-    top: 12,
     right: 0,
+    color: '#666',
   },
 
   menuItem: {
@@ -159,4 +167,25 @@ const styles = {
   },
 };
 
-export default withStyles(styles)(CollHolder);
+const mapStateToProps = ({ sessions }) => ({
+  User: sessions.User,
+});
+
+const trackHandler = ({ User, coll }) => {
+  let owner;
+  if (User.username === coll.user) {
+    owner = User;
+  } else {
+    Meteor.subscribe('Users.all');
+    owner = Meteor.users.findOne({ username: coll.user });
+  }
+  return {
+    owner,
+  };
+};
+
+export default compose(
+  connect(mapStateToProps),
+  withStyles(styles),
+  withTracker(trackHandler),
+)(CollHolder);

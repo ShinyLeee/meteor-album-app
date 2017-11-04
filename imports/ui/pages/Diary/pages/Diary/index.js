@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import queryString from 'query-string';
 import IconButton from 'material-ui/IconButton';
 import ChevronLeftIcon from 'material-ui-icons/ChevronLeft';
@@ -27,7 +27,7 @@ const AsyncDiaryContent = withLoadable({
 
 const { sourceDomain } = settings;
 
-export default class DiaryPage extends Component {
+export default class DiaryPage extends PureComponent {
   static propTypes = {
     history: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
@@ -69,10 +69,10 @@ export default class DiaryPage extends Component {
       <ViewLayout
         Topbar={
           <SecondaryNavHeader
-            style={{ backgroundColor: 'transparent' }}
+            style={{ backgroundColor: this.state.navTitle ? '#fff' : 'transparent' }}
             title={this.state.navTitle}
-            titleStyle={this.state.navTitle ? { color: '#222' } : null}
-            iconStyle={this.state.navTitle ? { color: '#222' } : { color: '#fff' }}
+            titleStyle={{ color: this.state.navTitle ? '#222' : 'inherit' }}
+            iconStyle={{ color: this.state.navTitle ? '#222' : '#fff' }}
           />
         }
       >

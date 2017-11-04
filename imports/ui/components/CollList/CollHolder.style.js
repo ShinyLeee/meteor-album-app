@@ -1,15 +1,19 @@
 import styled from 'styled-components';
 import Paper from 'material-ui/Paper';
 
+export const TabView = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  padding-bottom: 4px;
+`;
+
 export const Wrapper = styled(Paper)`
   display: inline-block;
   width: calc(50% - 2px);
   max-width: 225px;
   margin-top: 4px;
   cursor: pointer;
-  &:nth-of-type(even) {
-    margin-left: 4px;
-  }
 `;
 
 export const Cover = styled.section`
@@ -25,7 +29,8 @@ export const Cover = styled.section`
 
 export const Info = styled.section`
   position: relative;
-  max-height: 65px;
+  display: flex;
+  flex-direction: column;
   padding: 12px 28px 16px 12px
 `;
 

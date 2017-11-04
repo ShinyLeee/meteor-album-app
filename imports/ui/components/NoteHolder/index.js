@@ -1,4 +1,5 @@
 import { compose } from 'redux';
+import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
@@ -36,11 +37,25 @@ const styles = theme => ({
   },
 });
 
-const trackHandler = ({ note }) => ({
-  sender: Meteor.users.findOne({ username: note.sender }),
+const mapStateToProps = ({ sessions }) => ({
+  User: sessions.User,
 });
 
+const trackHandler = ({ User, note }) => {
+  let sender;
+  if (User.username === note.sender) {
+    sender = User;
+  } else {
+    Meteor.subscribe('Users.all');
+    sender = Meteor.users.findOne({ username: note.sender });
+  }
+  return {
+    sender,
+  };
+};
+
 export default compose(
+  connect(mapStateToProps),
   withTracker(trackHandler),
   withStyles(styles),
   withRouter,

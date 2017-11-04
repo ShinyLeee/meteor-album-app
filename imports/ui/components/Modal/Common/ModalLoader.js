@@ -10,13 +10,13 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: center;
+  justify-content: space-around;
+  min-width: 160px;
 `;
 
 const Message = styled.p`
   font-size: 14px;
   color: #222;
-  margin-left: 36px;
 `;
 
 class ModalLoader extends Component {

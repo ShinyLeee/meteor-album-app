@@ -4,14 +4,12 @@ import { withRouter } from 'react-router-dom';
 import { withStyles } from 'material-ui/styles';
 import purple from 'material-ui/colors/purple';
 import grey from 'material-ui/colors/grey';
-import { userLogin, modalOpen, modalClose, snackBarOpen } from '/imports/ui/redux/actions';
+import { userLogin, snackBarOpen } from '/imports/ui/redux/actions';
 import withRedirect from '/imports/ui/hocs/withRedirect';
 import LoginContent from '../components/Content';
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   userLogin,
-  modalOpen,
-  modalClose,
   snackBarOpen,
 }, dispatch);
 

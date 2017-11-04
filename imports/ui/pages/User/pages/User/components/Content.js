@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { Meteor } from 'meteor/meteor';
+import React, { PureComponent } from 'react';
 import Popover from 'material-ui/Popover';
 import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List';
 import Button from 'material-ui/Button';
@@ -9,10 +8,10 @@ import SettingsIcon from 'material-ui-icons/Settings';
 import ExitToAppIcon from 'material-ui-icons/ExitToApp';
 import { followUser, unFollowUser } from '/imports/api/users/methods';
 import ContentLayout from '/imports/ui/layouts/ContentLayout';
-import { vWidth, rWidth } from '/imports/utils/responsive';
+import { rWidth } from '/imports/utils/responsive';
 import ImageSlider from './ImageSlider';
 
-export default class UserContent extends Component {
+export default class UserContent extends PureComponent {
   static propTypes = {
     dataIsReady: PropTypes.bool.isRequired,
     User: PropTypes.object,
@@ -36,63 +35,48 @@ export default class UserContent extends Component {
 
   get isFollowed() {
     const { User, curUser } = this.props;
-    return !!User && curUser.profile.followers.indexOf(User.username) >= 0;
+    return User && curUser.profile.followers.indexOf(User.username) >= 0;
   }
 
   _navTo = (location) => () => {
     this.props.history.push(location);
   }
 
-  _handleOpenPopover = (e) => {
-    this.setState({
-      popover: true,
-      anchorEl: e.currentTarget,
-    });
-  }
-
-  _handleLogout = () => {
-    const logoutPromise = Meteor.wrapPromise(Meteor.logout);
-    logoutPromise()
-      .then(() => {
-        this.props.snackBarOpen('登出成功');
-      })
-      .catch((err) => {
-        console.log(err);
-        this.props.snackBarOpen(`发生未知错误 ${err.reason}`);
-      });
-  }
-
-  _handleFollow = () => {
+  _handleFollow = async () => {
     const { User, curUser } = this.props;
     if (!User) {
       this.props.snackBarOpen('您还尚未登录');
       return;
     }
-    followUser.callPromise({ targetId: curUser._id, targetName: curUser.username })
-      .then(() => {
-        this.props.userLogout();
-        this.props.snackBarOpen('关注成功');
-      })
-      .catch((err) => {
-        console.log(err);
-        this.props.snackBarOpen(`关注失败 ${err.reason}`);
-      });
+    try {
+      await followUser.callPromise({ targetId: curUser._id, targetName: curUser.username });
+      this.props.snackBarOpen('关注成功');
+    } catch (err) {
+      console.warn(err);
+      this.props.snackBarOpen(`关注失败 ${err.reason}`);
+    }
   }
 
-  _handleUnFollow = () => {
-    const { User, curUser } = this.prosp;
+  _handleUnFollow = async () => {
+    const { User, curUser } = this.props;
     if (!User) {
       this.props.snackBarOpen('您还尚未登录');
       return;
     }
-    unFollowUser.callPromise({ targetId: curUser._id, targetName: curUser.username })
-      .then(() => {
-        this.props.snackBarOpen('取消关注成功');
-      })
-      .catch((err) => {
-        console.log(err);
-        this.props.snackBarOpen(`取消关注失败 ${err.reason}`);
-      });
+    try {
+      await unFollowUser.callPromise({ targetId: curUser._id, targetName: curUser.username });
+      this.props.snackBarOpen('取消关注成功');
+    } catch (err) {
+      console.warn(err);
+      this.props.snackBarOpen(`取消关注失败 ${err.reason}`);
+    }
+  }
+
+  renderPopover = (e) => {
+    this.setState({
+      popover: true,
+      anchorEl: e.currentTarget,
+    });
   }
 
   render() {
@@ -105,7 +89,10 @@ export default class UserContent extends Component {
       classes,
     } = this.props;
     return (
-      <ContentLayout loading={!dataIsReady} delay>
+      <ContentLayout
+        loading={!dataIsReady}
+        delay
+      >
         <div className="content__user">
           { /* MAIN SECTION */ }
           <section className="user__main">
@@ -116,20 +103,15 @@ export default class UserContent extends Component {
               <div className="main__background" />
             </div>
             <div className="main__profile">
-              <div
-                className="main__content"
-                style={{ left: `${(vWidth - 120) / 2}px` }}
-              >
-                <div className="main__avatar">
-                  <img src={curUser.profile.avatar} alt={curUser.username} />
-                </div>
-                <div className="main__detail">
-                  <h4>{curUser.username}</h4>
-                  <span>{curUser.profile.intro || '暂无简介'}</span>
-                </div>
+              <div className="main__avatar">
+                <img src={curUser.profile.avatar} alt={curUser.username} />
+              </div>
+              <div className="main__detail">
+                <h4>{curUser.username}</h4>
+                <span>{curUser.profile.intro || '暂无简介'}</span>
               </div>
             </div>
-            <div className="main__action">
+            <div className="flex-box">
               <Button
                 className={classes.btn__left}
                 onClick={this._navTo(isOwner ? '/sendNote' : `/sendNote?receiver=${curUser.username}`)}
@@ -139,38 +121,38 @@ export default class UserContent extends Component {
               </Button>
               {
                 isOwner
-                ? (
-                  <div style={{ display: 'inline-block' }}>
-                    <Button
-                      className={classes.btn__more}
-                      onClick={this._handleOpenPopover}
-                      raised
-                    >更多操作
-                    </Button>
-                    <Popover
-                      open={this.state.popover}
-                      anchorEl={this.state.anchorEl}
-                      anchorOrigin={{ horizontal: 'top', vertical: 'left' }}
-                      transformOrigin={{ horizontal: 'bottom', vertical: 'left' }}
-                      onRequestClose={() => this.setState({ popover: false })}
-                    >
-                      <List>
-                        <ListItem onClick={this._navTo(`/note/${curUser.username}`)}>
-                          <ListItemIcon><MessageIcon /></ListItemIcon>
-                          <ListItemText primary="我的信息" />
-                        </ListItem>
-                        <ListItem onClick={this._navTo('/setting')}>
-                          <ListItemIcon><SettingsIcon /></ListItemIcon>
-                          <ListItemText primary="账号设置" />
-                        </ListItem>
-                        <ListItem onClick={this._handleLogout}>
-                          <ListItemIcon><ExitToAppIcon /></ListItemIcon>
-                          <ListItemText primary="登出" />
-                        </ListItem>
-                      </List>
-                    </Popover>
-                  </div>
-                )
+                ? [
+                  <Button
+                    key="btn__more"
+                    className={classes.btn__more}
+                    onClick={this.renderPopover}
+                    raised
+                  >更多操作
+                  </Button>,
+                  <Popover
+                    key="Popover"
+                    open={this.state.popover}
+                    anchorEl={this.state.anchorEl}
+                    anchorOrigin={{ horizontal: 'top', vertical: 'left' }}
+                    transformOrigin={{ horizontal: 'bottom', vertical: 'left' }}
+                    onRequestClose={() => this.setState({ popover: false })}
+                  >
+                    <List>
+                      <ListItem onClick={this._navTo(`/note/${curUser.username}`)}>
+                        <ListItemIcon><MessageIcon /></ListItemIcon>
+                        <ListItemText primary="我的信息" />
+                      </ListItem>
+                      <ListItem onClick={this._navTo('/setting')}>
+                        <ListItemIcon><SettingsIcon /></ListItemIcon>
+                        <ListItemText primary="账号设置" />
+                      </ListItem>
+                      <ListItem onClick={this.props.userLogout}>
+                        <ListItemIcon><ExitToAppIcon /></ListItemIcon>
+                        <ListItemText primary="登出" />
+                      </ListItem>
+                    </List>
+                  </Popover>,
+                  ]
                 : (
                   <Button
                     onClick={this.isFollowed ? this._handleUnFollow : this._handleFollow}
@@ -216,13 +198,10 @@ export default class UserContent extends Component {
           {
             topImages.length > 0 && (
               <section className="user__rank">
-                <div className="rank__header">最受欢迎的</div>
-                <div className="rank__content">
-                  <ImageSlider
-                    curUser={curUser}
-                    images={topImages}
-                  />
-                </div>
+                <ImageSlider
+                  curUser={curUser}
+                  images={topImages}
+                />
               </section>
             )
           }

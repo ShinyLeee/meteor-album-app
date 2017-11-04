@@ -79,6 +79,10 @@ export const ImageDetail = styled.div`
   }
 `;
 
+export const Content = styled.div`
+  min-width: 180px;
+`;
+
 export const Info = styled.div`
   padding: 6px 0;
 `;

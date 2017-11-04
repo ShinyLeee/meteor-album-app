@@ -1,16 +1,14 @@
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Meteor } from 'meteor/meteor';
 import Paper from 'material-ui/Paper';
 import ContentLayout from '/imports/ui/layouts/ContentLayout';
-import CollHolder from '/imports/ui/components/CollHolder';
+import CollList from '/imports/ui/components/CollList';
 import NoteHolder from '/imports/ui/components/NoteHolder';
 
 export default class SearchResultsContent extends Component {
   static propTypes = {
     dataIsReady: PropTypes.bool.isRequired,
-    User: PropTypes.object, // not required bc guest can visit
     users: PropTypes.array.isRequired,
     collections: PropTypes.array.isRequired,
     notes: PropTypes.array.isRequired,
@@ -19,22 +17,11 @@ export default class SearchResultsContent extends Component {
   }
 
   renderCollResults(query) {
-    const { User, collections } = this.props;
+    const { collections } = this.props;
     if (collections.length === 0) {
       return <p className="search__empty">未找到符合“{query}”的结果</p>;
     }
-    return collections.map((coll) => {
-      const avatarSrc = User && (coll.user === User.username)
-        ? User.profile.avatar
-        : Meteor.users.findOne({ username: coll.user }).profile.avatar;
-      return (
-        <CollHolder
-          key={coll._id}
-          coll={coll}
-          avatarSrc={avatarSrc}
-        />
-      );
-    });
+    return <CollList colls={collections} />;
   }
 
   renderUserResults(query) {
@@ -74,17 +61,13 @@ export default class SearchResultsContent extends Component {
     return (
       <div className="note__container">
         {
-          notes.map((note) => {
-            const receiverObj = Meteor.users.findOne({ username: note.receiver });
-            return (
-              <NoteHolder
-                key={note._id}
-                avatar={receiverObj && receiverObj.profile.avatar}
-                note={note}
-                isRead
-              />
-            );
-          })
+          notes.map((note) => (
+            <NoteHolder
+              key={note._id}
+              note={note}
+              isRead
+            />
+          ))
         }
       </div>
     );

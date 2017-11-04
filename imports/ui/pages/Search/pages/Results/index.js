@@ -8,7 +8,6 @@ const AsyncSearchResultsContent = withLoadable({
   loader: () => import('./containers/ContentContainer'),
 });
 
-
 export default class SearchResultsPage extends Component {
   static propTypes = {
     history: PropTypes.object.isRequired,

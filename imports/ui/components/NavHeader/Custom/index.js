@@ -2,7 +2,6 @@ import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { compose } from 'redux';
-import { withRouter } from 'react-router-dom';
 import { withStyles } from 'material-ui/styles';
 import AppBar from 'material-ui/AppBar';
 import Toolbar from 'material-ui/Toolbar';
@@ -86,5 +85,4 @@ const styles = {
 
 export default compose(
   withStyles(styles),
-  withRouter,
 )(CustomNavHeader);

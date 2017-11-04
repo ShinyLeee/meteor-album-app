@@ -3,12 +3,10 @@ import { connect } from 'react-redux';
 import { withStyles } from 'material-ui/styles';
 import blue from 'material-ui/colors/blue';
 
-import { modalOpen, modalClose, snackBarOpen } from '/imports/ui/redux/actions';
+import { snackBarOpen } from '/imports/ui/redux/actions';
 import ResetPasswordPage from '../index';
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
-  modalOpen,
-  modalClose,
   snackBarOpen,
 }, dispatch);
 

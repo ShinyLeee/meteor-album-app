@@ -5,15 +5,13 @@ import Button from 'material-ui/Button';
 import Input from 'material-ui/Input';
 import { checkCode, useCode } from '/imports/api/codes/methods';
 import ContentLayout from '/imports/ui/layouts/ContentLayout';
-import ModalLoader from '/imports/ui/components/Modal/Common/ModalLoader';
+import Modal from '/imports/ui/components/Modal';
 
 export default class RegisterContent extends Component {
   static propTypes = {
     userLogin: PropTypes.func.isRequired,
     history: PropTypes.object.isRequired,
     classes: PropTypes.object.isRequired,
-    modalOpen: PropTypes.func.isRequired,
-    modalClose: PropTypes.func.isRequired,
     snackBarOpen: PropTypes.func.isRequired,
   }
 
@@ -31,7 +29,7 @@ export default class RegisterContent extends Component {
     });
   }
 
-  _handleRegister = () => {
+  _handleRegister = async () => {
     const { email, username, password, password2, code } = this.state;
 
     if (!email || !username || !password || !password2) {
@@ -47,38 +45,23 @@ export default class RegisterContent extends Component {
       return;
     }
 
-    this.renderLoadModal('创建账号中');
-    checkCode.callPromise({ codeNo: code })
-      .then((isExist) => {
-        if (!isExist) {
-          throw new Meteor.Error(403, '此邀请码不存在或已被使用');
-        }
-        return Meteor.callPromise('Accounts.createUser', { username, email, password });
-      })
-      .then(() => useCode.callPromise({ codeNo: code }))
-      .then(() => {
-        const loginWithPassword = Meteor.wrapPromise(Meteor.loginWithPassword);
-        return loginWithPassword(username, password);
-      })
-      .then(() => {
-        const user = Meteor.user();
-        this.props.modalClose();
-        this.props.userLogin(user);
-        this.props.history.replace('/');
-        this.props.snackBarOpen('注册成功');
-      })
-      .catch((err) => {
-        console.log(err);
-        this.props.modalClose();
-        this.props.snackBarOpen(`注册失败 ${err.reason}`);
-      });
-  }
-
-  renderLoadModal = (message, errMsg = '请求超时') => {
-    this.props.modalOpen({
-      content: <ModalLoader message={message} errMsg={errMsg} />,
-      ops: { ignoreBackdropClick: true },
-    });
+    try {
+      await Modal.showLoader('创建账号中');
+      const isExist = await checkCode.callPromise({ codeNo: code });
+      if (!isExist) {
+        throw new Meteor.Error(403, '此邀请码不存在或已被使用');
+      }
+      await Meteor.callPromise('Accounts.createUser', { username, email, password });
+      await useCode.callPromise({ codeNo: code });
+      await this.props.userLogin({ account: username, password });
+      Modal.close();
+      this.props.history.replace('/');
+      this.props.snackBarOpen('注册成功');
+    } catch (err) {
+      console.warn(err);
+      Modal.close();
+      this.props.snackBarOpen(`注册失败 ${err.reason}`);
+    }
   }
 
   render() {

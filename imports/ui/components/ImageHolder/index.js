@@ -10,14 +10,6 @@ import { snackBarOpen } from '/imports/ui/redux/actions';
 
 import ImageHolder from './ImageHolder';
 
-const mapStateToProps = ({ sessions }) => ({
-  User: sessions.User,
-});
-
-const mapDispatchToProps = (dispatch) => bindActionCreators({
-  snackBarOpen,
-}, dispatch);
-
 const styles = {
   btn: {
     color: 'rgba(0, 0, 0, 0.87)',
@@ -32,25 +24,36 @@ const styles = {
   },
 };
 
-const trackHandler = ({ image }) => {
+const mapStateToProps = ({ sessions }) => ({
+  User: sessions.User,
+});
+
+const mapDispatchToProps = (dispatch) => bindActionCreators({
+  snackBarOpen,
+}, dispatch);
+
+const trackHandler = ({ User, image }) => {
   // discussion_id from comment
   const imageId = image._id;
 
   Meteor.subscribe('Images.specific', imageId);
   Meteor.subscribe('Comments.inImage', imageId);
 
-  const owner = Meteor.users.findOne({ username: image.user });
+  let owner;
+  if (User.username === image.user) {
+    owner = User;
+  } else {
+    Meteor.subscribe('Users.all');
+    owner = Meteor.users.findOne({ username: image.user }) || {};
+  }
 
   const freshImage = Images.findOne(imageId);
 
-  const comments = Comments.find(
-    { discussion_id: imageId, type: 'image' },
-    { sort: { createdAt: -1 } },
-  ).fetch();
+  const commentsNum = Comments.find({ discussion_id: imageId, type: 'image' }).count();
   return {
     owner,
     image: freshImage,
-    comments,
+    commentsNum,
   };
 };
 

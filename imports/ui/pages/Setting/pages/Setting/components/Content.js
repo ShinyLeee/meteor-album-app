@@ -22,7 +22,7 @@ import InboxIcon from 'material-ui-icons/Inbox';
 import EmailIcon from 'material-ui-icons/Email';
 import settings from '/imports/utils/settings';
 import ContentLayout from '/imports/ui/layouts/ContentLayout';
-import ModalLoader from '/imports/ui/components/Modal/Common/ModalLoader';
+import Modal from '/imports/ui/components/Modal';
 
 const { domain } = settings;
 
@@ -36,8 +36,6 @@ export default class SettingContent extends PureComponent {
     token: PropTypes.string.isRequired,
     classes: PropTypes.object.isRequired,
     history: PropTypes.object.isRequired,
-    modalOpen: PropTypes.func.isRequired,
-    modalClose: PropTypes.func.isRequired,
     snackBarOpen: PropTypes.func.isRequired,
   }
 
@@ -48,72 +46,68 @@ export default class SettingContent extends PureComponent {
     });
   }
 
-  _handleSetCover = (e) => {
-    this.renderLoadModal('上传封面中');
-
+  _handleSetCover = async (e) => {
     const { User, token } = this.props;
     const cover = e.target.files[0];
     if (!cover) {
       return;
     }
-    const key = `${User.username}/setting/cover/${cover.name}`;
-    const formData = new FormData();
-    formData.append('file', cover);
-    formData.append('key', key);
-    formData.append('token', token);
-
-    axios({
-      method: 'POST',
-      url: uploadURL,
-      data: formData,
-    })
-      .then(({ data }) => {
-        this.props.modalClose();
-        this.props.snackBarOpen('上传封面成功');
-        this.updateProfile({ cover: `${domain}/${data.key}` });
-      })
-      .catch((err) => {
-        console.log(err);
-        this.props.modalClose();
-        this.props.snackBarOpen(`上传封面失败 ${err}`);
-      });
-  }
-
-  _handleSetAvatar = (e) => {
-    this.renderLoadModal('上传头像中');
-
-    const avatar = e.target.files[0];
-    const size = Math.round(avatar.size / 1024);
-    if (size < 200) {
-      const reader = new FileReader();
-      reader.onload = (evt) => {
-        this.props.modalClose();
-        this.props.snackBarOpen('上传头像成功');
-        this.updateProfile({ avatar: evt.target.result });
-      };
-      reader.readAsDataURL(avatar);
-    } else {
-      const key = `${this.props.User.username}/setting/avatar/${avatar.name}`;
+    try {
+      await Modal.showLoader('上传封面中');
+      const key = `${User.username}/setting/cover/${cover.name}`;
       const formData = new FormData();
-      formData.append('file', avatar);
+      formData.append('file', cover);
       formData.append('key', key);
-      formData.append('token', this.props.token);
-
-      axios({
+      formData.append('token', token);
+      const { data } = await axios({
         method: 'POST',
         url: uploadURL,
         data: formData,
-      })
-        .then(({ data }) => {
-          this.props.modalClose();
+      });
+      Modal.close();
+      this.props.snackBarOpen('上传封面成功');
+      this.updateProfile({ cover: `${domain}/${data.key}` });
+    } catch (err) {
+      console.warn(err);
+      Modal.close();
+      this.props.snackBarOpen(`上传封面失败 ${err}`);
+    }
+  }
+
+  _handleSetAvatar = async (e) => {
+    try {
+      await Modal.showLoader('上传头像中');
+      const avatar = e.target.files[0];
+      const size = Math.round(avatar.size / 1024);
+      if (size < 200) {
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          Modal.close();
           this.props.snackBarOpen('上传头像成功');
-          this.updateProfile({ avatar: `${domain}/${data.key}?imageView2/1/w/240/h/240` });
-        })
-        .catch((err) => {
-          console.log(err);
-          this.props.modalClose();
-          this.props.snackBarOpen(`上传头像失败 ${err}`);
+          this.updateProfile({ avatar: evt.target.result });
+        };
+        reader.readAsDataURL(avatar);
+      } else {
+        const { User, token } = this.props;
+        const key = `${User.username}/setting/avatar/${avatar.name}`;
+        const formData = new FormData();
+        formData.append('file', avatar);
+        formData.append('key', key);
+        formData.append('token', token);
+
+        const { data } = await axios({
+          method: 'POST',
+          url: uploadURL,
+          data: formData,
         });
+        Modal.close();
+        this.props.snackBarOpen('上传头像成功');
+        this.updateProfile({ avatar: `${domain}/${data.key}?imageView2/1/w/240/h/240` });
+      }
+    } catch (err) {
+      console.warn(err);
+      Modal.close();
+      this.props.snackBarOpen(`上传头像失败 ${err}`);
     }
   }
 
@@ -127,13 +121,6 @@ export default class SettingContent extends PureComponent {
       [e.target.name]: selected,
     };
     this.updateProfile({ settings: newSettings });
-  }
-
-  renderLoadModal = (message, errMsg = '请求超时') => {
-    this.props.modalOpen({
-      content: <ModalLoader message={message} errMsg={errMsg} />,
-      ops: { ignoreBackdropClick: true },
-    });
   }
 
   render() {

@@ -5,6 +5,8 @@ export const DrawerContent = styled.div`
 `;
 
 export const DrawerProfile = styled.div`
+  display: flex;
+  flex-direction: column;
   position: relative;
   height: 150px;
   background-size: cover;
@@ -19,42 +21,18 @@ export const DrawerBackground = styled.div`
 `;
 
 export const DrawerAvatar = styled.div`
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 50%;
-  padding: 24px 0 0px 26px;
-  & > img {
-    border: 1px solid #fff;
-  }
+  flex: 3;
+  align-items: center;
+  display: flex;
+  padding-left: 24px;
 `;
 
 export const DrawerEmail = styled.div`
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-  padding: 24px 24px 6px 20px;
-  height: 50%;
-  line-height: 55px;
-  & > div {
-    position: relative;
-    & > span {
-      position: absolute;
-      left: 0;
-      font-family: 'Microsoft yahei';
-      font-size: 14px;
-      color: #fff;
-      text-shadow: 1px 2px 5px #222;
-    }
-    & > div {
-      position: absolute;
-      right: 0;
-      & > svg {
-        fill: #fff;
-        vertical-align: middle;
-      }
-    }
-  }
+  position: relative;
+  display: flex;
+  flex: 1;
+  justify-content: space-around;
+  align-items: center;
+  font-family: arial;  
+  color: #fff;  
 `;

@@ -45,7 +45,7 @@ class InfiniteImageList extends PureComponent {
         : { imageId: image._id, unliker: User.username };
       await api.callPromise(model);
     } catch (err) {
-      console.log(err);
+      console.warn(err);
       const msg = like ? `点赞失败 ${err.reason}` : `撤销点赞失败 ${err.reason}`;
       this.props.snackBarOpen(msg);
     }
@@ -64,15 +64,15 @@ class InfiniteImageList extends PureComponent {
         useWindowAsScrollContainer
       >
         {
-        images.map(image => (
-          <ImageHolder
-            key={image._id}
-            image={image}
-            onToggleLike={this._handleToggleLike}
-            onMediaClick={this.props.zoomerOpen}
-          />
-        ))
-      }
+          images.map(image => (
+            <ImageHolder
+              key={image._id}
+              image={image}
+              onToggleLike={this._handleToggleLike}
+              onMediaClick={this.props.zoomerOpen}
+            />
+          ))
+        }
       </Infinite>,
       disabled && <div key="Infinite__bottom" className="bottom">已经到底部啦</div>,
     ];

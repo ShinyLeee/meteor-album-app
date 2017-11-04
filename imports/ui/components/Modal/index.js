@@ -3,15 +3,16 @@ import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
-import { withStyles } from 'material-ui/styles';
 import Dialog, {
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
 } from 'material-ui/Dialog';
-import { modalClose } from '../../redux/actions';
-
+import Store from '../../redux/store';
+import { modalOpen, modalClose } from '../../redux/actions';
+import ModalActions from './Common/ModalActions';
+import ModalLoader from './Common/ModalLoader';
 
 const isValidElement = (a) => React.isValidElement(a) || Array.isArray(a);
 
@@ -19,11 +20,7 @@ class Modal extends PureComponent {
   static propTypes = {
     open: PropTypes.bool.isRequired,
     title: PropTypes.string,
-    content: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.array,
-      PropTypes.element,
-    ]),
+    content: PropTypes.node,
     actions: PropTypes.oneOfType([
       PropTypes.array,
       PropTypes.element,
@@ -31,8 +28,38 @@ class Modal extends PureComponent {
     // Dialog option props
     // More info: https://material-ui-1dab0.firebaseapp.com/api/dialog/
     ops: PropTypes.object,
-    classes: PropTypes.object.isRequired,
     modalClose: PropTypes.func.isRequired,
+  }
+
+  static show(args) {
+    return Store.dispatch(modalOpen(args));
+  }
+
+  static showPrompt(args) {
+    Store.dispatch(modalOpen({
+      title: '提示',
+      content: args.message,
+      actions: (
+        <ModalActions
+          onCancel={args.onCancel}
+          onConfirm={args.onConfirm}
+        />
+      ),
+    }));
+  }
+
+  static showLoader(message, errMsg) {
+    return new Promise((resolve) => {
+      Store.dispatch(modalOpen({
+        content: <ModalLoader message={message} errMsg={errMsg} />,
+        ops: { ignoreBackdropClick: true },
+      }));
+      setTimeout(() => resolve(), 275);
+    });
+  }
+
+  static close() {
+    return Store.dispatch(modalClose());
   }
 
   _handleRequestClose = () => {
@@ -45,10 +72,9 @@ class Modal extends PureComponent {
   }
 
   render() {
-    const { open, title, content, actions, ops, classes } = this.props;
+    const { open, title, content, actions, ops } = this.props;
     return (
       <Dialog
-        classes={{ paper: classes.dialog }}
         {...ops}
         open={open}
         onRequestClose={this._handleRequestClose}
@@ -79,13 +105,6 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
   modalClose,
 }, dispatch);
 
-const styles = {
-  dialog: {
-    width: '75%',
-  },
-};
-
 export default compose(
   connect(mapStateToProps, mapDispatchToProps),
-  withStyles(styles),
 )(Modal);

@@ -16,8 +16,8 @@ import { removeImagesToRecycle, shiftImages } from '/imports/api/images/methods'
 import { mutateCollectionCover } from '/imports/api/collections/methods';
 import ViewLayout from '/imports/ui/layouts/ViewLayout';
 import SecondaryNavHeader from '/imports/ui/components/NavHeader/Secondary';
+import Modal from '/imports/ui/components/Modal';
 import ModalActions from '/imports/ui/components/Modal/Common/ModalActions';
-import ModalLoader from '/imports/ui/components/Modal/Common/ModalLoader';
 import withLoadable from '/imports/ui/hocs/withLoadable';
 
 const { imageDomain } = settings;
@@ -38,8 +38,6 @@ export default class CollectionPage extends Component {
     counter: PropTypes.number.isRequired,
     selectImages: PropTypes.array.isRequired,
     disableSelectAll: PropTypes.func.isRequired,
-    modalOpen: PropTypes.func.isRequired,
-    modalClose: PropTypes.func.isRequired,
     snackBarOpen: PropTypes.func.isRequired,
     uploaderStart: PropTypes.func.isRequired,
     match: PropTypes.object.isRequired,
@@ -60,104 +58,82 @@ export default class CollectionPage extends Component {
     this.props.uploaderStart(curColl.name);
   }
 
-  _handleShiftPhoto = () => {
-    const { curColl, selectImages, otherColls } = this.props;
+  _handleShiftPhoto = async () => {
+    try {
+      const { curColl, selectImages, otherColls } = this.props;
+      await Modal.showLoader('转移照片中');
+      const keys = _.map(selectImages, (image) => ({
+        src: `${image.user}/${curColl.name}/${image.name}.${image.type}`,
+        dest: `${image.user}/${modalState.destName}/${image.name}.${image.type}`,
+      }));
+      const { results } = await Meteor.callPromise('Qiniu.move', { keys });
+      // Only shift images which are moved success in Qiniu
+      let moveStatus = [];
+      let moveMessage = '转移照片成功';
+      let movedImages = _.map(selectImages, (image) => image._id);
 
-    this.props.modalClose();
-    this.renderLoadModal('转移照片中');
-
-    const keys = _.map(selectImages, (image) => {
-      const srcKey = `${image.user}/${curColl.name}/${image.name}.${image.type}`;
-      const destKey = `${image.user}/${modalState.destName}/${image.name}.${image.type}`;
-      return {
-        src: srcKey,
-        dest: destKey,
-      };
-    });
-
-    Meteor.callPromise('Qiniu.move', { keys })
-      .then((res) => {
-        const rets = res.results;
-        // Only shift images which are moved success in Qiniu
-        let moveStatus = [];
-        let sucMsg;
-        let sucMovedImgIds = _.map(selectImages, (image) => image._id);
-
-        for (let i = 0; i < rets.length; i += 1) {
-          const status = rets[i].code;
-          const { data } = rets[i];
-          if (status !== 200) {
-            moveStatus = [...moveStatus, i];
-            console.warn(status, data);
-          }
+      for (let i = 0; i < results.length; i += 1) {
+        const status = results[i].code;
+        const { data } = results[i];
+        if (status !== 200) {
+          moveStatus = [...moveStatus, i];
+          console.warn(status, data);
         }
-        if (moveStatus.length > 0) {
-          sucMsg = '部分照片转移失败';
-          sucMovedImgIds = _.filter(sucMovedImgIds, (v, i) => _.indexOf(moveStatus, i) < 0);
-        }
-        return { sucMsg, sucMovedImgIds };
-      })
-      .then((related) => {
-        const destColl = _.find(otherColls, (coll) => coll.name === modalState.destName);
-        return shiftImages.callPromise({
-          selectImages: related.sucMovedImgIds,
-          dest: destColl.name,
-          destPrivateStat: destColl.private,
-        }).then(() => related.sucMsg || '转移照片成功');
-      })
-      .then((sucMsg) => {
-        this.props.disableSelectAll();
-        this.props.modalClose();
-        this.props.snackBarOpen(sucMsg);
-      })
-      .catch((err) => {
-        console.log(err);
-        this.props.modalClose();
-        this.props.snackBarOpen(`转移照片失败 ${err.reason}`);
+      }
+      if (moveStatus.length > 0) {
+        moveMessage = '部分照片转移失败';
+        movedImages = _.filter(movedImages, (v, i) => _.indexOf(moveStatus, i) < 0);
+      }
+      const destColl = _.find(otherColls, (coll) => coll.name === modalState.destName);
+      await shiftImages.callPromise({
+        selectImages: movedImages,
+        dest: destColl.name,
+        destPrivateStat: destColl.private,
       });
+      Modal.close();
+      this.props.disableSelectAll();
+      this.props.snackBarOpen(moveMessage);
+    } catch (err) {
+      console.warn(err);
+      Modal.close();
+      this.props.snackBarOpen(`转移照片失败 ${err.reason}`);
+    }
   }
 
-  _handleSetCover = () => {
-    const { selectImages, curColl } = this.props;
-    const curImg = selectImages[0];
-    const cover = `${imageDomain}/${curImg.user}/${curImg.collection}/${curImg.name}.${curImg.type}`;
-
-    this.props.modalClose();
-    this.renderLoadModal('设置封面中');
-
-    mutateCollectionCover.callPromise({
-      collId: curColl._id,
-      cover,
-    })
-      .then(() => {
-        this.props.disableSelectAll();
-        this.props.modalClose();
-        this.props.snackBarOpen('更换封面成功');
-      })
-      .catch((err) => {
-        console.log(err);
-        this.props.modalClose();
-        this.props.snackBarOpen(`更换封面失败 ${err.reason}`);
+  _handleSetCover = async () => {
+    try {
+      const { selectImages, curColl } = this.props;
+      const curImg = selectImages[0];
+      const cover = `${imageDomain}/${curImg.user}/${curImg.collection}/${curImg.name}.${curImg.type}`;
+      await Modal.showLoader('设置封面中');
+      await mutateCollectionCover.callPromise({
+        collId: curColl._id,
+        cover,
       });
+      Modal.close();
+      this.props.disableSelectAll();
+      this.props.snackBarOpen('更换封面成功');
+    } catch (err) {
+      console.warn(err);
+      Modal.close();
+      this.props.snackBarOpen(`更换封面失败 ${err.reason}`);
+    }
   }
 
-  _handleRemovePhoto = () => {
-    const { selectImages } = this.props;
-
-    this.props.modalClose();
-    this.renderLoadModal('删除照片中');
-
-    removeImagesToRecycle.callPromise({ selectImages: _.map(selectImages, (image) => image._id) })
-      .then(() => {
-        this.props.disableSelectAll();
-        this.props.modalClose();
-        this.props.snackBarOpen('删除相片成功');
-      })
-      .catch((err) => {
-        console.log(err);
-        this.props.modalClose();
-        this.props.snackBarOpen(`删除相片失败 ${err.reason}`);
-      });
+  _handleRemovePhoto = async () => {
+    try {
+      const selectImages = _.map(this.props.selectImages, (image) => image._id);
+      Modal.close();
+      await Modal.showLoader('删除照片中');
+      await removeImagesToRecycle.callPromise({ selectImages });
+      Modal.close();
+      this.props.disableSelectAll();
+      this.props.snackBarOpen('删除相片成功');
+    } catch (err) {
+      console.warn(err);
+      Modal.close();
+      this.props.snackBarOpen(`删除相片失败 ${err.reason}`);
+    }
   }
 
   renderShiftModal = () => {
@@ -177,15 +153,16 @@ export default class CollectionPage extends Component {
 
     const showModal = () => {
       const defaultValue = _.get(otherColls, '[0].name');
-      modalState.destName = defaultValue;
-      this.props.modalOpen({
+      const value = modalState.destName || defaultValue;
+      modalState.destName = value;
+      Modal.show({
         title: '移动至以下相册',
         content: (
           <RadioGroup
             name="collection"
-            value={modalState.destName || defaultValue}
-            onChange={(e, value) => {
-              modalState.destName = value;
+            value={value}
+            onChange={(e, val) => {
+              modalState.destName = val;
               showModal();
             }}
           >{radios}
@@ -193,12 +170,12 @@ export default class CollectionPage extends Component {
         ),
         actions: (
           <ModalActions
-            sClick={() => {
-              this.props.modalClose();
+            onCancel={() => {
+              Modal.close();
               modalState.destName = null;
             }}
-            pClick={() => {
-              this._handleShiftPhoto();
+            onConfirm={async () => {
+              await this._handleShiftPhoto();
               modalState.destName = null;
             }}
           />
@@ -208,46 +185,29 @@ export default class CollectionPage extends Component {
     showModal();
   }
 
-  renderSetCoverModal = () => {
+  renderSetCoverPrompt = () => {
     const { selectImages } = this.props;
     if (selectImages.length !== 1) {
       this.props.snackBarOpen('请选择一张照片');
       return;
     }
-    this.props.modalOpen({
-      title: '提示',
-      content: '是否确认将其设置为封面',
-      actions: (
-        <ModalActions
-          sClick={this.props.modalClose}
-          pClick={this._handleSetCover}
-        />
-      ),
+    Modal.showPrompt({
+      message: '是否确认将其设置为封面',
+      onCancel: Modal.close,
+      onConfirm: this._handleSetCover,
     });
   }
 
-  renderRemoveModal = () => {
+  renderRemovePrompt = () => {
     const { selectImages } = this.props;
     if (selectImages.length < 1) {
       this.props.snackBarOpen('请选择要删除的照片');
       return;
     }
-    this.props.modalOpen({
-      title: '提示',
-      content: '是否确认删除所选照片？',
-      actions: (
-        <ModalActions
-          sClick={this.props.modalClose}
-          pClick={this._handleRemovePhoto}
-        />
-      ),
-    });
-  }
-
-  renderLoadModal = (message, errMsg = '请求超时') => {
-    this.props.modalOpen({
-      content: <ModalLoader message={message} errMsg={errMsg} />,
-      ops: { ignoreBackdropClick: true },
+    Modal.showPrompt({
+      message: '是否确认删除所选照片？',
+      onCancel: Modal.close,
+      onConfirm: this._handleRemovePhoto,
     });
   }
 
@@ -272,13 +232,13 @@ export default class CollectionPage extends Component {
                 <IconButton
                   key="btn__setCover"
                   color="contrast"
-                  onClick={this.renderSetCoverModal}
+                  onClick={this.renderSetCoverPrompt}
                 ><SetCoverIcon />
                 </IconButton>,
                 <IconButton
                   key="btn__remove"
                   color="contrast"
-                  onClick={this.renderRemoveModal}
+                  onClick={this.renderRemovePrompt}
                 ><RemoveIcon />
                 </IconButton>,
               ]}

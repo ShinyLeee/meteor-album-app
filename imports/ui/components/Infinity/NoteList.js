@@ -88,7 +88,7 @@ class InfiniteNoteList extends Component {
       const { notes, heights } = this.generateNotes(newNotes);
       this.setState({ notes, heights });
     } catch (err) {
-      console.log(err);
+      console.warn(err);
       this.props.snackBarOpen(`标记已读失败 ${err.reason}`);
     }
   }

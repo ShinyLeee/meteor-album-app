@@ -5,13 +5,12 @@ import { Accounts } from 'meteor/accounts-base';
 import Button from 'material-ui/Button';
 import Input from 'material-ui/Input';
 import ContentLayout from '/imports/ui/layouts/ContentLayout';
-import ModalLoader from '/imports/ui/components/Modal/Common/ModalLoader';
+import Modal from '/imports/ui/components/Modal';
 
 export default class PasswordContent extends Component {
   static propTypes = {
     classes: PropTypes.object.isRequired,
-    modalOpen: PropTypes.func.isRequired,
-    modalClose: PropTypes.func.isRequired,
+    userLogout: PropTypes.func.isRequired,
     snackBarOpen: PropTypes.func.isRequired,
   }
 
@@ -25,7 +24,7 @@ export default class PasswordContent extends Component {
     this.setState({ [e.target.name]: e.target.value });
   }
 
-  _handlePasswordChange = () => {
+  _handlePasswordChange = async () => {
     const { oldPwd, newPwd, newPwd2 } = this.state;
 
     if (!oldPwd || !newPwd || !newPwd2) {
@@ -37,30 +36,18 @@ export default class PasswordContent extends Component {
       this.props.snackBarOpen('两次密码输入不相同');
       return;
     }
-
-    this.renderLoadModal('修改密码中');
-
-    const changePassword = Meteor.wrapPromise(Accounts.changePassword);
-    const logout = Meteor.wrapPromise(Meteor.logout);
-
-    changePassword(oldPwd, newPwd)
-      .then(() => logout())
-      .then(() => {
-        this.props.modalClose();
-        this.props.snackBarOpen('修改密码成功，请重新登录');
-      })
-      .catch((err) => {
-        console.log(err);
-        this.props.modalClose();
-        this.props.snackBarOpen(`修改密码失败 ${err.reason}`);
-      });
-  }
-
-  renderLoadModal = (message, errMsg = '请求超时') => {
-    this.props.modalOpen({
-      content: <ModalLoader message={message} errMsg={errMsg} />,
-      ops: { ignoreBackdropClick: true },
-    });
+    try {
+      await Modal.showLoader('修改密码中');
+      const changePassword = Meteor.wrapPromise(Accounts.changePassword);
+      await changePassword(oldPwd, newPwd);
+      await this.props.userLogout();
+      Modal.close();
+      this.props.snackBarOpen('修改密码成功，请重新登录');
+    } catch (err) {
+      console.warn(err);
+      Modal.close();
+      this.props.snackBarOpen(`修改密码失败 ${err.reason}`);
+    }
   }
 
   render() {

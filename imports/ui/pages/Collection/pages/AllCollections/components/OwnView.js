@@ -9,10 +9,9 @@ import Typography from 'material-ui/Typography';
 import AddIcon from 'material-ui-icons/AddCircleOutline';
 import { insertCollection, lockCollection, removeCollection } from '/imports/api/collections/methods';
 import { getRandomInt } from '/imports/utils';
-import CollHolder from '/imports/ui/components/CollHolder';
-import ModalLoader from '/imports/ui/components/Modal/Common/ModalLoader';
+import CollList from '/imports/ui/components/CollList';
+import Modal from '/imports/ui/components/Modal';
 import DataLoader from '/imports/ui/components/Loader/DataLoader';
-import { TabView } from '../styles';
 
 const modalState = {
   newCollName: null,
@@ -28,79 +27,71 @@ export default class OwnView extends PureComponent {
     colls: PropTypes.array.isRequired,
     existCollNames: PropTypes.array.isRequired,
     classes: PropTypes.object.isRequired,
-    modalOpen: PropTypes.func.isRequired,
-    modalClose: PropTypes.func.isRequired,
     snackBarOpen: PropTypes.func.isRequired,
   }
 
-  _handleAddCollection = () => {
+  _handleAddCollection = async () => {
     const { curUser } = this.props;
-    // eslint-disable-next-line no-extra-boolean-cast
     if (modalState.errorText) {
       this.props.snackBarOpen(modalState.errorText);
       this.closeModal('add');
       return;
     }
-    const name = modalState.newCollName;
-    this.closeModal('add');
-    this.renderLoadModal('新建相册中');
-    insertCollection.callPromise({
-      name,
-      user: curUser.username,
-      cover: `/img/pattern/VF_ac${getRandomInt(1, 28)}.jpg`,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    })
-      .then(() => {
-        this.props.modalClose();
-        this.props.snackBarOpen('新建相册成功');
-      })
-      .catch((err) => {
-        console.log(err);
-        this.props.modalClose();
-        this.props.snackBarOpen('新建相册失败');
+    try {
+      const name = modalState.newCollName;
+      await Modal.showLoader('新建相册中');
+      await insertCollection.callPromise({
+        name,
+        user: curUser.username,
+        cover: `/img/pattern/VF_ac${getRandomInt(1, 28)}.jpg`,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       });
+      this.closeModal('add');
+      this.props.snackBarOpen('新建相册成功');
+    } catch (err) {
+      console.warn(err);
+      this.closeModal('add');
+      this.props.snackBarOpen('新建相册失败');
+    }
   }
 
-  _handleRemoveCollection = (coll) => {
+  _handleRemoveCollection = async (coll) => {
     const { curUser } = this.props;
-    this.closeModal('remove');
-    this.renderLoadModal('删除相册中');
-    removeCollection.callPromise({
-      username: curUser.username,
-      collName: coll.name,
-    })
-      .then(() => {
-        this.props.modalClose();
-        this.props.snackBarOpen('删除相册成功');
-      })
-      .catch((err) => {
-        console.log(err);
-        this.props.modalClose();
-        this.props.snackBarOpen(`删除相册失败 ${err.reason}`);
+    try {
+      await Modal.showLoader('删除相册中');
+      await removeCollection.callPromise({
+        username: curUser.username,
+        collName: coll.name,
       });
+      this.closeModal('remove');
+      this.props.snackBarOpen('删除相册成功');
+    } catch (err) {
+      console.warn(err);
+      this.closeModal('remove');
+      this.props.snackBarOpen(`删除相册失败 ${err.reason}`);
+    }
   }
 
 
-  _handleLockCollection = (collection) => {
+  _handleLockCollection = async (collection) => {
     const { curUser } = this.props;
     const msg = collection.private ? '公开' : '加密';
-    this.renderLoadModal('加密相册中');
-    lockCollection.callPromise({
-      username: curUser.username,
-      collId: collection._id,
-      collName: collection.name,
-      privateStat: collection.private,
-    })
-      .then(() => {
-        this.props.modalClose();
-        this.props.snackBarOpen(`${msg}相册成功`);
-      })
-      .catch((err) => {
-        console.log(err);
-        this.props.modalClose();
-        this.props.snackBarOpen(`${msg}相册失败 ${err.reason}`);
+    try {
+      await Modal.showLoader('加密相册中');
+      await lockCollection.callPromise({
+        username: curUser.username,
+        collId: collection._id,
+        collName: collection.name,
+        privateStat: collection.private,
       });
+      Modal.close();
+      this.props.snackBarOpen(`${msg}相册成功`);
+    } catch (err) {
+      console.warn(err);
+      Modal.close();
+      this.props.snackBarOpen(`${msg}相册失败 ${err.reason}`);
+    }
   }
 
   _handleRemoveNameChange = (e, coll) => {
@@ -130,11 +121,11 @@ export default class OwnView extends PureComponent {
     } else if (type === 'remove') {
       modalState.confirmRemove = false;
     }
-    this.props.modalClose();
+    Modal.close();
   }
 
   renderAddModal = () => {
-    this.props.modalOpen({
+    Modal.show({
       title: '新建相册',
       content: (
         <FormControl error={modalState.errorText} fullWidth>
@@ -167,7 +158,7 @@ export default class OwnView extends PureComponent {
   }
 
   renderRemoveModal = (coll) => {
-    this.props.modalOpen({
+    Modal.show({
       title: '删除相册',
       content: [
         <small key="content__tip">请输入该相册名以确认删除该相册</small>,
@@ -196,20 +187,24 @@ export default class OwnView extends PureComponent {
     });
   }
 
-  renderLoadModal = (message, errMsg = '请求超时') => {
-    this.props.modalOpen({
-      content: <ModalLoader message={message} errMsg={errMsg} />,
-      ops: { ignoreBackdropClick: true },
-    });
-  }
-
   render() {
-    const { dataIsReady, isOwner, curUser, colls, classes } = this.props;
+    const {
+      dataIsReady,
+      isOwner,
+      colls,
+      classes,
+    } = this.props;
     if (!dataIsReady) {
       return <DataLoader />;
     }
     return (
-      <TabView>
+      <CollList
+        colls={colls}
+        onToggleLock={this._handleLockCollection}
+        onRemove={this.renderRemoveModal}
+        showActions={isOwner}
+        showDetails
+      >
         {
           isOwner && (
             <Paper className={classes.paper} onClick={this.renderAddModal}>
@@ -218,20 +213,7 @@ export default class OwnView extends PureComponent {
             </Paper>
           )
         }
-        {
-          colls.map((coll) => (
-            <CollHolder
-              key={coll._id}
-              coll={coll}
-              avatarSrc={curUser.profile.avatar}
-              onToggleLock={this._handleLockCollection}
-              onRemove={this.renderRemoveModal}
-              showActions={isOwner}
-              showDetails
-            />
-          ))
-        }
-      </TabView>
+      </CollList>
     );
   }
 }

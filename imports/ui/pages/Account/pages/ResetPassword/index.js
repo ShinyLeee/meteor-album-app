@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import IconButton from 'material-ui/IconButton';
 import ArrowBackIcon from 'material-ui-icons/ArrowBack';
 import ViewLayout from '/imports/ui/layouts/ViewLayout';
-import ModalActions from '/imports/ui/components/Modal/Common/ModalActions';
+import Modal from '/imports/ui/components/Modal';
 import CustomNavHeader from '/imports/ui/components/NavHeader/Custom';
 import withLoadable from '/imports/ui/hocs/withLoadable';
 
@@ -13,24 +13,18 @@ const AsyncResetPasswordContent = withLoadable({
 
 export default class ResetPasswordPage extends Component {
   static propTypes = {
-    modalOpen: PropTypes.func.isRequired,
-    modalClose: PropTypes.func.isRequired,
     classes: PropTypes.object.isRequired,
     history: PropTypes.object.isRequired,
   }
 
   renderPrompt = () => {
-    this.props.modalOpen({
-      content: '是否确认离开此页面？',
-      actions: (
-        <ModalActions
-          sClick={this.props.modalClose}
-          pClick={() => {
-            this.props.history.replace('/');
-            this.props.modalClose();
-          }}
-        />
-      ),
+    Modal.showPrompt({
+      message: '是否确认离开此页面？',
+      onCance: Modal.close,
+      onConfirm: () => {
+        this.props.history.replace('/');
+        Modal.close();
+      },
     });
   }
 

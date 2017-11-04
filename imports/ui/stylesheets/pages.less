@@ -79,32 +79,35 @@
     }
   }
   .main__profile {
-    position: relative;
-    margin-bottom: 140px;
-    & > .main__content {
-      position: absolute;
-      left: 127px; // We will set this more specific in jsx
-      top: -60px;
-      & > .main__avatar {
-        width: 120px;
-        height: 120px;
-        overflow: hidden;
-        & > img {
-          width: 100%;
-          height: 100%;
-          border-radius: 50%;
-          border: 3px solid #fff;
-        }
-      }
-      & > .main__detail {
-        text-align: center;
-        & > h4 { margin: 10px 0 10px 0; color: #222; }
-        & > span { font-size: 14px; color: #999; }
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    & > .main__avatar {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      margin-top: -60px;
+      overflow: hidden;
+      & > img {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        border: 3px solid #fff;
       }
     }
-  }
-  .main__action {
-    text-align: center;
+    & > .main__detail {
+      margin-bottom: 20px;
+      text-align: center;
+      & > h4 {
+        margin: 10px 0;
+        color: #222;
+      }
+      & > span {
+        font-size: 14px;
+        color: #999;
+      }
+    }
   }
 }
 
@@ -407,8 +410,6 @@
 }
 
 .search__note {
-  position: relative;
-  top: 28px;
   margin-bottom: 28px;
   & > .note__header {
     margin-bottom: 8px;

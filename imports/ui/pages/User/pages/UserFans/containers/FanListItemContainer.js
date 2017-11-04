@@ -1,5 +1,4 @@
-import _ from 'lodash';
-import { bindActionCreators, compose } from 'redux';
+import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { Meteor } from 'meteor/meteor';
@@ -7,30 +6,24 @@ import { withTracker } from 'meteor/react-meteor-data';
 import { withStyles } from 'material-ui/styles';
 import blue from 'material-ui/colors/blue';
 
-import { snackBarOpen } from '/imports/ui/redux/actions';
-import UserFansPage from '../components/Content';
+import FanListItem from '../components/FanListItem';
 
 const mapStateToProps = ({ sessions }) => ({
   User: sessions.User,
 });
 
-const mapDispatchToProps = (dispatch) => bindActionCreators({
-  snackBarOpen,
-}, dispatch);
-
-const trackHandler = ({ User, match }) => {
+const trackHandler = ({ User, fan: fanName, match }) => {
   const { username: curUserName } = match.params;
 
   const isOwner = !!User && (User.username === curUserName);
   const userHandler = Meteor.subscribe('Users.all');
   const dataIsReady = userHandler.ready();
-  const curUser = Meteor.users.findOne({ username: curUserName });
-  const fans = _.get(isOwner ? User : curUser, 'profile.followers');
+  const fan = Meteor.users.findOne({ username: fanName });
 
   return {
     dataIsReady,
-    curUser,
-    fans,
+    isOwner,
+    fan,
   };
 };
 
@@ -51,7 +44,7 @@ const styles = {
 
 export default compose(
   withRouter,
-  connect(mapStateToProps, mapDispatchToProps),
+  connect(mapStateToProps),
   withTracker(trackHandler),
   withStyles(styles),
-)(UserFansPage);
+)(FanListItem);

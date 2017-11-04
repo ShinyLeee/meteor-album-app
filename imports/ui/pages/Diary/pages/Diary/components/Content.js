@@ -1,14 +1,13 @@
 import moment from 'moment';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import TransitionGroup from 'react-transition-group/TransitionGroup';
 import FadeTransition from '/imports/ui/components/Transition/Fade';
 import ContentLayout from '/imports/ui/layouts/ContentLayout';
 import FloatButton from '/imports/ui/components/FloatButton';
 import DiaryHolder from './DiaryHolder';
 
-
-export default class DiaryContent extends Component {
+export default class DiaryContent extends PureComponent {
   static propTypes = {
     dataIsReady: PropTypes.bool.isRequired,
     diarys: PropTypes.array.isRequired,
@@ -23,6 +22,7 @@ export default class DiaryContent extends Component {
         loading={!dataIsReady}
         loadingType="Circle"
         topbarHeight={260}
+        delay
       >
         <div className="content__diary">
           <TransitionGroup>

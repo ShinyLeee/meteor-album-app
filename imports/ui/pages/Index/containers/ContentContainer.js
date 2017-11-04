@@ -10,9 +10,8 @@ const trackHandler = () => {
   // Define How many pictures render in the first time
   const limit = 5;
 
-  const userHandler = Meteor.subscribe('Users.all');
   const imageHandler = Meteor.subscribe('Images.all');
-  const dataIsReady = userHandler.ready() && imageHandler.ready();
+  const dataIsReady = imageHandler.ready();
 
   const images = Images.find(
     { private: false, deletedAt: null },

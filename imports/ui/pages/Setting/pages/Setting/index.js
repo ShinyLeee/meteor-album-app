@@ -8,7 +8,7 @@ import { updateProfile } from '/imports/api/users/methods';
 import ViewLayout from '/imports/ui/layouts/ViewLayout';
 import CustomNavHeader from '/imports/ui/components/NavHeader/Custom';
 import SecondaryNavHeader from '/imports/ui/components/NavHeader/Secondary';
-import ModalActions from '/imports/ui/components/Modal/Common/ModalActions';
+import Modal from '/imports/ui/components/Modal';
 import withLoadable from '/imports/ui/hocs/withLoadable';
 
 const AsyncSettingContent = withLoadable({
@@ -19,8 +19,6 @@ export default class SettingPage extends Component {
   static propTypes = {
     User: PropTypes.object.isRequired,
     classes: PropTypes.object.isRequired,
-    modalOpen: PropTypes.func.isRequired,
-    modalClose: PropTypes.func.isRequired,
     snackBarOpen: PropTypes.func.isRequired,
   }
 
@@ -54,10 +52,10 @@ export default class SettingPage extends Component {
       Meteor.call(
         'Qiniu.remove',
         { keys },
-        (err) => err && console.log(err),
+        (err) => err && console.warn(err),
       );
     }
-    this.props.modalClose();
+    Modal.close();
     this.setState(this._initState);
   }
 
@@ -80,7 +78,7 @@ export default class SettingPage extends Component {
         this.props.snackBarOpen('设置保存成功');
       })
       .catch((err) => {
-        console.log(err);
+        console.warn(err);
         this.props.snackBarOpen(`设置保存失败 ${err.reason}`);
       });
   }
@@ -93,15 +91,10 @@ export default class SettingPage extends Component {
   }
 
   renderPrompt = () => {
-    this.props.modalOpen({
-      title: '提示',
-      content: '您还有尚未保存的设置，是否确认退出？',
-      actions: (
-        <ModalActions
-          sClick={this.props.modalClose}
-          pClick={this._handleQuitEditing}
-        />
-      ),
+    Modal.showPrompt({
+      message: '您还有尚未保存的设置，是否确认退出？',
+      onCancel: Modal.close,
+      onConfirm: this._handleQuitEditing,
     });
   }
 

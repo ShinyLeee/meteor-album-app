@@ -2,17 +2,17 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import Button from 'material-ui/Button';
 
-const Actions = ({ primary, secondary, pClick, sClick }) => [
+const Actions = ({ primary, secondary, onConfirm, onCancel }) => [
   <Button
     key="action__cancel"
     color="primary"
-    onClick={sClick}
+    onClick={onCancel}
   >{ secondary || '取消' }
   </Button>,
   <Button
     key="action_confirm"
     color="primary"
-    onClick={pClick}
+    onClick={onConfirm}
   >{ primary || '确认' }
   </Button>,
 ];
@@ -20,8 +20,8 @@ const Actions = ({ primary, secondary, pClick, sClick }) => [
 Actions.propTypes = {
   primary: PropTypes.string,
   secondary: PropTypes.string,
-  pClick: PropTypes.func.isRequired,
-  sClick: PropTypes.func.isRequired,
+  onConfirm: PropTypes.func.isRequired,
+  onCancel: PropTypes.func.isRequired,
 };
 
 export default Actions;

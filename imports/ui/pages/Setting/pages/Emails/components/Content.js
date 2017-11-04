@@ -10,14 +10,12 @@ import IconButton from 'material-ui/IconButton';
 import Input from 'material-ui/Input';
 import MoreVertIcon from 'material-ui-icons/MoreVert';
 import ContentLayout from '/imports/ui/layouts/ContentLayout';
-import ModalLoader from '/imports/ui/components/Modal/Common/ModalLoader';
+import Modal from '/imports/ui/components/Modal';
 
 export default class EmailsContent extends Component {
   static propTypes = {
     User: PropTypes.object.isRequired,
     classes: PropTypes.object.isRequired,
-    modalOpen: PropTypes.func.isRequired,
-    modalClose: PropTypes.func.isRequired,
     snackBarOpen: PropTypes.func.isRequired,
   }
 
@@ -30,61 +28,51 @@ export default class EmailsContent extends Component {
     this.setState({ email: e.target.value });
   }
 
-  _handleSentVerifyEmail = () => {
-    this.renderLoadModal('发送邮件中');
-    Meteor.callPromise('Accounts.sendVerifyEmail')
-      .then(() => {
-        this.props.modalClose();
-        this.props.snackBarOpen('发送成功');
-      })
-      .catch((err) => {
-        console.log(err);
-        this.props.modalClose();
-        this.props.snackBarOpen(`发送失败 ${err.reason}`);
-      });
+  _handleSentVerifyEmail = async () => {
+    try {
+      await Modal.showLoader('发送邮件中');
+      await Meteor.callPromise('Accounts.sendVerifyEmail');
+      Modal.close();
+      this.props.snackBarOpen('发送成功');
+    } catch (err) {
+      console.warn(err);
+      Modal.close();
+      this.props.snackBarOpen(`发送失败 ${err.reason}`);
+    }
   }
 
   /**
    * Return the new gloabl counter and group state, when select or cancel one photo
    * @param {string} email - the email address in Menu item wait for remove
    */
-  _handleRemoveEmail(email) {
-    this.renderLoadModal('解除绑定邮箱中');
-    Meteor.callPromise('Accounts.removeEmail', { email })
-      .then(() => {
-        this.props.modalClose();
-        this.props.snackBarOpen('解除绑定邮箱成功');
-      })
-      .catch((err) => {
-        console.log(err);
-        this.props.modalClose();
-        this.props.snackBarOpen(`解除邮箱绑定失败 ${err.reason}`);
-      });
+  async _handleRemoveEmail(email) {
+    try {
+      await Modal.showLoader('解除绑定邮箱中');
+      await Meteor.callPromise('Accounts.removeEmail', { email });
+      Modal.close();
+      this.props.snackBarOpen('解除绑定邮箱成功');
+    } catch (err) {
+      console.warn(err);
+      Modal.close();
+      this.props.snackBarOpen(`解除邮箱绑定失败 ${err.reason}`);
+    }
   }
 
-  _handleAddEmail = () => {
+  _handleAddEmail = async () => {
     if (!this.state.email) {
       this.props.snackBarOpen('请输入新邮箱地址');
       return;
     }
-    this.renderLoadModal('发送验证邮件中');
-    Meteor.callPromise('Accounts.addEmail', { email: this.state.email })
-      .then(() => {
-        this.props.modalClose();
-        this.props.snackBarOpen('添加成功，请前往邮箱进行验证');
-      })
-      .catch((err) => {
-        console.log(err);
-        this.props.modalClose();
-        this.props.snackBarOpen(`更换邮箱失败 ${err.reason}`);
-      });
-  }
-
-  renderLoadModal = (message, errMsg = '请求超时') => {
-    this.props.modalOpen({
-      content: <ModalLoader message={message} errMsg={errMsg} />,
-      ops: { ignoreBackdropClick: true },
-    });
+    try {
+      await Modal.showLoader('发送验证邮件中');
+      await Meteor.callPromise('Accounts.addEmail', { email: this.state.email });
+      Modal.close();
+      this.props.snackBarOpen('添加成功，请前往邮箱进行验证');
+    } catch (err) {
+      console.warn(err);
+      Modal.close();
+      this.props.snackBarOpen(`更换邮箱失败 ${err.reason}`);
+    }
   }
 
   render() {

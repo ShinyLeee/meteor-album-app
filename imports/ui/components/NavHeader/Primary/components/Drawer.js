@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import React, { Component } from 'react';
@@ -21,7 +20,7 @@ import ArrowDropdownIcon from 'material-ui-icons/ArrowDropDown';
 import purple from 'material-ui/colors/purple';
 import teal from 'material-ui/colors/teal';
 import settings from '/imports/utils/settings';
-import { userLogout, snackBarOpen } from '/imports/ui/redux/actions';
+import { userLogout } from '/imports/ui/redux/actions';
 import {
   DrawerContent,
   DrawerProfile,
@@ -40,10 +39,10 @@ class NavHeaderDrawer extends Component {
     onRequestClose: PropTypes.func.isRequired,
     User: PropTypes.object,
     match: PropTypes.object.isRequired,
+    location: PropTypes.object.isRequired,
     history: PropTypes.object.isRequired,
     classes: PropTypes.object.isRequired,
     userLogout: PropTypes.func.isRequired,
-    snackBarOpen: PropTypes.func.isRequired,
   }
 
   state = {
@@ -64,20 +63,16 @@ class NavHeaderDrawer extends Component {
   }
 
   _navTo = (to) => () => {
+    const { location: { pathname } } = this.props;
+    if (pathname === to) {
+      this.props.onRequestClose();
+    }
     this.props.history.push(to);
   }
 
-  _handleLogout = () => {
-    const logoutPromise = Meteor.wrapPromise(Meteor.logout);
-    logoutPromise()
-      .then(() => {
-        this.props.userLogout();
-        this.props.snackBarOpen('登出成功');
-      })
-      .catch(err => {
-        console.log(err);
-        this.props.snackBarOpen(`登出失败 ${err.reason}`);
-      });
+  _handleLogout = async () => {
+    await this.props.userLogout();
+    this.props.onRequestClose();
   }
 
   renderPopover = (e) => {
@@ -88,7 +83,13 @@ class NavHeaderDrawer extends Component {
   }
 
   render() {
-    const { User, visible, match, classes, onRequestClose } = this.props;
+    const {
+      visible,
+      User,
+      match,
+      classes,
+      onRequestClose,
+    } = this.props;
     const indexPage = match.path === '/';
     const userPage = !!match.params.username;
     return (
@@ -109,23 +110,21 @@ class NavHeaderDrawer extends Component {
             {
               User && (
                 <DrawerEmail>
-                  <div>
-                    <span>{(User.emails && User.emails[0].address) || User.username}</span>
-                    <div><ArrowDropdownIcon color="#fff" onClick={this.renderPopover} /></div>
-                    <Popover
-                      open={this.state.popover}
-                      anchorEl={this.state.popoverAnchor}
-                      anchorOrigin={{ horizontal: 'center', vertical: 'bottom' }}
-                      transformOrigin={{ horizontal: 'center', vertical: 'top' }}
-                      onRequestClose={() => this.setState({ popover: false })}
-                    >
-                      <List>
-                        <ListItem onClick={this._handleLogout}>
-                          <ListItemText primary="登出" />
-                        </ListItem>
-                      </List>
-                    </Popover>
-                  </div>
+                  <span>{(User.emails && User.emails[0].address) || User.username}</span>
+                  <ArrowDropdownIcon color="#fff" onClick={this.renderPopover} />
+                  <Popover
+                    open={this.state.popover}
+                    anchorEl={this.state.popoverAnchor}
+                    anchorOrigin={{ horizontal: 'center', vertical: 'bottom' }}
+                    transformOrigin={{ horizontal: 'center', vertical: 'top' }}
+                    onRequestClose={() => this.setState({ popover: false })}
+                  >
+                    <List>
+                      <ListItem onClick={this._handleLogout}>
+                        <ListItemText primary="登出" />
+                      </ListItem>
+                    </List>
+                  </Popover>
                 </DrawerEmail>
               )
             }
@@ -211,7 +210,6 @@ const mapStateToProps = ({ sessions }) => ({
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   userLogout,
-  snackBarOpen,
 }, dispatch);
 
 const styles = {

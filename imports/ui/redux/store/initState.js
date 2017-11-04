@@ -1,7 +1,7 @@
 export default {
   sessions: {
     User: null,
-    uptoken: '',
+    uptoken: null,
   },
 
   portals: {

@@ -6,7 +6,8 @@ import Button from 'material-ui/Button';
 import Input from 'material-ui/Input';
 import { validateEmail } from '/imports/utils';
 import ContentLayout from '/imports/ui/layouts/ContentLayout';
-import { ModalActions, ModalLoader } from '/imports/ui/components/Modal/Common';
+import Modal from '/imports/ui/components/Modal';
+import ModalActions from '/imports/ui/components/Modal/Common/ModalActions';
 
 const modalState = {
   email: '',
@@ -29,8 +30,6 @@ const ModalContent = ({ className, onChange }) => (
 export default class LoginContent extends Component {
   static propTypes = {
     userLogin: PropTypes.func.isRequired,
-    modalOpen: PropTypes.func.isRequired,
-    modalClose: PropTypes.func.isRequired,
     snackBarOpen: PropTypes.func.isRequired,
     history: PropTypes.object.isRequired,
     classes: PropTypes.object.isRequired,
@@ -42,7 +41,8 @@ export default class LoginContent extends Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    return JSON.stringify(this.state) !== JSON.stringify(nextState);
+    return this.state.account !== nextState.account ||
+    this.state.password !== nextState.password;
   }
 
   _handleChange = (e) => {
@@ -55,30 +55,17 @@ export default class LoginContent extends Component {
     this.setState({ [name]: value });
   }
 
-  _handleLogin = () => {
+  _handleLogin = async () => {
     const { account, password } = this.state;
-
-    this.renderLoadModal('登录中');
-
-    const loginWithPassword = Meteor.wrapPromise(Meteor.loginWithPassword);
-
-    loginWithPassword(account, password)
-      .then(() => {
-        const user = Meteor.user();
-        this.setState({ account: '', password: '' });
-        this.props.modalClose();
-        this.props.userLogin(user);
-        this.props.snackBarOpen('登陆成功');
-        this.props.history.replace('/');
-      })
-      .catch((err) => {
-        console.log(err);
-        this.props.modalClose();
-        this.props.snackBarOpen(`登录失败 ${err.reason}`);
-      });
+    await Modal.showLoader('登录中');
+    await this.props.userLogin({ account, password });
+    this.setState({ account: '', password: '' });
+    Modal.close();
+    this.props.snackBarOpen('登陆成功');
+    this.props.history.replace('/');
   }
 
-  _handleSentResetEmail = () => {
+  _handleSentResetEmail = async () => {
     const { email } = modalState;
 
     if (!validateEmail(email)) {
@@ -86,25 +73,22 @@ export default class LoginContent extends Component {
       return;
     }
 
-    this.renderLoadModal('发送邮件中');
-
-    const forgotPassword = Meteor.wrapPromise(Accounts.forgotPassword);
-
-    forgotPassword({ email })
-      .then(() => {
-        this.props.modalClose();
-        this.props.snackBarOpen('发送成功');
-      })
-      .catch((err) => {
-        console.log(err);
-        this.props.modalClose();
-        this.props.snackBarOpen(`发送失败 ${err.reason}`);
-      });
+    try {
+      await Modal.showLoader('发送邮件中');
+      const forgotPassword = Meteor.wrapPromise(Accounts.forgotPassword);
+      await forgotPassword({ email });
+      Modal.close();
+      this.props.snackBarOpen('发送成功');
+    } catch (err) {
+      console.warn(err);
+      Modal.close();
+      this.props.snackBarOpen(`发送失败 ${err.reason}`);
+    }
   }
 
   renderPrompt = () => {
     const { classes } = this.props;
-    this.props.modalOpen({
+    Modal.show({
       title: '重置密码',
       content: (
         <ModalContent
@@ -115,23 +99,16 @@ export default class LoginContent extends Component {
       actions: (
         <ModalActions
           primary="确认发送"
-          pClick={() => {
-            this._handleSentResetEmail();
+          onCancel={() => {
+            Modal.close();
             modalState.email = '';
           }}
-          sClick={() => {
-            this.props.modalClose();
+          onConfirm={async () => {
+            await this._handleSentResetEmail();
             modalState.email = '';
           }}
         />
       ),
-      ops: { ignoreBackdropClick: true },
-    });
-  }
-
-  renderLoadModal = (message, errMsg = '请求超时') => {
-    this.props.modalOpen({
-      content: <ModalLoader message={message} errMsg={errMsg} />,
       ops: { ignoreBackdropClick: true },
     });
   }

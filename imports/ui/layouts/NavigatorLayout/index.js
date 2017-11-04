@@ -15,6 +15,7 @@ import Routes from './Routes';
 
 const AsyncUploader = withLoadable({
   loader: () => import('/imports/ui/components/Uploader'),
+  loading: () => <div />, // do not show loader when loading Uploader
 });
 
 class NavigatorLayout extends PureComponent {
@@ -62,7 +63,7 @@ export default compose(
     const { User: gUser } = props;
     const User = Meteor.user();
     if (!gUser && User) {
-      props.userLogin(User);
+      props.userLogin({ inExpiration: true });
     }
 
     let appIsReady = typeof User === 'object';

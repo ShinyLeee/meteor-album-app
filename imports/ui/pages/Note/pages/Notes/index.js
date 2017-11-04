@@ -9,7 +9,7 @@ import MoreVertIcon from 'material-ui-icons/MoreVert';
 import { readAllNotes } from '/imports/api/notes/methods';
 import ViewLayout from '/imports/ui/layouts/ViewLayout';
 import SecondaryNavHeader from '/imports/ui/components/NavHeader/Secondary';
-import ModalLoader from '/imports/ui/components/Modal/Common/ModalLoader';
+import Modal from '/imports/ui/components/Modal';
 import withLoadable from '/imports/ui/hocs/withLoadable';
 
 const AsyncNoteContent = withLoadable({
@@ -19,8 +19,6 @@ const AsyncNoteContent = withLoadable({
 export default class NotesPage extends Component {
   static propTypes = {
     User: PropTypes.object.isRequired,
-    modalOpen: PropTypes.func.isRequired,
-    modalClose: PropTypes.func.isRequired,
     snackBarOpen: PropTypes.func.isRequired,
     history: PropTypes.object.isRequired,
   }
@@ -38,13 +36,13 @@ export default class NotesPage extends Component {
     const { User } = this.props;
     this.setState({ popover: false });
     try {
-      await this.renderLoadModal('标记已读中');
+      await Modal.showLoader('标记已读中');
       await readAllNotes.callPromise({ receiver: User.username });
-      this.props.modalClose();
+      Modal.close();
       this.props.snackBarOpen('标记已读成功');
     } catch (err) {
-      console.log(err);
-      this.props.modalClose();
+      console.warn(err);
+      Modal.close();
       this.props.snackBarOpen(`标记已读失败 ${err.reason}`);
     }
   }
@@ -52,14 +50,6 @@ export default class NotesPage extends Component {
   renderPopover = (e) => {
     this.setState({ popover: true, popoverAnchor: e.currentTarget });
   }
-
-  renderLoadModal = (message, errMsg = '请求超时') => new Promise((resolve) => {
-    this.props.modalOpen({
-      content: <ModalLoader message={message} errMsg={errMsg} />,
-      ops: { ignoreBackdropClick: true },
-    });
-    setTimeout(() => resolve(), 275);
-  })
 
   render() {
     const { User } = this.props;

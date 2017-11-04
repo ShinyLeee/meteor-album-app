@@ -23,7 +23,7 @@ class UserFansPage extends Component {
       <ViewLayout
         Topbar={<SecondaryNavHeader title={isOwner ? '我的关注者' : `${curUserName}的关注者`} />}
       >
-        <AsyncUserFansContent isOwner={isOwner} />
+        <AsyncUserFansContent />
       </ViewLayout>
     );
   }

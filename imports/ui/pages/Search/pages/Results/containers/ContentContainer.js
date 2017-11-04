@@ -1,5 +1,4 @@
 import { compose } from 'redux';
-import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
@@ -8,10 +7,6 @@ import { Collections } from '/imports/api/collections/collection';
 import { Notes } from '/imports/api/notes/note';
 
 import ResultsContent from '../components/Content';
-
-const mapStateToProps = ({ sessions }) => ({
-  User: sessions.User,
-});
 
 const trackHandler = ({ match }) => {
   const { query } = match.params;
@@ -43,6 +38,5 @@ const trackHandler = ({ match }) => {
 
 export default compose(
   withRouter,
-  connect(mapStateToProps),
   withTracker(trackHandler),
 )(ResultsContent);

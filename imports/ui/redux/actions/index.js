@@ -85,29 +85,55 @@ export const disableSelectAll = () => ({
   type: types.DISABLE_SELECT_ALL,
 });
 
-export const storeUser = (user) => ({
-  type: types.STORE_USER,
+export const saveUser = (user) => ({
+  type: types.SAVE_USER,
   user,
 });
 
-export const storeUptoken = (uptoken) => ({
-  type: types.STORE_UPTOKEN,
+export const clearUser = () => ({
+  type: types.CLEAR_USER,
+});
+
+export const saveUptoken = (uptoken) => ({
+  type: types.SAVE_UPTOKEN,
   uptoken,
 });
 
-export const userLogin = (user) => async (dispatch) => {
-  dispatch(storeUser(user));
+export const clearUptoken = () => ({
+  type: types.CLEAR_USER,
+});
+
+export const userLogin = ({ account, password, inExpiration = false }) => async (dispatch) => {
   try {
-    const res = await Meteor.callPromise('Qiniu.getUptoken');
+    if (!inExpiration) {
+      const loginWithPassword = Meteor.wrapPromise(Meteor.loginWithPassword);
+      await loginWithPassword(account, password);
+    }
+    dispatch(saveUser(Meteor.user()));
     console.log('%c User Login', 'color: blue');
-    dispatch(storeUptoken(res.uptoken));
+    const { uptoken } = await Meteor.callPromise('Qiniu.getUptoken');
+    dispatch(saveUptoken(uptoken));
+    console.log('%c User get uptoken', 'color: blue');
   } catch (err) {
-    console.log(err);
-    dispatch(snackBarOpen(`获取七牛云token失败 ${err}`));
+    console.warn(err);
+    if (Meteor.user()) {
+      dispatch(snackBarOpen(`获取七牛云token失败 ${err}`));
+    } else {
+      dispatch(snackBarOpen(`登录失败 ${err}`));
+    }
   }
 };
 
-export const userLogout = () => ({
-  type: types.USER_LOGOUT,
-});
+export const userLogout = () => async (dispatch) => {
+  const logoutPromise = Meteor.wrapPromise(Meteor.logout);
+  try {
+    await logoutPromise();
+    dispatch(snackBarOpen('登出成功'));
+    dispatch(clearUser());
+    dispatch(clearUptoken());
+  } catch (err) {
+    console.warn(err);
+    dispatch(snackBarOpen(`登出失败 ${err.reason}`));
+  }
+};
 

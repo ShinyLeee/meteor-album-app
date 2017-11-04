@@ -68,7 +68,7 @@ class UploaderContainer extends Component {
         }))
         .catch((err) => {
           // fallback if can not get image average color
-          console.log(err);
+          console.warn(err);
           image.color = '#eee';
           return insertImage.callPromise(image);
         });
@@ -79,7 +79,7 @@ class UploaderContainer extends Component {
         return insertImage.callPromise(image);
       })
       .catch((err) => {
-        console.log(err);
+        console.warn(err);
         image.color = '#eee';
         return insertImage.callPromise(image);
       });

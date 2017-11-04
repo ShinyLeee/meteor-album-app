@@ -43,7 +43,7 @@ export default function Routes() {
       <AuthRoute path="/note/:username/sent" component={AllSentNotesPage} policy={isOwner} />
       <AuthRoute path="/note/:username/received" component={AllNotesPage} policy={isOwner} />
       <AuthRoute path="/sendNote" component={SendNotePage} policy={isLogin} />
-      <Route path="/login" component={LoginPage} policy={isLogout} />
+      <AuthRoute path="/login" component={LoginPage} policy={isLogout} />
       <AuthRoute path="/register" component={RegisterPage} policy={isLogout} />
       <AuthRoute path="/accounts/resetPassword" component={ResetPasswordPage} policy={isLogout} />
       <Route path="/accounts/verifyEmail" component={VerifyEmailPage} />

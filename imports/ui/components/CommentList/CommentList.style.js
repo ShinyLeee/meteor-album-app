@@ -1,18 +1,4 @@
 import styled from 'styled-components';
-import List from 'material-ui/List';
-
-export const CommentsWrapper = styled.div`
-  border-top: 1px solid #ebebeb;
-  overflow-x: hidden;
-`;
-
-export const CommentsSection = styled(List)`
-  max-height: 275px;
-  overflow-y: scroll;
-  & > div:first-child {
-    border-top: 1px solid #ebebeb;
-  }
-`;
 
 export const CommentsContent = styled.div`
   flex: 1 1 auto;

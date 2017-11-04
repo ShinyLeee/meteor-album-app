@@ -19,10 +19,7 @@ class PhotoSwipeHolder extends Component {
   }
 
   shouldComponentUpdate(nextProps) {
-    if (this.props.open !== nextProps.open) {
-      return true;
-    }
-    return false;
+    return this.props.open !== nextProps.open;
   }
 
   /**

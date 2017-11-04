@@ -1,6 +1,6 @@
 import moment from 'moment';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import TransitionGroup from 'react-transition-group/TransitionGroup';
@@ -11,10 +11,11 @@ import ArrowBackIcon from 'material-ui-icons/Close';
 import MoreVertIcon from 'material-ui-icons/MoreVert';
 import { Diarys } from '/imports/api/diarys/diary';
 import { updateDiary, removeDiary } from '/imports/api/diarys/methods';
-import { modalOpen, modalClose, diaryOpen, diaryClose, snackBarOpen } from '/imports/ui/redux/actions';
+import { diaryOpen, diaryClose, snackBarOpen } from '/imports/ui/redux/actions';
+import Portal from '/imports/ui/components/Portal';
 import SlideTransition from '/imports/ui/components/Transition/Slide';
 import CustomNavHeader from '/imports/ui/components/NavHeader/Custom';
-import { ModalActions, ModalLoader } from '/imports/ui/components/Modal/Common';
+import Modal from '/imports/ui/components/Modal';
 import { QuillShower, QuillEditor } from '/imports/ui/components/Quill';
 import {
   Wrapper,
@@ -35,12 +36,10 @@ const quillConfig = {
   },
 };
 
-class DiaryHolder extends Component {
+class DiaryHolder extends PureComponent {
   static propTypes = {
-    open: PropTypes.bool.isRequired,
+    visible: PropTypes.bool.isRequired,
     diary: PropTypes.object,
-    modalOpen: PropTypes.func.isRequired,
-    modalClose: PropTypes.func.isRequired,
     diaryOpen: PropTypes.func.isRequired,
     diaryClose: PropTypes.func.isRequired,
     snackBarOpen: PropTypes.func.isRequired,
@@ -52,16 +51,16 @@ class DiaryHolder extends Component {
     updatedContent: '',
   }
 
-  componentWillReceiveProps(nextProps) {
-    const { open, diary } = nextProps;
-    if (this.props.open !== open) {
-      if (open) {
-        this.setState({ updatedOutline: diary.outline, updatedContent: diary.content });
-      } else {
-        this.setState({ updatedOutline: '', updatedContent: '' });
-      }
-    }
-  }
+  // TODO bug fix
+  // componentDidUpdate(prevProps) {
+  //   if (prevProps.visible !== this.props.visible) {
+  //     if (this.props.visible) {
+  //       document.body.style.overflow = 'hidden';
+  //     } else {
+  //       document.body.style.overflow = '';
+  //     }
+  //   }
+  // }
 
   /**
    * @param {string} outline - plain text take from rich text
@@ -74,68 +73,47 @@ class DiaryHolder extends Component {
     this.setState({ updatedOutline: outline, updatedContent: content });
   }
 
-  _handleRemoveDiary = () => {
+  _handleRemoveDiary = async () => {
     const { diary } = this.props;
-
-    this.props.modalClose();
-    this.renderLoadModal('删除日记中');
-
-    removeDiary.callPromise({ diaryId: diary._id })
-      .then(() => {
-        this.props.modalClose();
-        this.props.diaryClose();
-        this.props.snackBarOpen('删除成功');
-      })
-      .catch((err) => {
-        console.log(err);
-        this.props.modalClose();
-        this.props.snackBarOpen(`删除失败 ${err.reason}`);
-      });
+    try {
+      await Modal.showLoader('删除日记中');
+      await removeDiary.callPromise({ diaryId: diary._id });
+      Modal.close();
+      this.props.diaryClose();
+      this.props.snackBarOpen('删除成功');
+    } catch (err) {
+      console.warn(err);
+      Modal.close();
+      this.props.snackBarOpen(`删除失败 ${err.reason}`);
+    }
   }
 
-  _handleUpdateDiary = () => {
+  _handleUpdateDiary = async () => {
     const { diary } = this.props;
     const { updatedOutline, updatedContent } = this.state;
-
-    this.renderLoadModal('更新日记中');
-
-    updateDiary.callPromise({
-      diaryId: diary._id,
-      outline: updatedOutline,
-      content: updatedContent,
-    })
-      .then(() => {
-        this.props.modalClose();
-        this.props.diaryOpen(Diarys.findOne(diary._id));
-        this.props.snackBarOpen('修改成功');
-        this.setState({ isEditing: false, updatedOutline: '', updatedContent: '' });
-      })
-      .catch((err) => {
-        console.log(err);
-        this.props.modalClose();
-        this.props.snackBarOpen(`修改失败 ${err.reason}`);
+    try {
+      await Modal.showLoader('更新日记中');
+      await updateDiary.callPromise({
+        diaryId: diary._id,
+        outline: updatedOutline,
+        content: updatedContent,
       });
+      Modal.close();
+      this.props.diaryOpen(Diarys.findOne(diary._id));
+      this.props.snackBarOpen('修改成功');
+      this.setState({ isEditing: false, updatedOutline: '', updatedContent: '' });
+    } catch (err) {
+      console.warn(err);
+      Modal.close();
+      this.props.snackBarOpen(`修改失败 ${err.reason}`);
+    }
   }
 
-  _handleClose = (closeDiary = false) => () => {
+  _handleClose(closeDiary = false) {
     this.setState({ isEditing: false, menuOpen: false });
     if (closeDiary) {
       this.props.diaryClose();
     }
-  }
-
-  _handleOpenModal = () => {
-    this._handleRequestClose();
-    this.props.modalOpen({
-      title: '提示',
-      content: '您是否确认删除此日记？',
-      actions: (
-        <ModalActions
-          sClick={this.props.modalClose}
-          pClick={this._handleRemoveDiary}
-        />
-      ),
-    });
   }
 
   _handleEditing = () => {
@@ -147,104 +125,102 @@ class DiaryHolder extends Component {
     this.setState({ menuOpen: false });
   }
 
-  renderNavHeader() {
-    const { diary } = this.props;
-    if (this.state.isEditing) {
-      return (
-        <CustomNavHeader
-          title={diary.title}
-          Left={
-            <IconButton onClick={this._handleClose()}>
-              <ArrowBackIcon />
-            </IconButton>
-          }
-          Right={<Button onClick={this._handleUpdateDiary}>保存</Button>}
-        />
-      );
-    }
-    return (
-      <CustomNavHeader
-        title={diary.title}
-        Left={
-          <IconButton onClick={this._handleClose(true)}>
-            <ArrowBackIcon color="#666" />
-          </IconButton>
-        }
-        Right={[
-          <IconButton
-            key="moreBtn"
-            onClick={(e) => this.setState({ anchorEl: e.currentTarget, menuOpen: true })}
-          >
-            <MoreVertIcon />
-          </IconButton>,
-          <Menu
-            key="moreMenu"
-            open={this.state.menuOpen}
-            anchorEl={this.state.anchorEl}
-            onRequestClose={this._handleRequestClose}
-          >
-            <MenuItem onClick={this._handleEditing}>编辑</MenuItem>
-            <MenuItem onClick={this._handleOpenModal}>删除</MenuItem>
-          </Menu>,
-        ]}
-      />
-    );
-  }
-
-  renderLoadModal = (message, errMsg = '请求超时') => {
-    this.props.modalOpen({
-      content: <ModalLoader message={message} errMsg={errMsg} />,
-      ops: { ignoreBackdropClick: true },
+  renderPrompt = () => {
+    this._handleRequestClose();
+    Modal.showPrompt({
+      message: '您是否确认删除此日记？',
+      onCancel: Modal.close,
+      onConfirm: this._handleRemoveDiary,
     });
   }
 
   render() {
-    const { open, diary } = this.props;
+    const { visible, diary } = this.props;
     return (
-      <TransitionGroup>
-        {
-          open && (
-            <SlideTransition>
-              <Wrapper>
-                { this.renderNavHeader() }
-                <Body>
-                  <Article>
-                    {
-                      this.state.isEditing
-                      ? (
-                        <QuillEditor
-                          modules={quillConfig}
-                          onChange={this._handleDiaryChange}
-                          contentType="delta"
-                          content={diary.content}
-                        />
-                      )
-                      : <QuillShower content={diary.content} />
-                    }
-                  </Article>
-                  <Footer>
-                    <Time dateTime={diary.time}>
-                      { this.state.isEditing ? `编辑中 ${moment().format('YYYY.MM.DD A HH:mm')}` : diary.time}
-                    </Time>
-                  </Footer>
-                </Body>
-              </Wrapper>
-            </SlideTransition>
-          )
-        }
-      </TransitionGroup>
+      <Portal name="DiaryHolder">
+        <TransitionGroup>
+          {
+            visible && (
+              <SlideTransition>
+                <Wrapper>
+                  {
+                    this.state.isEditing
+                    ? (
+                      <CustomNavHeader
+                        title={diary.title}
+                        Left={
+                          <IconButton onClick={() => this._handleClose()}>
+                            <ArrowBackIcon />
+                          </IconButton>
+                        }
+                        Right={<Button onClick={this._handleUpdateDiary}>保存</Button>}
+                      />
+                    )
+                    : (
+                      <CustomNavHeader
+                        title={diary.title}
+                        Left={
+                          <IconButton onClick={() => this._handleClose(true)}>
+                            <ArrowBackIcon color="#666" />
+                          </IconButton>
+                        }
+                        Right={[
+                          <IconButton
+                            key="moreBtn"
+                            onClick={(e) => this.setState({ anchorEl: e.currentTarget, menuOpen: true })}
+                          >
+                            <MoreVertIcon />
+                          </IconButton>,
+                          <Menu
+                            key="moreMenu"
+                            open={this.state.menuOpen}
+                            anchorEl={this.state.anchorEl}
+                            onRequestClose={this._handleRequestClose}
+                          >
+                            <MenuItem onClick={this._handleEditing}>编辑</MenuItem>
+                            <MenuItem onClick={this.renderPrompt}>删除</MenuItem>
+                          </Menu>,
+                        ]}
+                      />
+                    )
+                  }
+                  <Body>
+                    <Article>
+                      {
+                        this.state.isEditing
+                        ? (
+                          <QuillEditor
+                            modules={quillConfig}
+                            onChange={this._handleDiaryChange}
+                            contentType="delta"
+                            content={diary.content}
+                          />
+                        )
+                        : <QuillShower content={diary.content} />
+                      }
+                    </Article>
+                    <Footer>
+                      <Time dateTime={diary.time}>
+                        { this.state.isEditing ? `编辑中 ${moment().format('YYYY.MM.DD A HH:mm')}` : diary.time}
+                      </Time>
+                    </Footer>
+                  </Body>
+                </Wrapper>
+              </SlideTransition>
+            )
+          }
+        </TransitionGroup>
+      </Portal>
     );
   }
 }
 
 const mapStateToProps = ({ portals }) => ({
-  open: portals.diary.open,
+  visible: portals.diary.open,
   diary: portals.diary.content,
 });
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
-  modalOpen,
-  modalClose,
   diaryOpen,
   diaryClose,
   snackBarOpen,

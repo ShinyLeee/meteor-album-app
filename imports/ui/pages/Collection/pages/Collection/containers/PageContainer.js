@@ -5,8 +5,6 @@ import { connect } from 'react-redux';
 import { Collections } from '/imports/api/collections/collection';
 import {
   disableSelectAll,
-  modalOpen,
-  modalClose,
   snackBarOpen,
   uploaderStart,
 } from '/imports/ui/redux/actions';
@@ -20,8 +18,6 @@ const mapStateToProps = ({ sessions, selectCounter }) => ({
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   disableSelectAll,
-  modalOpen,
-  modalClose,
   snackBarOpen,
   uploaderStart,
 }, dispatch);

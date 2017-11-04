@@ -69,8 +69,7 @@ export default class NoteHolder extends PureComponent {
                     [classes.subheader__icon_open]: this.state.expanded,
                   })}
                   onClick={this._handleToggle}
-                >
-                  <ExpandMoreIcon />
+                ><ExpandMoreIcon />
                 </IconButton>
               </div>
             }
@@ -84,14 +83,12 @@ export default class NoteHolder extends PureComponent {
                 <IconButton
                   className={classes.cardActions__btn}
                   onClick={() => history.push(`/sendNote/?receiver=${note.receiver}`)}
-                >
-                  <ReplyIcon />
+                ><ReplyIcon />
                 </IconButton>
                 <IconButton
                   className={classes.cardActions__btn}
                   onClick={this._handleRead}
-                >
-                  <CheckBoxIcon />
+                ><CheckBoxIcon />
                 </IconButton>
               </CardActions>
             )

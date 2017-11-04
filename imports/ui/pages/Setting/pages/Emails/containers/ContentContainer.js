@@ -2,7 +2,7 @@ import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import { withStyles } from 'material-ui/styles';
 
-import { modalOpen, modalClose, snackBarOpen } from '/imports/ui/redux/actions';
+import { snackBarOpen } from '/imports/ui/redux/actions';
 import SettingEmailsContent from '../components/Content';
 
 const mapStateToProps = ({ sessions }) => ({
@@ -10,8 +10,6 @@ const mapStateToProps = ({ sessions }) => ({
 });
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
-  modalOpen,
-  modalClose,
   snackBarOpen,
 }, dispatch);
 

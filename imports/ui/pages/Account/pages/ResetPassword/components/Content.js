@@ -6,12 +6,10 @@ import { Accounts } from 'meteor/accounts-base';
 import Button from 'material-ui/Button';
 import Input from 'material-ui/Input';
 import ContentLayout from '/imports/ui/layouts/ContentLayout';
-import ModalLoader from '/imports/ui/components/Modal/Common/ModalLoader';
+import Modal from '/imports/ui/components/Modal';
 
 export default class ResetPasswordContent extends Component {
   static propTypes = {
-    modalOpen: PropTypes.func.isRequired,
-    modalClose: PropTypes.func.isRequired,
     snackBarOpen: PropTypes.func.isRequired,
     classes: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
@@ -27,7 +25,7 @@ export default class ResetPasswordContent extends Component {
     this.setState({ [e.target.name]: e.target.value });
   }
 
-  _handleResetPassword = () => {
+  _handleResetPassword = async () => {
     const { location } = this.props;
     const { newPwd, newPwd2 } = this.state;
 
@@ -48,29 +46,18 @@ export default class ResetPasswordContent extends Component {
       return;
     }
 
-    this.renderLoadModal('修改密码中');
-
-
-    const resetPassword = Meteor.wrapPromise(Accounts.resetPassword);
-
-    resetPassword(token, newPwd)
-      .then(() => {
-        this.props.modalClose();
-        this.props.history.replace('/login');
-        this.props.snackBarOpen('修改密码成功');
-      })
-      .catch((err) => {
-        console.log(err);
-        this.props.modalClose();
-        this.props.snackBarOpen(`修改密码失败 ${err.reason}`);
-      });
-  }
-
-  renderLoadModal = (message, errMsg = '请求超时') => {
-    this.props.modalOpen({
-      content: <ModalLoader message={message} errMsg={errMsg} />,
-      ops: { ignoreBackdropClick: true },
-    });
+    try {
+      await Modal.showLoader('修改密码中');
+      const resetPassword = Meteor.wrapPromise(Accounts.resetPassword);
+      await resetPassword(token, newPwd);
+      Modal.close();
+      this.props.history.replace('/login');
+      this.props.snackBarOpen('修改密码成功');
+    } catch (err) {
+      console.warn(err);
+      Modal.close();
+      this.props.snackBarOpen(`修改密码失败 ${err.reason}`);
+    }
   }
 
   render() {

@@ -25,12 +25,12 @@ const { imageDomain } = settings;
 export default class ImageHolder extends PureComponent {
   static propTypes = {
     User: PropTypes.object, // not required bc guest can visit it
-    owner: PropTypes.object.isRequired,
-    image: PropTypes.object.isRequired,
+    owner: PropTypes.object.isRequired, // real time data
+    image: PropTypes.object.isRequired, // real time data
+    commentsNum: PropTypes.number.isRequired, // real time data
     onToggleLike: PropTypes.func.isRequired,
     onMediaClick: PropTypes.func.isRequired,
     classes: PropTypes.object.isRequired,
-    comments: PropTypes.array.isRequired,
     history: PropTypes.object.isRequired,
   }
 
@@ -53,7 +53,7 @@ export default class ImageHolder extends PureComponent {
       User,
       owner,
       image,
-      comments,
+      commentsNum,
       classes,
     } = this.props;
 
@@ -125,15 +125,15 @@ export default class ImageHolder extends PureComponent {
               onClick={this._handleToggleComment}
             >
               <CommentIcon />
-              <ActionButtonNum visible={comments.length > 0}>
-                {comments.length}
+              <ActionButtonNum visible={commentsNum > 0}>
+                {commentsNum}
               </ActionButtonNum>
             </IconButton>
           </CardActions>
           <CommentList
             open={this.state.isCommentOpen}
             discId={image._id}
-            comments={comments}
+            owner={owner}
           />
         </Card>
       </Wrapper>

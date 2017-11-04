@@ -11,14 +11,14 @@ export default class App extends PureComponent {
   }
 
   componentDidCatch(error) {
-    console.log(error);
+    console.warn(error);
     import('/imports/ui/layouts/ErrorLayout')
       .then((module) => {
         const ErrorLayout = module.default;
         this.setState({ error: <ErrorLayout message={error.toString()} /> });
       })
       .catch((err) => {
-        console.log(err);
+        console.warn(err);
         this.setState({ error: <div>Uncaught Error: {err}</div> });
       });
   }

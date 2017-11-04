@@ -2,12 +2,11 @@ import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import { withStyles } from 'material-ui/styles';
 
-import { modalOpen, modalClose, snackBarOpen } from '/imports/ui/redux/actions';
+import { userLogout, snackBarOpen } from '/imports/ui/redux/actions';
 import SettingPasswordContent from '../components/Content';
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
-  modalOpen,
-  modalClose,
+  userLogout,
   snackBarOpen,
 }, dispatch);
 

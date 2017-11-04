@@ -10,7 +10,7 @@ import purple from 'material-ui/colors/purple';
 import { removeImages, recoveryImages } from '/imports/api/images/methods';
 import ViewLayout from '/imports/ui/layouts/ViewLayout';
 import SecondaryNavHeader from '/imports/ui/components/NavHeader/Secondary';
-import { ModalActions, ModalLoader } from '/imports/ui/components/Modal/Common';
+import Modal from '/imports/ui/components/Modal';
 import withLoadable from '/imports/ui/hocs/withLoadable';
 
 const AsyncRecycleContent = withLoadable({
@@ -25,8 +25,6 @@ export default class RecyclePage extends PureComponent {
     selectImages: PropTypes.array.isRequired,
     counter: PropTypes.number.isRequired,
     disableSelectAll: PropTypes.func.isRequired,
-    modalOpen: PropTypes.func.isRequired,
-    modalClose: PropTypes.func.isRequired,
     snackBarOpen: PropTypes.func.isRequired,
   }
 
@@ -38,11 +36,43 @@ export default class RecyclePage extends PureComponent {
     this.setState({ isEditing: !!nextProps.counter });
   }
 
-  _handleQuitEditing = () => {
-    this.props.disableSelectAll();
+  _handleRecovery = async () => {
+    try {
+      const { selectImages } = this.props;
+      await Modal.showLoader('恢复相片中');
+      await recoveryImages.callPromise({
+        selectImages: selectImages.map((image) => image._id),
+      });
+      Modal.close();
+      this.props.snackBarOpen('恢复相片成功');
+      this.props.disableSelectAll();
+    } catch (err) {
+      Modal.close();
+      this.props.snackBarOpen(`恢复相片失败 ${err.reason}`);
+    }
   }
 
-  _handleOpenModal = (type) => {
+  _handleDelete = async () => {
+    try {
+      const { selectImages } = this.props;
+      await Modal.showLoader('删除相片中');
+      await Meteor.callPromise('Qiniu.remove', {
+        keys: selectImages.map((image) => `${image.user}/${image.collection}/${image.name}.${image.type}`),
+      });
+      await removeImages.callPromise({
+        selectImages: selectImages.map((image) => image._id),
+      });
+      Modal.close();
+      this.props.snackBarOpen('删除相片成功');
+      this.props.disableSelectAll();
+    } catch (err) {
+      console.warn(err);
+      Modal.close();
+      this.props.snackBarOpen(`删除相片失败 ${err.reason}`);
+    }
+  }
+
+  renderPrompt(type) {
     const { selectImages } = this.props;
     if (selectImages.length === 0) {
       this.props.snackBarOpen('您尚未选择相片');
@@ -50,62 +80,10 @@ export default class RecyclePage extends PureComponent {
     }
 
     const isRecovery = type === 'recovery';
-    this.props.modalOpen({
-      title: '提示',
-      content: isRecovery ? '是否确认恢复所选照片' : '是否确认彻底删除所选照片？',
-      actions: (
-        <ModalActions
-          sClick={this.props.modalClose}
-          pClick={isRecovery ? this._handleRecoveryImgs : this._handleDeleteImgs}
-        />
-      ),
-    });
-  }
-
-  _handleRecoveryImgs = () => {
-    const { selectImages } = this.props;
-    this.props.modalClose();
-    this.renderLoadModal('恢复相片中');
-    const selectImagesIds = selectImages.map((image) => image._id);
-    recoveryImages.callPromise({ selectImages: selectImagesIds })
-      .then(() => {
-        this.props.modalClose();
-        this.props.snackBarOpen('恢复相片成功');
-        this.props.disableSelectAll();
-      })
-      .catch((err) => {
-        this.props.modalClose();
-        this.props.snackBarOpen(`恢复相片失败 ${err.reason}`);
-      });
-  }
-
-  _handleDeleteImgs = () => {
-    const { selectImages } = this.props;
-    this.props.modalClose();
-    this.renderLoadModal('删除相片中');
-    const selectImagesIds = selectImages.map((image) => image._id);
-    const keys = selectImages.map((image) => {
-      const key = `${image.user}/${image.collection}/${image.name}.${image.type}`;
-      return key;
-    });
-    Meteor.callPromise('Qiniu.remove', { keys })
-      .then(() => removeImages.callPromise({ selectImages: selectImagesIds }))
-      .then(() => {
-        this.props.modalClose();
-        this.props.snackBarOpen('删除相片成功');
-        this.props.disableSelectAll();
-      })
-      .catch((err) => {
-        console.log(err);
-        this.props.modalClose();
-        this.props.snackBarOpen(`删除相片失败 ${err.reason}`);
-      });
-  }
-
-  renderLoadModal = (message, errMsg = '请求超时') => {
-    this.props.modalOpen({
-      content: <ModalLoader message={message} errMsg={errMsg} />,
-      ops: { ignoreBackdropClick: true },
+    Modal.showPrompt({
+      message: isRecovery ? '是否确认恢复所选照片' : '是否确认彻底删除所选照片？',
+      onCancel: Modal.close,
+      onConfirm: isRecovery ? this._handleRecovery : this._handleDelete,
     });
   }
 
@@ -120,7 +98,7 @@ export default class RecyclePage extends PureComponent {
             Left={this.state.isEditing && (
               <IconButton
                 color="contrast"
-                onClick={this._handleQuitEditing}
+                onClick={this.props.disableSelectAll}
               ><CloseIcon />
               </IconButton>
             )}
@@ -128,13 +106,13 @@ export default class RecyclePage extends PureComponent {
               <IconButton
                 key="btn__Recovery"
                 color="contrast"
-                onClick={() => this._handleOpenModal('recovery')}
+                onClick={() => this.renderPrompt('recovery')}
               ><RecoveryIcon />
               </IconButton>,
               <IconButton
                 key="btn__delete"
                 color="contrast"
-                onClick={() => this._handleOpenModal('delete')}
+                onClick={() => this.renderPrompt('delete')}
               ><RemoveIcon />
               </IconButton>,
             ]}
