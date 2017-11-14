@@ -1,4 +1,5 @@
-import _ from 'lodash';
+import map from 'lodash/map';
+import forEach from 'lodash/forEach';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { bindActionCreators } from 'redux';
@@ -95,7 +96,7 @@ export class JustifiedGroupLayout extends PureComponent {
       }
 
       let hasGroup = false;
-      _.forEach(nextProps.group, (value, key) => {
+      forEach(nextProps.group, (value, key) => {
         if (key === groupName) {
           hasGroup = true;
           if (value === groupImages.length) this.setState({ isGroupSelect: true });
@@ -232,7 +233,7 @@ export class JustifiedGroupLayout extends PureComponent {
           <span>{groupImages.length}</span>
         </Title>
         {
-          _.map(groupImages, (image, i) => (
+          map(groupImages, (image, i) => (
             <ConnectedGroupImageHolder
               key={i}
               isEditing={isEditing}

@@ -1,4 +1,5 @@
-import _ from 'lodash';
+import map from 'lodash/map';
+import includes from 'lodash/includes';
 import { Meteor } from 'meteor/meteor';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
@@ -82,7 +83,7 @@ export const unFollowUser = new ValidatedMethod({
 });
 
 // Get list of all method names on Users
-const USERS_METHODS = _.map([
+const USERS_METHODS = map([
   updateProfile,
   followUser,
   unFollowUser,
@@ -92,7 +93,7 @@ if (Meteor.isServer) {
   // Only allow 2 user operations per connection per 5 second
   DDPRateLimiter.addRule({
     name(name) {
-      return _.includes(USERS_METHODS, name);
+      return includes(USERS_METHODS, name);
     },
 
     // Rate limit per connection ID

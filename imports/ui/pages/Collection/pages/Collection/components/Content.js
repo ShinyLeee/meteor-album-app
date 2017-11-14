@@ -4,6 +4,7 @@ import moment from 'moment';
 import ContentLayout from '/imports/ui/layouts/ContentLayout';
 import ConnectedJustified from '/imports/ui/components/JustifiedLayout';
 import PhotoSwipeHolder from './PhotoSwipeHolder';
+import { Header, Title, SubTitle } from '../styles';
 
 const getDuration = (images) => {
   let duration;
@@ -36,20 +37,18 @@ export default class CollectionContent extends Component {
         loading={!dataIsReady}
         delay
       >
-        <div className="content__collPics">
-          <header className="collPics__header">
-            <h2 className="collPics__name">{cname}</h2>
-            <div className="collPics__duration">{getDuration(images)}</div>
-          </header>
-          {
-            images.length > 0 && (
-              <ConnectedJustified
-                isEditing={isEditing}
-                images={images}
-              />
-            )
-          }
-        </div>
+        <Header>
+          <Title>{cname}</Title>
+          <SubTitle>{getDuration(images)}</SubTitle>
+        </Header>
+        {
+          images.length > 0 && (
+            <ConnectedJustified
+              isEditing={isEditing}
+              images={images}
+            />
+          )
+        }
         <PhotoSwipeHolder />
       </ContentLayout>
     );

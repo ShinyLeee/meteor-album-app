@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import get from 'lodash/get';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import TransitionGroup from 'react-transition-group/TransitionGroup';
@@ -75,7 +75,7 @@ export default class ImageHolder extends PureComponent {
             subheader={<TimeAgo date={image.createdAt} formatter={formatter} />}
             avatar={
               <Avatar
-                src={_.get(owner, 'profile.avatar')}
+                src={get(owner, 'profile.avatar')}
                 onClick={() => this.props.history.push(`/user/${image.user}`)}
               />
             }

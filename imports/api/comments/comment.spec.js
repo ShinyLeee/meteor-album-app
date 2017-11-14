@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import _ from 'lodash';
+import times from 'lodash/times';
 import faker from 'faker';
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
@@ -44,7 +44,7 @@ if (Meteor.isServer) {
         curUser = Factory.create('user');
 
         // Create 2 comments belong to current user
-        _.times(2, () => Factory.create('comment', { user: curUser.username }));
+        times(2, () => Factory.create('comment', { user: curUser.username }));
 
         // Create a default comment
         Factory.create('comment', { discussion_id: imageId, type: 'image' });

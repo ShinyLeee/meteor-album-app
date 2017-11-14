@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import map from 'lodash/map';
 import PropTypes from 'prop-types';
 import jsonp from 'jsonp';
 import React, { Component } from 'react';
@@ -51,7 +51,7 @@ class QuillContent extends Component {
         this.props.snackBarOpen(`获取失败 ${err}`);
       } else {
         let verses = data.chapter || data.book[0].chapter;
-        verses = _.map(verses, (verse) => (
+        verses = map(verses, (verse) => (
           `<small>${verse.verse_nr}</small> ${verse.verse}`
         ));
         Modal.show({

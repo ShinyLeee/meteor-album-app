@@ -1,4 +1,5 @@
-import _ from 'lodash';
+import map from 'lodash/map';
+import includes from 'lodash/includes';
 import { Meteor } from 'meteor/meteor';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
@@ -38,7 +39,7 @@ export const useCode = new ValidatedMethod({
   },
 });
 
-const CODES_METHODS = _.map([
+const CODES_METHODS = map([
   checkCode,
   useCode,
 ], 'name');
@@ -47,7 +48,7 @@ if (Meteor.isServer) {
   // Only allow 1 user operations per connection per second
   DDPRateLimiter.addRule({
     name(name) {
-      return _.includes(CODES_METHODS, name);
+      return includes(CODES_METHODS, name);
     },
 
     // Rate limit per connection ID

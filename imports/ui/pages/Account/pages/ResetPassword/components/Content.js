@@ -1,14 +1,15 @@
-import _ from 'lodash';
+import get from 'lodash/get';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import Button from 'material-ui/Button';
 import Input from 'material-ui/Input';
 import ContentLayout from '/imports/ui/layouts/ContentLayout';
 import Modal from '/imports/ui/components/Modal';
+import { ButtonSection } from '../styles';
 
-export default class ResetPasswordContent extends Component {
+export default class ResetPasswordContent extends PureComponent {
   static propTypes = {
     snackBarOpen: PropTypes.func.isRequired,
     classes: PropTypes.object.isRequired,
@@ -29,7 +30,7 @@ export default class ResetPasswordContent extends Component {
     const { location } = this.props;
     const { newPwd, newPwd2 } = this.state;
 
-    const token = _.get(location, 'state.token');
+    const token = get(location, 'state.token');
 
     if (!token) {
       this.props.snackBarOpen('token不存在，请从邮箱所提供链接进入');
@@ -63,39 +64,37 @@ export default class ResetPasswordContent extends Component {
   render() {
     const { classes } = this.props;
     return (
-      <ContentLayout loading={false}>
-        <div className="content__resetPassword">
-          <section className="resetPassword__form">
-            <Input
-              className={classes.input}
-              name="newPwd"
-              placeholder="新密码"
-              type="password"
-              value={this.state.newPwd}
-              onChange={this._handleValueChange}
-              disableUnderline
-              fullWidth
-            />
-            <Input
-              className={classes.input}
-              name="newPwd2"
-              placeholder="确认密码"
-              type="password"
-              value={this.state.newPwd2}
-              onChange={this._handleValueChange}
-              disableUnderline
-              fullWidth
-            /><br />
-          </section>
-          <section className="resetPassword__button">
-            <Button
-              color="primary"
-              onClick={this._handleResetPassword}
-              raised
-            >修改密码
-            </Button>
-          </section>
+      <ContentLayout>
+        <div>
+          <Input
+            className={classes.input}
+            name="newPwd"
+            placeholder="新密码"
+            type="password"
+            value={this.state.newPwd}
+            onChange={this._handleValueChange}
+            disableUnderline
+            fullWidth
+          />
+          <Input
+            className={classes.input}
+            name="newPwd2"
+            placeholder="确认密码"
+            type="password"
+            value={this.state.newPwd2}
+            onChange={this._handleValueChange}
+            disableUnderline
+            fullWidth
+          /><br />
         </div>
+        <ButtonSection>
+          <Button
+            color="primary"
+            onClick={this._handleResetPassword}
+            raised
+          >修改密码
+          </Button>
+        </ButtonSection>
       </ContentLayout>
     );
   }

@@ -1,4 +1,5 @@
-import _ from 'lodash';
+import map from 'lodash/map';
+import includes from 'lodash/includes';
 import { Meteor } from 'meteor/meteor';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
@@ -32,7 +33,7 @@ export const removeComment = new ValidatedMethod({
   },
 });
 
-const COMMENTS_METHODS = _.map([
+const COMMENTS_METHODS = map([
   insertComment,
   removeComment,
 ], 'name');
@@ -41,7 +42,7 @@ if (Meteor.isServer) {
   // Only allow 1 user operations per connection per second
   DDPRateLimiter.addRule({
     name(name) {
-      return _.includes(COMMENTS_METHODS, name);
+      return includes(COMMENTS_METHODS, name);
     },
 
     // Rate limit per connection ID

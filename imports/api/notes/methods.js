@@ -1,4 +1,5 @@
-import _ from 'lodash';
+import map from 'lodash/map';
+import includes from 'lodash/includes';
 import { Meteor } from 'meteor/meteor';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
@@ -67,7 +68,7 @@ export const readNote = new ValidatedMethod({
 });
 
 // Get list of all method names on Notes
-const NOTES_METHODS = _.map([
+const NOTES_METHODS = map([
   insertNote,
   readAllNotes,
   readNote,
@@ -77,7 +78,7 @@ if (Meteor.isServer) {
   // Only allow 1 note operations per connection per second
   DDPRateLimiter.addRule({
     name(name) {
-      return _.includes(NOTES_METHODS, name);
+      return includes(NOTES_METHODS, name);
     },
 
     // Rate limit per connection ID

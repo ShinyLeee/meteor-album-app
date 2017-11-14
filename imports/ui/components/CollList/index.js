@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import map from 'lodash/map';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import CollHolder from './CollHolder';
@@ -16,7 +16,7 @@ export default class CollList extends PureComponent {
       <TabView>
         { children }
         {
-          _.map(colls, (coll) => (
+          map(colls, (coll) => (
             <CollHolder
               key={coll._id}
               coll={coll}

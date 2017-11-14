@@ -1,10 +1,16 @@
-import _ from 'lodash';
+import get from 'lodash/get';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import Paper from 'material-ui/Paper';
 import ContentLayout from '/imports/ui/layouts/ContentLayout';
 import CollList from '/imports/ui/components/CollList';
 import NoteHolder from '/imports/ui/components/NoteHolder';
+import UserList from '../../../components/UserList';
+import {
+  Tip,
+  Section,
+  Header,
+  EmptyMessage,
+} from '../styles';
 
 export default class SearchResultsContent extends Component {
   static propTypes = {
@@ -19,7 +25,7 @@ export default class SearchResultsContent extends Component {
   renderCollResults(query) {
     const { collections } = this.props;
     if (collections.length === 0) {
-      return <p className="search__empty">未找到符合“{query}”的结果</p>;
+      return <EmptyMessage>未找到符合“{query}”的结果</EmptyMessage>;
     }
     return <CollList colls={collections} />;
   }
@@ -27,39 +33,23 @@ export default class SearchResultsContent extends Component {
   renderUserResults(query) {
     const { users } = this.props;
     if (users.length === 0) {
-      return <p className="search__empty">未找到符合“{query}”的结果</p>;
+      return <EmptyMessage>未找到符合“{query}”的结果</EmptyMessage>;
     }
     return (
-      <Paper className="user__container">
-        {
-          users.map((user) => (
-            <div
-              key={user._id}
-              className="user__content"
-              role="button"
-              tabIndex={-1}
-              onClick={() => this.props.history.push(`/user/${user.username}`)}
-            >
-              <div className="user__avatar">
-                <img src={user.profile.avatar} alt={user.username} />
-              </div>
-              <div className="user__info">
-                <div className="user__name">{user.username}</div>
-              </div>
-            </div>
-          ))
-        }
-      </Paper>
+      <UserList
+        users={users}
+        onItemClick={(user) => this.props.history.push(`/user/${user.username}`)}
+      />
     );
   }
 
   renderNoteResults(query) {
     const { notes } = this.props;
     if (notes.length === 0) {
-      return <p className="search__empty">未找到符合“{query}”的结果</p>;
+      return <EmptyMessage>未找到符合“{query}”的结果</EmptyMessage>;
     }
     return (
-      <div className="note__container">
+      <div>
         {
           notes.map((note) => (
             <NoteHolder
@@ -75,36 +65,26 @@ export default class SearchResultsContent extends Component {
 
   render() {
     const { dataIsReady, match } = this.props;
-    const query = _.get(match, 'params.query');
+    const query = get(match, 'params.query');
     return (
       <ContentLayout
         loading={!dataIsReady}
         delay
         deep
       >
-        <div className="content__search">
-          <section className="search__query">
-            以下为&quot;{query}&quot;的搜索结果:
-          </section>
-          <section className="search__collection">
-            <header className="collection__header">
-              <span>相册</span>
-            </header>
-            { this.renderCollResults(query) }
-          </section>
-          <section className="search__user">
-            <header className="user__header">
-              <span>用户</span>
-            </header>
-            { this.renderUserResults(query) }
-          </section>
-          <section className="search__note">
-            <header className="note__header">
-              <span>信息</span>
-            </header>
-            { this.renderNoteResults(query) }
-          </section>
-        </div>
+        <Tip>以下为&quot;{query}&quot;的搜索结果:</Tip>
+        <Section>
+          <Header>相册</Header>
+          { this.renderCollResults(query) }
+        </Section>
+        <Section>
+          <Header>用户</Header>
+          { this.renderUserResults(query) }
+        </Section>
+        <Section>
+          <Header>信息</Header>
+          { this.renderNoteResults(query) }
+        </Section>
       </ContentLayout>
     );
   }

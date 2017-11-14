@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import forEach from 'lodash/forEach';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { bindActionCreators } from 'redux';
@@ -48,7 +48,7 @@ export class GroupImageHolder extends PureComponent {
       this.setState({ isSelect: false });
       return;
     }
-    _.forEach(nextProps.group, (value, key) => {
+    forEach(nextProps.group, (value, key) => {
       if (key === groupName) {
         if (value === groupTotal) this.setState({ isSelect: true });
         if (value === 0) this.setState({ isSelect: false });

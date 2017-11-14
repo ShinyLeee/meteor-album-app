@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import _ from 'lodash';
+import times from 'lodash/times';
 import faker from 'faker';
 import { Meteor } from 'meteor/meteor';
 import { Factory } from 'meteor/dburles:factory';
@@ -181,7 +181,7 @@ if (Meteor.isServer) {
         });
 
         it('should also remove its images after method call', () => {
-          _.times(2, () => Factory.create('image', { user: curUser.username, collection: curColl.name }));
+          times(2, () => Factory.create('image', { user: curUser.username, collection: curColl.name }));
           expect(Images.find({ user: curUser.username, collection: curColl.name }).count()).to.equal(2);
 
           const methodInvocation = { userId: curUser._id };
@@ -243,7 +243,7 @@ if (Meteor.isServer) {
         });
 
         it('should also update Images\' private field after method call', () => {
-          _.times(2, () => Factory.create('image', { user: curUser.username, collection: curColl.name }));
+          times(2, () => Factory.create('image', { user: curUser.username, collection: curColl.name }));
           expect(Images.find({
             user: curUser.username,
             collection: curColl.name,

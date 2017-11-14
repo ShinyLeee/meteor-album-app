@@ -1,4 +1,6 @@
-import _ from 'lodash';
+import map from 'lodash/map';
+import forEach from 'lodash/forEach';
+import includes from 'lodash/includes';
 import { Meteor } from 'meteor/meteor';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
@@ -37,7 +39,7 @@ export const removeImages = new ValidatedMethod({
     if (!this.userId) {
       throw new Meteor.Error('api.images.remove.notLoggedIn');
     }
-    _.forEach(selectImages, (imgId) => Images.remove(imgId));
+    forEach(selectImages, (imgId) => Images.remove(imgId));
   },
 });
 
@@ -76,7 +78,7 @@ export const recoveryImages = new ValidatedMethod({
 
     const username = Meteor.users.findOne(this.userId).username;
 
-    _.forEach(selectImages, (imageId) => {
+    forEach(selectImages, (imageId) => {
       const destName = Images.findOne(imageId).collection;
       const dest = Collections.findOne({ name: destName, user: username });
       const destPrivateStat = dest && dest.private;
@@ -160,7 +162,7 @@ export const incView = new ValidatedMethod({
 });
 
 // Get list of all method names on Images
-const IMAGES_METHODS = _.map([
+const IMAGES_METHODS = map([
   // insertImage, // allow call this method within 1 second
   removeImages,
   removeImagesToRecycle,
@@ -174,7 +176,7 @@ if (Meteor.isServer) {
   // Only allow 2 operations per connection per 5 second
   DDPRateLimiter.addRule({
     name(name) {
-      return _.includes(IMAGES_METHODS, name);
+      return includes(IMAGES_METHODS, name);
     },
 
     // Rate limit per connection ID

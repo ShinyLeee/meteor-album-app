@@ -19,6 +19,7 @@ import SettingsIcon from 'material-ui-icons/Settings';
 import ArrowDropdownIcon from 'material-ui-icons/ArrowDropDown';
 import purple from 'material-ui/colors/purple';
 import teal from 'material-ui/colors/teal';
+import Modal from '/imports/ui/components/Modal';
 import settings from '/imports/utils/settings';
 import { userLogout } from '/imports/ui/redux/actions';
 import {
@@ -71,8 +72,10 @@ class NavHeaderDrawer extends Component {
   }
 
   _handleLogout = async () => {
-    await this.props.userLogout();
     this.props.onRequestClose();
+    await Modal.showLoader('登出中');
+    await this.props.userLogout();
+    Modal.close();
   }
 
   renderPopover = (e) => {

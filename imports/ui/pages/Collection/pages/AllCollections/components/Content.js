@@ -25,11 +25,10 @@ export default class AllCollectionContent extends Component {
     const { slideIndex } = this.props;
     return (
       <ContentLayout
-        loading={false}
+        topbarHeight={112}
         deep
       >
         <SwipeableViews
-          className="content__allCollections"
           index={slideIndex}
           onChangeIndex={this.props.onViewChange}
         >

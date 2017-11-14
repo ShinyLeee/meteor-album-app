@@ -8,6 +8,12 @@ import { validateEmail } from '/imports/utils';
 import ContentLayout from '/imports/ui/layouts/ContentLayout';
 import Modal from '/imports/ui/components/Modal';
 import ModalActions from '/imports/ui/components/Modal/Common/ModalActions';
+import {
+  Logo,
+  Section,
+  Separator,
+  Footer,
+} from '../../styles';
 
 const modalState = {
   email: '',
@@ -59,7 +65,6 @@ export default class LoginContent extends Component {
     const { account, password } = this.state;
     await Modal.showLoader('登录中');
     await this.props.userLogin({ account, password });
-    this.setState({ account: '', password: '' });
     Modal.close();
     this.props.snackBarOpen('登陆成功');
     this.props.history.replace('/');
@@ -116,51 +121,48 @@ export default class LoginContent extends Component {
   render() {
     const { classes } = this.props;
     return (
-      <ContentLayout loading={false}>
-        <div className="content__login">
-          <header className="login__logo">Gallery +</header>
-          <section className="login__form">
-            <Input
-              className={classes.input}
-              name="account"
-              placeholder="体验账号: guest"
-              value={this.state.account}
-              onChange={this._handleChange}
-              disableUnderline
-              fullWidth
-            />
-            <Input
-              className={classes.input}
-              name="password"
-              type="password"
-              placeholder="密码: guest001"
-              value={this.state.password}
-              onChange={this._handleChange}
-              disableUnderline
-              fullWidth
-            />
-          </section>
-          <section className="login__button">
-            <Button
-              className={classes.btn__login}
-              onClick={this._handleLogin}
-              raised
-            >立即登录
-            </Button>
-            <div className="separator">或</div>
-            <Button
-              className={classes.btn__register}
-              onClick={() => this.props.history.push('/register')}
-              raised
-            >创建账号
-            </Button>
-          </section>
-          <footer
-            className="login__footer"
-            onClick={this.renderPrompt}
-          >忘记密码?
-          </footer>
-        </div>
+      <ContentLayout
+        alignCenter
+        fullScreen
+      >
+        <Logo>Gallery +</Logo>
+        <Section>
+          <Input
+            className={classes.input}
+            name="account"
+            placeholder="体验账号: guest"
+            value={this.state.account}
+            onChange={this._handleChange}
+            disableUnderline
+            fullWidth
+          />
+          <Input
+            className={classes.input}
+            name="password"
+            type="password"
+            placeholder="密码: guest001"
+            value={this.state.password}
+            onChange={this._handleChange}
+            disableUnderline
+            fullWidth
+          />
+        </Section>
+        <Section>
+          <Button
+            className={classes.btn__login}
+            onClick={this._handleLogin}
+            raised
+          >立即登录
+          </Button>
+          <Separator>或</Separator>
+          <Button
+            className={classes.btn__register}
+            onClick={() => this.props.history.push('/register')}
+            raised
+          >创建账号
+          </Button>
+        </Section>
+        <Footer onClick={this.renderPrompt}>忘记密码?</Footer>
       </ContentLayout>
     );
   }

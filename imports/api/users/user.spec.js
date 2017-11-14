@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import times from 'lodash/times';
 import faker from 'faker';
 import { Meteor } from 'meteor/meteor';
 import { Factory } from 'meteor/dburles:factory';
@@ -36,7 +36,7 @@ if (Meteor.isServer) {
         Users.remove({});
 
         curUser = Factory.create('user');
-        _.times(3, () => Factory.create('user'));
+        times(3, () => Factory.create('user'));
       });
 
       describe('Users.all', () => {

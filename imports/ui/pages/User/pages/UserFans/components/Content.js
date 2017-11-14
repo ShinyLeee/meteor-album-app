@@ -1,10 +1,11 @@
-import _ from 'lodash';
+import map from 'lodash/map';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import List from 'material-ui/List/List';
 import ContentLayout from '/imports/ui/layouts/ContentLayout';
 import { followUser, unFollowUser } from '/imports/api/users/methods';
 import FanListItem from '../containers/FanListItemContainer';
+import { SearchSection } from '../styles';
 
 export default class UserFansContent extends PureComponent {
   static propTypes = {
@@ -55,7 +56,7 @@ export default class UserFansContent extends PureComponent {
     return (
       <List>
         {
-          _.map(this.state.fans, (fan) => (
+          map(this.state.fans, (fan) => (
             <FanListItem
               key={fan}
               fan={fan}
@@ -74,14 +75,12 @@ export default class UserFansContent extends PureComponent {
         loading={!dataIsReady}
         delay
       >
-        <div className="content__userFans">
-          <section className="userFans__search">
-            <input type="text" placeholder="搜索" onChange={this._handleSearchChange} />
-          </section>
-          <section className="userFans__list">
-            { this.renderFansList() }
-          </section>
-        </div>
+        <SearchSection>
+          <input type="text" placeholder="搜索" onChange={this._handleSearchChange} />
+        </SearchSection>
+        <section>
+          { this.renderFansList() }
+        </section>
       </ContentLayout>
     );
   }

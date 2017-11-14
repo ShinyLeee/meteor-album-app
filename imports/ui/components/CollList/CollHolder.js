@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import get from 'lodash/get';
 import moment from 'moment';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -88,7 +88,7 @@ class CollHolder extends Component {
           </Link>
         </Cover>
         <Info>
-          <Avatar classes={{ root: classes.avatar }} src={_.get(owner, 'profile.avatar')} alt="" />
+          <Avatar classes={{ root: classes.avatar }} src={get(owner, 'profile.avatar')} alt="" />
           <CollName>{coll.name}</CollName>
           { showUser && <UserName>{coll.user}</UserName> }
           { showDetails && (

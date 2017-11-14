@@ -40,7 +40,7 @@ const trackHandler = ({ User, image }) => {
   Meteor.subscribe('Comments.inImage', imageId);
 
   let owner;
-  if (User.username === image.user) {
+  if (User && User.username === image.user) {
     owner = User;
   } else {
     Meteor.subscribe('Users.all');

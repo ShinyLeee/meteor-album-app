@@ -69,21 +69,19 @@ export default class UserLikesContent extends PureComponent {
         deep={!isEmpty}
         delay
       >
-        <div className="content__userLiked">
-          <ZoomerHolder />
-          {
-            isEmpty
-            ? <EmptyHolder mainInfo={isOwner ? '您还未喜欢过照片' : '该用户尚未喜欢照片'} />
-            : (
-              <InfiniteImageList
-                loading={this.state.isLoading}
-                images={this.state.images}
-                disabled={isLoadAll}
-                onInfiniteLoad={this._handleInfiniteLoad}
-              />
-            )
-          }
-        </div>
+        <ZoomerHolder />
+        {
+          isEmpty
+          ? <EmptyHolder mainInfo={isOwner ? '您还未喜欢过照片' : '该用户尚未喜欢照片'} />
+          : (
+            <InfiniteImageList
+              loading={this.state.isLoading}
+              images={this.state.images}
+              disabled={isLoadAll}
+              onInfiniteLoad={this._handleInfiniteLoad}
+            />
+          )
+        }
       </ContentLayout>
     );
   }

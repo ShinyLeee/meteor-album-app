@@ -1,4 +1,5 @@
-import _ from 'lodash';
+import map from 'lodash/map';
+import includes from 'lodash/includes';
 import { Meteor } from 'meteor/meteor';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
@@ -51,7 +52,7 @@ export const removeDiary = new ValidatedMethod({
   },
 });
 
-const DIARYS_METHODS = _.map([
+const DIARYS_METHODS = map([
   insertDiary,
   updateDiary,
   removeDiary,
@@ -61,7 +62,7 @@ if (Meteor.isServer) {
   // Only allow 1 diary operations per connection per second
   DDPRateLimiter.addRule({
     name(name) {
-      return _.includes(DIARYS_METHODS, name);
+      return includes(DIARYS_METHODS, name);
     },
 
     // Rate limit per connection ID

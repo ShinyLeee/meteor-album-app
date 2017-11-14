@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import get from 'lodash/get';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { bindActionCreators, compose } from 'redux';
@@ -63,7 +63,7 @@ class Modal extends PureComponent {
   }
 
   _handleRequestClose = () => {
-    const onRequestClose = _.get(this, 'props.ops.onRequestClose');
+    const onRequestClose = get(this, 'props.ops.onRequestClose');
     if (onRequestClose) {
       onRequestClose();
     } else {

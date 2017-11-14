@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import times from 'lodash/times';
 import React from 'react';
 import settings from '/imports/utils/settings';
 
@@ -12,7 +12,7 @@ const PC = () => (
     </div>
     <div className="pc__content">
       {
-        _.times(6, (n) => (
+        times(6, (n) => (
           <div key={n + 1} className="pc__line">
             <div className="pc__img">
               <img

@@ -63,21 +63,19 @@ export default class AllSentNotesContent extends Component {
         loading={!dataIsReady}
         delay
       >
-        <div className="content__allSentNotes">
-          {
-            isEmpty
-            ? <EmptyHolder mainInfo="您还未发送过消息" />
-            : (
-              <InfiniteNoteList
-                loading={this.state.isLoading}
-                notes={this.state.notes}
-                notesNum={notesNum}
-                disabled={isLoadAll}
-                onInfiniteLoad={this._handleInfiniteLoad}
-              />
-            )
-          }
-        </div>
+        {
+          isEmpty
+          ? <EmptyHolder mainInfo="您还未发送过消息" />
+          : (
+            <InfiniteNoteList
+              loading={this.state.isLoading}
+              notes={this.state.notes}
+              notesNum={notesNum}
+              disabled={isLoadAll}
+              onInfiniteLoad={this._handleInfiniteLoad}
+            />
+          )
+        }
       </ContentLayout>
     );
   }

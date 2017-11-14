@@ -1,4 +1,6 @@
-import _ from 'lodash';
+import map from 'lodash/map';
+import forEach from 'lodash/forEach';
+import groupBy from 'lodash/groupBy';
 import moment from 'moment';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
@@ -8,7 +10,6 @@ import { enableSelectAll, disableSelectAll } from '/imports/ui/redux/actions';
 import ConnectedGroupLayout from './components/GroupLayout';
 import ConnectedGridLayout from './components/GridLayout';
 import ToolBar from './components/ToolBar';
-import { Wrapper } from './Justified.style';
 
 export class Justified extends PureComponent {
   static propTypes = {
@@ -55,11 +56,11 @@ export class Justified extends PureComponent {
       }
       if (layoutType === 'group') {
         const group = {};
-        const allGroupImages = _.groupBy(
+        const allGroupImages = groupBy(
           images,
           (image) => moment(image.shootAt).format('YYYYMMDD'),
         );
-        _.forEach(allGroupImages, (value, key) => {
+        forEach(allGroupImages, (value, key) => {
           group[key] = value.length;
         });
         this.props.enableSelectAll({
@@ -108,15 +109,14 @@ export class Justified extends PureComponent {
       default: formatStr = 'YYYYMMDD';
         break;
     }
-    return _.groupBy(images, (image) => moment(image.shootAt).format(formatStr));
+    return groupBy(images, (image) => moment(image.shootAt).format(formatStr));
   }
 
   render() {
     const { isEditing, images } = this.props;
     const { isAllSelect, layoutType, filterType, allGroupImages } = this.state;
-    const isDefaultLayout = layoutType === 'group';
     return (
-      <Wrapper isDefaultLayout={isDefaultLayout}>
+      <div>
         <ToolBar
           isEditing={isEditing}
           isAllSelect={isAllSelect}
@@ -127,20 +127,18 @@ export class Justified extends PureComponent {
           onFilterChange={this._handleFilterChange}
         />
         {
-          isDefaultLayout
-          ? (
-            _.map(allGroupImages, (groupImages, groupName) => (
-              <ConnectedGroupLayout
-                key={groupName}
-                isEditing={isEditing}
-                groupName={groupName}
-                groupImages={groupImages}
-                total={images.length}
-                filterType={filterType}
-                showGallery
-              />
-              ))
-            )
+          layoutType === 'group'
+          ? map(allGroupImages, (groupImages, groupName) => (
+            <ConnectedGroupLayout
+              key={groupName}
+              isEditing={isEditing}
+              groupName={groupName}
+              groupImages={groupImages}
+              total={images.length}
+              filterType={filterType}
+              showGallery
+            />
+            ))
           : (
             <ConnectedGridLayout
               images={images}
@@ -150,7 +148,7 @@ export class Justified extends PureComponent {
             />
           )
         }
-      </Wrapper>
+      </div>
     );
   }
 }

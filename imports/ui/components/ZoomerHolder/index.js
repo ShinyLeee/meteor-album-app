@@ -87,7 +87,7 @@ class ZoomerHolder extends Component {
       this.props.snackBarOpen('只有JPG图片存有EXIF信息');
       return;
     }
-    const showModal = (exif) => {
+    const showExifModal = (exif) => {
       Modal.show({
         content: (
           <ExifContent
@@ -98,7 +98,7 @@ class ZoomerHolder extends Component {
       });
     };
     if (Object.keys(this.state.exif).length !== 0) {
-      showModal(this.state.exif);
+      showExifModal(this.state.exif);
       return;
     }
     try {
@@ -107,7 +107,7 @@ class ZoomerHolder extends Component {
         method: 'GET',
         url: `${this.imgSrc}?exif`,
       });
-      showModal(data);
+      showExifModal(data);
       this.setState({ exif: data });
     } catch (err) {
       console.warn(err);

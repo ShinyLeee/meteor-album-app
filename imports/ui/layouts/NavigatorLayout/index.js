@@ -60,12 +60,13 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
 export default compose(
   connect(mapStateToProps, mapDispatchToProps),
   withTracker((props) => {
-    const { User: gUser } = props;
+    const { User: globalUser } = props;
     const User = Meteor.user();
-    if (!gUser && User) {
+    if (!globalUser && User) {
       props.userLogin({ inExpiration: true });
     }
 
+    // if User is logging, User is undefined, else User is a Object or null.
     let appIsReady = typeof User === 'object';
 
     const { pathname } = window.location;

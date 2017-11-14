@@ -31,10 +31,10 @@ export const diaryClose = () => ({
   type: types.DIARY_CLOSE,
 });
 
-export const photoSwipeOpen = (items, options) => ({
+export const photoSwipeOpen = (items, ops) => ({
   type: types.PHOTOSWIPE_OPEN,
   items,
-  options,
+  ops,
 });
 
 export const photoSwipeClose = () => ({
@@ -125,8 +125,8 @@ export const userLogin = ({ account, password, inExpiration = false }) => async 
 };
 
 export const userLogout = () => async (dispatch) => {
-  const logoutPromise = Meteor.wrapPromise(Meteor.logout);
   try {
+    const logoutPromise = Meteor.wrapPromise(Meteor.logout);
     await logoutPromise();
     dispatch(snackBarOpen('登出成功'));
     dispatch(clearUser());

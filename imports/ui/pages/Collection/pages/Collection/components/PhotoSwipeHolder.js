@@ -1,12 +1,13 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { incView } from '/imports/api/images/methods';
 import { photoSwipeClose } from '/imports/ui/redux/actions';
+import Portal from '/imports/ui/components/Portal';
 import PhotoSwipe from '/imports/ui/components/PhotoSwipe';
 
-class PhotoSwipeHolder extends Component {
+class PhotoSwipeHolder extends PureComponent {
   static propTypes = {
     open: PropTypes.bool.isRequired,
     items: PropTypes.array.isRequired,
@@ -18,18 +19,15 @@ class PhotoSwipeHolder extends Component {
     viewedIndexes: [],
   }
 
-  shouldComponentUpdate(nextProps) {
-    return this.props.open !== nextProps.open;
-  }
-
   /**
    * @param {array} indexDiff - [null] or [-1] or [1], show the swipe direction
    * @param {number} curIndex - current Image index
    */
   _handleGallerySlide = (indexDiff, curIndex) => {
     let viewedIndexes;
-    if (!this.state.viewedIndexes.length === 0) viewedIndexes = [curIndex];
-    else {
+    if (!this.state.viewedIndexes.length === 0) {
+      viewedIndexes = [curIndex];
+    } else {
       const indexes = [...this.state.viewedIndexes, curIndex];
       viewedIndexes = [...new Set(indexes)];
     }
@@ -51,13 +49,15 @@ class PhotoSwipeHolder extends Component {
   render() {
     const { open, items, options } = this.props;
     return (
-      <PhotoSwipe
-        open={open}
-        items={items}
-        options={options}
-        beforeChange={this._handleGallerySlide}
-        onClose={this._handleGalleryClose}
-      />
+      <Portal name="PhotoSwipe">
+        <PhotoSwipe
+          open={open}
+          items={items}
+          options={options}
+          beforeChange={this._handleGallerySlide}
+          onClose={this._handleGalleryClose}
+        />
+      </Portal>
     );
   }
 }
@@ -65,7 +65,7 @@ class PhotoSwipeHolder extends Component {
 const mapStateToProps = ({ portals }) => ({
   open: portals.photoSwipe.open,
   items: portals.photoSwipe.items,
-  options: portals.photoSwipe.options,
+  options: portals.photoSwipe.ops,
 });
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({

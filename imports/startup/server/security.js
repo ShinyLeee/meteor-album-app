@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import includes from 'lodash/includes';
 import { Meteor } from 'meteor/meteor';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 
@@ -24,7 +24,7 @@ if (Meteor.isServer) {
   // Only allow 2 login attempts per connection per 5 seconds
   DDPRateLimiter.addRule({
     name(name) {
-      return _.includes(AUTH_METHODS, name);
+      return includes(AUTH_METHODS, name);
     },
 
     // Rate limit per connection ID

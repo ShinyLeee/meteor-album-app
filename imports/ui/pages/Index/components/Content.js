@@ -92,27 +92,28 @@ export default class IndexContent extends Component {
     } = this.props;
     const isLoadAll = dataIsReady && this.state.images.length === imagesCount;
     return (
-      <ContentLayout loading={!dataIsReady} delay>
-        <div className="content__index">
-          <Notification
-            visible={this.state.notification}
-            message="内容有更新"
-            onClick={this._handleRefreshImages}
-          />
-          <Recap
-            title="Gallery"
-            detailFir="Vivian的私人相册"
-            detailSec="Created By Shiny Lee"
-            showIcon
-          />
-          <ZoomerHolder />
-          <InfiniteImageList
-            loading={this.state.isLoading}
-            images={this.state.images}
-            disabled={isLoadAll}
-            onInfiniteLoad={this._handleInfiniteLoad}
-          />
-        </div>
+      <ContentLayout
+        loading={!dataIsReady}
+        delay
+      >
+        <Notification
+          visible={this.state.notification}
+          message="内容有更新"
+          onClick={this._handleRefreshImages}
+        />
+        <Recap
+          title="Gallery"
+          detailFir="Vivian的私人相册"
+          detailSec="Created By Shiny Lee"
+          showIcon
+        />
+        <InfiniteImageList
+          loading={this.state.isLoading}
+          images={this.state.images}
+          disabled={isLoadAll}
+          onInfiniteLoad={this._handleInfiniteLoad}
+        />
+        <ZoomerHolder />
       </ContentLayout>
     );
   }

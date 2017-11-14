@@ -1,4 +1,5 @@
-import _ from 'lodash';
+import map from 'lodash/map';
+import includes from 'lodash/includes';
 import { Meteor } from 'meteor/meteor';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
@@ -96,7 +97,7 @@ export const mutateCollectionCover = new ValidatedMethod({
 });
 
 // Get list of all method names on Collections
-const COLLECTIONS_METHODS = _.map([
+const COLLECTIONS_METHODS = map([
   insertCollection,
   removeCollection,
   lockCollection,
@@ -107,7 +108,7 @@ if (Meteor.isServer) {
   // Only allow 1 user operations per connection per second
   DDPRateLimiter.addRule({
     name(name) {
-      return _.includes(COLLECTIONS_METHODS, name);
+      return includes(COLLECTIONS_METHODS, name);
     },
 
     // Rate limit per connection ID

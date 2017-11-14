@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import _ from 'lodash';
+import times from 'lodash/times';
 import faker from 'faker';
 import { Meteor } from 'meteor/meteor';
 import { Factory } from 'meteor/dburles:factory';
@@ -64,7 +64,7 @@ if (Meteor.isServer) {
         collTwo = Factory.create('collection', { user: curUser.username });
 
         // Create 2 images belong to user and collOne
-        _.times(2, () => Factory.create('image', { user: curUser.username, collection: collOne.name }));
+        times(2, () => Factory.create('image', { user: curUser.username, collection: collOne.name }));
 
         // Create 1 image belong to user but collTwo
         Factory.create('image', { user: curUser.username, collection: collTwo.name });
@@ -163,8 +163,8 @@ if (Meteor.isServer) {
         curUser = Factory.create('user');
         collOne = Factory.create('collection', { user: curUser.username });
         imgId = Factory.create('image', { user: curUser.username, collection: collOne.name })._id;
-        _.times(2, () => Factory.create('image', { user: curUser.username, collection: collOne.name }));
-        _.times(2, () => Factory.create('comment', { discussion_id: imgId }));
+        times(2, () => Factory.create('image', { user: curUser.username, collection: collOne.name }));
+        times(2, () => Factory.create('comment', { discussion_id: imgId }));
       });
 
       describe('insertImage', () => {

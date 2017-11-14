@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import get from 'lodash/get';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
@@ -10,6 +10,7 @@ import DataLoader from '/imports/ui/components/Loader/DataLoader';
 import { snackBarOpen } from '/imports/ui/redux/actions';
 import NoteHolder from '/imports/ui/components/NoteHolder';
 import GetHeightWrapper from './GetHeightWrapper';
+import Tip from './Tip';
 
 class InfiniteNoteList extends Component {
   static propTypes = {
@@ -53,7 +54,7 @@ class InfiniteNoteList extends Component {
 
     const heights = [];
     const notesAlias = notes.map((note, i) => {
-      heights[i] = _.get(this, `state.heights[${i}]`) || 200;
+      heights[i] = get(this, `state.heights[${i}]`) || 200;
       return (
         <GetHeightWrapper
           key={note._id}
@@ -98,6 +99,7 @@ class InfiniteNoteList extends Component {
     return [
       <Infinite
         key="Infinite__NoteList"
+        className="inset"
         isInfiniteLoading={loading}
         elementHeight={this.state.heights}
         onInfiniteLoad={this.props.onInfiniteLoad}
@@ -107,7 +109,7 @@ class InfiniteNoteList extends Component {
       >
         {this.state.notes}
       </Infinite>,
-      this.isDisabled && <div key="Infinite__bottom" className="bottom">已经到底部啦</div>,
+      this.isDisabled && <Tip key="Infinite_Tip" />,
     ];
   }
 }

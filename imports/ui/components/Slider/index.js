@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import map from 'lodash/map';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Motion, spring } from 'react-motion';
@@ -88,7 +88,7 @@ export default class Slider extends Component {
 
   updateSliders(props) {
     const { children, gap } = props;
-    const styledChilds = _.map(children, (child) => {
+    const styledChilds = map(children, (child) => {
       const style = {
         display: 'inline-block',
         width: `${this.sliderWidth}px`,

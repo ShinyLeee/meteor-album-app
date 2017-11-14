@@ -29,15 +29,13 @@ const styles = {
 };
 
 const trackHandler = ({ open, discId }) => {
-  // discussion_id from comment
-  let comments = [];
   if (open) {
     Meteor.subscribe('Comments.inImage', discId);
-    comments = Comments.find(
-      { discussion_id: discId, type: 'image' },
-      { sort: { createdAt: -1 } },
-    ).fetch();
   }
+  const comments = Comments.find(
+    { discussion_id: discId, type: 'image' },
+    { sort: { createdAt: -1 } },
+  ).fetch();
 
   return {
     comments,

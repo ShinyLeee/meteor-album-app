@@ -12,6 +12,7 @@ export default class PasswordContent extends Component {
     classes: PropTypes.object.isRequired,
     userLogout: PropTypes.func.isRequired,
     snackBarOpen: PropTypes.func.isRequired,
+    history: PropTypes.object.isRequired,
   }
 
   state = {
@@ -42,6 +43,7 @@ export default class PasswordContent extends Component {
       await changePassword(oldPwd, newPwd);
       await this.props.userLogout();
       Modal.close();
+      this.props.history.replace('/login');
       this.props.snackBarOpen('修改密码成功，请重新登录');
     } catch (err) {
       console.warn(err);
@@ -53,49 +55,46 @@ export default class PasswordContent extends Component {
   render() {
     const { classes } = this.props;
     return (
-      <ContentLayout loading={false}>
-        <div className="content__settingPassword">
-          <section className="settingPassword__form">
-            <Input
-              className={classes.input}
-              name="oldPwd"
-              placeholder="当前密码"
-              type="password"
-              value={this.state.oldPwd}
-              onChange={this._handleValueChange}
-              disableUnderline
-              fullWidth
-            />
-            <Input
-              className={classes.input}
-              name="newPwd"
-              placeholder="新密码"
-              type="password"
-              value={this.state.newPwd}
-              onChange={this._handleValueChange}
-              disableUnderline
-              fullWidth
-            />
-            <Input
-              className={classes.input}
-              name="newPwd2"
-              placeholder="确认密码"
-              type="password"
-              value={this.state.newPwd2}
-              onChange={this._handleValueChange}
-              disableUnderline
-              fullWidth
-            />
-          </section>
-          <section className="settingPassword__button">
-            <Button
-              color="primary"
-              onClick={this._handlePasswordChange}
-              raised
-            >确认修改
-            </Button>
-          </section>
-        </div>
+      <ContentLayout>
+        <section>
+          <Input
+            className={classes.input}
+            name="oldPwd"
+            placeholder="当前密码"
+            type="password"
+            value={this.state.oldPwd}
+            onChange={this._handleValueChange}
+            disableUnderline
+            fullWidth
+          />
+          <Input
+            className={classes.input}
+            name="newPwd"
+            placeholder="新密码"
+            type="password"
+            value={this.state.newPwd}
+            onChange={this._handleValueChange}
+            disableUnderline
+            fullWidth
+          />
+          <Input
+            className={classes.input}
+            name="newPwd2"
+            placeholder="确认密码"
+            type="password"
+            value={this.state.newPwd2}
+            onChange={this._handleValueChange}
+            disableUnderline
+            fullWidth
+          />
+        </section>
+        <Button
+          className={classes.button}
+          color="primary"
+          onClick={this._handlePasswordChange}
+          raised
+        >确认修改
+        </Button>
       </ContentLayout>
     );
   }

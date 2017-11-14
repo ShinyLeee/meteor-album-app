@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import _ from 'lodash';
+import times from 'lodash/times';
 import faker from 'faker';
 import { Meteor } from 'meteor/meteor';
 import { Factory } from 'meteor/dburles:factory';
@@ -44,7 +44,7 @@ if (Meteor.isServer) {
         curUser = Factory.create('user');
 
         // Create 2 notes send to current user
-        _.times(2, () => Factory.create('note', { receiver: curUser.username }));
+        times(2, () => Factory.create('note', { receiver: curUser.username }));
 
         // Create 1 note send to another user
         Factory.create('note', { sender: curUser.username, receiver: 'tester' });

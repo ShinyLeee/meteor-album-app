@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import classNames from 'classnames';
 import CircleLoader from '/imports/ui/components/Loader/CircleLoader';
 import LinearLoader from '/imports/ui/components/Loader/LinearLoader';
 import { vHeight } from '/imports/utils/responsive';
 
-export default class ContentLayout extends Component {
+export default class ContentLayout extends PureComponent {
   static propTypes = {
     deep: PropTypes.bool,
     loading: PropTypes.bool,
@@ -17,6 +17,8 @@ export default class ContentLayout extends Component {
       PropTypes.func,
       PropTypes.element,
     ]),
+    alignCenter: PropTypes.bool, // 是否垂直居中
+    fullScreen: PropTypes.bool,
     topbarHeight: PropTypes.number,
     children: PropTypes.any,
   }
@@ -28,6 +30,8 @@ export default class ContentLayout extends Component {
     loadingType: 'Linear',
     delay: false,
     content: false,
+    alignCenter: false,
+    fullScreen: false,
     topbarHeight: 64,
   }
 
@@ -63,13 +67,20 @@ export default class ContentLayout extends Component {
       loading,
       delay,
       content,
+      alignCenter,
+      fullScreen,
       topbarHeight,
       children,
     } = this.props;
     return (
       <main
         className={classNames('content', { deep })}
-        style={{ minHeight: vHeight - topbarHeight }}
+        style={{
+          height: fullScreen ? vHeight : 'auto',
+          paddingTop: topbarHeight,
+          paddingBottom: alignCenter ? 64 : 0,
+          justifyContent: alignCenter ? 'center' : 'inhreit',
+        }}
       >
         { this.renderLoader() }
         {

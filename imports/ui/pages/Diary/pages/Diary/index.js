@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import times from 'lodash/times';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import queryString from 'query-string';
@@ -95,7 +95,7 @@ export default class DiaryPage extends PureComponent {
           </DiaryYear>
           <DiaryMonth>
             {
-              _.times(12, (i) => {
+              times(12, (i) => {
                 const month = i + 1;
                 const props = {
                   key: month,

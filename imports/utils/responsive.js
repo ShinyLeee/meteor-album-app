@@ -1,6 +1,6 @@
-export const vWidth = document.body.clientWidth;
+export const vWidth = window.screen.width;
 
-export const vHeight = document.body.clientHeight;
+export const vHeight = window.screen.height;
 
 export const pixelRatio = window.devicePixelRatio;
 

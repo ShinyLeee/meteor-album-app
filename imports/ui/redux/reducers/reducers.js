@@ -1,4 +1,7 @@
-import _ from 'lodash';
+import map from 'lodash/map';
+import uniqBy from 'lodash/uniqBy';
+import filter from 'lodash/filter';
+import indexOf from 'lodash/indexOf';
 import * as types from '../constants/ActionTypes';
 import initState from '../store/initState';
 
@@ -162,8 +165,8 @@ export const selectCounter = (state = initState.selectCounter, action) => {
         }
         // If disselect a photo, we need to remove nextImage from prevImages
         if (action.counter < 0) {
-          // selectImages = _.filter(prevImages, (prevImage) => prevImage !== nextImage[0]);
-          selectImages = _.filter(prevImages, (prevImage) => prevImage._id !== nextImage[0]._id);
+          // selectImages = filter(prevImages, (prevImage) => prevImage !== nextImage[0]);
+          selectImages = filter(prevImages, (prevImage) => prevImage._id !== nextImage[0]._id);
         }
       }
 
@@ -206,16 +209,16 @@ export const selectCounter = (state = initState.selectCounter, action) => {
       if (prevImages.length === 0) selectImages = [...nextImages];
       else {
         if (groupCounter > 0) {
-          selectImages = _.uniqBy([...prevImages, ...nextImages], (image) => image._id);
+          selectImages = uniqBy([...prevImages, ...nextImages], (image) => image._id);
         }
         // If disselect a group, we need to remove nextImages from prevImages
         if (groupCounter < 0) {
-          // selectImages = _.filter(prevImages, (prevImage) => _.indexOf(nextImages, prevImage) < 0);
+          // selectImages = filter(prevImages, (prevImage) => indexOf(nextImages, prevImage) < 0);
 
           // Deal with array of object
-          selectImages = _.filter(prevImages, (prevImage) => {
-            const nextImagesId = _.map(nextImages, (nextImage) => nextImage._id);
-            return _.indexOf(nextImagesId, prevImage._id) < 0;
+          selectImages = filter(prevImages, (prevImage) => {
+            const nextImagesId = map(nextImages, (nextImage) => nextImage._id);
+            return indexOf(nextImagesId, prevImage._id) < 0;
           });
         }
       }

@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import get from 'lodash/get';
 import PropTypes from 'prop-types';
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -28,7 +28,7 @@ export default class Portal extends React.Component {
 
   getDisplayName() {
     const regex = /\((.+)\)/;
-    let displayName = _.get(this.props, 'children.type.displayName') || 'Unknown';
+    let displayName = get(this.props, 'children.type.displayName') || 'Unknown';
     displayName = displayName.match(regex) ? displayName.match(regex)[1] : displayName;
     return displayName;
   }

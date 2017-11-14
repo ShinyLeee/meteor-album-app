@@ -1,3 +1,4 @@
+import get from 'lodash/get';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import Popover from 'material-ui/Popover';
@@ -7,9 +8,20 @@ import MessageIcon from 'material-ui-icons/Message';
 import SettingsIcon from 'material-ui-icons/Settings';
 import ExitToAppIcon from 'material-ui-icons/ExitToApp';
 import { followUser, unFollowUser } from '/imports/api/users/methods';
+import Modal from '/imports/ui/components/Modal';
 import ContentLayout from '/imports/ui/layouts/ContentLayout';
 import { rWidth } from '/imports/utils/responsive';
 import ImageSlider from './ImageSlider';
+import {
+  CoverSection,
+  MainSection,
+  Profile,
+  Avatar,
+  Detail,
+  CounterSection,
+  Counter,
+  RankSection,
+} from '../styles';
 
 export default class UserContent extends PureComponent {
   static propTypes = {
@@ -35,7 +47,14 @@ export default class UserContent extends PureComponent {
 
   get isFollowed() {
     const { User, curUser } = this.props;
-    return User && curUser.profile.followers.indexOf(User.username) >= 0;
+    const followers = get(curUser, 'profile.followers');
+    return User && followers && followers.indexOf(User.username) >= 0;
+  }
+
+  get coverSrc() {
+    const { curUser } = this.props;
+    const cover = get(curUser, 'profile.cover');
+    return `url("${cover}"),url("${cover}?imageView2/2/w/${rWidth}")`;
   }
 
   _navTo = (location) => () => {
@@ -72,6 +91,12 @@ export default class UserContent extends PureComponent {
     }
   }
 
+  _handleLogout = async () => {
+    await Modal.showLoader('登出中');
+    await this.props.userLogout();
+    Modal.close();
+  }
+
   renderPopover = (e) => {
     this.setState({
       popover: true,
@@ -91,121 +116,104 @@ export default class UserContent extends PureComponent {
     return (
       <ContentLayout
         loading={!dataIsReady}
+        fullScreen
         delay
       >
-        <div className="content__user">
-          { /* MAIN SECTION */ }
-          <section className="user__main">
-            <div
-              className="main__cover"
-              style={{ backgroundImage: `url("${curUser.profile.cover}"),url("${curUser.profile.cover}?imageView2/2/w/${rWidth}")` }}
-            >
-              <div className="main__background" />
-            </div>
-            <div className="main__profile">
-              <div className="main__avatar">
-                <img src={curUser.profile.avatar} alt={curUser.username} />
-              </div>
-              <div className="main__detail">
-                <h4>{curUser.username}</h4>
-                <span>{curUser.profile.intro || '暂无简介'}</span>
-              </div>
-            </div>
-            <div className="flex-box">
-              <Button
-                className={classes.btn__left}
-                onClick={this._navTo(isOwner ? '/sendNote' : `/sendNote?receiver=${curUser.username}`)}
-                color="primary"
-                raised
-              >{ isOwner ? '发送信息' : '发送私信' }
-              </Button>
-              {
-                isOwner
-                ? [
-                  <Button
-                    key="btn__more"
-                    className={classes.btn__more}
-                    onClick={this.renderPopover}
-                    raised
-                  >更多操作
-                  </Button>,
-                  <Popover
-                    key="Popover"
-                    open={this.state.popover}
-                    anchorEl={this.state.anchorEl}
-                    anchorOrigin={{ horizontal: 'top', vertical: 'left' }}
-                    transformOrigin={{ horizontal: 'bottom', vertical: 'left' }}
-                    onRequestClose={() => this.setState({ popover: false })}
-                  >
-                    <List>
-                      <ListItem onClick={this._navTo(`/note/${curUser.username}`)}>
-                        <ListItemIcon><MessageIcon /></ListItemIcon>
-                        <ListItemText primary="我的信息" />
-                      </ListItem>
-                      <ListItem onClick={this._navTo('/setting')}>
-                        <ListItemIcon><SettingsIcon /></ListItemIcon>
-                        <ListItemText primary="账号设置" />
-                      </ListItem>
-                      <ListItem onClick={this.props.userLogout}>
-                        <ListItemIcon><ExitToAppIcon /></ListItemIcon>
-                        <ListItemText primary="登出" />
-                      </ListItem>
-                    </List>
-                  </Popover>,
-                  ]
-                : (
-                  <Button
-                    onClick={this.isFollowed ? this._handleUnFollow : this._handleFollow}
-                    color="accent"
-                    raised
-                  >{this.isFollowed ? '取消关注' : '关注'}
-                  </Button>
-                )
-              }
-            </div>
-          </section>
-          { /* COUNTER SECTION */ }
-          <section className="user__counter">
-            <div
-              className="counter counter__likes"
-              role="button"
-              tabIndex={-1}
-              onClick={this._navTo(`/user/${curUser.username}/likes`)}
-            >
-              <span>{counts.likes}</span>
-              <span>喜欢</span>
-            </div>
-            <div
-              className="counter counter__collections"
-              role="button"
-              tabIndex={-1}
-              onClick={this._navTo(`/user/${curUser.username}/collection`)}
-            >
-              <span>{counts.colls}</span>
-              <span>相册</span>
-            </div>
-            <div
-              className="counter counter__follwer"
-              role="button"
-              tabIndex={-1}
-              onClick={this._navTo(`/user/${curUser.username}/fans`)}
-            >
-              <span>{counts.followers}</span>
-              <span>关注者</span>
-            </div>
-          </section>
-          { /* RANK SECTION */ }
+        {/* COVER SECTION */}
+        <CoverSection
+          style={{ backgroundImage: this.coverSrc }}
+        ><div />
+        </CoverSection>
+        { /* MAIN SECTION */ }
+        <MainSection>
+          <Profile>
+            <Avatar>
+              <img src={get(curUser, 'profile.avatar')} alt={curUser.username} />
+            </Avatar>
+            <Detail>
+              <h4>{curUser.username}</h4>
+              <span>{get(curUser, 'profile.intro') || '暂无简介'}</span>
+            </Detail>
+          </Profile>
+          <div>
+            <Button
+              className={classes.btn__left}
+              onClick={this._navTo(isOwner ? '/sendNote' : `/sendNote?receiver=${curUser.username}`)}
+              color="primary"
+              raised
+            >{ isOwner ? '发送信息' : '发送私信' }
+            </Button>
+            {
+              isOwner
+              ? [
+                <Button
+                  key="btn__more"
+                  className={classes.btn__more}
+                  onClick={this.renderPopover}
+                  raised
+                >更多操作
+                </Button>,
+                <Popover
+                  key="Popover"
+                  open={this.state.popover}
+                  anchorEl={this.state.anchorEl}
+                  anchorOrigin={{ horizontal: 'top', vertical: 'left' }}
+                  transformOrigin={{ horizontal: 'bottom', vertical: 'left' }}
+                  onRequestClose={() => this.setState({ popover: false })}
+                >
+                  <List>
+                    <ListItem onClick={this._navTo(`/note/${curUser.username}`)}>
+                      <ListItemIcon><MessageIcon /></ListItemIcon>
+                      <ListItemText primary="我的信息" />
+                    </ListItem>
+                    <ListItem onClick={this._navTo('/setting')}>
+                      <ListItemIcon><SettingsIcon /></ListItemIcon>
+                      <ListItemText primary="账号设置" />
+                    </ListItem>
+                    <ListItem onClick={this._handleLogout}>
+                      <ListItemIcon><ExitToAppIcon /></ListItemIcon>
+                      <ListItemText primary="登出" />
+                    </ListItem>
+                  </List>
+                </Popover>,
+                ]
+              : (
+                <Button
+                  onClick={this.isFollowed ? this._handleUnFollow : this._handleFollow}
+                  color="accent"
+                  raised
+                >{this.isFollowed ? '取消关注' : '关注'}
+                </Button>
+              )
+            }
+          </div>
+        </MainSection>
+        { /* COUNTER SECTION */ }
+        <CounterSection>
+          <Counter onClick={this._navTo(`/user/${curUser.username}/likes`)}>
+            <span>{counts.likes}</span>
+            <span>喜欢</span>
+          </Counter>
+          <Counter onClick={this._navTo(`/user/${curUser.username}/collection`)}>
+            <span>{counts.colls}</span>
+            <span>相册</span>
+          </Counter>
+          <Counter onClick={this._navTo(`/user/${curUser.username}/fans`)}>
+            <span>{counts.followers}</span>
+            <span>关注者</span>
+          </Counter>
+        </CounterSection>
+        { /* RANK SECTION */ }
+        <RankSection>
           {
             topImages.length > 0 && (
-              <section className="user__rank">
-                <ImageSlider
-                  curUser={curUser}
-                  images={topImages}
-                />
-              </section>
+              <ImageSlider
+                curUser={curUser}
+                images={topImages}
+              />
             )
           }
-        </div>
+        </RankSection>
       </ContentLayout>
     );
   }

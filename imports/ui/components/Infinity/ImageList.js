@@ -8,6 +8,7 @@ import DataLoader from '/imports/ui/components/Loader/DataLoader';
 import { zoomerOpen, snackBarOpen } from '/imports/ui/redux/actions';
 import { vWidth } from '/imports/utils/responsive';
 import ImageHolder from '/imports/ui/components/ImageHolder';
+import Tip from './Tip';
 
 class InfiniteImageList extends PureComponent {
   static propTypes = {
@@ -56,6 +57,7 @@ class InfiniteImageList extends PureComponent {
     return [
       <Infinite
         key="Infinite__ImageList"
+        className="deep"
         isInfiniteLoading={loading}
         elementHeight={this.getImageHeights()}
         onInfiniteLoad={this.props.onInfiniteLoad}
@@ -74,7 +76,7 @@ class InfiniteImageList extends PureComponent {
           ))
         }
       </Infinite>,
-      disabled && <div key="Infinite__bottom" className="bottom">已经到底部啦</div>,
+      disabled && <Tip key="Infinite_Tip" />,
     ];
   }
 }

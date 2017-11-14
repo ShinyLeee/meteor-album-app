@@ -1,17 +1,12 @@
-import React from 'react';
 import styled from 'styled-components';
 
 export const Wrapper = styled.section`
   position: relative;
-  left: 0;
-  top: 48px;
   width: 100%;
   margin-top: 48px;
 `;
 
-const H = (props) => <header {...props} />; // eslint-disable-line
-
-export const Title = styled(H)`
+export const Title = styled.header`
   position: absolute;
   left: 0;
   top: -48px;

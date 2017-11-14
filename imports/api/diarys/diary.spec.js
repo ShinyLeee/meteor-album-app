@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import _ from 'lodash';
+import times from 'lodash/times';
 import faker from 'faker';
 import { Meteor } from 'meteor/meteor';
 import { Factory } from 'meteor/dburles:factory';
@@ -52,7 +52,7 @@ if (Meteor.isServer) {
         Factory.create('diary');
 
         // Create 2 diarys belong to current user
-        _.times(2, () => Factory.create('diary', { user: curUser.username }));
+        times(2, () => Factory.create('diary', { user: curUser.username }));
       });
 
       describe('Diarys.own', () => {

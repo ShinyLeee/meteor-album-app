@@ -5,6 +5,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { insertImage } from '/imports/api/images/methods';
 import settings from '/imports/utils/settings';
+import Portal from '/imports/ui/components/Portal';
 import { snackBarOpen, uploaderStop } from '/imports/ui/redux/actions';
 import Uploader from './Uploader';
 
@@ -100,14 +101,16 @@ class UploaderContainer extends Component {
     const { User, dest } = this.props;
     const prefix = `${User.username}/${dest}`;
     return (
-      <Uploader
-        title={dest}
-        prefix={prefix}
-        afterUpload={this._handleAfterUpload}
-        onCancel={this._handleCancelUpload}
-        onFinish={this._handleFinishUpload}
-        multiple
-      />
+      <Portal name="Uploader">
+        <Uploader
+          title={dest}
+          prefix={prefix}
+          afterUpload={this._handleAfterUpload}
+          onCancel={this._handleCancelUpload}
+          onFinish={this._handleFinishUpload}
+          multiple
+        />
+      </Portal>
     );
   }
 }

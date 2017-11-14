@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import get from 'lodash/get';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
@@ -25,7 +25,7 @@ const trackHandler = ({ User, match }) => {
   const userHandler = Meteor.subscribe('Users.all');
   const dataIsReady = userHandler.ready();
   const curUser = Meteor.users.findOne({ username: curUserName });
-  const fans = _.get(isOwner ? User : curUser, 'profile.followers');
+  const fans = get(isOwner ? User : curUser, 'profile.followers');
 
   return {
     dataIsReady,

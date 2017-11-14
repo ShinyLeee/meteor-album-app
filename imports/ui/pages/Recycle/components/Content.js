@@ -4,6 +4,11 @@ import ContentLayout from '/imports/ui/layouts/ContentLayout';
 import EmptyHolder from '/imports/ui/components/EmptyHolder';
 import JustifiedSelectIcon from '/imports/ui/components/JustifiedLayout/components/snippet/JustifiedSelectIcon';
 import ConnectedGridLayout from '/imports/ui/components/JustifiedLayout/components/GridLayout';
+import {
+  Toolbar,
+  ToolbarLeft,
+} from '/imports/ui/components/JustifiedLayout/components/ToolBar/ToolBar.style';
+import { Header, Title, SubTitle } from '../../Collection/pages/Collection/styles';
 
 export default class RecycleContent extends PureComponent {
   static propTypes = {
@@ -15,7 +20,6 @@ export default class RecycleContent extends PureComponent {
   }
 
   state = {
-    isEditing: false,
     isAllSelect: false,
   }
 
@@ -23,15 +27,9 @@ export default class RecycleContent extends PureComponent {
     const { images } = this.props;
     const { counter } = nextProps;
     if (counter > 0) {
-      this.setState({
-        isEditing: true,
-        isAllSelect: images.length === counter,
-      });
+      this.setState({ isAllSelect: images.length === counter });
     } else {
-      this.setState({
-        isEditing: false,
-        isAllSelect: false,
-      });
+      this.setState({ isAllSelect: false });
     }
   }
 
@@ -57,34 +55,28 @@ export default class RecycleContent extends PureComponent {
         loading={!dataIsReady}
         delay
       >
-        <div className="content__recycle">
-          {
-            isEmpty
-            ? <EmptyHolder mainInfo="您的回收站是空的" />
-            : [
-              <header key="header" className="recycle__header">
-                <h2 className="recycle__title">回收站</h2>
-                <div className="recycle__desc">回收站中的内容会在 30 天后永久删除</div>
-              </header>,
-              <div key="content" className="recycle__content">
-                <div className="recycle__toolbox">
-                  <div
-                    className="recycle__toolbox_left"
-                    role="presentation"
-                    onClick={this._handleToggleSelectAll}
-                  >
-                    <JustifiedSelectIcon activate={this.state.isAllSelect} />
-                    <h4>选择全部</h4>
-                  </div>
-                </div>
-                <ConnectedGridLayout
-                  isEditing={this.state.isEditing}
-                  images={images}
-                />
-              </div>,
-            ]
-          }
-        </div>
+        {
+          isEmpty
+          ? <EmptyHolder mainInfo="您的回收站是空的" />
+          : [
+            <Header key="header">
+              <Title>回收站</Title>
+              <SubTitle>回收站中的内容会在 30 天后永久删除</SubTitle>
+            </Header>,
+            <div key="content" className="recycle__content">
+              <Toolbar>
+                <ToolbarLeft visible onClick={this._handleToggleSelectAll}>
+                  <JustifiedSelectIcon activate={this.state.isAllSelect} />
+                  <h4>选择全部</h4>
+                </ToolbarLeft>
+              </Toolbar>
+              <ConnectedGridLayout
+                images={images}
+                isEditing
+              />
+            </div>,
+          ]
+        }
       </ContentLayout>
     );
   }

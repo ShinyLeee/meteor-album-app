@@ -1,4 +1,8 @@
-import _ from 'lodash';
+import map from 'lodash/map';
+import get from 'lodash/get';
+import indexOf from 'lodash/indexOf';
+import filter from 'lodash/filter';
+import find from 'lodash/find';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Meteor } from 'meteor/meteor';
@@ -62,7 +66,7 @@ export default class CollectionPage extends Component {
     try {
       const { curColl, selectImages, otherColls } = this.props;
       await Modal.showLoader('转移照片中');
-      const keys = _.map(selectImages, (image) => ({
+      const keys = map(selectImages, (image) => ({
         src: `${image.user}/${curColl.name}/${image.name}.${image.type}`,
         dest: `${image.user}/${modalState.destName}/${image.name}.${image.type}`,
       }));
@@ -70,7 +74,7 @@ export default class CollectionPage extends Component {
       // Only shift images which are moved success in Qiniu
       let moveStatus = [];
       let moveMessage = '转移照片成功';
-      let movedImages = _.map(selectImages, (image) => image._id);
+      let movedImages = map(selectImages, (image) => image._id);
 
       for (let i = 0; i < results.length; i += 1) {
         const status = results[i].code;
@@ -82,9 +86,9 @@ export default class CollectionPage extends Component {
       }
       if (moveStatus.length > 0) {
         moveMessage = '部分照片转移失败';
-        movedImages = _.filter(movedImages, (v, i) => _.indexOf(moveStatus, i) < 0);
+        movedImages = filter(movedImages, (v, i) => indexOf(moveStatus, i) < 0);
       }
-      const destColl = _.find(otherColls, (coll) => coll.name === modalState.destName);
+      const destColl = find(otherColls, (coll) => coll.name === modalState.destName);
       await shiftImages.callPromise({
         selectImages: movedImages,
         dest: destColl.name,
@@ -122,7 +126,7 @@ export default class CollectionPage extends Component {
 
   _handleRemovePhoto = async () => {
     try {
-      const selectImages = _.map(this.props.selectImages, (image) => image._id);
+      const selectImages = map(this.props.selectImages, (image) => image._id);
       Modal.close();
       await Modal.showLoader('删除照片中');
       await removeImagesToRecycle.callPromise({ selectImages });
@@ -142,7 +146,7 @@ export default class CollectionPage extends Component {
       this.props.snackBarOpen('请选择要转移的照片');
       return;
     }
-    const radios = _.map(otherColls, (coll, i) => (
+    const radios = map(otherColls, (coll, i) => (
       <FormControlLabel
         key={i}
         value={coll.name}
@@ -152,7 +156,7 @@ export default class CollectionPage extends Component {
     ));
 
     const showModal = () => {
-      const defaultValue = _.get(otherColls, '[0].name');
+      const defaultValue = get(otherColls, '[0].name');
       const value = modalState.destName || defaultValue;
       modalState.destName = value;
       Modal.show({

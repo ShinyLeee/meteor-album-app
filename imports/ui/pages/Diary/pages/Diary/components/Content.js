@@ -6,6 +6,7 @@ import FadeTransition from '/imports/ui/components/Transition/Fade';
 import ContentLayout from '/imports/ui/layouts/ContentLayout';
 import FloatButton from '/imports/ui/components/FloatButton';
 import DiaryHolder from './DiaryHolder';
+import DiaryViewer from './DiaryViewer';
 
 export default class DiaryContent extends PureComponent {
   static propTypes = {
@@ -21,37 +22,27 @@ export default class DiaryContent extends PureComponent {
       <ContentLayout
         loading={!dataIsReady}
         loadingType="Circle"
-        topbarHeight={260}
         delay
       >
-        <div className="content__diary">
-          <TransitionGroup>
-            {
-              diarys.map((diary) => {
-                const diaryTime = moment(diary.updatedAt).format('YYYY.MM.DD A HH:mm');
-                const activeDiary = diary;
-                activeDiary.time = diaryTime;
-                return (
-                  <FadeTransition key={diary._id} exit={false}>
-                    <article className="diary__item">
-                      <header className="diary__title">
-                        <h3>{diary.title}</h3>
-                      </header>
-                      <article className="diary__content" onClick={() => this.props.diaryOpen(activeDiary)}>
-                        {diary.outline}
-                      </article>
-                      <footer className="diary__footer">
-                        <time className="diary__time" dateTime={diaryTime}>{diaryTime}</time>
-                      </footer>
-                    </article>
-                  </FadeTransition>
-                );
-              })
-            }
-          </TransitionGroup>
-          <DiaryHolder />
-          <FloatButton onClick={() => this.props.history.push('/diary/write')} />
-        </div>
+        <TransitionGroup style={{ marginTop: -64 }}>
+          {
+            diarys.map((diary) => {
+              const diaryTime = moment(diary.updatedAt).format('YYYY.MM.DD A HH:mm');
+              const diaryWithTime = diary;
+              diaryWithTime.time = diaryTime;
+              return (
+                <FadeTransition key={diary._id} exit={false}>
+                  <DiaryHolder
+                    diary={diaryWithTime}
+                    onDiaryClick={(d) => this.props.diaryOpen(d)}
+                  />
+                </FadeTransition>
+              );
+            })
+          }
+        </TransitionGroup>
+        <DiaryViewer />
+        <FloatButton onClick={() => this.props.history.push('/diary/write')} />
       </ContentLayout>
     );
   }

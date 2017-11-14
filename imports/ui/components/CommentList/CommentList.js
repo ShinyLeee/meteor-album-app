@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import get from 'lodash/get';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import TimeAgo from 'react-timeago';
@@ -134,7 +134,7 @@ export default class CommentList extends Component {
                 button
               >
                 <ListItemAvatar>
-                  <Avatar src={owner.profile.avatar} />
+                  <Avatar src={get(owner, 'profile.avatar')} />
                 </ListItemAvatar>
                 <CommentsContent>
                   <h3>{comment.user}</h3>
@@ -159,7 +159,7 @@ export default class CommentList extends Component {
                     <ListItemText primary="查看该用户" />
                   </ListItem>
                   {
-                    (_.get(User, 'username')) === comment.user && (
+                    (get(User, 'username')) === comment.user && (
                       <ListItem onClick={() => this._handleRemoveComment(comment)}>
                         <ListItemText primary="删除评论" />
                       </ListItem>

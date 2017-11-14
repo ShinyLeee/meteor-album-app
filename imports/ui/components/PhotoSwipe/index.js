@@ -25,8 +25,11 @@ export default class ReactPhotoSwipe extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.open) {
-      if (!this.state.open) this.initPhotoSwipe(nextProps);
-      else if (this.props.items.length !== nextProps.items.length) this.updatePhotoSwipe(nextProps.items);
+      if (!this.state.open) {
+        this.initPhotoSwipe(nextProps);
+      } else if (this.props.items.length !== nextProps.items.length) {
+        this.updatePhotoSwipe(nextProps.items);
+      }
     } else if (this.state.open) {
       this.destroyPhotoSwipe();
     }
@@ -44,11 +47,16 @@ export default class ReactPhotoSwipe extends Component {
       if (callback || event === 'destroy') {
         this.PhotoSwipe.listen(event, (...args) => {
           if (callback) {
-            if (event === 'beforeChange') callback(args, this.PhotoSwipe.getCurrentIndex());
-            else callback(args);
+            if (event === 'beforeChange') {
+              callback(args, this.PhotoSwipe.getCurrentIndex());
+            } else {
+              callback(args);
+            }
           }
           if (event === 'destroy') {
-            if (!this.state.open) return;
+            if (!this.state.open) {
+              return;
+            }
             this.handleInnerClose();
           }
         });
@@ -70,7 +78,9 @@ export default class ReactPhotoSwipe extends Component {
   }
 
   destroyPhotoSwipe() {
-    if (!this.PhotoSwipe) return;
+    if (!this.PhotoSwipe) {
+      return;
+    }
     this.setState({ open: false }, () => this.PhotoSwipe.close());
   }
 
@@ -125,8 +135,6 @@ export default class ReactPhotoSwipe extends Component {
     );
   }
 }
-
-ReactPhotoSwipe.displayName = 'ReactPhotoSwipe';
 
 ReactPhotoSwipe.propTypes = {
   open: PropTypes.bool.isRequired,

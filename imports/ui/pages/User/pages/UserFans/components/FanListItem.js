@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import get from 'lodash/get';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import Avatar from 'material-ui/Avatar';
@@ -23,7 +23,7 @@ export default class UserFansContent extends PureComponent {
       fan,
       classes,
     } = this.props;
-    const followers = _.get(fan, 'profile.followers');
+    const followers = get(fan, 'profile.followers');
     const isFollowed = isOwner && followers && followers.indexOf(User.username) !== -1;
     return (
       <ListItem
@@ -32,12 +32,12 @@ export default class UserFansContent extends PureComponent {
         divider
       >
         <Avatar
-          src={_.get(fan, 'profile.avatar')}
-          onClick={() => this.props.history.push(`/user/${_.get(fan, 'username')}`)}
+          src={get(fan, 'profile.avatar')}
+          onClick={() => this.props.history.push(`/user/${get(fan, 'username')}`)}
         />
         <ListItemText
-          primary={_.get(fan, 'username')}
-          secondary={_.get(fan, 'profile.nickname')}
+          primary={get(fan, 'username')}
+          secondary={get(fan, 'profile.nickname')}
         />
         <Button
           className={isFollowed ? classes.btn__blue : classes.btn__white}

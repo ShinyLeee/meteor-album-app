@@ -4,7 +4,7 @@ import { withRouter } from 'react-router-dom';
 import { withStyles } from 'material-ui/styles';
 
 import { snackBarOpen } from '/imports/ui/redux/actions';
-import ResetPasswordPage from '../index';
+import ResetPasswordPage from '../components/Content';
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   snackBarOpen,

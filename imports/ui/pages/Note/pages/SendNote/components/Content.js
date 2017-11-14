@@ -128,28 +128,26 @@ export default class SendNoteContent extends Component {
         loading={!dataIsReady}
         delay
       >
-        <div className="content__sendNote">
-          <AutocompleteWrapper
-            value={this.state.receiver}
-            data={otherUsers}
-            onChange={this._handleReceiverChange}
-            onComplete={this._handleReceiverChange}
-          />
-          <Divider />
-          <Input
-            className={classes.input}
-            placeholder="标题"
-            value={this.state.title}
-            onChange={this._handleTitleChange}
-            disableUnderline
-            fullWidth
-          /><Divider />
-          <QuillEditor
-            placeholder="内容"
-            modules={this.quillModulesConfig}
-            onChange={this._handleContentChange}
-          />
-        </div>
+        <AutocompleteWrapper
+          value={this.state.receiver}
+          data={otherUsers}
+          onChange={this._handleReceiverChange}
+          onComplete={this._handleReceiverChange}
+        />
+        <Divider />
+        <Input
+          className={classes.input}
+          placeholder="标题"
+          value={this.state.title}
+          onChange={this._handleTitleChange}
+          disableUnderline
+          fullWidth
+        /><Divider />
+        <QuillEditor
+          placeholder="内容"
+          modules={this.quillModulesConfig}
+          onChange={this._handleContentChange}
+        />
       </ContentLayout>
     );
   }

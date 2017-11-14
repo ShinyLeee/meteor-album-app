@@ -20,7 +20,7 @@ export default class ResetPasswordPage extends Component {
   renderPrompt = () => {
     Modal.showPrompt({
       message: '是否确认离开此页面？',
-      onCance: Modal.close,
+      onCancel: Modal.close,
       onConfirm: () => {
         this.props.history.replace('/');
         Modal.close();
