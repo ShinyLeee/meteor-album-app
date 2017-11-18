@@ -55,7 +55,7 @@ export default class PasswordContent extends Component {
   render() {
     const { classes } = this.props;
     return (
-      <ContentLayout>
+      <ContentLayout fullScreen>
         <section>
           <Input
             className={classes.input}

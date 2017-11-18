@@ -173,7 +173,7 @@ const mapStateToProps = ({ sessions }) => ({
 
 const trackHandler = ({ User, coll }) => {
   let owner;
-  if (User.username === coll.user) {
+  if (User && User.username === coll.user) {
     owner = User;
   } else {
     Meteor.subscribe('Users.all');

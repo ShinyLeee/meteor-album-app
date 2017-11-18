@@ -5,6 +5,9 @@ import { Collections } from '/imports/api/collections/collection';
 export const isLogin = ({ User, location }) => {
   let ret = {
     isAuthenticated: !!User,
+    state: {
+      message: '已登录',
+    },
   };
   if (!ret.isAuthenticated) {
     ret = Object.assign({}, ret, {
@@ -19,15 +22,19 @@ export const isLogin = ({ User, location }) => {
 };
 
 export const isLogout = ({ User, location }) => {
+  console.log(location);
   let ret = {
     isAuthenticated: !User,
+    state: {
+      message: '已登出',
+    },
   };
   if (!ret.isAuthenticated) {
     ret = Object.assign({}, ret, {
       redirect: '/',
       state: {
         referrer: location.pathname,
-        message: '您已成功登录',
+        message: '您已登录',
       },
     });
   }
@@ -37,6 +44,9 @@ export const isLogout = ({ User, location }) => {
 export const isOwner = ({ User, location, computedMatch: { params } }) => {
   let ret = {
     isAuthenticated: !!User && User.username === params.username,
+    state: {
+      message: '页面拥有者',
+    },
   };
   if (!ret.isAuthenticated) {
     ret = Object.assign({}, ret, {
@@ -64,6 +74,9 @@ export const isAllowVisitHome = ({ User, location, computedMatch: { params } }) 
 
   let ret = {
     isAuthenticated: isUserExist && (isUserOwner || get(curUser, 'profile.settings.allowVisitHome')),
+    state: {
+      message: '允许访问该用户主页',
+    },
   };
   if (!ret.isAuthenticated) {
     ret = Object.assign({}, ret, {
@@ -102,6 +115,9 @@ export const isAllowVisitAllColl = ({ User, location, computedMatch: { params } 
   ) {
     return {
       isAuthenticated: true,
+      state: {
+        message: '允许访问该用户所有相册页面',
+      },
     };
   }
   return {
@@ -140,6 +156,9 @@ export const isAllowVisitSpecColl = ({ User, location, computedMatch: { params }
   ) {
     return {
       isAuthenticated: true,
+      state: {
+        message: '允许访问该用户当前相册',
+      },
     };
   }
   return {

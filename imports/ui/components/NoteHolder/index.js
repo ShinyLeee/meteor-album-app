@@ -43,7 +43,7 @@ const mapStateToProps = ({ sessions }) => ({
 
 const trackHandler = ({ User, note }) => {
   let sender;
-  if (User.username === note.sender) {
+  if (User && User.username === note.sender) {
     sender = User;
   } else {
     Meteor.subscribe('Users.all');

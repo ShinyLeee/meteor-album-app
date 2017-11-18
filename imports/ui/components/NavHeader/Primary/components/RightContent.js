@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
@@ -14,10 +14,11 @@ import SearchIcon from 'material-ui-icons/Search';
 import NotificationIcon from 'material-ui-icons/Notifications';
 import { Notes } from '/imports/api/notes/note';
 import settings from '/imports/utils/settings';
+import { RightContent } from '../../NavHeader.style';
 
 const { sourceDomain } = settings;
 
-class RightContent extends Component {
+class RightContentComp extends PureComponent {
   static propTypes = {
     User: PropTypes.object,
     noteNum: PropTypes.number,
@@ -37,60 +38,64 @@ class RightContent extends Component {
 
   render() {
     const { User, noteNum, classes } = this.props;
-    if (User) {
-      return (
-        <div className={classes.root}>
-          <IconButton
-            aria-label="Search"
-            color="contrast"
-            onClick={this._navTo('/search')}
-          ><SearchIcon />
-          </IconButton>
-          <IconButton
-            aria-label="Note"
-            color="contrast"
-            onClick={this._navTo(`/note/${User.username}`)}
-          >
-            <Badge
-              className={noteNum > 0 ? 'bell-shake' : ''}
-              classes={{ badge: classes.badge }}
-              style={{ height: 24 }}
-              badgeContent={noteNum}
-              color="primary"
-            ><NotificationIcon />
-            </Badge>
-          </IconButton>
-          <IconButton
-            className={classes.avatar}
-            aria-label="User"
-            color="contrast"
-            onClick={this._navTo(`/user/${User.username}`)}
-          ><Avatar src={this.avatarSrc} />
-          </IconButton>
-        </div>
-      );
-    }
     return (
-      <div className={classes.root}>
+      <RightContent>
         <IconButton
+          className={classes.iconBtn}
           aria-label="Search"
           color="contrast"
           onClick={this._navTo('/search')}
-        ><SearchIcon onClick={this._navTo('/search')} />
+        ><SearchIcon />
         </IconButton>
-        <Button
-          color="contrast"
-          onClick={this._navTo('/login')}
-        >登录
-        </Button>
-      </div>
+        {
+          User && (
+            <IconButton
+              className={classes.iconBtn}
+              aria-label="Note"
+              color="contrast"
+              onClick={this._navTo(`/note/${User.username}`)}
+            >
+              <Badge
+                className={noteNum > 0 ? 'bell-shake' : ''}
+                classes={{ badge: classes.badge }}
+                style={{ height: 24 }}
+                badgeContent={noteNum}
+                color="primary"
+              ><NotificationIcon />
+              </Badge>
+            </IconButton>
+          )
+        }
+        {
+          User
+          ? (
+            <IconButton
+              className={classes.avatar}
+              aria-label="User"
+              color="contrast"
+              onClick={this._navTo(`/user/${User.username}`)}
+            ><Avatar classes={{ root: classes.avatar }} src={this.avatarSrc} />
+            </IconButton>
+          )
+          : (
+            <Button
+              color="contrast"
+              onClick={this._navTo('/login')}
+            >登录
+            </Button>
+          )
+        }
+      </RightContent>
     );
   }
 }
 
-const styles = {
-  root: {
-    display: 'flex',
+const styles = theme => ({
+  iconBtn: {
+    [theme.breakpoints.down('xs')]: {
+      width: 36,
+      height: 36,
+    },
   },
 
   badge: {
@@ -99,8 +104,13 @@ const styles = {
 
   avatar: {
     marginLeft: 12,
+    [theme.breakpoints.down('xs')]: {
+      width: 36,
+      height: 36,
+      marginLeft: 8,
+    },
   },
-};
+});
 
 const mapStateToProps = ({ sessions }) => ({
   User: sessions.User,
@@ -118,4 +128,4 @@ export default compose(
       noteNum: User ? Notes.find({ isRead: false }).count() : 0,
     };
   }),
-)(RightContent);
+)(RightContentComp);

@@ -2,8 +2,6 @@ import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { withStyles } from 'material-ui/styles';
-import purple from 'material-ui/colors/purple';
-import grey from 'material-ui/colors/grey';
 import { userLogin, snackBarOpen } from '/imports/ui/redux/actions';
 import withRedirect from '/imports/ui/hocs/withRedirect';
 import LoginContent from '../components/Content';
@@ -13,7 +11,7 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
   snackBarOpen,
 }, dispatch);
 
-const styles = {
+const styles = theme => ({
   input: {
     display: 'flex',
     alignItems: 'flex-end',
@@ -25,21 +23,21 @@ const styles = {
   btn__login: {
     width: '100%',
     color: '#fff',
-    backgroundColor: purple[500],
+    backgroundImage: theme.palette.gradients.plumPlate,
     '&:hover': {
-      backgroundColor: purple[400],
+      opacity: 0.9,
     },
   },
 
   btn__register: {
     width: '100%',
     color: '#fff',
-    backgroundColor: grey[500],
+    backgroundImage: theme.palette.gradients.aboveCloud,
     '&:hover': {
-      backgroundColor: grey[400],
+      opacity: 0.9,
     },
   },
-};
+});
 
 export default compose(
   connect(null, mapDispatchToProps),

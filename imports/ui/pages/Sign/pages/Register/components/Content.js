@@ -76,7 +76,9 @@ export default class RegisterContent extends Component {
         alignCenter
         fullScreen
       >
-        <Logo>Gallery +</Logo>
+        <Logo>
+          <h2>Gallery Plus</h2>
+        </Logo>
         <Section>
           <Input
             className={classes.input}

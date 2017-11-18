@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
@@ -17,13 +17,10 @@ import DiaryIcon from 'material-ui-icons/Book';
 import DeleteIcon from 'material-ui-icons/Delete';
 import SettingsIcon from 'material-ui-icons/Settings';
 import ArrowDropdownIcon from 'material-ui-icons/ArrowDropDown';
-import purple from 'material-ui/colors/purple';
-import teal from 'material-ui/colors/teal';
 import Modal from '/imports/ui/components/Modal';
 import settings from '/imports/utils/settings';
 import { userLogout } from '/imports/ui/redux/actions';
 import {
-  DrawerContent,
   DrawerProfile,
   DrawerBackground,
   DrawerAvatar,
@@ -34,7 +31,7 @@ const noop = () => {};
 
 const { sourceDomain } = settings;
 
-class NavHeaderDrawer extends Component {
+class NavHeaderDrawer extends PureComponent {
   static propTypes = {
     visible: PropTypes.bool.isRequired,
     onRequestClose: PropTypes.func.isRequired,
@@ -98,41 +95,42 @@ class NavHeaderDrawer extends Component {
     return (
       <Drawer
         open={visible}
+        classes={{ paper: classes.drawer }}
         onRequestClose={onRequestClose}
       >
-        <DrawerContent>
-          <DrawerProfile style={{ backgroundImage: this.coverSrc }}>
-            <DrawerBackground />
-            <DrawerAvatar>
-              <Avatar
-                className={classes.avatar}
-                src={this.avatarSrc}
-                onClick={User ? this._navTo(`/user/${User.username}`) : noop}
-              />
-            </DrawerAvatar>
-            {
-              User && (
-                <DrawerEmail>
-                  <span>{(User.emails && User.emails[0].address) || User.username}</span>
-                  <ArrowDropdownIcon color="#fff" onClick={this.renderPopover} />
-                  <Popover
-                    open={this.state.popover}
-                    anchorEl={this.state.popoverAnchor}
-                    anchorOrigin={{ horizontal: 'center', vertical: 'bottom' }}
-                    transformOrigin={{ horizontal: 'center', vertical: 'top' }}
-                    onRequestClose={() => this.setState({ popover: false })}
-                  >
-                    <List>
-                      <ListItem onClick={this._handleLogout}>
-                        <ListItemText primary="登出" />
-                      </ListItem>
-                    </List>
-                  </Popover>
-                </DrawerEmail>
-              )
-            }
-          </DrawerProfile>
-          <Divider />
+        <DrawerProfile style={{ backgroundImage: this.coverSrc }}>
+          <DrawerBackground />
+          <DrawerAvatar>
+            <Avatar
+              className={classes.avatar}
+              src={this.avatarSrc}
+              onClick={User ? this._navTo(`/user/${User.username}`) : noop}
+            />
+          </DrawerAvatar>
+          {
+            User && (
+              <DrawerEmail>
+                <span>{(User.emails && User.emails[0].address) || User.username}</span>
+                <ArrowDropdownIcon color="#fff" onClick={this.renderPopover} />
+                <Popover
+                  open={this.state.popover}
+                  anchorEl={this.state.popoverAnchor}
+                  anchorOrigin={{ horizontal: 'center', vertical: 'bottom' }}
+                  transformOrigin={{ horizontal: 'center', vertical: 'top' }}
+                  onRequestClose={() => this.setState({ popover: false })}
+                >
+                  <List>
+                    <ListItem onClick={this._handleLogout}>
+                      <ListItemText primary="登出" />
+                    </ListItem>
+                  </List>
+                </Popover>
+              </DrawerEmail>
+            )
+          }
+        </DrawerProfile>
+        <Divider />
+        <div>
           <List>
             <ListItem
               onClick={this._navTo('/')}
@@ -150,11 +148,11 @@ class NavHeaderDrawer extends Component {
               onClick={User ? this._navTo(`/user/${User.username}`) : this._navTo('/login')}
               button
             >
-              <ListItemIcon className={classNames({ [classes.teal]: userPage })}>
+              <ListItemIcon className={classNames({ [classes.red]: userPage })}>
                 <UserIcon />
               </ListItemIcon>
               <ListItemText
-                classes={userPage ? { text: classes.teal } : {}}
+                classes={userPage ? { text: classes.red } : {}}
                 primary="主页"
               />
             </ListItem>
@@ -201,7 +199,7 @@ class NavHeaderDrawer extends Component {
               <ListItemText primary="设置" />
             </ListItem>
           </List>
-        </DrawerContent>
+        </div>
       </Drawer>
     );
   }
@@ -216,17 +214,21 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
 }, dispatch);
 
 const styles = {
+  drawer: {
+    width: '70%',
+  },
+
   avatar: {
     width: 54,
     height: 54,
   },
 
   purple: {
-    color: purple[500],
+    color: '#764ba2',
   },
 
-  teal: {
-    color: teal[500],
+  red: {
+    color: 'rgb(196, 58, 48)',
   },
 };
 

@@ -78,7 +78,6 @@ export default class ContentLayout extends PureComponent {
         style={{
           height: fullScreen ? vHeight : 'auto',
           paddingTop: topbarHeight,
-          paddingBottom: alignCenter ? 64 : 0,
           justifyContent: alignCenter ? 'center' : 'inhreit',
         }}
       >

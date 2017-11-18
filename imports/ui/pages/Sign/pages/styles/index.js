@@ -1,27 +1,37 @@
 import styled from 'styled-components';
 
 export const Logo = styled.header`
-  width: 100%;
-  height: 120px;
-  padding: 12px 0;
-  font-size: 48px;
-  color: rgba(156, 39, 176, 0.8);
-  text-align: center;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  & > h2 {
+    font-size: 54px;
+    font-family: 'Pacifico', cursive;
+    color: rgba(156, 39, 176, 0.8);
+    @media (max-width: 320px) {
+      font-size: 46px;
+    }
+  }
 `;
 
 export const Section = styled.section`
   padding: 0 10%;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 `;
 
 export const Separator = styled.div`
-  margin-top: 10px;
-  margin-bottom: 10px;
+  margin-top: 8px;
+  margin-bottom: 8px;
   overflow: hidden;
   font-family: 'Microsoft Yahei';
   font-size: 14px;
   color: #999;
   text-align: center;
+  @media (max-width: 320px) {
+    margin-top: 4px;
+    margin-bottom: 4px;
+  }
   &::before, &::after {
     position: relative;
     display: inline-block;
@@ -36,7 +46,8 @@ export const Separator = styled.div`
 `;
 
 export const Footer = styled.footer`
+  padding-bottom: 10px;
   color: #777;
-  font-size: 14px;
+  font-size: 12px;
   text-align: center;
 `;

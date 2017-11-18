@@ -7,3 +7,9 @@ export const LeftContent = styled.div`
 export const Content = styled.div`
   flex: 1;
 `;
+
+export const RightContent = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;

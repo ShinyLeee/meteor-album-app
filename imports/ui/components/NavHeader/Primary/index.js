@@ -8,13 +8,10 @@ import Toolbar from 'material-ui/Toolbar';
 import Typography from 'material-ui/Typography';
 import MenuIcon from 'material-ui-icons/Menu';
 import IconButton from 'material-ui/IconButton';
-import purple from 'material-ui/colors/purple';
 import scrollTo from '/imports/vendor/scrollTo';
 import Drawer from './components/Drawer';
 import RightContent from './components/RightContent';
 import { LeftContent, Content } from '../NavHeader.style';
-
-const purple500 = purple['500'];
 
 class PrimaryNavHeader extends Component {
   static propTypes = {
@@ -60,6 +57,7 @@ class PrimaryNavHeader extends Component {
           {/* LeftContent */}
           <LeftContent>
             <IconButton
+              className={classes.iconBtn}
               color="contrast"
               aria-label="Menu"
               onClick={this._handleToggleDrawer}
@@ -74,11 +72,13 @@ class PrimaryNavHeader extends Component {
           {/* Content */}
           <Content>
             <Typography
+              className={classes.title}
               type="title"
               color="inherit"
               onClick={this._handleTitleClick}
-            >Gallery +
+            >Gallery
             </Typography>
+            <sup>&nbsp;+</sup>
           </Content>
 
           {/* RightContent */}
@@ -90,15 +90,27 @@ class PrimaryNavHeader extends Component {
   }
 }
 
-const styles = {
+const styles = theme => ({
   appbar: {
-    backgroundColor: purple500,
+    backgroundColor: '#764ba2',
+    backgroundImage: theme.palette.gradients.plumPlate,
   },
 
   toolbar: {
     minHeight: 64,
   },
-};
+
+  title: {
+    display: 'inline',
+  },
+
+  iconBtn: {
+    [theme.breakpoints.down('xs')]: {
+      width: 36,
+      height: 36,
+    },
+  },
+});
 
 export default compose(
   withStyles(styles),

@@ -15,4 +15,8 @@ export const Input = styled.input`
   padding: 0 12px;
   font-size: 16px;
   color: #fff;
+  &::placeholder { 
+    color: #fff !important;
+    text-overflow: ellipsis; 
+  }
 `;

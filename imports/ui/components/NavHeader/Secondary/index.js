@@ -24,6 +24,7 @@ const SecondaryNavHeader = (props) => {
     Right,
     classes,
     history,
+    children,
   } = props;
 
   return (
@@ -54,6 +55,7 @@ const SecondaryNavHeader = (props) => {
         {/* Content */}
         <Content style={titleStyle}>
           <Typography
+            className={classes.title}
             type="title"
             color="inherit"
             onClick={() => scrollTo(0, 1500)}
@@ -64,8 +66,9 @@ const SecondaryNavHeader = (props) => {
 
         {/* RightContent */}
         {Right}
-
       </Toolbar>
+
+      {children}
     </AppBar>
   );
 };
@@ -87,17 +90,24 @@ SecondaryNavHeader.propTypes = {
   ]),
   classes: PropTypes.object.isRequired,
   history: PropTypes.object.isRequired,
+  children: PropTypes.element,
 };
 
-const styles = {
+const styles = theme => ({
   appbar: {
     backgroundColor: blue500,
+    backgroundImage: theme.palette.gradients.riverCity,
   },
 
   toolbar: {
     minHeight: 64,
   },
-};
+
+  title: {
+    height: 48,
+    lineHeight: '48px',
+  },
+});
 
 export default compose(
   withStyles(styles),

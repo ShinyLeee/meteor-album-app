@@ -116,7 +116,6 @@ export default class UserContent extends PureComponent {
     return (
       <ContentLayout
         loading={!dataIsReady}
-        fullScreen
         delay
       >
         {/* COVER SECTION */}

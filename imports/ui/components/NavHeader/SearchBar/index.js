@@ -44,15 +44,16 @@ SearchBar.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-const styles = {
+const styles = theme => ({
   appbar: {
     backgroundColor: '#455a64',
+    backgroundImage: theme.palette.gradients.viciousStance,
   },
 
   toolbar: {
     minHeight: 64,
   },
-};
+});
 
 export default compose(
   withStyles(styles),

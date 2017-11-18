@@ -35,7 +35,7 @@ export default compose(
     const dataIsReady = collHandler.ready();
 
     // curColl is currentCollection use for lock/remove etc.
-    const curColl = Collections.findOne({ name: curCName });
+    const curColl = Collections.findOne({ name: curCName }) || {};
     // otherColls use for shift photos
     const otherColls = Collections.find(
       { name: { $ne: curCName } },

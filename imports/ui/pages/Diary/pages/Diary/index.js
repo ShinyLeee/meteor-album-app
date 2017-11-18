@@ -69,7 +69,7 @@ export default class DiaryPage extends PureComponent {
       <ViewLayout
         Topbar={
           <SecondaryNavHeader
-            style={{ backgroundColor: this.state.navTitle ? '#fff' : 'transparent' }}
+            style={{ background: this.state.navTitle ? '#fff' : 'transparent' }}
             title={this.state.navTitle}
             titleStyle={{ color: this.state.navTitle ? '#222' : 'inherit' }}
             iconStyle={{ color: this.state.navTitle ? '#222' : '#fff' }}

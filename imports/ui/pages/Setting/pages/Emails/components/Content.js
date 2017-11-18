@@ -79,7 +79,7 @@ export default class EmailsContent extends Component {
   render() {
     const { User, classes } = this.props;
     return (
-      <ContentLayout>
+      <ContentLayout fullScreen>
         <section>
           <List subheader={<ListSubheader>邮箱列表</ListSubheader>}>
             {
