@@ -1,12 +1,8 @@
 /* eslint-disable no-confusing-arrow */
-import React from 'react';
 import styled from 'styled-components';
 
-const D = (props) => <div {...props} />; // eslint-disable-line
-
-export const Wrapper = styled(D)`
+export const Wrapper = styled.div`
   position: absolute;
-  background-color: #eee;
   transform: translate3d(0px, 0px, 0px);
   overflow: hidden;
 `;

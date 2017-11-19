@@ -1,7 +1,16 @@
 export default {
   sessions: {
+    isLoggedIn: false,
     User: null,
     uptoken: null,
+  },
+
+  device: {
+    agent: window.navigator.userAgent,
+    lang: window.navigator.language || window.navigator.userLanguage,
+    width: window.screen.width,
+    height: window.screen.height,
+    pixelRatio: window.devicePixelRatio,
   },
 
   portals: {

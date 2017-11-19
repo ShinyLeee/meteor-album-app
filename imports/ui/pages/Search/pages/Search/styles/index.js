@@ -6,9 +6,6 @@ export const CollSection = styled.section`
 
 export const UserSection = styled.section`
   margin-bottom: 28px;
-  &:last-child {
-    margin-bottom: 0;
-  }
 `;
 
 export const Header = styled.header`

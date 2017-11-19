@@ -4,11 +4,9 @@ import React, { PureComponent } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import LazyLoad from 'react-lazyload';
-import TransitionGroup from 'react-transition-group/TransitionGroup';
-import { pixelRatio } from '/imports/utils/responsive';
 import settings from '/imports/utils/settings';
 import { selectCounter } from '/imports/ui/redux/actions';
-import FadeTransition from '/imports/ui/components/Transition/Fade';
+import ProgressiveImage from '/imports/ui/components/ProgressiveImage';
 import JustifiedImageBackground from '../../snippet/JustifiedImageBackground';
 import { Wrapper, SelectableImage } from './GroupImageHolder.style';
 
@@ -20,6 +18,7 @@ export class GroupImageHolder extends PureComponent {
     groupName: PropTypes.string.isRequired,
     dimension: PropTypes.object.isRequired,
     image: PropTypes.object.isRequired,
+    device: PropTypes.object.isRequired,
     total: PropTypes.number.isRequired,
     groupTotal: PropTypes.number,
     onImageClick: PropTypes.func,
@@ -89,38 +88,43 @@ export class GroupImageHolder extends PureComponent {
       isEditing,
       dimension,
       image,
+      device,
     } = this.props;
     const url = `${imageDomain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
-    const retinaWidth = Math.round(dimension.width * pixelRatio);
-    const retinaHeight = Math.round(dimension.height * pixelRatio);
+    const retinaWidth = Math.round(dimension.width * device.pixelRatio);
+    const retinaHeight = Math.round(dimension.height * device.pixelRatio);
     const imageSrc = `${url}?imageView2/1/w/${retinaWidth}/h/${retinaHeight}`;
     const imageHolderStyle = {
       left: `${dimension.left}px`,
       top: `${dimension.top}px`,
       width: `${dimension.width}px`,
       height: `${dimension.height}px`,
-      backgroundColor: image.color,
     };
     return (
       <Wrapper
         style={imageHolderStyle}
         onClick={this._handleSelect}
       >
-        <JustifiedImageBackground isEditing={isEditing} isSelect={this.state.isSelect} />
+        <JustifiedImageBackground
+          isEditing={isEditing}
+          isSelect={this.state.isSelect}
+        />
         <LazyLoad
           height={dimension.height}
           once
         >
-          <TransitionGroup>
-            <FadeTransition>
-              <SelectableImage
-                src={imageSrc}
-                alt={image.name}
-                isSelect={this.state.isSelect}
-                innerRef={(node) => { this.image = node; }}
-              />
-            </FadeTransition>
-          </TransitionGroup>
+          <ProgressiveImage
+            src={imageSrc}
+            aspectRatio={image.dimension[1] / image.dimension[0]}
+            color={image.color}
+          >
+            <SelectableImage
+              src={imageSrc}
+              alt={image.name}
+              isSelect={this.state.isSelect}
+              innerRef={(node) => { this.image = node; }}
+            />
+          </ProgressiveImage>
         </LazyLoad>
       </Wrapper>
     );
@@ -128,6 +132,7 @@ export class GroupImageHolder extends PureComponent {
 }
 
 const mapStateToProps = (state) => ({
+  device: state.device,
   group: state.selectCounter.group,
   counter: state.selectCounter.counter,
 });
@@ -136,4 +141,6 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
   selectCounter,
 }, dispatch);
 
-export default connect(mapStateToProps, mapDispatchToProps, null, { withRef: true })(GroupImageHolder);
+export default connect(
+  mapStateToProps, mapDispatchToProps, null, { withRef: true },
+)(GroupImageHolder);

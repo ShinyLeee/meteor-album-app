@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { vWidth, pixelRatio } from '/imports/utils/responsive';
 import settings from '/imports/utils/settings';
 import { photoSwipeOpen } from '/imports/ui/redux/actions';
 import GridLayout from '/imports/ui/components/GridLayout';
@@ -16,6 +15,7 @@ export class JustifiedGridLayout extends PureComponent {
     images: PropTypes.array.isRequired,
     showGallery: PropTypes.bool,
     filterType: PropTypes.oneOf(['latest', 'oldest', 'popular']),
+    device: PropTypes.object.isRequired,
     photoSwipeOpen: PropTypes.func.isRequired,
   }
 
@@ -25,36 +25,52 @@ export class JustifiedGridLayout extends PureComponent {
     filterType: 'latest',
   }
 
-  state = {
-    pswpItems: this.props.showGallery ? this.generateItems(this.props) : undefined,
+  constructor(props) {
+    super(props);
+    this._pswpItems = props.showGallery ? this.generateItems(props) : null;
   }
 
   componentWillReceiveProps(nextProps) {
     const { images, showGallery } = this.props;
     // When image added in GroupHolder we need to refresh both two state
-    if (showGallery) {
-      if (images.length !== nextProps.images.length) {
-        this.setState({ pswpItems: this.generateItems(nextProps) });
-      }
+    if (
+      showGallery &&
+      images.length !== nextProps.images.length
+    ) {
+      this._pswpItems = this.generateItems(nextProps);
     }
+  }
+
+  // 获取网格布局图片宽
+  generateImageDimension() {
+    const { device } = this.props;
+    const { width, pixelRatio } = device;
+    return Math.round((width / 3) * pixelRatio);
+  }
+
+  // 获取屏幕宽
+  generateDimension() {
+    const { device } = this.props;
+    const { width, pixelRatio } = device;
+    return Math.round(width * pixelRatio);
   }
 
   // eslint-disable-next-line class-methods-use-this
   generateItems(props) {
     const { images } = props;
     const pswpItems = images.map((image) => {
-      const realDimension = Math.round((vWidth / 3) * pixelRatio);
+      const thumbnailDimension = this.generateDimension();
       const url = `${imageDomain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
       // generate based on Qiniu imageView2 mode 3 API
       // more details see https://developer.qiniu.com/dora/api/basic-processing-images-imageview2
-      const minWidth = Math.round(vWidth * pixelRatio);
-      const minHeight = Math.round((image.dimension[1] / image.dimension[0]) * minWidth);
+      const largeImageWidth = this.generateDimension();
+      const largeImageHeight = Math.round((image.dimension[1] / image.dimension[0]) * largeImageWidth);
       return ({
         _id: image._id,
-        msrc: `${url}?imageView2/1/w/${realDimension}`,
-        src: `${url}?imageView2/3/w/${minWidth}`,
-        w: minWidth,
-        h: minHeight,
+        msrc: `${url}?imageView2/1/w/${thumbnailDimension}`,
+        src: `${url}?imageView2/3/w/${largeImageWidth}`,
+        w: largeImageWidth,
+        h: largeImageHeight,
       });
     });
     return pswpItems;
@@ -64,7 +80,7 @@ export class JustifiedGridLayout extends PureComponent {
     const { showGallery } = this.props;
     if (showGallery) {
       this.props.photoSwipeOpen(
-        this.state.pswpItems,
+        this._pswpItems,
         {
           index: i,
           history: false,
@@ -96,6 +112,7 @@ export class JustifiedGridLayout extends PureComponent {
               isEditing={isEditing}
               image={image}
               total={images.length}
+              dimension={this.generateImageDimension()}
               ref={(node) => { this[`thumbnail${i}`] = node; }}
               onImageClick={() => this.handleOpenGallery(i)}
             />
@@ -106,8 +123,12 @@ export class JustifiedGridLayout extends PureComponent {
   }
 }
 
+const mapStateToProps = ({ device }) => ({
+  device,
+});
+
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   photoSwipeOpen,
 }, dispatch);
 
-export default connect(null, mapDispatchToProps)(JustifiedGridLayout);
+export default connect(mapStateToProps, mapDispatchToProps)(JustifiedGridLayout);

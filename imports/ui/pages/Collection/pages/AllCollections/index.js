@@ -30,10 +30,7 @@ class AllCollectionPage extends Component {
       <ViewLayout
         deep
         Topbar={
-          <SecondaryNavHeader
-            style={{ boxShadow: 'none' }}
-            title={isOwner ? '我的相册' : `${curUserName}的相册`}
-          >
+          <SecondaryNavHeader title={isOwner ? '我的相册' : `${curUserName}的相册`}>
             <Tabs
               value={this.state.slideIndex}
               onChange={this._handleViewIndex}

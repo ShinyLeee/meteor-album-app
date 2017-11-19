@@ -15,7 +15,6 @@ import DeleteIcon from 'material-ui-icons/Delete';
 import MoreVertIcon from 'material-ui-icons/MoreVert';
 import LockIcon from 'material-ui-icons/LockOutline';
 import LockOutIcon from 'material-ui-icons/LockOpen';
-import { rWidth } from '/imports/utils/responsive';
 import {
   Wrapper,
   Cover,
@@ -35,6 +34,7 @@ class CollHolder extends Component {
     classes: PropTypes.object.isRequired,
     onToggleLock: PropTypes.func,
     onRemove: PropTypes.func,
+    device: PropTypes.object.isRequired,
   }
 
   static defaultProps = {
@@ -76,7 +76,9 @@ class CollHolder extends Component {
       showDetails,
       showActions,
       classes,
+      device,
     } = this.props;
+    const rWidth = (device.width * device.pixelRatio) / 2;
     const fastSrc = coll.cover.indexOf('VF_ac') > 0
       ? coll.cover
       : `${coll.cover}?imageView2/2/w/${rWidth}`;
@@ -167,8 +169,9 @@ const styles = {
   },
 };
 
-const mapStateToProps = ({ sessions }) => ({
+const mapStateToProps = ({ sessions, device }) => ({
   User: sessions.User,
+  device,
 });
 
 const trackHandler = ({ User, coll }) => {

@@ -40,10 +40,11 @@ const SecondaryNavHeader = (props) => {
           ? (
             <LeftContent>
               <IconButton
+                className={classes.iconBtn}
                 style={iconStyle}
                 color="contrast"
                 aria-label="Back"
-                onClick={() => history.goBack()}
+                onClick={history.goBack}
               >
                 <ArrowBackIcon />
               </IconButton>
@@ -97,15 +98,27 @@ const styles = theme => ({
   appbar: {
     backgroundColor: blue500,
     backgroundImage: theme.palette.gradients.riverCity,
+    transition: theme.transitions.create('all', {
+      duration: theme.transitions.duration.short,
+    }),
   },
 
   toolbar: {
     minHeight: 64,
   },
 
+  iconBtn: {
+    transition: theme.transitions.create('color', {
+      duration: theme.transitions.duration.short,
+    }),
+  },
+
   title: {
     height: 48,
     lineHeight: '48px',
+    transition: theme.transitions.create('color', {
+      duration: theme.transitions.duration.short,
+    }),
   },
 });
 

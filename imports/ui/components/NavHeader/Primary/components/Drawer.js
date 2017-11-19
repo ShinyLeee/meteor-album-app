@@ -1,3 +1,4 @@
+import get from 'lodash/get';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import React, { PureComponent } from 'react';
@@ -18,11 +19,12 @@ import DeleteIcon from 'material-ui-icons/Delete';
 import SettingsIcon from 'material-ui-icons/Settings';
 import ArrowDropdownIcon from 'material-ui-icons/ArrowDropDown';
 import Modal from '/imports/ui/components/Modal';
+import { ResponsiveCover } from '/imports/ui/components/ProgressiveImage';
 import settings from '/imports/utils/settings';
 import { userLogout } from '/imports/ui/redux/actions';
 import {
   DrawerProfile,
-  DrawerBackground,
+  DrawerControlCenter,
   DrawerAvatar,
   DrawerEmail,
 } from '../Primary.style';
@@ -51,13 +53,13 @@ class NavHeaderDrawer extends PureComponent {
   get avatarSrc() {
     const { User } = this.props;
     const defaultAvatar = `${sourceDomain}/GalleryPlus/Default/default-avatar.jpg`;
-    return User ? User.profile.avatar : defaultAvatar;
+    return get(User, 'profile.avatar') || defaultAvatar;
   }
 
   get coverSrc() {
     const { User } = this.props;
-    const defaultCover = `url(${sourceDomain}/GalleryPlus/Default/default-cover.jpg)`;
-    return User ? `url("${User.profile.cover}")` : defaultCover;
+    const defaultCover = `${sourceDomain}/GalleryPlus/Default/default-cover.jpg`;
+    return get(User, 'profile.cover') || defaultCover;
   }
 
   _navTo = (to) => () => {
@@ -98,36 +100,42 @@ class NavHeaderDrawer extends PureComponent {
         classes={{ paper: classes.drawer }}
         onRequestClose={onRequestClose}
       >
-        <DrawerProfile style={{ backgroundImage: this.coverSrc }}>
-          <DrawerBackground />
-          <DrawerAvatar>
-            <Avatar
-              className={classes.avatar}
-              src={this.avatarSrc}
-              onClick={User ? this._navTo(`/user/${User.username}`) : noop}
-            />
-          </DrawerAvatar>
-          {
-            User && (
-              <DrawerEmail>
-                <span>{(User.emails && User.emails[0].address) || User.username}</span>
-                <ArrowDropdownIcon color="#fff" onClick={this.renderPopover} />
-                <Popover
-                  open={this.state.popover}
-                  anchorEl={this.state.popoverAnchor}
-                  anchorOrigin={{ horizontal: 'center', vertical: 'bottom' }}
-                  transformOrigin={{ horizontal: 'center', vertical: 'top' }}
-                  onRequestClose={() => this.setState({ popover: false })}
-                >
-                  <List>
-                    <ListItem onClick={this._handleLogout}>
-                      <ListItemText primary="登出" />
-                    </ListItem>
-                  </List>
-                </Popover>
-              </DrawerEmail>
-            )
-          }
+        <DrawerProfile>
+          <ResponsiveCover
+            src={this.coverSrc}
+            basis={0.35}
+            maxHeight={250}
+          />
+          <DrawerControlCenter>
+            <DrawerAvatar>
+              <Avatar
+                className={classes.avatar}
+                src={this.avatarSrc}
+                onClick={User ? this._navTo(`/user/${User.username}`) : noop}
+              />
+            </DrawerAvatar>
+            {
+              User && (
+                <DrawerEmail>
+                  <span>{get(User, 'emails[0].address') || User.username}</span>
+                  <ArrowDropdownIcon color="#fff" onClick={this.renderPopover} />
+                  <Popover
+                    open={this.state.popover}
+                    anchorEl={this.state.popoverAnchor}
+                    anchorOrigin={{ horizontal: 'center', vertical: 'bottom' }}
+                    transformOrigin={{ horizontal: 'center', vertical: 'top' }}
+                    onRequestClose={() => this.setState({ popover: false })}
+                  >
+                    <List>
+                      <ListItem onClick={this._handleLogout}>
+                        <ListItemText primary="登出" />
+                      </ListItem>
+                    </List>
+                  </Popover>
+                </DrawerEmail>
+              )
+            }
+          </DrawerControlCenter>
         </DrawerProfile>
         <Divider />
         <div>

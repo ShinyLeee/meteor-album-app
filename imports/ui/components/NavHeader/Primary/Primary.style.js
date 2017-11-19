@@ -8,12 +8,13 @@ export const DrawerProfile = styled.div`
   background-size: cover;
 `;
 
-export const DrawerBackground = styled.div`
+export const DrawerControlCenter = styled.div`
   position: absolute;
   width: 100%;
   height: 100%;
-  background: transparent;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.3) 0, transparent 30%, transparent 70%, rgba(0, 0, 0, 0.3));
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 `;
 
 export const DrawerAvatar = styled.div`

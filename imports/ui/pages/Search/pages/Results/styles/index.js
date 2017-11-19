@@ -7,9 +7,6 @@ export const Tip = styled.div`
 
 export const Section = styled.section`
   margin-bottom: 28px;
-  &:last-child {
-    margin-bottom: 0;
-  }
 `;
 
 export const Header = styled.header`

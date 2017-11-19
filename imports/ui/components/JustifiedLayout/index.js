@@ -36,8 +36,11 @@ export class Justified extends PureComponent {
       this.setState({ allGroupImages });
     }
     // Fix potential issue that images is empty when first render
-    if (isEditing && counter > 0 && images.length === counter) this.setState({ isAllSelect: true });
-    else this.setState({ isAllSelect: false });
+    if (isEditing && counter > 0 && images.length === counter) {
+      this.setState({ isAllSelect: true });
+    } else {
+      this.setState({ isAllSelect: false });
+    }
   }
 
   _handleToggleSelectAll = () => {
@@ -73,8 +76,9 @@ export class Justified extends PureComponent {
   }
 
   _handleLayoutChange = (newLayoutType) => {
+    const { images } = this.props;
     if (newLayoutType === 'group') {
-      const allGroupImages = this.generateAllGroupImages(this.props.images, 'day');
+      const allGroupImages = this.generateAllGroupImages(images, 'day');
       this.setState({
         allGroupImages,
         layoutType: newLayoutType,
@@ -87,11 +91,11 @@ export class Justified extends PureComponent {
   }
 
   _handleFilterChange = (newFilterType) => {
+    const { images } = this.props;
     if (this.state.layoutType === 'group') {
-      const allGroupImages = this.generateAllGroupImages(this.props.images, newFilterType);
+      const allGroupImages = this.generateAllGroupImages(images, newFilterType);
       this.setState({ filterType: newFilterType, allGroupImages });
-    }
-    if (this.state.layoutType === 'grid') {
+    } else if (this.state.layoutType === 'grid') {
       this.setState({ filterType: newFilterType });
     }
   }

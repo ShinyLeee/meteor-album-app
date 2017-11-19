@@ -3,11 +3,9 @@ import React, { PureComponent } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import LazyLoad from 'react-lazyload';
-import TransitionGroup from 'react-transition-group/TransitionGroup';
-import { vWidth, pixelRatio } from '/imports/utils/responsive';
 import settings from '/imports/utils/settings';
 import { selectCounter } from '/imports/ui/redux/actions';
-import FadeTransition from '/imports/ui/components/Transition/Fade';
+import ProgressiveImage from '/imports/ui/components/ProgressiveImage';
 import JustifiedImageBackground from '../../snippet/JustifiedImageBackground';
 import {
   Wrapper,
@@ -21,6 +19,7 @@ export class GridImageHolder extends PureComponent {
     isEditing: PropTypes.bool.isRequired,
     image: PropTypes.object.isRequired,
     total: PropTypes.number.isRequired,
+    dimension: PropTypes.number.isRequired,
     onImageClick: PropTypes.func,
     counter: PropTypes.number.isRequired,
     selectCounter: PropTypes.func.isRequired,
@@ -70,34 +69,31 @@ export class GridImageHolder extends PureComponent {
   }
 
   render() {
-    const { isEditing, image } = this.props;
-    const realDimension = vWidth / 3;
-    const retinaDimension = Math.round(realDimension * pixelRatio);
+    const { isEditing, image, dimension } = this.props;
     const url = `${imageDomain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
-    const imageSrc = `${url}?imageView2/1/w/${retinaDimension}`;
+    const imageSrc = `${url}?imageView2/1/w/${dimension}`;
     return (
-      <Wrapper
-        style={{ backgroundColor: image.color }}
-        onClick={this._handleSelect}
-      >
+      <Wrapper onClick={this._handleSelect}>
         <JustifiedImageBackground
           isEditing={isEditing}
           isSelect={this.state.isSelect}
         />
         <LazyLoad
-          height={Math.round(realDimension)}
+          height={dimension}
           once
         >
-          <TransitionGroup>
-            <FadeTransition>
-              <SelectableImage
-                src={imageSrc}
-                alt={image.name}
-                isSelect={this.state.isSelect}
-                innerRef={(node) => { this.image = node; }}
-              />
-            </FadeTransition>
-          </TransitionGroup>
+          <ProgressiveImage
+            src={imageSrc}
+            aspectRatio={1}
+            color={image.color}
+          >
+            <SelectableImage
+              src={imageSrc}
+              alt={image.name}
+              isSelect={this.state.isSelect}
+              innerRef={(node) => { this.image = node; }}
+            />
+          </ProgressiveImage>
         </LazyLoad>
       </Wrapper>
     );
@@ -112,4 +108,6 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
   selectCounter,
 }, dispatch);
 
-export default connect(mapStateToProps, mapDispatchToProps, null, { withRef: true })(GridImageHolder);
+export default connect(
+  mapStateToProps, mapDispatchToProps, null, { withRef: true },
+)(GridImageHolder);

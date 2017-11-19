@@ -101,12 +101,7 @@ export default class IndexContent extends Component {
           message="内容有更新"
           onClick={this._handleRefreshImages}
         />
-        <Recap
-          title="Gallery"
-          detailFir="Vivian的私人相册"
-          detailSec="Created By Shiny Lee"
-          showIcon
-        />
+        <Recap />
         <InfiniteImageList
           loading={this.state.isLoading}
           images={this.state.images}

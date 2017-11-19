@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
+import { connect } from 'react-redux';
 import classNames from 'classnames';
 import CircleLoader from '/imports/ui/components/Loader/CircleLoader';
 import LinearLoader from '/imports/ui/components/Loader/LinearLoader';
-import { vHeight } from '/imports/utils/responsive';
 
-export default class ContentLayout extends PureComponent {
+class ContentLayout extends PureComponent {
   static propTypes = {
     deep: PropTypes.bool,
     loading: PropTypes.bool,
@@ -21,6 +21,7 @@ export default class ContentLayout extends PureComponent {
     fullScreen: PropTypes.bool,
     topbarHeight: PropTypes.number,
     children: PropTypes.any,
+    device: PropTypes.object.isRequired,
   }
 
   static defaultProps = {
@@ -71,12 +72,13 @@ export default class ContentLayout extends PureComponent {
       fullScreen,
       topbarHeight,
       children,
+      device,
     } = this.props;
     return (
       <main
         className={classNames('content', { deep })}
         style={{
-          height: fullScreen ? vHeight : 'auto',
+          height: fullScreen ? device.height : 'auto',
           paddingTop: topbarHeight,
           justifyContent: alignCenter ? 'center' : 'inhreit',
         }}
@@ -91,3 +93,9 @@ export default class ContentLayout extends PureComponent {
     );
   }
 }
+
+const mapStateToProps = ({ device }) => ({
+  device,
+});
+
+export default connect(mapStateToProps)(ContentLayout);

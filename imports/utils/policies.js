@@ -22,7 +22,6 @@ export const isLogin = ({ User, location }) => {
 };
 
 export const isLogout = ({ User, location }) => {
-  console.log(location);
   let ret = {
     isAuthenticated: !User,
     state: {

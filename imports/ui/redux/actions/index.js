@@ -1,6 +1,17 @@
 import { Meteor } from 'meteor/meteor';
 import * as types from '../constants/ActionTypes';
 
+export const updateLang = ({ lang }) => ({
+  type: types.UPDATE_LANG,
+  lang,
+});
+
+export const updateDimension = ({ width, height }) => ({
+  type: types.UPDATE_DIMENSION,
+  width,
+  height,
+});
+
 export const modalOpen = ({ title, content, actions, ops }) => ({
   type: types.MODAL_OPEN,
   title,

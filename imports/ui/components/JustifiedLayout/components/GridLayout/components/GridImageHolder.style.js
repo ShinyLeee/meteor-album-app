@@ -1,10 +1,7 @@
 /* eslint-disable no-confusing-arrow */
-import React from 'react';
 import styled from 'styled-components';
 
-const D = (props) => <div {...props} />; // eslint-disable-line
-
-export const Wrapper = styled(D)`
+export const Wrapper = styled.div`
   position: absolute;
   width: 100%;
   height: 100%;

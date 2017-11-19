@@ -24,7 +24,8 @@ const styles = {
   },
 };
 
-const mapStateToProps = ({ sessions }) => ({
+const mapStateToProps = ({ sessions, device }) => ({
+  device,
   User: sessions.User,
 });
 

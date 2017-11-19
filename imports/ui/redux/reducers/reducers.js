@@ -10,11 +10,13 @@ export const sessions = (state = initState.sessions, action) => {
     case types.SAVE_USER:
       return {
         ...state,
+        isLoggedIn: true,
         User: action.user,
       };
     case types.CLEAR_USER:
       return {
         ...state,
+        isLoggedIn: false,
         User: null,
       };
     case types.SAVE_UPTOKEN:
@@ -26,6 +28,25 @@ export const sessions = (state = initState.sessions, action) => {
       return {
         ...state,
         uptoken: null,
+      };
+    default: {
+      return state;
+    }
+  }
+};
+
+export const device = (state = initState.device, action) => {
+  switch (action.type) {
+    case types.UPDATE_LANG:
+      return {
+        ...state,
+        lang: action.lang,
+      };
+    case types.UPDATE_DIMENSION:
+      return {
+        ...state,
+        width: action.width,
+        height: action.height,
       };
     default: {
       return state;

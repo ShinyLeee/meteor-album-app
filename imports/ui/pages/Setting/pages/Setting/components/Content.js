@@ -23,8 +23,8 @@ import EmailIcon from 'material-ui-icons/Email';
 import settings from '/imports/utils/settings';
 import ContentLayout from '/imports/ui/layouts/ContentLayout';
 import Modal from '/imports/ui/components/Modal';
+import { ResponsiveCover } from '/imports/ui/components/ProgressiveImage';
 import {
-  Cover,
   Uploader,
   Username,
 } from '../styles';
@@ -133,9 +133,11 @@ export default class SettingContent extends PureComponent {
     return (
       <ContentLayout>
         <header>
-          <Cover style={{ backgroundImage: `url("${profile.cover}")` }}>
-            <div />
-          </Cover>
+          <ResponsiveCover
+            src={profile.cover}
+            basis={0.3}
+            maxHeight={300}
+          />
           <Uploader>
             <IconButton onClick={() => this.avatarInput.click()}>
               <Avatar className={classes.icon__avatar} src={profile.avatar} size={60} />

@@ -1,30 +1,18 @@
 import styled from 'styled-components';
 
-export const DiaryHeader = styled.header`
+export const DiaryHeader = styled.div`
   position: relative;
-  height: 260px;
-  background-size: cover;
   display: flex;
   flex-direction: column;
-  &:before {
-    position: absolute;
-    content: " ";
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.1);
-    z-index: 0;
-  }
 `;
 
-export const DiaryBackground = styled.div`
+export const DiaryControlCenter = styled.div`
   position: absolute;
-  top: 0;
   width: 100%;
   height: 100%;
-  background: transparent;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.3) 0, transparent 30%, transparent 70%, rgba(0, 0, 0, 0.3));
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 `;
 
 export const DiaryYear = styled.div`

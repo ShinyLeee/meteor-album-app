@@ -9,11 +9,10 @@ import SettingsIcon from 'material-ui-icons/Settings';
 import ExitToAppIcon from 'material-ui-icons/ExitToApp';
 import { followUser, unFollowUser } from '/imports/api/users/methods';
 import Modal from '/imports/ui/components/Modal';
+import { ResponsiveCover } from '/imports/ui/components/ProgressiveImage';
 import ContentLayout from '/imports/ui/layouts/ContentLayout';
-import { rWidth } from '/imports/utils/responsive';
 import ImageSlider from './ImageSlider';
 import {
-  CoverSection,
   MainSection,
   Profile,
   Avatar,
@@ -49,12 +48,6 @@ export default class UserContent extends PureComponent {
     const { User, curUser } = this.props;
     const followers = get(curUser, 'profile.followers');
     return User && followers && followers.indexOf(User.username) >= 0;
-  }
-
-  get coverSrc() {
-    const { curUser } = this.props;
-    const cover = get(curUser, 'profile.cover');
-    return `url("${cover}"),url("${cover}?imageView2/2/w/${rWidth}")`;
   }
 
   _navTo = (location) => () => {
@@ -118,11 +111,12 @@ export default class UserContent extends PureComponent {
         loading={!dataIsReady}
         delay
       >
-        {/* COVER SECTION */}
-        <CoverSection
-          style={{ backgroundImage: this.coverSrc }}
-        ><div />
-        </CoverSection>
+        <ResponsiveCover
+          src={get(curUser, 'profile.cover')}
+          basis={0.3}
+          maxHeight={300}
+        />
+
         { /* MAIN SECTION */ }
         <MainSection>
           <Profile>

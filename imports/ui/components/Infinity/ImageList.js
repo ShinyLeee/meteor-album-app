@@ -6,7 +6,6 @@ import Infinite from 'react-infinite';
 import { likeImage, unlikeImage } from '/imports/api/images/methods';
 import DataLoader from '/imports/ui/components/Loader/DataLoader';
 import { zoomerOpen, snackBarOpen } from '/imports/ui/redux/actions';
-import { vWidth } from '/imports/utils/responsive';
 import ImageHolder from '/imports/ui/components/ImageHolder';
 import Tip from './Tip';
 
@@ -17,6 +16,7 @@ class InfiniteImageList extends PureComponent {
     loading: PropTypes.bool,
     disabled: PropTypes.bool,
     onInfiniteLoad: PropTypes.func.isRequired,
+    device: PropTypes.object.isRequired,
     snackBarOpen: PropTypes.func.isRequired,
     zoomerOpen: PropTypes.func.isRequired,
   }
@@ -27,8 +27,9 @@ class InfiniteImageList extends PureComponent {
   }
 
   getImageHeights() {
-    const heights = this.props.images.map(image => {
-      const imageHeight = Math.round((image.dimension[1] / image.dimension[0]) * vWidth);
+    const { images, device } = this.props;
+    const heights = images.map(image => {
+      const imageHeight = Math.round((image.dimension[1] / image.dimension[0]) * device.width);
       return imageHeight + 152; // 80 + 52 + 20 --> title + footer + padding
     });
     return heights;
@@ -81,7 +82,8 @@ class InfiniteImageList extends PureComponent {
   }
 }
 
-const mapStateToProps = ({ sessions }) => ({
+const mapStateToProps = ({ sessions, device }) => ({
+  device,
   User: sessions.User,
 });
 

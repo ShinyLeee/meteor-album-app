@@ -11,6 +11,7 @@ import AppLoader from '/imports/ui/components/Loader/AppLoader';
 import { userLogin } from '/imports/ui/redux/actions';
 import withLoadable from '/imports/ui/hocs/withLoadable';
 import ScrollToTop from './ScrollToTop';
+import DeviceWatcher from './DeviceWatcher';
 import Routes from './Routes';
 
 const AsyncUploader = withLoadable({
@@ -39,6 +40,8 @@ class NavigatorLayout extends PureComponent {
           )
           : <AppLoader />
         }
+
+        <DeviceWatcher />
 
         {/* Portals */}
         <Modal />

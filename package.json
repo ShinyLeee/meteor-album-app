@@ -28,7 +28,7 @@
     "meteor-node-stubs": "~0.2.0",
     "moment": "^2.15.1",
     "node-uuid": "^1.4.7",
-    "photoswipe": "^4.1.1",
+    "photoswipe": "^4.1.2",
     "prop-types": "^15.6.0",
     "qiniu": "^6.1.13",
     "query-string": "^5.0.0",

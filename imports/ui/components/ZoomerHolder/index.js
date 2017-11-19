@@ -10,7 +10,6 @@ import Modal from '/imports/ui/components/Modal';
 import SlideTransition from '/imports/ui/components/Transition/Slide';
 import { incView } from '/imports/api/images/methods';
 import settings from '/imports/utils/settings';
-import { rWidth } from '/imports/utils/responsive';
 import {
   zoomerClose,
   snackBarOpen,
@@ -26,6 +25,7 @@ class ZoomerHolder extends Component {
   static propTypes = {
     visible: PropTypes.bool.isRequired,
     image: PropTypes.object, // image only required when zoomerOpen is true
+    device: PropTypes.object.isRequired,
     snackBarOpen: PropTypes.func.isRequired,
     zoomerClose: PropTypes.func.isRequired,
     history: PropTypes.object.isRequired,
@@ -61,7 +61,8 @@ class ZoomerHolder extends Component {
   }
 
   get imgSrc() {
-    const { image } = this.props;
+    const { image, device } = this.props;
+    const rWidth = device.width * device.pixelRatio;
     const src = `${imageDomain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
     const preSrc = `${src}?imageView2/2/w/${rWidth}`;
     const realSrc = `${src}?imageView2/3/w/${rWidth}`;
@@ -143,7 +144,8 @@ class ZoomerHolder extends Component {
   }
 }
 
-const mapStateToProps = ({ portals }) => ({
+const mapStateToProps = ({ device, portals }) => ({
+  device,
   visible: portals.zoomer.open,
   image: portals.zoomer.image,
 });

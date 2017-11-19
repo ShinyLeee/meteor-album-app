@@ -5,7 +5,6 @@ import React, { PureComponent } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import justifiedLayout from 'justified-layout';
-import { pixelRatio } from '/imports/utils/responsive';
 import settings from '/imports/utils/settings';
 import { photoSwipeOpen, selectGroupCounter } from '/imports/ui/redux/actions';
 import ConnectedGroupImageHolder from './components/GroupImageHolder';
@@ -26,6 +25,7 @@ export class JustifiedGroupLayout extends PureComponent {
     groupImages: PropTypes.array.isRequired,
     total: PropTypes.number.isRequired,
     // Below Pass from Redux
+    device: PropTypes.object.isRequired, // eslint-disable-line react/no-unused-prop-types
     group: PropTypes.object.isRequired,
     counter: PropTypes.number.isRequired,
     photoSwipeOpen: PropTypes.func.isRequired,
@@ -33,7 +33,6 @@ export class JustifiedGroupLayout extends PureComponent {
     /**
      * See docs: http://flickr.github.io/justified-layout/
      */
-    containerWidth: PropTypes.number, // eslint-disable-line react/no-unused-prop-types
     containerPadding: PropTypes.number, // eslint-disable-line react/no-unused-prop-types
     boxSpacing: PropTypes.oneOfType([ // eslint-disable-line react/no-unused-prop-types
       PropTypes.object,
@@ -50,7 +49,6 @@ export class JustifiedGroupLayout extends PureComponent {
   static defaultProps = {
     filterType: 'day',
     showGallery: false,
-    containerWidth: document.body.clientWidth,
     containerPadding: 0,
     targetRowHeight: 180,
     targetRowHeightTolerance: 0.25,
@@ -61,7 +59,7 @@ export class JustifiedGroupLayout extends PureComponent {
   state = {
     isGroupSelect: false,
     geometry: this.generateGeo(this.props),
-    pswpItems: this.props.showGallery ? this.generateItems(this.props, this.generateGeo(this.props)) : undefined,
+    pswpItems: this.props.showGallery ? this.generateItems(this.props, this.generateGeo(this.props)) : null,
   }
 
   componentWillReceiveProps(nextProps) {
@@ -111,8 +109,8 @@ export class JustifiedGroupLayout extends PureComponent {
   // eslint-disable-next-line class-methods-use-this
   generateGeo(props) {
     const {
+      device,
       groupImages,
-      containerWidth,
       containerPadding,
       targetRowHeight,
       targetRowHeightTolerance,
@@ -129,7 +127,7 @@ export class JustifiedGroupLayout extends PureComponent {
     const geometry = justifiedLayout(
       ratios,
       {
-        containerWidth,
+        containerWidth: device.width,
         containerPadding,
         targetRowHeight,
         targetRowHeightTolerance,
@@ -142,21 +140,22 @@ export class JustifiedGroupLayout extends PureComponent {
 
   // eslint-disable-next-line class-methods-use-this
   generateItems(props, geometry) {
-    const { containerWidth, groupImages } = props;
+    const { groupImages, device } = props;
+    const { width, pixelRatio } = device;
     const pswpItems = groupImages.map((image, i) => {
       const src = `${imageDomain}/${image.user}/${image.collection}/${image.name}.${image.type}`;
-      const realMWidth = Math.round(geometry.boxes[i].width * pixelRatio);
-      const realMHeight = Math.round(geometry.boxes[i].height * pixelRatio);
+      const thumbnailWidth = Math.round(geometry.boxes[i].width * pixelRatio);
+      const thumbnailHeight = Math.round(geometry.boxes[i].height * pixelRatio);
       // generate based on Qiniu imageView2 mode 3 API
       // more details see https://developer.qiniu.com/dora/api/basic-processing-images-imageview2
-      const minWidth = Math.round(containerWidth * pixelRatio);
-      const minHeight = Math.round((image.dimension[1] / image.dimension[0]) * minWidth);
+      const largeImageWidth = Math.round(width * pixelRatio);
+      const largeImageHeight = Math.round((image.dimension[1] / image.dimension[0]) * largeImageWidth);
       return ({
         _id: image._id,
-        msrc: `${src}?imageView2/1/w/${realMWidth}/h/${realMHeight}`,
-        src: `${src}?imageView2/3/w/${minWidth}`,
-        w: minWidth,
-        h: minHeight,
+        msrc: `${src}?imageView2/1/w/${thumbnailWidth}/h/${thumbnailHeight}`,
+        src: `${src}?imageView2/3/w/${largeImageWidth}`,
+        w: largeImageWidth,
+        h: largeImageHeight,
       });
     });
     return pswpItems;
@@ -253,6 +252,7 @@ export class JustifiedGroupLayout extends PureComponent {
 }
 
 const mapStateToProps = (state) => ({
+  device: state.device,
   group: state.selectCounter.group,
   counter: state.selectCounter.counter,
 });
