@@ -1,13 +1,12 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import Button from 'material-ui/Button';
 import Input from 'material-ui/Input';
-import ContentLayout from '/imports/ui/layouts/ContentLayout';
 import Modal from '/imports/ui/components/Modal';
 
-export default class PasswordContent extends Component {
+export default class PasswordContent extends PureComponent {
   static propTypes = {
     classes: PropTypes.object.isRequired,
     userLogout: PropTypes.func.isRequired,
@@ -54,48 +53,47 @@ export default class PasswordContent extends Component {
 
   render() {
     const { classes } = this.props;
-    return (
-      <ContentLayout fullScreen>
-        <section>
-          <Input
-            className={classes.input}
-            name="oldPwd"
-            placeholder="当前密码"
-            type="password"
-            value={this.state.oldPwd}
-            onChange={this._handleValueChange}
-            disableUnderline
-            fullWidth
-          />
-          <Input
-            className={classes.input}
-            name="newPwd"
-            placeholder="新密码"
-            type="password"
-            value={this.state.newPwd}
-            onChange={this._handleValueChange}
-            disableUnderline
-            fullWidth
-          />
-          <Input
-            className={classes.input}
-            name="newPwd2"
-            placeholder="确认密码"
-            type="password"
-            value={this.state.newPwd2}
-            onChange={this._handleValueChange}
-            disableUnderline
-            fullWidth
-          />
-        </section>
-        <Button
-          className={classes.button}
-          color="primary"
-          onClick={this._handlePasswordChange}
-          raised
-        >确认修改
-        </Button>
-      </ContentLayout>
-    );
+    return [
+      <section key="InputSection">
+        <Input
+          className={classes.input}
+          name="oldPwd"
+          placeholder="当前密码"
+          type="password"
+          value={this.state.oldPwd}
+          onChange={this._handleValueChange}
+          disableUnderline
+          fullWidth
+        />
+        <Input
+          className={classes.input}
+          name="newPwd"
+          placeholder="新密码"
+          type="password"
+          value={this.state.newPwd}
+          onChange={this._handleValueChange}
+          disableUnderline
+          fullWidth
+        />
+        <Input
+          className={classes.input}
+          name="newPwd2"
+          placeholder="确认密码"
+          type="password"
+          value={this.state.newPwd2}
+          onChange={this._handleValueChange}
+          disableUnderline
+          fullWidth
+        />
+      </section>,
+      <Button
+        key="ConfirmBtn"
+        className={classes.button}
+        color="primary"
+        onClick={this._handlePasswordChange}
+        raised
+      >确认修改
+      </Button>,
+    ];
   }
 }

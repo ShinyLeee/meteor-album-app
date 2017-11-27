@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { Meteor } from 'meteor/meteor';
 import IconButton from 'material-ui/IconButton';
 import CloseIcon from 'material-ui-icons/Close';
@@ -15,18 +15,20 @@ const AsyncSettingContent = withLoadable({
   loader: () => import('./containers/ContentContainer'),
 });
 
-export default class SettingPage extends Component {
+export default class SettingPage extends PureComponent {
   static propTypes = {
-    User: PropTypes.object.isRequired,
+    isLoggedIn: PropTypes.bool.isRequired,
+    User: PropTypes.object,
     classes: PropTypes.object.isRequired,
     snackBarOpen: PropTypes.func.isRequired,
   }
 
   constructor(props) {
     super(props);
+    const { isLoggedIn, User } = props;
     this.state = {
       isEditing: false,
-      profile: props.User.profile,
+      profile: isLoggedIn ? User.profile : null,
     };
     this._initState = this.state;
   }
@@ -60,27 +62,30 @@ export default class SettingPage extends Component {
   }
 
   _handleSubmit = () => {
+    const { isLoggedIn } = this.props;
     const { profile } = this.state;
-    updateProfile.callPromise({
-      nickname: profile.nickname,
-      intro: profile.intro,
-      cover: profile.cover,
-      avatar: profile.avatar,
-      settings: {
-        allowVisitColl: profile.settings.allowVisitColl,
-        allowVisitHome: profile.settings.allowVisitHome,
-        allowNoti: profile.settings.allowNoti,
-        allowMsg: profile.settings.allowMsg,
-      },
-    })
-      .then(() => {
-        this.setState({ isEditing: false });
-        this.props.snackBarOpen('设置保存成功');
+    if (isLoggedIn) {
+      updateProfile.callPromise({
+        nickname: profile.nickname,
+        intro: profile.intro,
+        cover: profile.cover,
+        avatar: profile.avatar,
+        settings: {
+          allowVisitColl: profile.settings.allowVisitColl,
+          allowVisitHome: profile.settings.allowVisitHome,
+          allowNoti: profile.settings.allowNoti,
+          allowMsg: profile.settings.allowMsg,
+        },
       })
-      .catch((err) => {
-        console.warn(err);
-        this.props.snackBarOpen(`设置保存失败 ${err.reason}`);
-      });
+        .then(() => {
+          this.setState({ isEditing: false });
+          this.props.snackBarOpen('设置保存成功');
+        })
+        .catch((err) => {
+          console.warn(err);
+          this.props.snackBarOpen(`设置保存失败 ${err.reason}`);
+        });
+    }
   }
 
   _handleSettingChange = (profile) => {
@@ -91,15 +96,18 @@ export default class SettingPage extends Component {
   }
 
   renderPrompt = () => {
-    Modal.showPrompt({
-      message: '您还有尚未保存的设置，是否确认退出？',
-      onCancel: Modal.close,
-      onConfirm: this._handleQuitEditing,
-    });
+    const { isLoggedIn } = this.props;
+    if (isLoggedIn) {
+      Modal.showPrompt({
+        message: '您还有尚未保存的设置，是否确认退出？',
+        onCancel: Modal.close,
+        onConfirm: this._handleQuitEditing,
+      });
+    }
   }
 
   render() {
-    const { classes } = this.props;
+    const { isLoggedIn, classes } = this.props;
     return (
       <ViewLayout
         Topbar={
@@ -123,10 +131,14 @@ export default class SettingPage extends Component {
           : <SecondaryNavHeader title="个人设置" />
         }
       >
-        <AsyncSettingContent
-          profile={this.state.profile}
-          onProfileChange={this._handleSettingChange}
-        />
+        {
+          isLoggedIn && (
+            <AsyncSettingContent
+              profile={this.state.profile}
+              onProfileChange={this._handleSettingChange}
+            />
+          )
+        }
       </ViewLayout>
     );
   }

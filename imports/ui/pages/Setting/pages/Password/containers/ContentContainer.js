@@ -1,6 +1,7 @@
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
+import { setDisplayName } from 'recompose';
 import { withStyles } from 'material-ui/styles';
 
 import { userLogout, snackBarOpen } from '/imports/ui/redux/actions';
@@ -27,6 +28,7 @@ const styles = {
 };
 
 export default compose(
+  setDisplayName('SettingPasswordContentContainer'),
   connect(null, mapDispatchToProps),
   withStyles(styles),
   withRouter,

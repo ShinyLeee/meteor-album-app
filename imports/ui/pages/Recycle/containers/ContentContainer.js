@@ -2,8 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
+import { setDisplayName } from 'recompose';
 import { Images } from '/imports/api/images/image';
-
+import withDataReadyHandler from '/imports/ui/hocs/withDataReadyHandler';
 import {
   enableSelectAll,
   disableSelectAll,
@@ -19,18 +20,22 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
   disableSelectAll,
 }, dispatch);
 
+const trackerHandler = () => {
+  const imageHandle = Meteor.subscribe('Images.recycle');
+  const isDataReady = imageHandle.ready();
+  const images = Images.find(
+    { deletedAt: { $ne: null } },
+    { sort: { shootAt: -1 } },
+  ).fetch();
+  return {
+    isDataReady,
+    images,
+  };
+};
+
 export default compose(
+  setDisplayName('RecycleContentContainer'),
   connect(mapStateToProps, mapDispatchToProps),
-  withTracker(() => {
-    const imageHandle = Meteor.subscribe('Images.recycle');
-    const dataIsReady = imageHandle.ready();
-    const images = Images.find(
-      { deletedAt: { $ne: null } },
-      { sort: { shootAt: -1 } },
-    ).fetch();
-    return {
-      dataIsReady,
-      images,
-    };
-  }),
+  withTracker(trackerHandler),
+  withDataReadyHandler(),
 )(Content);

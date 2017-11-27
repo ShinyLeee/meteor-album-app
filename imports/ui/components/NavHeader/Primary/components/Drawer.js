@@ -21,7 +21,7 @@ import ArrowDropdownIcon from 'material-ui-icons/ArrowDropDown';
 import Modal from '/imports/ui/components/Modal';
 import { ResponsiveCover } from '/imports/ui/components/ProgressiveImage';
 import settings from '/imports/utils/settings';
-import { userLogout } from '/imports/ui/redux/actions';
+import { userLogout, snackBarOpen } from '/imports/ui/redux/actions';
 import {
   DrawerProfile,
   DrawerControlCenter,
@@ -37,12 +37,14 @@ class NavHeaderDrawer extends PureComponent {
   static propTypes = {
     visible: PropTypes.bool.isRequired,
     onRequestClose: PropTypes.func.isRequired,
+    isLoggedIn: PropTypes.bool.isRequired,
     User: PropTypes.object,
     match: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
     history: PropTypes.object.isRequired,
     classes: PropTypes.object.isRequired,
     userLogout: PropTypes.func.isRequired,
+    snackBarOpen: PropTypes.func.isRequired,
   }
 
   state = {
@@ -67,6 +69,9 @@ class NavHeaderDrawer extends PureComponent {
     if (pathname === to) {
       this.props.onRequestClose();
     }
+    if (to === '/login') {
+      this.props.snackBarOpen('您还尚未登录');
+    }
     this.props.history.push(to);
   }
 
@@ -87,13 +92,14 @@ class NavHeaderDrawer extends PureComponent {
   render() {
     const {
       visible,
+      isLoggedIn,
       User,
       match,
       classes,
       onRequestClose,
     } = this.props;
-    const indexPage = match.path === '/';
-    const userPage = !!match.params.username;
+    const isIndexPage = match.path === '/';
+    const isUserPage = !!match.params.username;
     return (
       <Drawer
         open={visible}
@@ -111,11 +117,11 @@ class NavHeaderDrawer extends PureComponent {
               <Avatar
                 className={classes.avatar}
                 src={this.avatarSrc}
-                onClick={User ? this._navTo(`/user/${User.username}`) : noop}
+                onClick={isLoggedIn ? this._navTo(`/user/${User.username}`) : noop}
               />
             </DrawerAvatar>
             {
-              User && (
+              isLoggedIn && (
                 <DrawerEmail>
                   <span>{get(User, 'emails[0].address') || User.username}</span>
                   <ArrowDropdownIcon color="#fff" onClick={this.renderPopover} />
@@ -144,28 +150,28 @@ class NavHeaderDrawer extends PureComponent {
               onClick={this._navTo('/')}
               button
             >
-              <ListItemIcon className={classNames({ [classes.purple]: indexPage })}>
+              <ListItemIcon className={classNames({ [classes.purple]: isIndexPage })}>
                 <ExploreIcon />
               </ListItemIcon>
               <ListItemText
-                classes={indexPage ? { text: classes.purple } : {}}
+                classes={isIndexPage ? { text: classes.purple } : {}}
                 primary="探索"
               />
             </ListItem>
             <ListItem
-              onClick={User ? this._navTo(`/user/${User.username}`) : this._navTo('/login')}
+              onClick={isLoggedIn ? this._navTo(`/user/${User.username}`) : this._navTo('/login')}
               button
             >
-              <ListItemIcon className={classNames({ [classes.red]: userPage })}>
+              <ListItemIcon className={classNames({ [classes.red]: isUserPage })}>
                 <UserIcon />
               </ListItemIcon>
               <ListItemText
-                classes={userPage ? { text: classes.red } : {}}
+                classes={isUserPage ? { text: classes.red } : {}}
                 primary="主页"
               />
             </ListItem>
             <ListItem
-              onClick={User ? this._navTo(`/user/${User.username}/collection`) : this._navTo('/login')}
+              onClick={isLoggedIn ? this._navTo(`/user/${User.username}/collection`) : this._navTo('/login')}
               button
             >
               <ListItemIcon>
@@ -174,7 +180,7 @@ class NavHeaderDrawer extends PureComponent {
               <ListItemText primary="相册" />
             </ListItem>
             <ListItem
-              onClick={this._navTo('/diary')}
+              onClick={isLoggedIn ? this._navTo('/diary') : this._navTo('/login')}
               button
             >
               <ListItemIcon>
@@ -186,7 +192,7 @@ class NavHeaderDrawer extends PureComponent {
           <Divider />
           <List>
             <ListItem
-              onClick={this._navTo('/recycle')}
+              onClick={isLoggedIn ? this._navTo('/recycle') : this._navTo('/login')}
               button
             >
               <ListItemIcon>
@@ -214,11 +220,13 @@ class NavHeaderDrawer extends PureComponent {
 }
 
 const mapStateToProps = ({ sessions }) => ({
+  isLoggedIn: sessions.isLoggedIn,
   User: sessions.User,
 });
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   userLogout,
+  snackBarOpen,
 }, dispatch);
 
 const styles = {

@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import ViewLayout from '/imports/ui/layouts/ViewLayout';
 import PrimaryNavHeader from '/imports/ui/components/NavHeader/Primary';
@@ -10,7 +10,7 @@ const AsyncUserContent = withLoadable({
   loader: () => import('./containers/ContentContainer'),
 });
 
-class UserPage extends Component {
+class UserPage extends PureComponent {
   static propTypes = {
     User: PropTypes.object,
     match: PropTypes.object.isRequired,

@@ -1,12 +1,18 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import Tabs, { Tab } from 'material-ui/Tabs';
 import ViewLayout from '/imports/ui/layouts/ViewLayout';
 import { SecondaryNavHeader } from '/imports/ui/components/NavHeader';
-import Content from './components/Content';
+import withLoadable from '/imports/ui/hocs/withLoadable';
+import DataLoader from '/imports/ui/components/Loader/DataLoader';
 
-class AllCollectionPage extends Component {
+const AsyncAllCollectionContent = withLoadable({
+  loader: () => import('./components/Content'),
+  loading: DataLoader,
+});
+
+class AllCollectionPage extends PureComponent {
   static propTypes = {
     User: PropTypes.object,
     match: PropTypes.object.isRequired,
@@ -16,10 +22,14 @@ class AllCollectionPage extends Component {
     slideIndex: 0,
   }
 
-  _handleViewIndex = (e, index) => {
-    this.setState({
-      slideIndex: index,
-    });
+  _handleTabChange = (e, value) => {
+    window.scrollTo(0, 0);
+    this.setState({ slideIndex: value });
+  }
+
+  _handleViewChange = (index) => {
+    window.scrollTo(0, 0);
+    this.setState({ slideIndex: index });
   }
 
   render() {
@@ -28,12 +38,11 @@ class AllCollectionPage extends Component {
     const isOwner = !!User && (User.username === curUserName);
     return (
       <ViewLayout
-        deep
         Topbar={
           <SecondaryNavHeader title={isOwner ? '我的相册' : `${curUserName}的相册`}>
             <Tabs
               value={this.state.slideIndex}
-              onChange={this._handleViewIndex}
+              onChange={this._handleTabChange}
               indicatorColor="#fff"
               textColor="inherit"
               fullWidth
@@ -43,10 +52,12 @@ class AllCollectionPage extends Component {
             </Tabs>
           </SecondaryNavHeader>
         }
+        topbarHeight={112}
+        deep
       >
-        <Content
+        <AsyncAllCollectionContent
           slideIndex={this.state.slideIndex}
-          onViewChange={this._handleViewIndex}
+          onViewChange={this._handleViewChange}
         />
       </ViewLayout>
     );

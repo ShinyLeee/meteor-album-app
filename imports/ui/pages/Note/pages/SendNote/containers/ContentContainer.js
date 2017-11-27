@@ -2,10 +2,11 @@ import queryString from 'query-string';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
+import { setDisplayName } from 'recompose';
 import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
 import { withStyles } from 'material-ui/styles';
-
+import withDataReadyHandler from '/imports/ui/hocs/withDataReadyHandler';
 import SendNoteContent from '../components/Content';
 
 const mapStateToProps = ({ sessions }) => ({
@@ -15,12 +16,12 @@ const mapStateToProps = ({ sessions }) => ({
 const trackHandler = ({ User, location }) => {
   const { receiver } = queryString.parse(location.search);
   const userHandler = Meteor.subscribe('Users.all');
-  const dataIsReady = userHandler.ready();
+  const isDataReady = userHandler.ready();
 
   const otherUsers = Meteor.users.find({ _id: { $ne: User._id } }).fetch();
 
   return {
-    dataIsReady,
+    isDataReady,
     initReceiver: receiver,
     otherUsers,
   };
@@ -36,8 +37,10 @@ const styles = {
 };
 
 export default compose(
-  withRouter,
+  setDisplayName('SendNoteContentContainer'),
   connect(mapStateToProps),
-  withTracker(trackHandler),
+  withRouter,
   withStyles(styles),
+  withTracker(trackHandler),
+  withDataReadyHandler({ loose: true }),
 )(SendNoteContent);

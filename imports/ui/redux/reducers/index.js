@@ -1,6 +1,8 @@
 import { combineReducers } from 'redux';
+import { routerReducer } from 'react-router-redux';
 import {
   sessions,
+  modules,
   device,
   portals,
   selectCounter,
@@ -8,9 +10,11 @@ import {
 
 const reducers = combineReducers({
   sessions,
+  modules,
   device,
   portals,
   selectCounter,
+  router: routerReducer,
 });
 
 export default reducers;

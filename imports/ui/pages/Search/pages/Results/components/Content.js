@@ -1,7 +1,6 @@
 import get from 'lodash/get';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import ContentLayout from '/imports/ui/layouts/ContentLayout';
+import React, { PureComponent } from 'react';
 import CollList from '/imports/ui/components/CollList';
 import NoteHolder from '/imports/ui/components/NoteHolder';
 import UserList from '../../../components/UserList';
@@ -12,9 +11,8 @@ import {
   EmptyMessage,
 } from '../styles';
 
-export default class SearchResultsContent extends Component {
+export default class SearchResultsContent extends PureComponent {
   static propTypes = {
-    dataIsReady: PropTypes.bool.isRequired,
     users: PropTypes.array.isRequired,
     collections: PropTypes.array.isRequired,
     notes: PropTypes.array.isRequired,
@@ -48,30 +46,20 @@ export default class SearchResultsContent extends Component {
     if (notes.length === 0) {
       return <EmptyMessage>未找到符合“{query}”的结果</EmptyMessage>;
     }
-    return (
-      <div>
-        {
-          notes.map((note) => (
-            <NoteHolder
-              key={note._id}
-              note={note}
-              isRead
-            />
-          ))
-        }
-      </div>
-    );
+    return notes.map((note) => (
+      <NoteHolder
+        key={note._id}
+        note={note}
+        isRead
+      />
+    ));
   }
 
   render() {
-    const { dataIsReady, match } = this.props;
+    const { match } = this.props;
     const query = get(match, 'params.query');
     return (
-      <ContentLayout
-        loading={!dataIsReady}
-        delay
-        deep
-      >
+      <div>
         <Tip>以下为&quot;{query}&quot;的搜索结果:</Tip>
         <Section>
           <Header>相册</Header>
@@ -85,7 +73,7 @@ export default class SearchResultsContent extends Component {
           <Header>信息</Header>
           { this.renderNoteResults(query) }
         </Section>
-      </ContentLayout>
+      </div>
     );
   }
 }

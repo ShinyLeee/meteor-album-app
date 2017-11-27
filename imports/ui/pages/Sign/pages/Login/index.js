@@ -9,9 +9,17 @@ const AsyncLoginContent = withLoadable({
 
 // TODO add Recaptch in this Login page component
 export default class LoginPage extends Component {
+  shouldComponentUpdate() {
+    return false;
+  }
+
   render() {
     return (
-      <ViewLayout Topbar={<PrimaryNavHeader />}>
+      <ViewLayout
+        Topbar={<PrimaryNavHeader />}
+        alignCenter
+        fullScreen
+      >
         <AsyncLoginContent />
       </ViewLayout>
     );

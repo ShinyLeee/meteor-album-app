@@ -1,19 +1,8 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import SwipeableViews from 'react-swipeable-views';
-import ContentLayout from '/imports/ui/layouts/ContentLayout';
-import withLoadable from '/imports/ui/hocs/withLoadable';
-import DataLoader from '/imports/ui/components/Loader/DataLoader';
-
-const AsyncOwnView = withLoadable({
-  loader: () => import('../containers/OwnContainer'),
-  loading: DataLoader,
-});
-
-const AsyncFollowingView = withLoadable({
-  loader: () => import('../containers/FollowingContainer'),
-  loading: DataLoader,
-});
+import OwnView from '../containers/OwnContainer';
+import FollowingView from '../containers/FollowingContainer';
 
 export default class AllCollectionContent extends Component {
   static propTypes = {
@@ -24,18 +13,13 @@ export default class AllCollectionContent extends Component {
   render() {
     const { slideIndex } = this.props;
     return (
-      <ContentLayout
-        topbarHeight={112}
-        deep
+      <SwipeableViews
+        index={slideIndex}
+        onChangeIndex={this.props.onViewChange}
       >
-        <SwipeableViews
-          index={slideIndex}
-          onChangeIndex={this.props.onViewChange}
-        >
-          <AsyncOwnView />
-          <AsyncFollowingView />
-        </SwipeableViews>
-      </ContentLayout>
+        <OwnView />
+        <FollowingView />
+      </SwipeableViews>
     );
   }
 }

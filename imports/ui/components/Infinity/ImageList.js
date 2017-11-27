@@ -13,7 +13,6 @@ class InfiniteImageList extends PureComponent {
   static propTypes = {
     User: PropTypes.object,
     images: PropTypes.array.isRequired,
-    loading: PropTypes.bool,
     disabled: PropTypes.bool,
     onInfiniteLoad: PropTypes.func.isRequired,
     device: PropTypes.object.isRequired,
@@ -22,7 +21,6 @@ class InfiniteImageList extends PureComponent {
   }
 
   static defaultProps = {
-    loading: false,
     disabled: false,
   }
 
@@ -54,16 +52,15 @@ class InfiniteImageList extends PureComponent {
   }
 
   render() {
-    const { loading, images, disabled } = this.props;
+    const { images, disabled } = this.props;
     return [
       <Infinite
         key="Infinite__ImageList"
         className="deep"
-        isInfiniteLoading={loading}
         elementHeight={this.getImageHeights()}
         onInfiniteLoad={this.props.onInfiniteLoad}
         loadingSpinnerDelegate={<DataLoader bottom />}
-        infiniteLoadBeginEdgeOffset={disabled ? undefined : -360}
+        infiniteLoadBeginEdgeOffset={(disabled || images.length === 0) ? undefined : -360}
         useWindowAsScrollContainer
       >
         {

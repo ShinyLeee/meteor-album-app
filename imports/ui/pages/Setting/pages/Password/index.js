@@ -8,9 +8,16 @@ const AsyncPasswordContent = withLoadable({
 });
 
 export default class PasswordPage extends Component {
+  shouldComponentUpdate() {
+    return false;
+  }
+
   render() {
     return (
-      <ViewLayout Topbar={<SecondaryNavHeader title="修改密码" />}>
+      <ViewLayout
+        Topbar={<SecondaryNavHeader title="修改密码" />}
+        fullScreen
+      >
         <AsyncPasswordContent />
       </ViewLayout>
     );

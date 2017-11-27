@@ -19,21 +19,34 @@ class ResponsiveCover extends Component {
     maxHeight: 300,
   }
 
-  generateRatio() {
-    const { device, basis, maxHeight } = this.props;
-    const { width: deviceWidth, height: deviceHeight } = device;
-    const height = Math.min(deviceHeight * basis, maxHeight);
+  constructor(props) {
+    super(props);
+    this._height = null;
+  }
 
+  componentDidMount() {
     if (this.props.onLayout) {
-      this.props.onLayout(height);
+      this.props.onLayout(this._height);
     }
+  }
 
-    return height / deviceWidth;
+  componentDidUpdate() {
+    if (this.props.onLayout) {
+      this.props.onLayout(this._height);
+    }
+  }
+
+  generateHeight() {
+    const { device, basis, maxHeight } = this.props;
+    const { height: deviceHeight } = device;
+    this._height = Math.min(deviceHeight * basis, maxHeight);
+    return this._height;
   }
 
   render() {
-    const { src } = this.props;
-    const ratio = this.generateRatio();
+    const { src, device: { width } } = this.props;
+    const height = this.generateHeight();
+    const ratio = height / width;
     return (
       <ProgressiveImage
         aspectRatio={ratio}

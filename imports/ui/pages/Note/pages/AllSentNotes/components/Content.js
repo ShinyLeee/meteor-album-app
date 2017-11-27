@@ -1,29 +1,29 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { Notes } from '/imports/api/notes/note';
-import ContentLayout from '/imports/ui/layouts/ContentLayout';
+import ViewLayout from '/imports/ui/layouts/ViewLayout';
 import InfiniteNoteList from '/imports/ui/components/Infinity/NoteList';
 import EmptyHolder from '/imports/ui/components/EmptyHolder';
 
-export default class AllSentNotesContent extends Component {
+export default class AllSentNotesContent extends PureComponent {
   static propTypes = {
     User: PropTypes.object.isRequired,
-    dataIsReady: PropTypes.bool.isRequired,
     limit: PropTypes.number.isRequired,
     notes: PropTypes.array.isRequired,
     notesNum: PropTypes.number.isRequired,
   }
 
-  state = {
-    isLoading: false,
-    notes: this.props.notes,
+  constructor(props) {
+    super(props);
+    this._loadTimeout = null;
+    this.state = {
+      notes: props.notes,
+    };
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (!this.props.dataIsReady && nextProps.dataIsReady) {
-      this.setState({
-        notes: nextProps.notes,
-      });
+  componentWillMount() {
+    if (this.props.notesNum > 0) {
+      ViewLayout.setRootBackgroundColor(true); // set deep BackgroundColor
     }
   }
 
@@ -35,8 +35,6 @@ export default class AllSentNotesContent extends Component {
   }
 
   _handleInfiniteLoad = () => {
-    this.setState({ isLoading: true });
-
     const { User, limit } = this.props;
     const { notes } = this.state;
     const skip = notes.length;
@@ -47,36 +45,23 @@ export default class AllSentNotesContent extends Component {
         { sort: { sendAt: -1 }, limit, skip },
       ).fetch();
       this.setState((prevState) => ({
-        isLoading: false,
         notes: [...prevState.notes, ...newNotes],
       }));
     }, 300);
   }
 
   render() {
-    const { dataIsReady, notesNum } = this.props;
-    const isEmpty = this.state.notes.length === 0;
-    const isLoadAll = dataIsReady && this.state.notes.length === notesNum;
-    return (
-      <ContentLayout
-        deep={!isEmpty}
-        loading={!dataIsReady}
-        delay
-      >
-        {
-          isEmpty
-          ? <EmptyHolder mainInfo="您还未发送过消息" />
-          : (
-            <InfiniteNoteList
-              loading={this.state.isLoading}
-              notes={this.state.notes}
-              notesNum={notesNum}
-              disabled={isLoadAll}
-              onInfiniteLoad={this._handleInfiniteLoad}
-            />
-          )
-        }
-      </ContentLayout>
-    );
+    const { notesNum } = this.props;
+    const isLoadAll = this.state.notes.length === notesNum;
+    return notesNum === 0
+      ? <EmptyHolder mainInfo="您还未发送过消息" />
+      : (
+        <InfiniteNoteList
+          notes={this.state.notes}
+          notesNum={notesNum}
+          disabled={isLoadAll}
+          onInfiniteLoad={this._handleInfiniteLoad}
+        />
+      );
   }
 }

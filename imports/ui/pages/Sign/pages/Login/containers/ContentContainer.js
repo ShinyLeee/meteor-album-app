@@ -1,9 +1,9 @@
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
+import { setDisplayName } from 'recompose';
 import { withStyles } from 'material-ui/styles';
 import { userLogin, snackBarOpen } from '/imports/ui/redux/actions';
-import withRedirect from '/imports/ui/hocs/withRedirect';
 import LoginContent from '../components/Content';
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
@@ -40,8 +40,8 @@ const styles = theme => ({
 });
 
 export default compose(
+  setDisplayName('LoginContentContainer'),
   connect(null, mapDispatchToProps),
   withStyles(styles),
   withRouter,
-  withRedirect,
 )(LoginContent);

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { Images } from '/imports/api/images/image';
-import ContentLayout from '/imports/ui/layouts/ContentLayout';
+import ViewLayout from '/imports/ui/layouts/ViewLayout';
 import EmptyHolder from '/imports/ui/components/EmptyHolder';
 import ZoomerHolder from '/imports/ui/components/ZoomerHolder';
 import InfiniteImageList from '/imports/ui/components/Infinity/ImageList';
@@ -9,7 +9,6 @@ import InfiniteImageList from '/imports/ui/components/Infinity/ImageList';
 export default class UserLikesContent extends PureComponent {
   static propTypes = {
     limit: PropTypes.number.isRequired,
-    dataIsReady: PropTypes.bool.isRequired,
     isOwner: PropTypes.bool.isRequired, // based on isOwner render different content
     images: PropTypes.array.isRequired,
     imagesCount: PropTypes.number.isRequired,
@@ -19,14 +18,18 @@ export default class UserLikesContent extends PureComponent {
     super(props);
     this._loadTimeout = null;
     this.state = {
-      isLoading: false,
       images: props.images,
     };
   }
 
+  componentWillMount() {
+    if (this.props.imagesCount > 0) {
+      ViewLayout.setRootBackgroundColor(true);
+    }
+  }
 
   componentWillReceiveProps(nextProps) {
-    if (this.props.images !== nextProps.images) {
+    if (this.props.imagesCount !== nextProps.imagesCount) {
       this.setState({
         images: nextProps.images,
       });
@@ -41,11 +44,8 @@ export default class UserLikesContent extends PureComponent {
   }
 
   _handleInfiniteLoad = () => {
-    this.setState({ isLoading: true });
-
     const { limit } = this.props;
-    const { images } = this.state;
-    const skip = images.length;
+    const skip = this.state.images.length;
 
     this._loadTimeout = setTimeout(() => {
       const newImages = Images.find(
@@ -53,36 +53,32 @@ export default class UserLikesContent extends PureComponent {
         { sort: { createdAt: -1 }, limit, skip },
       ).fetch();
       this.setState((prevState) => ({
-        isLoading: false,
         images: [...prevState.images, ...newImages],
       }));
     }, 300);
   }
 
   render() {
-    const { dataIsReady, isOwner, imagesCount } = this.props;
+    const { isOwner, imagesCount } = this.props;
     const isEmpty = this.state.images.length === 0;
-    const isLoadAll = dataIsReady && this.state.images.length === imagesCount;
-    return (
-      <ContentLayout
-        loading={!dataIsReady}
-        deep={!isEmpty}
-        delay
-      >
-        <ZoomerHolder />
-        {
-          isEmpty
-          ? <EmptyHolder mainInfo={isOwner ? '您还未喜欢过照片' : '该用户尚未喜欢照片'} />
-          : (
-            <InfiniteImageList
-              loading={this.state.isLoading}
-              images={this.state.images}
-              disabled={isLoadAll}
-              onInfiniteLoad={this._handleInfiniteLoad}
-            />
-          )
-        }
-      </ContentLayout>
-    );
+    const isLoadAll = this.state.images.length === imagesCount;
+    return [
+      <ZoomerHolder key="ZoomerHolder" />,
+      isEmpty
+        ? (
+          <EmptyHolder
+            key="EmptyHolder"
+            mainInfo={isOwner ? '您还未喜欢过照片' : '该用户尚未喜欢照片'}
+          />
+        )
+        : (
+          <InfiniteImageList
+            key="InfiniteImageList"
+            images={this.state.images}
+            disabled={isLoadAll}
+            onInfiniteLoad={this._handleInfiniteLoad}
+          />
+        ),
+    ];
   }
 }

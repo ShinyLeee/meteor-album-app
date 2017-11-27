@@ -12,7 +12,6 @@ const Wrapper = styled.div`
   align-items: center;
   flex-direction: column;
   justify-content: center;
-  padding-bottom: 32vw;
 `;
 
 const Logo = styled.p`
@@ -22,14 +21,21 @@ const Logo = styled.p`
   margin-bottom: 36px;
 `;
 
-const ErrorLayout = ({ message }) => (
+const Message = styled.p`
+  margin: 0;
+  padding: 12px 24px;
+  word-break: break-all;
+`;
+
+const ErrorLayout = ({ title, message }) => (
   <Wrapper>
-    <Logo>Gallery Plus</Logo>
-    <p>{message}</p>
+    <Logo>{title || 'Gallery Plus'}</Logo>
+    <Message>{message}</Message>
   </Wrapper>
 );
 
 ErrorLayout.propTypes = {
+  title: PropTypes.string,
   message: PropTypes.string.isRequired,
 };
 

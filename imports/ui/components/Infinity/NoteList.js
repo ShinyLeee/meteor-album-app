@@ -1,10 +1,9 @@
 import get from 'lodash/get';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import Infinite from 'react-infinite';
-import { Notes } from '/imports/api/notes/note';
 import { readNote } from '/imports/api/notes/methods';
 import DataLoader from '/imports/ui/components/Loader/DataLoader';
 import { snackBarOpen } from '/imports/ui/redux/actions';
@@ -12,11 +11,10 @@ import NoteHolder from '/imports/ui/components/NoteHolder';
 import GetHeightWrapper from './GetHeightWrapper';
 import Tip from './Tip';
 
-class InfiniteNoteList extends Component {
+class InfiniteNoteList extends PureComponent {
   static propTypes = {
     notes: PropTypes.array.isRequired,
     notesNum: PropTypes.number.isRequired,
-    loading: PropTypes.bool,
     disabled: PropTypes.bool,
     showActions: PropTypes.bool,
     onInfiniteLoad: PropTypes.func.isRequired,
@@ -24,7 +22,6 @@ class InfiniteNoteList extends Component {
   }
 
   static defaultProps = {
-    loading: false,
     disabled: false,
     showActions: false,
   }
@@ -39,7 +36,7 @@ class InfiniteNoteList extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (this.props.notes !== nextProps.notes) {
+    if (this.props.notesNum !== nextProps.notesNum) {
       const { notes, heights } = this.generateNotes(nextProps.notes);
       this.setState({ notes, heights });
     }
@@ -82,12 +79,6 @@ class InfiniteNoteList extends Component {
   _handleReadNote = async (id) => {
     try {
       await readNote.callPromise({ noteId: id });
-      const newNotes = Notes.find(
-        { isRead: { $ne: true } },
-        { sort: { sendAt: -1 }, limit: this.state.notes.length - 1 },
-      ).fetch();
-      const { notes, heights } = this.generateNotes(newNotes);
-      this.setState({ notes, heights });
     } catch (err) {
       console.warn(err);
       this.props.snackBarOpen(`标记已读失败 ${err.reason}`);
@@ -95,12 +86,10 @@ class InfiniteNoteList extends Component {
   }
 
   render() {
-    const { loading } = this.props;
     return [
       <Infinite
         key="Infinite__NoteList"
         className="inset"
-        isInfiniteLoading={loading}
         elementHeight={this.state.heights}
         onInfiniteLoad={this.props.onInfiniteLoad}
         loadingSpinnerDelegate={<DataLoader bottom />}

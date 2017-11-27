@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import IconButton from 'material-ui/IconButton';
 import ArrowBackIcon from 'material-ui-icons/ArrowBack';
 import DoneIcon from 'material-ui-icons/Done';
@@ -13,7 +13,7 @@ const AsyncWriteContent = withLoadable({
   loader: () => import('./components/Content'),
 });
 
-export default class WriteDiaryPage extends Component {
+export default class WriteDiaryPage extends PureComponent {
   static propTypes = {
     User: PropTypes.object.isRequired,
     history: PropTypes.object.isRequired,
@@ -98,6 +98,7 @@ export default class WriteDiaryPage extends Component {
             }
           />
         }
+        fullScreen
       >
         <AsyncWriteContent
           onTitleChange={this._handleTitleChange}

@@ -8,9 +8,16 @@ const AsyncEmailsContent = withLoadable({
 });
 
 export default class EmailsPage extends Component {
+  shouldComponentUpdate() {
+    return false;
+  }
+
   render() {
     return (
-      <ViewLayout Topbar={<SecondaryNavHeader title="我的邮箱" />}>
+      <ViewLayout
+        Topbar={<SecondaryNavHeader title="我的邮箱" />}
+        fullScreen
+      >
         <AsyncEmailsContent />
       </ViewLayout>
     );

@@ -30,7 +30,7 @@ const modalState = {
   destName: null,
 };
 
-const AsyncContent = withLoadable({
+const AsyncCollectionContent = withLoadable({
   loader: () => import('./containers/ContentContainer'),
 });
 
@@ -49,6 +49,10 @@ export default class CollectionPage extends Component {
 
   state = {
     isEditing: false,
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return this.state.isEditing !== nextState.isEditing;
   }
 
   _handleQuitEditing = () => {
@@ -270,7 +274,7 @@ export default class CollectionPage extends Component {
           )
         }
       >
-        <AsyncContent isEditing={this.state.isEditing} />
+        <AsyncCollectionContent isEditing={this.state.isEditing} />
       </ViewLayout>
     );
   }

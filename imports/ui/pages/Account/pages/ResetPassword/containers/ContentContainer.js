@@ -1,10 +1,11 @@
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
+import { setDisplayName } from 'recompose';
 import { withStyles } from 'material-ui/styles';
 
 import { snackBarOpen } from '/imports/ui/redux/actions';
-import ResetPasswordPage from '../components/Content';
+import ResetPasswordContent from '../components/Content';
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   snackBarOpen,
@@ -22,7 +23,8 @@ const styles = {
 };
 
 export default compose(
+  setDisplayName('ResetPasswordContentContainer'),
   connect(null, mapDispatchToProps),
   withStyles(styles),
   withRouter,
-)(ResetPasswordPage);
+)(ResetPasswordContent);

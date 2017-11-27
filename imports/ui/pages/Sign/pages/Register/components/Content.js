@@ -1,10 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import Button from 'material-ui/Button';
 import Input from 'material-ui/Input';
 import { checkCode, useCode } from '/imports/api/codes/methods';
-import ContentLayout from '/imports/ui/layouts/ContentLayout';
 import Modal from '/imports/ui/components/Modal';
 import {
   Logo,
@@ -12,7 +11,7 @@ import {
   Separator,
 } from '../../styles';
 
-export default class RegisterContent extends Component {
+export default class RegisterContent extends PureComponent {
   static propTypes = {
     userLogin: PropTypes.func.isRequired,
     history: PropTypes.object.isRequired,
@@ -72,10 +71,7 @@ export default class RegisterContent extends Component {
   render() {
     const { classes } = this.props;
     return (
-      <ContentLayout
-        alignCenter
-        fullScreen
-      >
+      <div>
         <Logo>
           <h2>Gallery Plus</h2>
         </Logo>
@@ -139,7 +135,7 @@ export default class RegisterContent extends Component {
           >已有账号
           </Button>
         </Section>
-      </ContentLayout>
+      </div>
     );
   }
 }

@@ -1,15 +1,13 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import Delta from 'quill-delta';
 import Divider from 'material-ui/Divider';
 import Input from 'material-ui/Input';
-import ContentLayout from '/imports/ui/layouts/ContentLayout';
 import { QuillEditor } from '/imports/ui/components/Quill';
 import AutocompleteWrapper from './Autocomplete';
 
-export default class SendNoteContent extends Component {
+export default class SendNoteContent extends PureComponent {
   static propTypes = {
-    dataIsReady: PropTypes.bool.isRequired,
     initReceiver: PropTypes.string,
     otherUsers: PropTypes.array.isRequired,
     classes: PropTypes.object.isRequired,
@@ -122,12 +120,9 @@ export default class SendNoteContent extends Component {
   }
 
   render() {
-    const { dataIsReady, otherUsers, classes } = this.props;
+    const { otherUsers, classes } = this.props;
     return (
-      <ContentLayout
-        loading={!dataIsReady}
-        delay
-      >
+      <div>
         <AutocompleteWrapper
           value={this.state.receiver}
           data={otherUsers}
@@ -148,7 +143,7 @@ export default class SendNoteContent extends Component {
           modules={this.quillModulesConfig}
           onChange={this._handleContentChange}
         />
-      </ContentLayout>
+      </div>
     );
   }
 }

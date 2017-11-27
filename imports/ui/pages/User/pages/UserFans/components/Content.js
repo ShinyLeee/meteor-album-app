@@ -2,14 +2,12 @@ import map from 'lodash/map';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import List from 'material-ui/List/List';
-import ContentLayout from '/imports/ui/layouts/ContentLayout';
 import { followUser, unFollowUser } from '/imports/api/users/methods';
 import FanListItem from '../containers/FanListItemContainer';
 import { SearchSection } from '../styles';
 
 export default class UserFansContent extends PureComponent {
   static propTypes = {
-    dataIsReady: PropTypes.bool.isRequired,
     fans: PropTypes.array.isRequired,
     User: PropTypes.object, // not required bc guest can visit this page
     snackBarOpen: PropTypes.func.isRequired,
@@ -69,19 +67,15 @@ export default class UserFansContent extends PureComponent {
   }
 
   render() {
-    const { dataIsReady } = this.props;
     return (
-      <ContentLayout
-        loading={!dataIsReady}
-        delay
-      >
+      <div>
         <SearchSection>
           <input type="text" placeholder="搜索" onChange={this._handleSearchChange} />
         </SearchSection>
         <section>
           { this.renderFansList() }
         </section>
-      </ContentLayout>
+      </div>
     );
   }
 }

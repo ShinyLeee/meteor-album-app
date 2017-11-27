@@ -1,9 +1,10 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
+import { compose } from 'redux';
+import { setDisplayName } from 'recompose';
 import { withStyles } from 'material-ui/styles';
 import Divider from 'material-ui/Divider';
 import Input from 'material-ui/Input';
-import ContentLayout from '/imports/ui/layouts/ContentLayout';
 import QuillEditor from '/imports/ui/components/Quill/QuillEditor';
 
 const quillConfig = {
@@ -17,7 +18,7 @@ const quillConfig = {
   },
 };
 
-class WriteContentPage extends Component {
+class WriteContent extends PureComponent {
   static propTypes = {
     classes: PropTypes.object.isRequired,
     onTitleChange: PropTypes.func.isRequired,
@@ -36,27 +37,26 @@ class WriteContentPage extends Component {
 
   render() {
     const { classes } = this.props;
-    return (
-      <ContentLayout>
-        <div className="content__writeDiary">
-          <Input
-            className={classes.input}
-            value={this.state.title}
-            placeholder="标题"
-            onChange={this._handleTitleChange}
-            disableUnderline
-            fullWidth
-          />
-          <Divider />
-          <QuillEditor
-            placeholder="内容"
-            modules={quillConfig}
-            contentType="delta"
-            onChange={this.props.onContentChange}
-          />
-        </div>
-      </ContentLayout>
-    );
+    return [
+      <Input
+        key="Input"
+        className={classes.input}
+        value={this.state.title}
+        placeholder="标题"
+        onChange={this._handleTitleChange}
+        disableUnderline
+        fullWidth
+      />,
+      <Divider key="Divider" />,
+      <QuillEditor
+        key="Editor"
+        style={{ flex: 1 }}
+        placeholder="内容"
+        modules={quillConfig}
+        contentType="delta"
+        onChange={this.props.onContentChange}
+      />,
+    ];
   }
 }
 
@@ -69,4 +69,7 @@ const styles = {
   },
 };
 
-export default withStyles(styles)(WriteContentPage);
+export default compose(
+  setDisplayName('DiaryWriteContentContainer'),
+  withStyles(styles),
+)(WriteContent);

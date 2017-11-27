@@ -10,7 +10,6 @@ import ExitToAppIcon from 'material-ui-icons/ExitToApp';
 import { followUser, unFollowUser } from '/imports/api/users/methods';
 import Modal from '/imports/ui/components/Modal';
 import { ResponsiveCover } from '/imports/ui/components/ProgressiveImage';
-import ContentLayout from '/imports/ui/layouts/ContentLayout';
 import ImageSlider from './ImageSlider';
 import {
   MainSection,
@@ -24,7 +23,6 @@ import {
 
 export default class UserContent extends PureComponent {
   static propTypes = {
-    dataIsReady: PropTypes.bool.isRequired,
     User: PropTypes.object,
     isOwner: PropTypes.bool.isRequired,
     curUser: PropTypes.object.isRequired,
@@ -99,7 +97,6 @@ export default class UserContent extends PureComponent {
 
   render() {
     const {
-      dataIsReady,
       isOwner,
       curUser,
       counts,
@@ -107,10 +104,7 @@ export default class UserContent extends PureComponent {
       classes,
     } = this.props;
     return (
-      <ContentLayout
-        loading={!dataIsReady}
-        delay
-      >
+      <div>
         <ResponsiveCover
           src={get(curUser, 'profile.cover')}
           basis={0.3}
@@ -207,7 +201,7 @@ export default class UserContent extends PureComponent {
             )
           }
         </RankSection>
-      </ContentLayout>
+      </div>
     );
   }
 }

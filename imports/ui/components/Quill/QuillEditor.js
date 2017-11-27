@@ -6,7 +6,7 @@ import './Quill.css';
 
 export default class QuillEditor extends Component {
   static propTypes = {
-    className: PropTypes.string,
+    style: PropTypes.object,
     readOnly: PropTypes.bool,
     placeholder: PropTypes.string,
     theme: PropTypes.oneOf(['snow', 'bubble']),
@@ -17,7 +17,6 @@ export default class QuillEditor extends Component {
   }
 
   static defaultProps = {
-    className: 'component__QuillEditor',
     readOnly: false,
     theme: 'snow',
     modules: { toolbar: false },
@@ -63,10 +62,10 @@ export default class QuillEditor extends Component {
   }
 
   render() {
-    const { className } = this.props;
+    const { style } = this.props;
 
     return (
-      <div className={className}>
+      <div style={style}>
         <div
           id="Quill__editor"
           ref={(node) => { this.editor = node; }}

@@ -2,9 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
 import { compose } from 'redux';
 import { withRouter } from 'react-router-dom';
+import { setDisplayName } from 'recompose';
 import { Images } from '/imports/api/images/image';
-
-import UserLikesPage from '../components/Content';
+import withDataReadyHandler from '/imports/ui/hocs/withDataReadyHandler';
+import UserLikesContent from '../components/Content';
 
 const trackHandler = ({ match }) => {
   // Define How many pictures render in the first time
@@ -12,7 +13,7 @@ const trackHandler = ({ match }) => {
 
   const { username } = match.params;
   const imageHandler = Meteor.subscribe('Images.liked', username);
-  const dataIsReady = imageHandler.ready();
+  const isDataReady = imageHandler.ready();
 
   const images = Images.find(
     { private: false, liker: { $in: [username] } },
@@ -23,13 +24,15 @@ const trackHandler = ({ match }) => {
 
   return {
     limit,
-    dataIsReady,
+    isDataReady,
     images,
     imagesCount,
   };
 };
 
 export default compose(
+  setDisplayName('UserLikesContentContainer'),
   withRouter,
   withTracker(trackHandler),
-)(UserLikesPage);
+  withDataReadyHandler(),
+)(UserLikesContent);

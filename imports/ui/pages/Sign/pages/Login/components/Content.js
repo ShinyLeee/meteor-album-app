@@ -5,7 +5,6 @@ import React, { Component } from 'react';
 import Button from 'material-ui/Button';
 import Input from 'material-ui/Input';
 import { validateEmail } from '/imports/utils';
-import ContentLayout from '/imports/ui/layouts/ContentLayout';
 import Modal from '/imports/ui/components/Modal';
 import ModalActions from '/imports/ui/components/Modal/Common/ModalActions';
 import {
@@ -121,10 +120,7 @@ export default class LoginContent extends Component {
   render() {
     const { classes } = this.props;
     return (
-      <ContentLayout
-        alignCenter
-        fullScreen
-      >
+      <div>
         <Logo>
           <h2>Gallery Plus</h2>
         </Logo>
@@ -165,7 +161,7 @@ export default class LoginContent extends Component {
           </Button>
         </Section>
         <Footer onClick={this.renderPrompt}>忘记密码?</Footer>
-      </ContentLayout>
+      </div>
     );
   }
 }

@@ -1,5 +1,14 @@
 import { Meteor } from 'meteor/meteor';
+import { replace } from 'react-router-redux';
 import * as types from '../constants/ActionTypes';
+
+export const loadingData = () => ({
+  type: types.LOADING_DATA,
+});
+
+export const loadedData = () => ({
+  type: types.LOADED_DATA,
+});
 
 export const updateLang = ({ lang }) => ({
   type: types.UPDATE_LANG,
@@ -10,6 +19,19 @@ export const updateDimension = ({ width, height }) => ({
   type: types.UPDATE_DIMENSION,
   width,
   height,
+});
+
+export const loadingModule = () => ({
+  type: types.LOADING_MODULE,
+});
+
+export const loadedModule = (loaded) => ({
+  type: types.LOADED_MODULE,
+  loaded,
+});
+
+export const loadingModuleError = () => ({
+  type: types.LOADING_MODULE_ERROR,
 });
 
 export const modalOpen = ({ title, content, actions, ops }) => ({
@@ -104,6 +126,39 @@ export const saveUser = (user) => ({
 export const clearUser = () => ({
   type: types.CLEAR_USER,
 });
+
+export const authSuccess = () => ({
+  type: types.AUTH_SUCCESS,
+});
+
+export const authFail = (state) => ({
+  type: types.AUTH_FAIL,
+  state,
+});
+
+// const delay = () => new Promise((resolve) => {
+//   setTimeout(resolve, 750);
+// });
+
+export const fetchAuth = (policy, args) => async (dispatch) => {
+  try {
+    dispatch({ type: types.FETCH_AUTH });
+    // await delay();
+    const data = await policy(args);
+    if (data.isAuthenticated) {
+      dispatch(authSuccess());
+    } else {
+      dispatch(authFail(data.state));
+      dispatch(replace(data.state.redirect));
+      dispatch(snackBarOpen(data.state.message));
+    }
+  } catch (err) {
+    dispatch(authFail(err.error || '/500'));
+    dispatch(replace(`/${err.error || 500}`));
+    dispatch(snackBarOpen(err.reason || '服务器内部错误'));
+    console.warn(err);
+  }
+};
 
 export const saveUptoken = (uptoken) => ({
   type: types.SAVE_UPTOKEN,

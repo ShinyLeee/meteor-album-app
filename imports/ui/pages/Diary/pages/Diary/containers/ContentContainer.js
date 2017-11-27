@@ -5,12 +5,14 @@ import { withTracker } from 'meteor/react-meteor-data';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
+import { setDisplayName } from 'recompose';
 import { Diarys } from '/imports/api/diarys/diary';
-
+import withDataReadyHandler from '/imports/ui/hocs/withDataReadyHandler';
 import { diaryOpen, snackBarOpen } from '/imports/ui/redux/actions';
 import DiaryPage from '../components/Content';
 
 const mapStateToProps = ({ sessions }) => ({
+  isLoggedIn: sessions.isLoggedIn,
   User: sessions.User,
 });
 
@@ -19,7 +21,7 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
   snackBarOpen,
 }, dispatch);
 
-const trackHandler = ({ User, location }) => {
+const trackHandler = ({ isLoggedIn, User, location }) => {
   const query = queryString.parse(location.search);
 
   let start;
@@ -35,23 +37,27 @@ const trackHandler = ({ User, location }) => {
   }
 
   const diaryHandler = Meteor.subscribe('Diarys.own');
-  const dataIsReady = !!User && diaryHandler.ready();
+  const isDataReady = isLoggedIn && diaryHandler.ready();
 
-  const diarys = Diarys.find({
-    user: User.username,
-    createdAt: { $gte: start, $lt: end },
-  }, { sort: { createdAt: -1 } },
-  ).fetch();
+  const diarys = isDataReady
+    ? Diarys.find({
+      user: User.username,
+      createdAt: { $gte: start, $lt: end },
+    }, { sort: { createdAt: -1 } },
+    ).fetch()
+    : [];
 
   return {
-    dataIsReady,
+    isDataReady,
     diarys,
     date: start,
   };
 };
 
 export default compose(
+  setDisplayName('DiaryContentContainer'),
   withRouter,
   connect(mapStateToProps, mapDispatchToProps),
   withTracker(trackHandler),
+  withDataReadyHandler(),
 )(DiaryPage);

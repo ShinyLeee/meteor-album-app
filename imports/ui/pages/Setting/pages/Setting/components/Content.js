@@ -21,7 +21,6 @@ import UserIcon from 'material-ui-icons/AccountBox';
 import InboxIcon from 'material-ui-icons/Inbox';
 import EmailIcon from 'material-ui-icons/Email';
 import settings from '/imports/utils/settings';
-import ContentLayout from '/imports/ui/layouts/ContentLayout';
 import Modal from '/imports/ui/components/Modal';
 import { ResponsiveCover } from '/imports/ui/components/ProgressiveImage';
 import {
@@ -129,20 +128,24 @@ export default class SettingContent extends PureComponent {
   }
 
   render() {
-    const { profile, User, classes } = this.props;
+    const { User, profile, classes } = this.props;
     return (
-      <ContentLayout>
+      <div>
         <header>
-          <ResponsiveCover
-            src={profile.cover}
-            basis={0.3}
-            maxHeight={300}
-          />
+          {
+            profile && (
+              <ResponsiveCover
+                src={get(profile, 'cover')}
+                basis={0.3}
+                maxHeight={300}
+              />
+            )
+          }
           <Uploader>
             <IconButton onClick={() => this.avatarInput.click()}>
-              <Avatar className={classes.icon__avatar} src={profile.avatar} size={60} />
+              <Avatar className={classes.icon__avatar} src={get(profile, 'avatar')} size={60} />
               <input
-                style={{ display: 'none' }}
+                className="hide"
                 type="file"
                 ref={(ref) => { this.avatarInput = ref; }}
                 onChange={this._handleSetAvatar}
@@ -151,7 +154,7 @@ export default class SettingContent extends PureComponent {
             <IconButton className={classes.btn__camera} onClick={() => this.coverInput.click()}>
               <CameraIcon className={classes.icon__camera} />
               <input
-                style={{ display: 'none' }}
+                className="hide"
                 type="file"
                 ref={(ref) => { this.coverInput = ref; }}
                 onChange={this._handleSetCover}
@@ -159,7 +162,7 @@ export default class SettingContent extends PureComponent {
             </IconButton>
           </Uploader>
         </header>
-        <Username>{User.username}</Username>
+        <Username>{get(User, 'username')}</Username>
         <Divider />
         { /* General Setting */ }
         <List subheader={<ListSubheader>基础资料</ListSubheader>}>
@@ -169,7 +172,7 @@ export default class SettingContent extends PureComponent {
             </ListItemIcon>
             <TextField
               label="用户名"
-              value={User.username}
+              value={get(User, 'username')}
               fullWidth
               disabled
             />
@@ -192,7 +195,7 @@ export default class SettingContent extends PureComponent {
             <TextField
               label="昵称"
               name="nickname"
-              value={profile.nickname}
+              value={get(profile, 'nickname')}
               onChange={this._handleInputChange}
               fullWidth
               disabled
@@ -205,7 +208,7 @@ export default class SettingContent extends PureComponent {
             <TextField
               label="个人简介"
               name="intro"
-              value={profile.intro}
+              value={get(profile, 'intro')}
               onChange={this._handleInputChange}
               fullWidth
               disabled
@@ -250,7 +253,7 @@ export default class SettingContent extends PureComponent {
           <ListItem>
             <Checkbox
               name="allowVisitHome"
-              checked={profile.settings.allowVisitHome}
+              checked={get(profile, 'settings.allowVisitHome')}
               tabIndex={-1}
               onChange={this._handleSelectChange}
               disableRipple
@@ -263,7 +266,7 @@ export default class SettingContent extends PureComponent {
           <ListItem>
             <Checkbox
               name="allowVisitColl"
-              checked={profile.settings.allowVisitColl}
+              checked={get(profile, 'settings.allowVisitColl')}
               tabIndex={-1}
               onChange={this._handleSelectChange}
               disableRipple
@@ -282,7 +285,7 @@ export default class SettingContent extends PureComponent {
             <ListItemSecondaryAction>
               <Switch
                 name="allowNoti"
-                checked={profile.settings.allowNoti}
+                checked={get(profile, 'settings.allowNoti')}
                 onChange={this._handleSelectChange}
                 disabled
               />
@@ -293,7 +296,7 @@ export default class SettingContent extends PureComponent {
             <ListItemSecondaryAction>
               <Switch
                 name="allowMsg"
-                checked={profile.settings.allowMsg}
+                checked={get(profile, 'settings.allowMsg')}
                 onChange={this._handleSelectChange}
                 disabled
               />
@@ -301,7 +304,7 @@ export default class SettingContent extends PureComponent {
           </ListItem>
         </List>
         <Divider />
-      </ContentLayout>
+      </div>
     );
   }
 }

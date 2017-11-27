@@ -5,7 +5,6 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import Button from 'material-ui/Button';
 import Input from 'material-ui/Input';
-import ContentLayout from '/imports/ui/layouts/ContentLayout';
 import Modal from '/imports/ui/components/Modal';
 import { ButtonSection } from '../styles';
 
@@ -64,29 +63,27 @@ export default class ResetPasswordContent extends PureComponent {
   render() {
     const { classes } = this.props;
     return (
-      <ContentLayout>
-        <div>
-          <Input
-            className={classes.input}
-            name="newPwd"
-            placeholder="新密码"
-            type="password"
-            value={this.state.newPwd}
-            onChange={this._handleValueChange}
-            disableUnderline
-            fullWidth
-          />
-          <Input
-            className={classes.input}
-            name="newPwd2"
-            placeholder="确认密码"
-            type="password"
-            value={this.state.newPwd2}
-            onChange={this._handleValueChange}
-            disableUnderline
-            fullWidth
-          /><br />
-        </div>
+      <div>
+        <Input
+          className={classes.input}
+          name="newPwd"
+          placeholder="新密码"
+          type="password"
+          value={this.state.newPwd}
+          onChange={this._handleValueChange}
+          disableUnderline
+          fullWidth
+        />
+        <Input
+          className={classes.input}
+          name="newPwd2"
+          placeholder="确认密码"
+          type="password"
+          value={this.state.newPwd2}
+          onChange={this._handleValueChange}
+          disableUnderline
+          fullWidth
+        />
         <ButtonSection>
           <Button
             color="primary"
@@ -95,7 +92,7 @@ export default class ResetPasswordContent extends PureComponent {
           >修改密码
           </Button>
         </ButtonSection>
-      </ContentLayout>
+      </div>
     );
   }
 }

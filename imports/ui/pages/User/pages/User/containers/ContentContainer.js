@@ -2,11 +2,12 @@ import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import { Meteor } from 'meteor/meteor';
 import { withRouter } from 'react-router-dom';
+import { setDisplayName } from 'recompose';
 import { withTracker } from 'meteor/react-meteor-data';
 import { withStyles } from 'material-ui/styles';
 import { Collections } from '/imports/api/collections/collection';
 import { Images } from '/imports/api/images/image';
-
+import withDataReadyHandler from '/imports/ui/hocs/withDataReadyHandler';
 import { userLogout, snackBarOpen } from '/imports/ui/redux/actions';
 import UserContent from '../components/Content';
 
@@ -31,14 +32,14 @@ const trackerHandler = ({ match }) => {
     colls: 0,
     followers: 0,
   };
-  let dataIsReady = false;
+  let isDataReady = false;
   let topImages = [];
 
   const userIsReady = userHandler.ready();
   const curUser = Meteor.users.findOne({ username }) || {};
 
   if (userIsReady) {
-    dataIsReady = imageHandler.ready() && collHandler.ready();
+    isDataReady = imageHandler.ready() && collHandler.ready();
     counts.likes = Images.find({ liker: { $in: [curUser.username] } }).count();
     counts.colls = Collections.find().count();
     counts.followers = curUser.profile.followers.length;
@@ -50,7 +51,7 @@ const trackerHandler = ({ match }) => {
   }
 
   return {
-    dataIsReady,
+    isDataReady,
     curUser,
     counts,
     topImages,
@@ -68,8 +69,10 @@ const styles = {
 };
 
 export default compose(
+  setDisplayName('UserContentContainer'),
   withRouter,
   connect(mapStateToProps, mapDispatchToProps),
   withTracker(trackerHandler),
   withStyles(styles),
+  withDataReadyHandler(),
 )(UserContent);

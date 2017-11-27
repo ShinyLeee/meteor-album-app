@@ -28,6 +28,10 @@ export default class NotesPage extends Component {
     popoverAnchor: undefined,
   }
 
+  shouldComponentUpdate(nextProps, nextState) {
+    return this.state.popover !== nextState.popover;
+  }
+
   _navTo = (location) => () => {
     this.props.history.push(location);
   }

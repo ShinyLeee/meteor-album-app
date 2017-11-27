@@ -5,8 +5,6 @@ import IconButton from 'material-ui/IconButton';
 import CloseIcon from 'material-ui-icons/Close';
 import RecoveryIcon from 'material-ui-icons/Replay';
 import RemoveIcon from 'material-ui-icons/Delete';
-import blue from 'material-ui/colors/blue';
-import purple from 'material-ui/colors/purple';
 import { removeImages, recoveryImages } from '/imports/api/images/methods';
 import ViewLayout from '/imports/ui/layouts/ViewLayout';
 import SecondaryNavHeader from '/imports/ui/components/NavHeader/Secondary';
@@ -16,9 +14,6 @@ import withLoadable from '/imports/ui/hocs/withLoadable';
 const AsyncRecycleContent = withLoadable({
   loader: () => import('./containers/ContentContainer'),
 });
-
-const blue500 = blue['500'];
-const purple500 = purple['500'];
 
 export default class RecyclePage extends PureComponent {
   static propTypes = {
@@ -93,7 +88,6 @@ export default class RecyclePage extends PureComponent {
       <ViewLayout
         Topbar={
           <SecondaryNavHeader
-            style={{ backgroundColor: this.state.isEditing ? blue500 : purple500 }}
             title={counter ? `选择了${counter}张照片` : '回收站'}
             Left={this.state.isEditing && (
               <IconButton

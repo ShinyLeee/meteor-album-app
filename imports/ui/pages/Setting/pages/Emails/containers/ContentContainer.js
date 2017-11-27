@@ -1,5 +1,6 @@
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
+import { setDisplayName } from 'recompose';
 import { withStyles } from 'material-ui/styles';
 
 import { snackBarOpen } from '/imports/ui/redux/actions';
@@ -20,6 +21,7 @@ const styles = {
 };
 
 export default compose(
+  setDisplayName('SettingEmailsContentContainer'),
   connect(mapStateToProps, mapDispatchToProps),
   withStyles(styles),
 )(SettingEmailsContent);

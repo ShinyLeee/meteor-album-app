@@ -15,6 +15,8 @@ LinearLoader.propTypes = {
 const styles = {
   root: {
     position: 'absolute',
+    left: 0,
+    top: 64,
     width: '100%',
     height: 5,
     zIndex: 999,

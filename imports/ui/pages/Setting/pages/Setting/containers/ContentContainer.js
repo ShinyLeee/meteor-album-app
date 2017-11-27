@@ -1,8 +1,8 @@
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
+import { setDisplayName } from 'recompose';
 import { withStyles } from 'material-ui/styles';
-
 import { snackBarOpen } from '/imports/ui/redux/actions';
 import SettingContent from '../components/Content';
 
@@ -35,6 +35,7 @@ const styles = {
 };
 
 export default compose(
+  setDisplayName('SettingContentContainer'),
   connect(mapStateToProps, mapDispatchToProps),
   withStyles(styles),
   withRouter,

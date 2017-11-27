@@ -19,6 +19,43 @@ export const sessions = (state = initState.sessions, action) => {
         isLoggedIn: false,
         User: null,
       };
+    case types.LOADING_DATA:
+      return {
+        ...state,
+        isFetchingData: true,
+      };
+    case types.LOADED_DATA:
+      return {
+        ...state,
+        isFetchingData: false,
+      };
+    case types.FETCH_AUTH:
+      return {
+        ...state,
+        auth: {
+          isFetching: true,
+          isAuthenticated: false,
+          state: null,
+        },
+      };
+    case types.AUTH_SUCCESS:
+      return {
+        ...state,
+        auth: {
+          isFetching: false,
+          isAuthenticated: true,
+          state: null,
+        },
+      };
+    case types.AUTH_FAIL:
+      return {
+        ...state,
+        auth: {
+          isFetching: false,
+          isAuthenticated: false,
+          state: action.state,
+        },
+      };
     case types.SAVE_UPTOKEN:
       return {
         ...state,
@@ -32,6 +69,29 @@ export const sessions = (state = initState.sessions, action) => {
     default: {
       return state;
     }
+  }
+};
+
+export const modules = (state = initState.modules, action) => {
+  switch (action.type) {
+    case types.LOADING_MODULE:
+      return {
+        ...state,
+        loading: true,
+      };
+    case types.LOADED_MODULE:
+      return {
+        ...state,
+        loading: false,
+        loaded: [...state.loaded, action.loaded],
+      };
+    case types.LOADING_MODULE_ERROR:
+      return {
+        ...state,
+        loading: false,
+      };
+    default:
+      return state;
   }
 };
 

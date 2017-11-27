@@ -7,6 +7,7 @@ import { snackBarOpen } from '/imports/ui/redux/actions';
 import SettingPage from '../index';
 
 const mapStateToProps = ({ sessions }) => ({
+  isLoggedIn: sessions.isLoggedIn,
   User: sessions.User,
   token: sessions.uptoken,
 });

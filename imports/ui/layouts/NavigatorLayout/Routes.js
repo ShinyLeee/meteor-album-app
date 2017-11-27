@@ -6,8 +6,7 @@ import {
   isLogout,
   isOwner,
   isAllowVisitHome,
-  isAllowVisitAllColl,
-  isAllowVisitSpecColl,
+  isAllowVisitColl,
 } from '/imports/utils/policies';
 
 import IndexPage from '/imports/ui/pages/Index';
@@ -31,8 +30,8 @@ export default function Routes() {
       <AuthRoute path="/user/:username" component={UserPage} policy={isAllowVisitHome} exact />
       <AuthRoute path="/user/:username/likes" component={UserLikesPage} policy={isAllowVisitHome} />
       <AuthRoute path="/user/:username/fans" component={UserFansPage} policy={isAllowVisitHome} />
-      <AuthRoute path="/user/:username/collection" component={AllCollectionsPage} policy={isAllowVisitAllColl} exact />
-      <AuthRoute path="/user/:username/collection/:cname" component={CollectionPage} policy={isLogin} />
+      <AuthRoute path="/user/:username/collection" component={AllCollectionsPage} policy={isAllowVisitColl} exact />
+      <AuthRoute path="/user/:username/collection/:cname" component={CollectionPage} policy={isAllowVisitColl} />
       <AuthRoute path="/diary" component={DiaryPage} policy={isLogin} exact />
       <AuthRoute path="/diary/write" component={DiaryWritePage} policy={isLogin} />
       <AuthRoute path="/recycle" component={RecyclePage} policy={isLogin} />

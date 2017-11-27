@@ -2,7 +2,17 @@ export default {
   sessions: {
     isLoggedIn: false,
     User: null,
+    isFetchingData: false,
+    auth: {
+      isFetching: false,
+      isAuthenticated: true,
+    },
     uptoken: null,
+  },
+
+  modules: {
+    loading: false,
+    loaded: [],
   },
 
   device: {

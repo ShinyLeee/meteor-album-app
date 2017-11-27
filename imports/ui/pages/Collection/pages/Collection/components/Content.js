@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import moment from 'moment';
-import ContentLayout from '/imports/ui/layouts/ContentLayout';
 import ConnectedJustified from '/imports/ui/components/JustifiedLayout';
 import PhotoSwipeHolder from './PhotoSwipeHolder';
 import { Header, Title, SubTitle } from '../styles';
@@ -23,20 +22,16 @@ const getDuration = (images) => {
 
 export default class CollectionContent extends Component {
   static propTypes = {
-    dataIsReady: PropTypes.bool.isRequired,
     isEditing: PropTypes.bool.isRequired,
     images: PropTypes.array.isRequired,
     match: PropTypes.object.isRequired,
   }
 
   render() {
-    const { dataIsReady, images, isEditing, match } = this.props;
+    const { images, isEditing, match } = this.props;
     const { cname } = match.params;
     return (
-      <ContentLayout
-        loading={!dataIsReady}
-        delay
-      >
+      <div>
         <Header>
           <Title>{cname}</Title>
           <SubTitle>{getDuration(images)}</SubTitle>
@@ -50,7 +45,7 @@ export default class CollectionContent extends Component {
           )
         }
         <PhotoSwipeHolder />
-      </ContentLayout>
+      </div>
     );
   }
 }

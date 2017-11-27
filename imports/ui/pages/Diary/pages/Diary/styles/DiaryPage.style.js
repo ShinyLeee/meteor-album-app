@@ -1,9 +1,11 @@
 import styled from 'styled-components';
 
 export const DiaryHeader = styled.div`
-  position: relative;
+  position: absolute;
+  width: 100%;
   display: flex;
   flex-direction: column;
+  z-index: -1;
 `;
 
 export const DiaryControlCenter = styled.div`

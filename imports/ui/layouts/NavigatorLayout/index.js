@@ -2,7 +2,8 @@ import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
-import { BrowserRouter as Router, matchPath } from 'react-router-dom';
+import { matchPath } from 'react-router-dom';
+import { ConnectedRouter } from 'react-router-redux';
 import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
 import Modal from '/imports/ui/components/Modal';
@@ -10,33 +11,34 @@ import SnackBar from '/imports/ui/components/SnackBar';
 import AppLoader from '/imports/ui/components/Loader/AppLoader';
 import { userLogin } from '/imports/ui/redux/actions';
 import withLoadable from '/imports/ui/hocs/withLoadable';
+import history from '/imports/utils/history';
 import ScrollToTop from './ScrollToTop';
 import DeviceWatcher from './DeviceWatcher';
 import Routes from './Routes';
 
 const AsyncUploader = withLoadable({
   loader: () => import('/imports/ui/components/Uploader'),
-  loading: () => <div />, // do not show loader when loading Uploader
+  loading: () => null, // do not show loader when loading Uploader
 });
 
 class NavigatorLayout extends PureComponent {
   static propTypes = {
     appIsReady: PropTypes.bool.isRequired,
-    User: PropTypes.object,
+    isLoggedIn: PropTypes.bool.isRequired,
   }
 
   render() {
-    const { appIsReady, User } = this.props;
+    const { appIsReady, isLoggedIn } = this.props;
     return (
       <div className="router">
         {
           appIsReady
           ? (
-            <Router>
+            <ConnectedRouter history={history}>
               <ScrollToTop>
                 <Routes />
               </ScrollToTop>
-            </Router>
+            </ConnectedRouter>
           )
           : <AppLoader />
         }
@@ -46,14 +48,14 @@ class NavigatorLayout extends PureComponent {
         {/* Portals */}
         <Modal />
         <SnackBar />
-        { appIsReady && User && <AsyncUploader /> }
+        {/* { appIsReady && isLoggedIn && <AsyncUploader /> } */}
       </div>
     );
   }
 }
 
 const mapStateToProps = ({ sessions }) => ({
-  User: sessions.User,
+  isLoggedIn: sessions.isLoggedIn,
 });
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
@@ -63,9 +65,9 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
 export default compose(
   connect(mapStateToProps, mapDispatchToProps),
   withTracker((props) => {
-    const { User: globalUser } = props;
+    const { isLoggedIn } = props;
     const User = Meteor.user();
-    if (!globalUser && User) {
+    if (!isLoggedIn && User) {
       props.userLogin({ inExpiration: true });
     }
 

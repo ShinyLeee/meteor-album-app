@@ -8,9 +8,17 @@ const AsyncRegisterContent = withLoadable({
 });
 
 export default class RegisterPage extends Component {
+  shouldComponentUpdate() {
+    return false;
+  }
+
   render() {
     return (
-      <ViewLayout Topbar={<PrimaryNavHeader />}>
+      <ViewLayout
+        Topbar={<PrimaryNavHeader />}
+        alignCenter
+        fullScreen
+      >
         <AsyncRegisterContent />
       </ViewLayout>
     );

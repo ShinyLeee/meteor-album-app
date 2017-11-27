@@ -1,6 +1,7 @@
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
+import { setDisplayName } from 'recompose';
 import { withStyles } from 'material-ui/styles';
 import { userLogin, snackBarOpen } from '/imports/ui/redux/actions';
 import RegisterContent from '../components/Content';
@@ -38,6 +39,7 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
 }, dispatch);
 
 export default compose(
+  setDisplayName('RegisterContentContainer'),
   connect(null, mapDispatchToProps),
   withStyles(styles),
   withRouter,

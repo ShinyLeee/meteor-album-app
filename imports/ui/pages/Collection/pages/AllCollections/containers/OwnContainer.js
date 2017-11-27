@@ -3,6 +3,7 @@ import { withTracker } from 'meteor/react-meteor-data';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
+import setDisplayName from 'recompose/setDisplayName';
 import { withStyles } from 'material-ui/styles';
 import { Collections } from '/imports/api/collections/collection';
 import { snackBarOpen } from '/imports/ui/redux/actions';
@@ -77,6 +78,7 @@ const styles = {
 };
 
 export default compose(
+  setDisplayName('DynamicOwnViewContainer'),
   withRouter,
   connect(mapStateToProps, mapDispatchToProps),
   withTracker(trackHandler),

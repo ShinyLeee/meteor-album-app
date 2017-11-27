@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import ViewLayout from '/imports/ui/layouts/ViewLayout';
 import SearchBar from '/imports/ui/components/NavHeader/SearchBar';
 import withLoadable from '/imports/ui/hocs/withLoadable';
@@ -8,7 +8,7 @@ const AsyncSearchContent = withLoadable({
   loader: () => import('./containers/ContentContainer'),
 });
 
-export default class SearchPage extends Component {
+export default class SearchPage extends PureComponent {
   static propTypes = {
     history: PropTypes.object.isRequired,
   }
@@ -32,6 +32,7 @@ export default class SearchPage extends Component {
   render() {
     return (
       <ViewLayout
+        deep
         Topbar={
           <SearchBar
             onChange={this._handleSearchChange}

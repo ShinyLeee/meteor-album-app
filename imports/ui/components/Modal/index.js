@@ -54,7 +54,7 @@ class Modal extends PureComponent {
         content: <ModalLoader message={message} errMsg={errMsg} />,
         ops: { ignoreBackdropClick: true },
       }));
-      setTimeout(() => resolve(), 275);
+      setTimeout(resolve, 275);
     });
   }
 

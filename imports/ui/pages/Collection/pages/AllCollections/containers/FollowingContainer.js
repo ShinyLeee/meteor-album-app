@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
 import { compose } from 'redux';
 import { withRouter } from 'react-router-dom';
+import setDisplayName from 'recompose/setDisplayName';
 import { Collections } from '/imports/api/collections/collection';
 import FollowingView from '../components/FollowingView';
 
@@ -27,6 +28,7 @@ const trackHandler = ({ User, match }) => {
 };
 
 export default compose(
+  setDisplayName('DynamicFollowingViewContainer'),
   withRouter,
   withTracker(trackHandler),
 )(FollowingView);

@@ -1,19 +1,23 @@
 import map from 'lodash/map';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { Meteor } from 'meteor/meteor';
 import Button from 'material-ui/Button';
 import Divider from 'material-ui/Divider';
-import List, { ListSubheader, ListItem, ListItemSecondaryAction, ListItemText } from 'material-ui/List';
+import List, {
+  ListSubheader,
+  ListItem,
+  ListItemSecondaryAction,
+  ListItemText,
+} from 'material-ui/List';
 import Menu, { MenuItem } from 'material-ui/Menu';
 import IconButton from 'material-ui/IconButton';
 import Input from 'material-ui/Input';
 import MoreVertIcon from 'material-ui-icons/MoreVert';
-import ContentLayout from '/imports/ui/layouts/ContentLayout';
 import Modal from '/imports/ui/components/Modal';
 import { Section } from '../styles';
 
-export default class EmailsContent extends Component {
+export default class EmailsContent extends PureComponent {
   static propTypes = {
     User: PropTypes.object.isRequired,
     classes: PropTypes.object.isRequired,
@@ -79,7 +83,7 @@ export default class EmailsContent extends Component {
   render() {
     const { User, classes } = this.props;
     return (
-      <ContentLayout fullScreen>
+      <div>
         <section>
           <List subheader={<ListSubheader>邮箱列表</ListSubheader>}>
             {
@@ -148,7 +152,7 @@ export default class EmailsContent extends Component {
           >下一步
           </Button>
         </Section>
-      </ContentLayout>
+      </div>
     );
   }
 }

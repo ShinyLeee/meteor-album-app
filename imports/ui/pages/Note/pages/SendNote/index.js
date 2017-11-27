@@ -25,6 +25,10 @@ export default class SendNotePage extends Component {
     this._note = {};
   }
 
+  shouldComponentUpdate() {
+    return false;
+  }
+
   _handleGoBack = () => {
     if (this._note.content) {
       Modal.showPrompt({
