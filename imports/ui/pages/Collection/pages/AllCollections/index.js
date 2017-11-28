@@ -5,11 +5,9 @@ import Tabs, { Tab } from 'material-ui/Tabs';
 import ViewLayout from '/imports/ui/layouts/ViewLayout';
 import { SecondaryNavHeader } from '/imports/ui/components/NavHeader';
 import withLoadable from '/imports/ui/hocs/withLoadable';
-import DataLoader from '/imports/ui/components/Loader/DataLoader';
 
 const AsyncAllCollectionContent = withLoadable({
   loader: () => import('./components/Content'),
-  loading: DataLoader,
 });
 
 class AllCollectionPage extends PureComponent {
@@ -53,6 +51,7 @@ class AllCollectionPage extends PureComponent {
           </SecondaryNavHeader>
         }
         topbarHeight={112}
+        loadingType="Circle"
         deep
       >
         <AsyncAllCollectionContent

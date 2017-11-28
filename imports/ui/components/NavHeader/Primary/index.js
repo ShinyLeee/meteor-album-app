@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { compose } from 'redux';
 import { withRouter } from 'react-router-dom';
 import { withStyles } from 'material-ui/styles';
@@ -13,7 +13,7 @@ import Drawer from './components/Drawer';
 import RightContent from './components/RightContent';
 import { LeftContent, Content } from '../NavHeader.style';
 
-class PrimaryNavHeader extends Component {
+class PrimaryNavHeader extends PureComponent {
   static propTypes = {
     onTitleClick: PropTypes.func,
     style: PropTypes.object,
@@ -106,8 +106,8 @@ const styles = theme => ({
 
   iconBtn: {
     [theme.breakpoints.down('xs')]: {
-      width: 36,
-      height: 36,
+      width: 42,
+      height: 42,
     },
   },
 });

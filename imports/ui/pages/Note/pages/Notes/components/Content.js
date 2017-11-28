@@ -12,12 +12,8 @@ export default class NotesContent extends PureComponent {
     notesNum: PropTypes.number.isRequired,
   }
 
-  constructor(props) {
-    super(props);
-    this._loadTimeout = null;
-    this.state = {
-      notes: props.notes,
-    };
+  state = {
+    notes: this.props.notes,
   }
 
   componentWillMount() {
@@ -39,27 +35,18 @@ export default class NotesContent extends PureComponent {
     }
   }
 
-  componentWillUnmount() {
-    if (this._loadTimeout) {
-      clearTimeout(this._loadTimeout);
-      this._loadTimeout = null;
-    }
-  }
-
   _handleInfiniteLoad = () => {
     const { limit } = this.props;
     const { notes } = this.state;
     const skip = notes.length;
 
-    this._loadTimeout = setTimeout(() => {
-      const newNotes = Notes.find(
-        { isRead: { $ne: true } },
-        { sort: { sendAt: -1 }, limit, skip },
-      ).fetch();
-      this.setState((prevState) => ({
-        notes: [...prevState.notes, ...newNotes],
-      }));
-    }, 300);
+    const newNotes = Notes.find(
+      { isRead: { $ne: true } },
+      { sort: { sendAt: -1 }, limit, skip },
+    ).fetch();
+    this.setState((prevState) => ({
+      notes: [...prevState.notes, ...newNotes],
+    }));
   }
 
   render() {

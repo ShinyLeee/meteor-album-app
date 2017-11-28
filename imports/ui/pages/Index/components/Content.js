@@ -13,13 +13,9 @@ export default class IndexContent extends PureComponent {
     imagesCount: PropTypes.number.isRequired,
   }
 
-  constructor(props) {
-    super(props);
-    this._loadTimeout = null;
-    this.state = {
-      notification: false,
-      images: props.images,
-    };
+  state = {
+    notification: false,
+    images: this.props.images,
   }
 
   componentWillReceiveProps(nextProps) {
@@ -28,31 +24,21 @@ export default class IndexContent extends PureComponent {
     }
   }
 
-  componentWillUnmount() {
-    if (this._loadTimeout) {
-      clearTimeout(this._loadTimeout);
-      this._loadTimeout = null;
-    }
-  }
-
   _handleInfiniteLoad = () => {
     const { limit } = this.props;
-    const { images } = this.state;
-    const skip = images.length;
+    const skip = this.state.images.length;
 
-    this._loadTimeout = setTimeout(() => {
-      const newImages = Images.find(
-        { private: false, deletedAt: null },
-        { sort: { createdAt: -1 }, limit, skip },
-      ).fetch();
-      this.setState((prevState) => ({
-        images: [...prevState.images, ...newImages],
-      }));
-    }, 300);
+    const newImages = Images.find(
+      { private: false, deletedAt: null },
+      { sort: { createdAt: -1 }, limit, skip },
+    ).fetch();
+    this.setState((prevState) => ({
+      images: [...prevState.images, ...newImages],
+    }));
   }
 
   _handleRefreshImages = () => {
-    scrollTo(0, 1500, () => {
+    const refreshImage = () => {
       const { limit } = this.props;
       const newImages = Images.find(
         { private: false, deletedAt: null },
@@ -62,7 +48,8 @@ export default class IndexContent extends PureComponent {
         notification: false,
         images: newImages,
       });
-    });
+    };
+    scrollTo(0, 1500, refreshImage);
   }
 
   render() {

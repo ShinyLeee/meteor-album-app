@@ -13,12 +13,8 @@ export default class AllNotesContent extends PureComponent {
     notesNum: PropTypes.number.isRequired,
   }
 
-  constructor(props) {
-    super(props);
-    this._loadTimeout = null;
-    this.state = {
-      notes: props.notes,
-    };
+  state = {
+    notes: this.props.notes,
   }
 
   componentWillMount() {
@@ -27,26 +23,17 @@ export default class AllNotesContent extends PureComponent {
     }
   }
 
-  componentWillUnmount() {
-    if (this._loadTimeout) {
-      clearTimeout(this._loadTimeout);
-      this._loadTimeout = null;
-    }
-  }
-
   _handleInfiniteLoad = () => {
     const { User, limit } = this.props;
     const skip = this.state.notes.length;
 
-    this._loadTimeout = setTimeout(() => {
-      const newNotes = Notes.find(
-        { receiver: User.username },
-        { sort: { sendAt: -1 }, limit, skip },
-      ).fetch();
-      this.setState((prevState) => ({
-        notes: [...prevState.notes, ...newNotes],
-      }));
-    }, 300);
+    const newNotes = Notes.find(
+      { receiver: User.username },
+      { sort: { sendAt: -1 }, limit, skip },
+    ).fetch();
+    this.setState((prevState) => ({
+      notes: [...prevState.notes, ...newNotes],
+    }));
   }
 
   render() {

@@ -11,6 +11,10 @@ export default class GetHeightWrapper extends Component {
     this.setHeight();
   }
 
+  shouldComponentUpdate() {
+    return false;
+  }
+
   setHeight = () => {
     const { height } = this._node.getBoundingClientRect();
     this.props.getHeight(height);

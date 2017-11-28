@@ -7,7 +7,7 @@ import { Images } from '/imports/api/images/image';
 import withDataReadyHandler from '/imports/ui/hocs/withDataReadyHandler';
 import UserLikesContent from '../components/Content';
 
-const trackHandler = ({ match }) => {
+const trackHandler = ({ isOwner, match }) => {
   // Define How many pictures render in the first time
   const limit = 5;
 
@@ -15,12 +15,20 @@ const trackHandler = ({ match }) => {
   const imageHandler = Meteor.subscribe('Images.liked', username);
   const isDataReady = imageHandler.ready();
 
+  const imageSelector = { liker: { $in: [username] } };
+  const countSelector = { deletedAt: null };
+
+  if (!isOwner) {
+    imageSelector.private = false;
+    countSelector.private = false;
+  }
+
   const images = Images.find(
-    { private: false, liker: { $in: [username] } },
+    imageSelector,
     { sort: { createdAt: -1 }, limit },
   ).fetch();
 
-  const imagesCount = Images.find({ private: false, deletedAt: null }).count();
+  const imagesCount = Images.find(countSelector).count();
 
   return {
     limit,

@@ -78,7 +78,7 @@ export default class OwnView extends PureComponent {
     const { curUser } = this.props;
     const msg = collection.private ? '公开' : '加密';
     try {
-      await Modal.showLoader('加密相册中');
+      await Modal.showLoader(`${msg}相册中`);
       await lockCollection.callPromise({
         username: curUser.username,
         collId: collection._id,

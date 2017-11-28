@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
-import { matchPath } from 'react-router-dom';
 import { ConnectedRouter } from 'react-router-redux';
 import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
@@ -48,7 +47,7 @@ class NavigatorLayout extends PureComponent {
         {/* Portals */}
         <Modal />
         <SnackBar />
-        {/* { appIsReady && isLoggedIn && <AsyncUploader /> } */}
+        { appIsReady && isLoggedIn && <AsyncUploader /> }
       </div>
     );
   }
@@ -70,23 +69,8 @@ export default compose(
     if (!isLoggedIn && User) {
       props.userLogin({ inExpiration: true });
     }
-
     // if User is logging, User is undefined, else User is a Object or null.
-    let appIsReady = typeof User === 'object';
-
-    const { pathname } = window.location;
-
-    const userMatch = matchPath(pathname, '/user/:username');
-
-    const collMatch = matchPath(pathname, '/user/:username/collection/:cname');
-
-    if (userMatch !== null) {
-      appIsReady = appIsReady && Meteor.subscribe('Users.all').ready();
-    }
-    if (collMatch !== null) {
-      const username = userMatch.params && userMatch.params.username;
-      appIsReady = appIsReady && Meteor.subscribe('Collections.inUser', username).ready();
-    }
+    const appIsReady = typeof User === 'object';
 
     return {
       appIsReady,

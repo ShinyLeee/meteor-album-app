@@ -36,7 +36,7 @@ class InfiniteNoteList extends PureComponent {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (this.props.notesNum !== nextProps.notesNum) {
+    if (this.props.notes !== nextProps.notes) {
       const { notes, heights } = this.generateNotes(nextProps.notes);
       this.setState({ notes, heights });
     }
@@ -48,7 +48,6 @@ class InfiniteNoteList extends PureComponent {
 
   generateNotes(notes) {
     const { showActions } = this.props;
-
     const heights = [];
     const notesAlias = notes.map((note, i) => {
       heights[i] = get(this, `state.heights[${i}]`) || 200;
@@ -57,8 +56,11 @@ class InfiniteNoteList extends PureComponent {
           key={note._id}
           getHeight={(height) => {
             if (heights[i] !== height) {
-              heights[i] = height;
-              this.setState({ heights });
+              this.setState((prevState) => {
+                const newHeights = [...prevState.heights];
+                newHeights[i] = height;
+                return { heights: newHeights };
+              });
             }
           }}
         >

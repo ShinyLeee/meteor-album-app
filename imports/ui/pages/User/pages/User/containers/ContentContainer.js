@@ -11,21 +11,22 @@ import withDataReadyHandler from '/imports/ui/hocs/withDataReadyHandler';
 import { userLogout, snackBarOpen } from '/imports/ui/redux/actions';
 import UserContent from '../components/Content';
 
-const mapStateToProps = ({ sessions }) => ({
-  User: sessions.User,
-});
-
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   userLogout,
   snackBarOpen,
 }, dispatch);
 
-const trackerHandler = ({ match }) => {
+const trackerHandler = ({ isOwner, match }) => {
   const { username } = match.params;
 
   const userHandler = Meteor.subscribe('Users.all');
-  const imageHandler = Meteor.subscribe('Images.all');
-  const collHandler = Meteor.subscribe('Collections.inUser', username);
+  const likedHandler = Meteor.subscribe('Images.liked', username);
+  const collHandler = isOwner
+    ? Meteor.subscribe('Collections.own')
+    : Meteor.subscribe('Collections.inUser', username);
+  const imageHandler = isOwner
+    ? Meteor.subscribe('Images.own')
+    : Meteor.subscribe('Images.inUser', username);
 
   const counts = {
     likes: 0,
@@ -36,16 +37,22 @@ const trackerHandler = ({ match }) => {
   let topImages = [];
 
   const userIsReady = userHandler.ready();
-  const curUser = Meteor.users.findOne({ username }) || {};
+  const curUser = Meteor.users.findOne({ username });
 
   if (userIsReady) {
-    isDataReady = imageHandler.ready() && collHandler.ready();
-    counts.likes = Images.find({ liker: { $in: [curUser.username] } }).count();
-    counts.colls = Collections.find().count();
+    const likesSelector = { liker: { $in: [curUser.username] } };
+    const collSelector = {};
+    const imgsSelctor = { user: curUser.username };
+    if (!isOwner) {
+      likesSelector.private = false;
+      collSelector.private = false;
+      imgsSelctor.private = false;
+    }
+    isDataReady = likedHandler.ready() && collHandler.ready() && imageHandler.ready();
+    counts.likes = Images.find(likesSelector).count();
+    counts.colls = Collections.find(collSelector).count();
     counts.followers = curUser.profile.followers.length;
-    topImages = Images.find(
-      { user: curUser.username },
-      { limit: 10 })
+    topImages = Images.find(imgsSelctor, { limit: 10 })
       .fetch()
       .sort((p, n) => n.liker.length - p.liker.length);
   }
@@ -71,7 +78,7 @@ const styles = {
 export default compose(
   setDisplayName('UserContentContainer'),
   withRouter,
-  connect(mapStateToProps, mapDispatchToProps),
+  connect(null, mapDispatchToProps),
   withTracker(trackerHandler),
   withStyles(styles),
   withDataReadyHandler(),

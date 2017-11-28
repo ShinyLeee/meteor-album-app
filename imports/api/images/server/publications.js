@@ -26,21 +26,29 @@ Meteor.publish('Images.own', function ownImages() {
   });
 });
 
+Meteor.publish('Images.inUser', function targetUserImages(username) {
+  new SimpleSchema({
+    user: { type: String, label: '用户名', max: 10 },
+  }).validator({ clean: true, filter: false });
+  return Images.find({
+    user: username,
+    private: false,
+  });
+});
+
 Meteor.publish('Images.liked', function likedImages(username) {
   new SimpleSchema({
     username: { type: String, label: '用户名', max: 20, optional: true },
   }).validator({ clean: true, filter: false });
-  if (username) {
-    return Images.find({
-      private: false,
-      liker: { $in: [username] },
-    });
-  }
   const user = Meteor.users.findOne(this.userId);
-  return Images.find({
-    private: false,
-    liker: { $in: [user.username] },
-  });
+  const isOwner = user.username === username;
+  const imageSelector = {
+    liker: { $in: [username] },
+  };
+  if (!isOwner) {
+    imageSelector.private = false;
+  }
+  return Images.find(imageSelector);
 });
 
 Meteor.publish('Images.recycle', function inRecycleImages() {

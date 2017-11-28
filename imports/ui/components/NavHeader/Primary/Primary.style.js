@@ -1,10 +1,9 @@
 import styled from 'styled-components';
 
 export const DrawerProfile = styled.div`
+  position: relative;
   display: flex;
   flex-direction: column;
-  position: relative;
-  height: 150px;
   background-size: cover;
 `;
 

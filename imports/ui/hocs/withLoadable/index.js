@@ -5,12 +5,12 @@ import LoadedComponent from './LoadedComponent';
 
 export default function withLoadable(opts) {
   return Loadable({
-    // delay: 0, // 不延迟因为我们实际使用的loading组件不在此
+    delay: 0, // 不延迟因为我们实际使用的loading组件不在此
     timeout: 10000,
-    ...opts,
     loading: (props) => (
       <LoadingComponent {...props} />
     ),
+    ...opts,
     render: (loaded, props) => {
       const Element = loaded.default;
       const displayName = Element.displayName || Element.name;

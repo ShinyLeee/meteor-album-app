@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { compose } from 'redux';
 import { withStyles } from 'material-ui/styles';
 import AppBar from 'material-ui/AppBar';
@@ -9,7 +9,7 @@ import Typography from 'material-ui/Typography';
 import scrollTo from '/imports/vendor/scrollTo';
 import { LeftContent, Content } from '../NavHeader.style';
 
-class CustomNavHeader extends Component {
+class CustomNavHeader extends PureComponent {
   static propTypes = {
     title: PropTypes.string,
     Left: PropTypes.oneOfType([

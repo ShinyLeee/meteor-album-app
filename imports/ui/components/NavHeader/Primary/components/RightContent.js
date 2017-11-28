@@ -93,8 +93,8 @@ class RightContentComp extends PureComponent {
 const styles = theme => ({
   iconBtn: {
     [theme.breakpoints.down('xs')]: {
-      width: 36,
-      height: 36,
+      width: 42,
+      height: 42,
     },
   },
 
@@ -105,9 +105,9 @@ const styles = theme => ({
   avatar: {
     marginLeft: 12,
     [theme.breakpoints.down('xs')]: {
-      width: 36,
-      height: 36,
-      marginLeft: 8,
+      width: 42,
+      height: 42,
+      marginLeft: 10,
     },
   },
 });

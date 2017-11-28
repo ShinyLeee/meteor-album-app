@@ -37,12 +37,12 @@ deanius:promise
 didericis:callpromise-mixin
 
 # production
-nitrolabs:cdn
+nitrolabs:cdn  # TODO remove jQuery / Blaze dependencies
 percolate:migrations
 
 # testing
 dburles:factory
-practicalmeteor:mocha
+practicalmeteor:mocha # TODO remove jQuery / Blaze dependencies
 practicalmeteor:chai
 practicalmeteor:sinon
 johanbrook:publication-collector

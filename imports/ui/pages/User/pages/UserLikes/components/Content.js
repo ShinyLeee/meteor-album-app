@@ -14,12 +14,8 @@ export default class UserLikesContent extends PureComponent {
     imagesCount: PropTypes.number.isRequired,
   }
 
-  constructor(props) {
-    super(props);
-    this._loadTimeout = null;
-    this.state = {
-      images: props.images,
-    };
+  state = {
+    images: this.props.images,
   }
 
   componentWillMount() {
@@ -28,34 +24,23 @@ export default class UserLikesContent extends PureComponent {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (this.props.imagesCount !== nextProps.imagesCount) {
-      this.setState({
-        images: nextProps.images,
-      });
-    }
-  }
-
-  componentWillUnmount() {
-    if (this._loadTimeout) {
-      clearTimeout(this._loadTimeout);
-      this._loadTimeout = null;
-    }
-  }
-
   _handleInfiniteLoad = () => {
-    const { limit } = this.props;
+    const { limit, isOwner } = this.props;
     const skip = this.state.images.length;
 
-    this._loadTimeout = setTimeout(() => {
-      const newImages = Images.find(
-        { private: false, deletedAt: null },
-        { sort: { createdAt: -1 }, limit, skip },
-      ).fetch();
-      this.setState((prevState) => ({
-        images: [...prevState.images, ...newImages],
-      }));
-    }, 300);
+    const imageSelector = { deletedAt: null };
+
+    if (!isOwner) {
+      imageSelector.private = false;
+    }
+
+    const newImages = Images.find(
+      imageSelector,
+      { sort: { createdAt: -1 }, limit, skip },
+    ).fetch();
+    this.setState((prevState) => ({
+      images: [...prevState.images, ...newImages],
+    }));
   }
 
   render() {

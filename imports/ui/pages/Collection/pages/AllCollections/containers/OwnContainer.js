@@ -29,9 +29,13 @@ const trackHandler = ({ User, match }) => {
 
   const dataIsReady = userHandler.ready() && collHandler.ready();
 
-  const curUser = Meteor.users.findOne({ username: curUserName });
+  const curUser = Meteor.users.findOne({ username: curUserName }) || {};
 
-  const collSelector = isOwner ? { user: curUserName } : { user: curUserName, private: false };
+  const collSelector = { user: curUserName };
+
+  if (!isOwner) {
+    collSelector.private = false;
+  }
 
   const colls = Collections.find(
     collSelector,
