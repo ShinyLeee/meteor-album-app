@@ -12,6 +12,7 @@ import Modal from '/imports/ui/components/Modal';
 import { ResponsiveCover } from '/imports/ui/components/ProgressiveImage';
 import ImageSlider from './ImageSlider';
 import {
+  Wrapper,
   MainSection,
   Profile,
   Avatar,
@@ -104,7 +105,7 @@ export default class UserContent extends PureComponent {
       classes,
     } = this.props;
     return (
-      <div>
+      <Wrapper>
         <ResponsiveCover
           src={get(curUser, 'profile.cover')}
           basis={0.3}
@@ -201,7 +202,7 @@ export default class UserContent extends PureComponent {
             )
           }
         </RankSection>
-      </div>
+      </Wrapper>
     );
   }
 }

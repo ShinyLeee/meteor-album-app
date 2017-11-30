@@ -12,7 +12,6 @@ export default class InternalError extends Component {
     return (
       <ViewLayout
         Topbar={<PrimaryNavHeader />}
-        fullScreen
       >
         <ErrorHolder
           title="Error: 500 Unexpected Error"

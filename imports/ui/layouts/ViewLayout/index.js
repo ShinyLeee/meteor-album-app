@@ -6,23 +6,17 @@ import GlobalLoader from './Loader';
 
 class ViewLayout extends PureComponent {
   static propTypes = {
+    deep: PropTypes.bool,
     loadingStyle: PropTypes.object,
     loadingType: PropTypes.oneOf(['Circle', 'Linear']),
-    Topbar: PropTypes.element.isRequired,
-    deep: PropTypes.bool,
-    alignCenter: PropTypes.bool, // 是否垂直居中
-    fullScreen: PropTypes.bool,
     topbarHeight: PropTypes.number,
+    Topbar: PropTypes.element.isRequired,
     children: PropTypes.any,
     isFetchingAuth: PropTypes.bool.isRequired,
-    isFetchingData: PropTypes.bool.isRequired,
-    device: PropTypes.object.isRequired,
   }
 
   static defaultProps = {
     deep: false,
-    alignCenter: false,
-    fullScreen: false,
     topbarHeight: 64,
   }
 
@@ -49,51 +43,35 @@ class ViewLayout extends PureComponent {
 
   render() {
     const {
+      deep,
       loadingStyle,
       loadingType,
-      Topbar,
-      deep,
-      alignCenter,
-      fullScreen,
       topbarHeight,
+      Topbar,
       children,
-      device,
       isFetchingAuth,
-      isFetchingData,
     } = this.props;
-    const isContentReady = !isFetchingAuth && !isFetchingData;
     const loaderStyle = topbarHeight === 64
       ? loadingStyle
       : Object.assign({}, loadingStyle, { top: topbarHeight });
     return [
-      React.cloneElement(Topbar, { key: 'topbar' }),
+      React.cloneElement(Topbar, { key: 'topbar', height: topbarHeight }),
       <main
         key="content"
         className={classNames('content', { deep })}
-        style={{
-          height: fullScreen ? device.height : 'auto',
-          paddingTop: topbarHeight,
-          justifyContent: alignCenter ? 'center' : 'inhreit',
-        }}
       >
         <GlobalLoader
           loadingStyle={loaderStyle}
           loadingType={loadingType}
         />
-        {
-          isFetchingAuth
-          ? isContentReady && children
-          : children
-        }
+        { !isFetchingAuth && children }
       </main>,
     ];
   }
 }
 
-const mapStateToProps = ({ sessions, device }) => ({
+const mapStateToProps = ({ sessions }) => ({
   isFetchingAuth: sessions.auth.isFetching,
-  isFetchingData: sessions.isFetchingData,
-  device,
 });
 
 export default connect(mapStateToProps)(ViewLayout);

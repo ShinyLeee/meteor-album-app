@@ -12,7 +12,6 @@ export default class Construction extends Component {
     return (
       <ViewLayout
         Topbar={<PrimaryNavHeader />}
-        fullScreen
       >
         <ErrorHolder
           title="This Page is Under Construction"

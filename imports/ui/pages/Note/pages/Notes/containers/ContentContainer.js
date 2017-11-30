@@ -1,9 +1,12 @@
-import { Meteor } from 'meteor/meteor';
-import { withTracker } from 'meteor/react-meteor-data';
+import map from 'lodash/map';
+import React from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { setDisplayName } from 'recompose';
+import { Meteor } from 'meteor/meteor';
+import { withTracker } from 'meteor/react-meteor-data';
 import { Notes } from '/imports/api/notes/note';
+import CardLoader from '/imports/ui/components/Loader/CardLoader';
 import withDataReadyHandler from '/imports/ui/hocs/withDataReadyHandler';
 import NotesContent from '../components/Content';
 
@@ -34,9 +37,16 @@ const trackHandler = ({ User }) => {
   };
 };
 
+const dataHandlerOps = {
+  placeholder: map(
+    [1, 2, 3],
+    (key) => <CardLoader key={key} />,
+  ),
+};
+
 export default compose(
   setDisplayName('NotesContentContainer'),
   connect(mapStateToProps),
   withTracker(trackHandler),
-  withDataReadyHandler({ loose: true }),
+  withDataReadyHandler(dataHandlerOps),
 )(NotesContent);

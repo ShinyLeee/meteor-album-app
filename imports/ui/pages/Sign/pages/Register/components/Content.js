@@ -6,6 +6,7 @@ import Input from 'material-ui/Input';
 import { checkCode, useCode } from '/imports/api/codes/methods';
 import Modal from '/imports/ui/components/Modal';
 import {
+  Wrapper,
   Logo,
   Section,
   Separator,
@@ -71,7 +72,7 @@ export default class RegisterContent extends PureComponent {
   render() {
     const { classes } = this.props;
     return (
-      <div>
+      <Wrapper>
         <Logo>
           <h2>Gallery Plus</h2>
         </Logo>
@@ -135,7 +136,7 @@ export default class RegisterContent extends PureComponent {
           >已有账号
           </Button>
         </Section>
-      </div>
+      </Wrapper>
     );
   }
 }

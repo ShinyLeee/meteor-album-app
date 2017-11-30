@@ -12,7 +12,6 @@ export default class Forbidden extends Component {
     return (
       <ViewLayout
         Topbar={<PrimaryNavHeader />}
-        fullScreen
       >
         <ErrorHolder
           title="Error: 403 Access Denied"

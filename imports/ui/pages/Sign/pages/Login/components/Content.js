@@ -8,6 +8,7 @@ import { validateEmail } from '/imports/utils';
 import Modal from '/imports/ui/components/Modal';
 import ModalActions from '/imports/ui/components/Modal/Common/ModalActions';
 import {
+  Wrapper,
   Logo,
   Section,
   Separator,
@@ -120,7 +121,7 @@ export default class LoginContent extends Component {
   render() {
     const { classes } = this.props;
     return (
-      <div>
+      <Wrapper>
         <Logo>
           <h2>Gallery Plus</h2>
         </Logo>
@@ -161,7 +162,7 @@ export default class LoginContent extends Component {
           </Button>
         </Section>
         <Footer onClick={this.renderPrompt}>忘记密码?</Footer>
-      </div>
+      </Wrapper>
     );
   }
 }

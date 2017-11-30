@@ -17,8 +17,6 @@ export default class LoginPage extends Component {
     return (
       <ViewLayout
         Topbar={<PrimaryNavHeader />}
-        alignCenter
-        fullScreen
       >
         <AsyncLoginContent />
       </ViewLayout>

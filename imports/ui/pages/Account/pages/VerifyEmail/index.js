@@ -14,6 +14,11 @@ export default class VerifyEmailPage extends Component {
     setTimeout(this.autoRedirect, 2000);
   }
 
+  shouldComponentUpdate() {
+    return false;
+  }
+
+
   componentWillUnmount() {
     clearTimeout(this.autoRedirect);
   }
@@ -26,8 +31,6 @@ export default class VerifyEmailPage extends Component {
     return (
       <ViewLayout
         Topbar={<PrimaryNavHeader />}
-        alignCenter
-        fullScreen
       >
         <Content>
           <h2>邮箱验证成功</h2>

@@ -1,5 +1,5 @@
 {
-  "version": "1.4.0-rc.14",
+  "version": "1.4.0-rc.15",
   "name": "galleryplus",
   "private": true,
   "repository": "git@github.com:ShinyLeee/meteor-album-app.git",
@@ -34,7 +34,7 @@
     "query-string": "^5.0.0",
     "quill": "^1.2.0",
     "quill-delta": "^3.4.3",
-    "react": "^16.0.0",
+    "react": "^16.2.0",
     "react-autocomplete": "^1.7.2",
     "react-dom": "^16.0.0",
     "react-infinite": "^0.12.1",

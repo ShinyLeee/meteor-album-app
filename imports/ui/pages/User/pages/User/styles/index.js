@@ -1,5 +1,11 @@
 import styled from 'styled-components';
 
+export const Wrapper = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+`;
+
 export const MainSection = styled.section`
   text-align: center;
 `;
@@ -67,5 +73,4 @@ export const Counter = styled.div`
 
 export const RankSection = styled.section`
   padding: 0 20px;
-  overflow-x: hidden;
 `;

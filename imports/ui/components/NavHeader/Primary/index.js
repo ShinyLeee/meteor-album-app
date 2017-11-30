@@ -9,6 +9,7 @@ import Typography from 'material-ui/Typography';
 import MenuIcon from 'material-ui-icons/Menu';
 import IconButton from 'material-ui/IconButton';
 import scrollTo from '/imports/vendor/scrollTo';
+import NavHeader from '../NavHeader';
 import Drawer from './components/Drawer';
 import RightContent from './components/RightContent';
 import { LeftContent, Content } from '../NavHeader.style';
@@ -16,6 +17,7 @@ import { LeftContent, Content } from '../NavHeader.style';
 class PrimaryNavHeader extends PureComponent {
   static propTypes = {
     onTitleClick: PropTypes.func,
+    height: PropTypes.number,
     style: PropTypes.object,
     classes: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
@@ -46,57 +48,62 @@ class PrimaryNavHeader extends PureComponent {
   }
 
   render() {
-    const { style, classes } = this.props;
+    const { height, style, classes } = this.props;
     return (
-      <AppBar
-        className={classes.appbar}
-        style={style}
-        position="fixed"
-      >
-        <Toolbar className={classes.toolbar}>
-          {/* LeftContent */}
-          <LeftContent>
-            <IconButton
-              className={classes.iconBtn}
-              color="contrast"
-              aria-label="Menu"
-              onClick={this._handleToggleDrawer}
-            ><MenuIcon />
-            </IconButton>
-            <Drawer
-              visible={this.state.drawer}
-              onRequestClose={this._handleRequestClose}
-            />
-          </LeftContent>
+      <NavHeader height={height}>
+        <AppBar
+          className={classes.appbar}
+          style={style}
+          position="fixed"
+        >
+          <Toolbar className={classes.toolbar}>
+            {/* LeftContent */}
+            <LeftContent>
+              <IconButton
+                className={classes.iconBtn}
+                color="contrast"
+                aria-label="Menu"
+                onClick={this._handleToggleDrawer}
+              ><MenuIcon />
+              </IconButton>
+              <Drawer
+                visible={this.state.drawer}
+                onRequestClose={this._handleRequestClose}
+              />
+            </LeftContent>
 
-          {/* Content */}
-          <Content>
-            <Typography
-              className={classes.title}
-              type="title"
-              color="inherit"
-              onClick={this._handleTitleClick}
-            >Gallery
-            </Typography>
-            <sup>&nbsp;+</sup>
-          </Content>
+            {/* Content */}
+            <Content>
+              <Typography
+                className={classes.title}
+                type="title"
+                color="inherit"
+                onClick={this._handleTitleClick}
+              >Gallery
+              </Typography>
+              <sup>&nbsp;+</sup>
+            </Content>
 
-          {/* RightContent */}
-          <RightContent />
+            {/* RightContent */}
+            <RightContent />
 
-        </Toolbar>
-      </AppBar>
+          </Toolbar>
+        </AppBar>
+      </NavHeader>
     );
   }
 }
 
 const styles = theme => ({
   appbar: {
+    minHeight: 64,
     backgroundColor: '#764ba2',
     backgroundImage: theme.palette.gradients.plumPlate,
   },
 
   toolbar: {
+    position: 'fixed',
+    width: '100%',
     minHeight: 64,
   },
 

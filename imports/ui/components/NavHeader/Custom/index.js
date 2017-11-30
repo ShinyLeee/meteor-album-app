@@ -7,6 +7,7 @@ import AppBar from 'material-ui/AppBar';
 import Toolbar from 'material-ui/Toolbar';
 import Typography from 'material-ui/Typography';
 import scrollTo from '/imports/vendor/scrollTo';
+import NavHeader from '../NavHeader';
 import { LeftContent, Content } from '../NavHeader.style';
 
 class CustomNavHeader extends PureComponent {
@@ -22,6 +23,7 @@ class CustomNavHeader extends PureComponent {
       PropTypes.array,
       PropTypes.element,
     ]),
+    height: PropTypes.number,
     style: PropTypes.object,
     classnames: PropTypes.object,
     classes: PropTypes.object.isRequired,
@@ -36,35 +38,45 @@ class CustomNavHeader extends PureComponent {
   }
 
   render() {
-    const { title, Left, Right, style, classnames, classes } = this.props;
+    const {
+      title,
+      Left,
+      Right,
+      height,
+      style,
+      classnames,
+      classes,
+    } = this.props;
     return (
-      <AppBar
-        className={classNames(classes.appbar, classnames.root)}
-        style={style}
-        position="fixed"
-      >
-        <Toolbar className={classNames(classes.toolbar, classnames.toolbar)}>
-          {/* LeftContent */}
-          <LeftContent>
-            {Left}
-          </LeftContent>
+      <NavHeader height={height}>
+        <AppBar
+          className={classNames(classes.appbar, classnames.root)}
+          style={style}
+          position="fixed"
+        >
+          <Toolbar className={classNames(classes.toolbar, classnames.toolbar)}>
+            {/* LeftContent */}
+            <LeftContent>
+              {Left}
+            </LeftContent>
 
-          {/* Content */}
-          <Content className={classNames(classes.content, classnames.content)}>
-            <Typography
-              type="title"
-              color="inherit"
-              onClick={this._handleTitleClick}
-            >
-              {title}
-            </Typography>
-          </Content>
+            {/* Content */}
+            <Content className={classNames(classes.content, classnames.content)}>
+              <Typography
+                type="title"
+                color="inherit"
+                onClick={this._handleTitleClick}
+              >
+                {title}
+              </Typography>
+            </Content>
 
-          {/* RightContent */}
-          {Right}
+            {/* RightContent */}
+            {Right}
 
-        </Toolbar>
-      </AppBar>
+          </Toolbar>
+        </AppBar>
+      </NavHeader>
     );
   }
 }

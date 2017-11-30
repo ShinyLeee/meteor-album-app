@@ -16,8 +16,6 @@ export default class RegisterPage extends Component {
     return (
       <ViewLayout
         Topbar={<PrimaryNavHeader />}
-        alignCenter
-        fullScreen
       >
         <AsyncRegisterContent />
       </ViewLayout>

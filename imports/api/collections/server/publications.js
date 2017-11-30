@@ -51,5 +51,6 @@ Meteor.publish('Collections.limit', function limit(num) {
   }).validator({ clean: true, filter: false });
   return Collections.find(
     { private: false },
-    { limit: num });
+    { limit: num },
+  );
 });

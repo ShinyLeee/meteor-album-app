@@ -98,7 +98,6 @@ export default class WriteDiaryPage extends PureComponent {
             }
           />
         }
-        fullScreen
       >
         <AsyncWriteContent
           onTitleChange={this._handleTitleChange}

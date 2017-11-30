@@ -27,7 +27,7 @@ import {
   DrawerControlCenter,
   DrawerAvatar,
   DrawerEmail,
-} from '../Primary.style';
+} from './Drawer.style';
 
 const noop = () => {};
 

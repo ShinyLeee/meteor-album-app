@@ -1,11 +1,17 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import ProgressiveImage from '/imports/ui/components/ProgressiveImage';
 import { Cover } from './ProgressiveImage.style';
 
-class ResponsiveCover extends Component {
+const loadedCover = [];
+
+function isLoaded(src) {
+  return loadedCover.includes(src);
+}
+
+class ResponsiveCover extends PureComponent {
   static propTypes = {
     device: PropTypes.object.isRequired,
     src: PropTypes.string.isRequired,
@@ -36,6 +42,12 @@ class ResponsiveCover extends Component {
     }
   }
 
+  _handleSaveCover = (src) => {
+    if (!isLoaded(src)) {
+      loadedCover.push(src);
+    }
+  }
+
   generateHeight() {
     const { device, basis, maxHeight } = this.props;
     const { height: deviceHeight } = device;
@@ -51,6 +63,8 @@ class ResponsiveCover extends Component {
       <ProgressiveImage
         aspectRatio={ratio}
         src={src}
+        onLoad={this._handleSaveCover}
+        disabled={isLoaded(src)}
       >
         <Cover>
           <div />

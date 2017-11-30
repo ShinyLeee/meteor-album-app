@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { PureComponent } from 'react';
 import { compose } from 'redux';
 import { withRouter } from 'react-router-dom';
 import { withStyles } from 'material-ui/styles';
@@ -10,89 +10,94 @@ import IconButton from 'material-ui/IconButton';
 import ArrowBackIcon from 'material-ui-icons/ArrowBack';
 import blue from 'material-ui/colors/blue';
 import scrollTo from '/imports/vendor/scrollTo';
+import NavHeader from '../NavHeader';
 import { LeftContent, Content } from '../NavHeader.style';
 
 const blue500 = blue[500];
 
-const SecondaryNavHeader = (props) => {
-  const {
-    style,
-    titleStyle,
-    iconStyle,
-    title,
-    Left,
-    Right,
-    classes,
-    history,
-    children,
-  } = props;
+class SecondaryNavHeader extends PureComponent {
+  static propTypes = {
+    height: PropTypes.number,
+    style: PropTypes.object,
+    titleStyle: PropTypes.object,
+    iconStyle: PropTypes.object,
+    title: PropTypes.string,
+    Left: PropTypes.oneOfType([
+      PropTypes.array,
+      PropTypes.bool,
+      PropTypes.element,
+    ]),
+    Right: PropTypes.oneOfType([
+      PropTypes.array,
+      PropTypes.bool,
+      PropTypes.element,
+    ]),
+    classes: PropTypes.object.isRequired,
+    history: PropTypes.object.isRequired,
+    children: PropTypes.element,
+  }
+  render() {
+    const {
+      height,
+      style,
+      titleStyle,
+      iconStyle,
+      title,
+      Left,
+      Right,
+      classes,
+      history,
+      children,
+    } = this.props;
+    return (
+      <NavHeader height={height}>
+        <AppBar
+          className={classes.appbar}
+          style={style}
+          position="fixed"
+        >
+          <Toolbar className={classes.toolbar}>
+            {/* LeftContent */}
+            {
+            !Left
+            ? (
+              <LeftContent>
+                <IconButton
+                  className={classes.iconBtn}
+                  style={iconStyle}
+                  color="contrast"
+                  aria-label="Back"
+                  onClick={history.goBack}
+                >
+                  <ArrowBackIcon />
+                </IconButton>
+              </LeftContent>
+            )
+            : Left
+          }
 
-  return (
-    <AppBar
-      className={classes.appbar}
-      style={style}
-      position="fixed"
-    >
-      <Toolbar className={classes.toolbar}>
-        {/* LeftContent */}
-        {
-          !Left
-          ? (
-            <LeftContent>
-              <IconButton
-                className={classes.iconBtn}
-                style={iconStyle}
-                color="contrast"
-                aria-label="Back"
-                onClick={history.goBack}
+            {/* Content */}
+            <Content style={titleStyle}>
+              <Typography
+                className={classes.title}
+                type="title"
+                color="inherit"
+                onClick={() => scrollTo(0, 1500)}
               >
-                <ArrowBackIcon />
-              </IconButton>
-            </LeftContent>
-          )
-          : Left
-        }
+                {title}
+              </Typography>
+            </Content>
 
-        {/* Content */}
-        <Content style={titleStyle}>
-          <Typography
-            className={classes.title}
-            type="title"
-            color="inherit"
-            onClick={() => scrollTo(0, 1500)}
-          >
-            {title}
-          </Typography>
-        </Content>
+            {/* RightContent */}
+            {Right}
+          </Toolbar>
 
-        {/* RightContent */}
-        {Right}
-      </Toolbar>
-
-      {children}
-    </AppBar>
-  );
-};
-
-SecondaryNavHeader.propTypes = {
-  style: PropTypes.object,
-  titleStyle: PropTypes.object,
-  iconStyle: PropTypes.object,
-  title: PropTypes.string,
-  Left: PropTypes.oneOfType([
-    PropTypes.array,
-    PropTypes.bool,
-    PropTypes.element,
-  ]),
-  Right: PropTypes.oneOfType([
-    PropTypes.array,
-    PropTypes.bool,
-    PropTypes.element,
-  ]),
-  classes: PropTypes.object.isRequired,
-  history: PropTypes.object.isRequired,
-  children: PropTypes.element,
-};
+          {children}
+        </AppBar>
+      </NavHeader>
+    );
+  }
+}
 
 const styles = theme => ({
   appbar: {

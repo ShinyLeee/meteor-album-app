@@ -12,7 +12,6 @@ export default class NotFound extends Component {
     return (
       <ViewLayout
         Topbar={<PrimaryNavHeader />}
-        fullScreen
       >
         <ErrorHolder
           title="Error: 404 Page Not Found"

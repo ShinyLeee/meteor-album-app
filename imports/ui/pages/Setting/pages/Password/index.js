@@ -16,7 +16,6 @@ export default class PasswordPage extends Component {
     return (
       <ViewLayout
         Topbar={<SecondaryNavHeader title="修改密码" />}
-        fullScreen
       >
         <AsyncPasswordContent />
       </ViewLayout>

@@ -5,7 +5,9 @@ import { connect } from 'react-redux';
 import { loadingData, loadedData } from '/imports/ui/redux/actions';
 
 const defaultOps = {
-  delay: true, // 是否等到数据加载完毕后再显示
+  delay: 200,
+  placeholder: null,
+  wait: true, // 是否等到数据加载完毕后再显示
   loose: true, // 是否移除data相关props
 };
 
@@ -20,9 +22,20 @@ const withDataReadyHandler = (ops) => (WrappedComponent) => {
       loadedData: PropTypes.func.isRequired,
     }
 
+    constructor(props) {
+      super(props);
+      this._timeout = null;
+      this.state = {
+        pastDelay: false,
+      };
+    }
+
     componentWillMount() {
       if (!this.props.isDataReady) {
         this.props.loadingData();
+      }
+      if (options.placeholder) {
+        this._timeout = setTimeout(() => this.setState({ pastDelay: true }), options.delay);
       }
     }
 
@@ -40,10 +53,18 @@ const withDataReadyHandler = (ops) => (WrappedComponent) => {
       if (!this.props.isDataReady) {
         this.props.loadedData();
       }
+      if (this._timeout) {
+        clearTimeout(this._timeout);
+        this._timeout = null;
+      }
     }
 
     render() {
-      const { delay, loose } = options;
+      const {
+        placeholder,
+        wait,
+        loose,
+      } = options;
       const {
         isDataReady,
         loadingData, // eslint-disable-line no-shadow
@@ -51,8 +72,10 @@ const withDataReadyHandler = (ops) => (WrappedComponent) => {
         ...rest
       } = this.props;
       const remainedProps = loose ? rest : this.props;
-      return delay
-        ? isDataReady && <WrappedComponent {...remainedProps} />
+      return wait
+        ? isDataReady
+          ? <WrappedComponent {...remainedProps} />
+          : this.state.pastDelay && placeholder
         : <WrappedComponent {...remainedProps} />;
     }
   }

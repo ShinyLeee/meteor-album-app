@@ -6,7 +6,6 @@ export const Wrapper = styled.div`
   flex-direction: column;    
   align-items: center;
   justify-content: center;    
-  padding-bottom: 64px;
 `;
 
 export const Title = styled.h2`

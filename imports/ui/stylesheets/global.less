@@ -1,11 +1,29 @@
-.content {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
+body {
   width: 100%;
   height: 100%;
-  padding-top: 64px;
-  overflow: hidden;
+  overflow-y: scroll;
+}
+
+#app {
+  width: 100%;
+  height: 100%;
+}
+
+.router {
+  display: flex;
+  -webkit-box-direction: normal;
+  -webkit-box-orient: vertical;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+.content {
+  display: flex;
+  -webkit-box-direction: normal;
+  -webkit-box-orient: vertical;
+  flex-direction: column;
+  flex: 1 0 auto;
 }
 
 .deep {

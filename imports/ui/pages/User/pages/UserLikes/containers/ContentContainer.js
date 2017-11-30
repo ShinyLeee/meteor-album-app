@@ -1,9 +1,12 @@
-import { Meteor } from 'meteor/meteor';
-import { withTracker } from 'meteor/react-meteor-data';
+import map from 'lodash/map';
+import React from 'react';
 import { compose } from 'redux';
 import { withRouter } from 'react-router-dom';
 import { setDisplayName } from 'recompose';
+import { Meteor } from 'meteor/meteor';
+import { withTracker } from 'meteor/react-meteor-data';
 import { Images } from '/imports/api/images/image';
+import CardLoader from '/imports/ui/components/Loader/CardLoader';
 import withDataReadyHandler from '/imports/ui/hocs/withDataReadyHandler';
 import UserLikesContent from '../components/Content';
 
@@ -38,9 +41,16 @@ const trackHandler = ({ isOwner, match }) => {
   };
 };
 
+const dataReadyOps = {
+  placeholder: map(
+    [1, 2, 3],
+    (key) => <CardLoader key={key} />,
+  ),
+};
+
 export default compose(
   setDisplayName('UserLikesContentContainer'),
   withRouter,
   withTracker(trackHandler),
-  withDataReadyHandler(),
+  withDataReadyHandler(dataReadyOps),
 )(UserLikesContent);

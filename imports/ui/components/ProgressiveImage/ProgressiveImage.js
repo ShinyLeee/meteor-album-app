@@ -12,12 +12,16 @@ export default class ProgressiveImage extends PureComponent {
     max: PropTypes.number,
     color: PropTypes.string,
     style: PropTypes.object,
+    disabled: PropTypes.bool,
+    onLoad: PropTypes.func,
+    onError: PropTypes.func,
     children: PropTypes.element.isRequired,
   }
 
   static defaultProps = {
     max: 60,
     color: '#eee',
+    disabled: false,
   }
 
   state = {
@@ -50,10 +54,29 @@ export default class ProgressiveImage extends PureComponent {
 
   loadHandler = () => {
     this.setState({ loading: false });
+    if (this.props.onLoad) {
+      this.props.onLoad(this.props.src);
+    }
   }
 
   errorHandler = () => {
     this.setState({ error: true });
+    if (this.props.onError) {
+      this.props.onError();
+    }
+  }
+
+  renderChildren() {
+    const { disabled, children } = this.props;
+    return disabled
+      ? children
+      : (
+        <TransitionGroup>
+          <FadeTransition>
+            { children }
+          </FadeTransition>
+        </TransitionGroup>
+      );
   }
 
   render() {
@@ -63,7 +86,6 @@ export default class ProgressiveImage extends PureComponent {
       max,
       color,
       style,
-      children,
     } = this.props;
     const plainSrc = src.split('?')[0];
     const fillerStyle = {
@@ -79,13 +101,7 @@ export default class ProgressiveImage extends PureComponent {
           )
         }
         {
-          !this.state.loading && !this.state.error && (
-            <TransitionGroup>
-              <FadeTransition>
-                { children }
-              </FadeTransition>
-            </TransitionGroup>
-          )
+          !this.state.loading && !this.state.error && this.renderChildren()
         }
         {
           this.state.error && (

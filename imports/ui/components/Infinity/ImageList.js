@@ -56,7 +56,6 @@ class InfiniteImageList extends PureComponent {
     return [
       <Infinite
         key="Infinite__ImageList"
-        className="deep"
         elementHeight={this.getImageHeights()}
         onInfiniteLoad={this.props.onInfiniteLoad}
         loadingSpinnerDelegate={<DataLoader bottom />}

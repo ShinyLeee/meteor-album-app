@@ -113,19 +113,22 @@ const styles = theme => ({
 });
 
 const mapStateToProps = ({ sessions }) => ({
+  isLoggedIn: sessions.isLoggedIn,
   User: sessions.User,
 });
 
 export default compose(
   connect(mapStateToProps),
-  withStyles(styles),
   withRouter,
-  withTracker(({ User }) => {
-    if (User) {
+  withStyles(styles),
+  withTracker(({ isLoggedIn }) => {
+    let noteNum = 0;
+    if (isLoggedIn) {
       Meteor.subscribe('Notes.receiver');
+      noteNum = Notes.find({ isRead: false }).count();
     }
     return {
-      noteNum: User ? Notes.find({ isRead: false }).count() : 0,
+      noteNum,
     };
   }),
 )(RightContentComp);

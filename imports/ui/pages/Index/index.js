@@ -9,9 +9,16 @@ const AsyncIndexContent = withLoadable({
 });
 
 export default class IndexPage extends Component {
+  shouldComponentUpdate() {
+    return false;
+  }
+
   render() {
     return (
-      <ViewLayout Topbar={<PrimaryNavHeader />}>
+      <ViewLayout
+        Topbar={<PrimaryNavHeader />}
+        deep
+      >
         <Recap />
         <AsyncIndexContent />
       </ViewLayout>
