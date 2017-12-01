@@ -22,6 +22,7 @@ export class GroupImageHolder extends PureComponent {
     total: PropTypes.number.isRequired,
     groupTotal: PropTypes.number,
     onImageClick: PropTypes.func,
+    onImageLoad: PropTypes.func.isRequired,
     group: PropTypes.object.isRequired,
     counter: PropTypes.number.isRequired,
     selectCounter: PropTypes.func.isRequired,
@@ -123,6 +124,7 @@ export class GroupImageHolder extends PureComponent {
               alt={image.name}
               isSelect={this.state.isSelect}
               innerRef={(node) => { this.image = node; }}
+              onLoad={this.props.onImageLoad}
             />
           </ProgressiveImage>
         </LazyLoad>

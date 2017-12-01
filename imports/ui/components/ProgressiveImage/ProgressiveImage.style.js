@@ -39,8 +39,10 @@ export const ErrorHolder = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
+  padding: 0 12px;
+  background: linear-gradient(180deg, transparent 0, rgba(0, 0, 0, 0.2) 40%, rgba(0, 0, 0, 0.22) 60%, transparent);  
   text-shadow: #fff 0px 0px 6px;
+  color: #fff;  
   & > svg {
     margin-right: 12px;
   }
@@ -56,7 +58,7 @@ export const Cover = styled.div`
     width: 100%;
     height: 100%;
     background: transparent;
-    background: linear-gradient(180deg, rgba(0, 0, 0, 0.3) 0, transparent 30%, transparent 70%, rgba(0, 0, 0, 0.3));
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.3) 0, transparent 30%, transparent 70%, rgba(0, 0, 0, 0.3));    
   }
   & > img {
     width: 100%;

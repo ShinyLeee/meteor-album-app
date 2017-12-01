@@ -13,7 +13,9 @@ class InfiniteImageList extends PureComponent {
   static propTypes = {
     User: PropTypes.object,
     images: PropTypes.array.isRequired,
+    offset: PropTypes.number,
     disabled: PropTypes.bool,
+    isLoadedAll: PropTypes.bool,
     onInfiniteLoad: PropTypes.func.isRequired,
     device: PropTypes.object.isRequired,
     snackBarOpen: PropTypes.func.isRequired,
@@ -21,7 +23,9 @@ class InfiniteImageList extends PureComponent {
   }
 
   static defaultProps = {
-    disabled: false,
+    offset: -32, // 允许再多滚动32px，因为Topbar默认64px
+    disabled: false, // 是否禁止InfiniteLoad
+    isLoadedAll: false, // 是否全部加载完
   }
 
   getImageHeights() {
@@ -52,14 +56,19 @@ class InfiniteImageList extends PureComponent {
   }
 
   render() {
-    const { images, disabled } = this.props;
+    const {
+      images,
+      offset,
+      disabled,
+      isLoadedAll,
+    } = this.props;
     return [
       <Infinite
         key="Infinite__ImageList"
         elementHeight={this.getImageHeights()}
         onInfiniteLoad={this.props.onInfiniteLoad}
         loadingSpinnerDelegate={<DataLoader bottom />}
-        infiniteLoadBeginEdgeOffset={(disabled || images.length === 0) ? undefined : -360}
+        infiniteLoadBeginEdgeOffset={disabled ? undefined : offset}
         useWindowAsScrollContainer
       >
         {
@@ -73,7 +82,7 @@ class InfiniteImageList extends PureComponent {
           ))
         }
       </Infinite>,
-      disabled && <Tip key="Infinite_Tip" />,
+      isLoadedAll && <Tip key="Infinite_Tip" />,
     ];
   }
 }

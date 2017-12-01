@@ -18,12 +18,10 @@ const trackHandler = ({ isOwner, match }) => {
   const imageHandler = Meteor.subscribe('Images.liked', username);
   const isDataReady = imageHandler.ready();
 
-  const imageSelector = { liker: { $in: [username] } };
-  const countSelector = { deletedAt: null };
+  const imageSelector = { liker: { $in: [username] }, deletedAt: null };
 
   if (!isOwner) {
     imageSelector.private = false;
-    countSelector.private = false;
   }
 
   const images = Images.find(
@@ -31,7 +29,7 @@ const trackHandler = ({ isOwner, match }) => {
     { sort: { createdAt: -1 }, limit },
   ).fetch();
 
-  const imagesCount = Images.find(countSelector).count();
+  const imagesCount = Images.find(imageSelector).count();
 
   return {
     limit,

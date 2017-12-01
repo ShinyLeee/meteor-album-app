@@ -15,6 +15,7 @@ export const ToolbarLeft = styled.div`
   justify-content: flex-start;
   margin-left: 8px;
   opacity: ${props => props.visible ? 1 : 0};
+  visibility: ${props => props.visible ? 'visible' : 'hidden'};
   & > h4 {
     margin-left: 8px;
     font-family: 'Microsoft Yahei';

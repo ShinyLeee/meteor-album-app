@@ -56,10 +56,15 @@ export class JustifiedGroupLayout extends PureComponent {
     fullWidthBreakoutRowCadence: false,
   }
 
-  state = {
-    isGroupSelect: false,
-    geometry: this.generateGeo(this.props),
-    pswpItems: this.props.showGallery ? this.generateItems(this.props, this.generateGeo(this.props)) : null,
+  constructor(props) {
+    super(props);
+    const geometry = this.generateGeo(props);
+    this._loadedItems = [];
+    this.state = {
+      isGroupSelect: false,
+      geometry,
+      pswpItems: props.showGallery ? this.generateItems(props, geometry) : null,
+    };
   }
 
   componentWillReceiveProps(nextProps) {
@@ -180,9 +185,9 @@ export class JustifiedGroupLayout extends PureComponent {
     }
   }
 
-  _handleOpenGallery = (i) => {
+  _handleRenderGallery(i) {
     const { showGallery } = this.props;
-    if (showGallery) {
+    if (showGallery && this._loadedItems.includes(i)) {
       this.props.photoSwipeOpen(
         this.state.pswpItems,
         {
@@ -197,6 +202,12 @@ export class JustifiedGroupLayout extends PureComponent {
           },
         },
       );
+    }
+  }
+
+  _handleImageLoad(i) {
+    if (!this._loadedItems.includes(i)) {
+      this._loadedItems.push(i);
     }
   }
 
@@ -242,7 +253,8 @@ export class JustifiedGroupLayout extends PureComponent {
               total={total}
               groupTotal={groupImages.length}
               ref={(node) => { this[`thumbnail${i}`] = node; }}
-              onImageClick={() => this._handleOpenGallery(i)}
+              onImageClick={() => this._handleRenderGallery(i)}
+              onImageLoad={() => this._handleImageLoad(i)}
             />
           ))
         }

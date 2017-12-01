@@ -46,7 +46,8 @@ export default class UserLikesContent extends PureComponent {
   render() {
     const { isOwner, imagesCount } = this.props;
     const isEmpty = this.state.images.length === 0;
-    const isLoadAll = this.state.images.length === imagesCount;
+    const isLoadedAll = this.state.images.length === imagesCount;
+    const disabled = isEmpty || isLoadedAll;
     return [
       <ZoomerHolder key="ZoomerHolder" />,
       isEmpty
@@ -60,7 +61,8 @@ export default class UserLikesContent extends PureComponent {
           <InfiniteImageList
             key="InfiniteImageList"
             images={this.state.images}
-            disabled={isLoadAll}
+            disabled={disabled}
+            isLoadedAll={isLoadedAll}
             onInfiniteLoad={this._handleInfiniteLoad}
           />
         ),

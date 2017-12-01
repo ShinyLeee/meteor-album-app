@@ -45,19 +45,19 @@ export class Justified extends PureComponent {
 
   _handleToggleSelectAll = () => {
     const { images } = this.props;
-    const { isAllSelect, layoutType } = this.state;
 
-    if (isAllSelect) this.props.disableSelectAll();
-    else {
+    if (this.state.isAllSelect) {
+      this.props.disableSelectAll();
+    } else {
       const counter = images.length;
-      if (layoutType === 'grid') {
+      if (this.state.layoutType === 'grid') {
         this.props.enableSelectAll({
           selectImages: images,
           group: { grid: counter },
           counter,
         });
       }
-      if (layoutType === 'group') {
+      if (this.state.layoutType === 'group') {
         const group = {};
         const allGroupImages = groupBy(
           images,

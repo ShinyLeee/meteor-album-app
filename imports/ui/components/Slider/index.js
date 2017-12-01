@@ -1,12 +1,25 @@
 import map from 'lodash/map';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
+import { connect } from 'react-redux';
 import { Motion, spring } from 'react-motion';
 import { Wrapper, EnhancedSliderTracker } from './Slider.style';
 
 const FRICTION_LEVEL = 0.3;
 
-export default class Slider extends Component {
+class Slider extends PureComponent {
+  static propTypes = {
+    visibleNum: PropTypes.number, // Define how many pictrue will be show in one slider.
+    gap: PropTypes.number,
+    children: PropTypes.any.isRequired,
+    device: PropTypes.object.isRequired,
+  }
+
+  static defaultProps = {
+    visibleNum: 3,
+    gap: 10,
+  }
+
   constructor(props) {
     super(props);
     this.bounds = undefined;
@@ -30,20 +43,17 @@ export default class Slider extends Component {
     if (
       this.props.children !== nextProps.children ||
       this.props.visibleNum !== nextProps.visibleNum ||
-      this.props.gap !== nextProps.gap
+      this.props.gap !== nextProps.gap ||
+      this.props.device !== nextProps.device
     ) {
       this.updateVars(nextProps);
-      this.updateSliders(nextProps);
+      this.updateSliders(nextProps, this.props.device !== nextProps);
     }
   }
 
   // eslint-disable-next-line class-methods-use-this
   getWidth(ele) {
     return ele ? (ele.getBoundingClientRect().width || ele.offsetWidth) : 0;
-  }
-
-  applyTrackerTransform(x) {
-    this.SliderTracker.style.transform = `translate3d(${x}px, 0px, 0px)`;
   }
 
   /**
@@ -86,7 +96,7 @@ export default class Slider extends Component {
     this.singleWidth = singleWidth;
   }
 
-  updateSliders(props) {
+  updateSliders(props, reset) {
     const { children, gap } = props;
     const styledChilds = map(children, (child) => {
       const style = {
@@ -96,7 +106,10 @@ export default class Slider extends Component {
       };
       return React.cloneElement(child, { style });
     });
-    this.setState({ sliders: styledChilds });
+    this.setState(prevState => ({
+      sliders: styledChilds,
+      deltaX: reset ? 0 : prevState.deltaX,
+    }));
   }
 
   _handlePan = (e) => {
@@ -141,22 +154,8 @@ export default class Slider extends Component {
   }
 }
 
-Slider.displayName = 'Slider';
+const mapStateToProps = ({ device }) => ({
+  device,
+});
 
-Slider.defaultProps = {
-  visibleNum: 3,
-  gap: 10,
-};
-
-Slider.propTypes = {
-  children: PropTypes.any.isRequired,
-
-  /**
-   * visibleNum:
-   *
-   * Define how many pictrue will be show in one slider.
-   */
-  visibleNum: PropTypes.number,
-
-  gap: PropTypes.number,
-};
+export default connect(mapStateToProps)(Slider);

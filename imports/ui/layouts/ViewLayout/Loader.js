@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types';
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import LinearLoader from '/imports/ui/components/Loader/LinearLoader';
 import DataLoader from '/imports/ui/components/Loader/DataLoader';
 
-class GlobalLoader extends PureComponent {
+class GlobalLoader extends Component {
   static propTypes = {
     delay: PropTypes.number,
     loadingStyle: PropTypes.object,
@@ -26,12 +26,18 @@ class GlobalLoader extends PureComponent {
     };
   }
 
-
   componentWillMount() {
     this._delayTimeout = setTimeout(
       () => this.setState({ pastDelay: true }),
       this.props.delay,
     );
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    const prev = this.props.isFetchingAuth || this.props.isFetchingModule || this.props.isFetchingData;
+    const next = nextProps.isFetchingAuth || nextProps.isFetchingModule || nextProps.isFetchingData;
+    return prev !== next ||
+    this.state.pastDelay !== nextState.pastDelay;
   }
 
   componentWillUnmount() {

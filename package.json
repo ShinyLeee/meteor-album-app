@@ -1,5 +1,5 @@
 {
-  "version": "1.4.0-rc.15",
+  "version": "1.4.0-rc.16",
   "name": "galleryplus",
   "private": true,
   "repository": "git@github.com:ShinyLeee/meteor-album-app.git",
@@ -23,7 +23,7 @@
     "jsonp": "^0.2.1",
     "justified-layout": "^2.1.0",
     "lodash": "^4.17.4",
-    "material-ui": "^1.0.0-beta.21",
+    "material-ui": "^1.0.0-beta.22",
     "material-ui-icons": "^1.0.0-beta.15",
     "meteor-node-stubs": "~0.2.0",
     "moment": "^2.15.1",

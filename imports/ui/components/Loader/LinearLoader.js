@@ -1,20 +1,29 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { Component } from 'react';
 import { withStyles } from 'material-ui/styles';
 import { LinearProgress } from 'material-ui/Progress';
 
-const LinearLoader = ({ style, classes }) => (
-  <LinearProgress style={style} classes={{ root: classes.root }} mode="indeterminate" />
-);
+class LinearLoader extends Component {
+  static propTypes = {
+    style: PropTypes.object,
+    classes: PropTypes.object.isRequired,
+  }
 
-LinearLoader.propTypes = {
-  style: PropTypes.object,
-  classes: PropTypes.object.isRequired,
-};
+  shouldComponentUpdate() {
+    return false;
+  }
+
+  render() {
+    const { style, classes } = this.props;
+    return (
+      <LinearProgress style={style} classes={{ root: classes.root }} mode="indeterminate" />
+    );
+  }
+}
 
 const styles = {
   root: {
-    position: 'absolute',
+    position: 'fixed',
     left: 0,
     top: 64,
     width: '100%',

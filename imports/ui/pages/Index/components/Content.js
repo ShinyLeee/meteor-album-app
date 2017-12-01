@@ -54,7 +54,8 @@ export default class IndexContent extends PureComponent {
 
   render() {
     const { imagesCount } = this.props;
-    const isLoadAll = this.state.images.length === imagesCount;
+    const isLoadedAll = this.state.images.length === imagesCount;
+    const disabled = this.state.images.length === 0 || isLoadedAll;
     return [
       <Notification
         key="Notification"
@@ -65,7 +66,9 @@ export default class IndexContent extends PureComponent {
       <InfiniteImageList
         key="InfiniteImageList"
         images={this.state.images}
-        disabled={isLoadAll}
+        offset={-48} // 32 + 316 二分之一Topbar + Recap
+        disabled={disabled}
+        isLoadedAll={isLoadedAll}
         onInfiniteLoad={this._handleInfiniteLoad}
       />,
       <ZoomerHolder key="ZoomerHolder" />,

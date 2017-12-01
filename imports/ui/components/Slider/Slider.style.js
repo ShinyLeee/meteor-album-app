@@ -4,6 +4,7 @@ import withGesture from '/imports/ui/hocs/withGesture';
 export const Wrapper = styled.div`
   position: relative;
   display: block;
+  width: 100%;
   margin: 0;
   padding: 0;
   overflow-x: hidden;

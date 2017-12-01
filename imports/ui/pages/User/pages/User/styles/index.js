@@ -72,5 +72,10 @@ export const Counter = styled.div`
 `;
 
 export const RankSection = styled.section`
+  flex: 1;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  width: 100%;
   padding: 0 20px;
 `;

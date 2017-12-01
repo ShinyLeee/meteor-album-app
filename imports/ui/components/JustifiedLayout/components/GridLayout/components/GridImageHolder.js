@@ -21,6 +21,7 @@ export class GridImageHolder extends PureComponent {
     total: PropTypes.number.isRequired,
     dimension: PropTypes.number.isRequired,
     onImageClick: PropTypes.func,
+    onImageLoad: PropTypes.func.isRequired,
     counter: PropTypes.number.isRequired,
     selectCounter: PropTypes.func.isRequired,
   }
@@ -92,6 +93,7 @@ export class GridImageHolder extends PureComponent {
               alt={image.name}
               isSelect={this.state.isSelect}
               innerRef={(node) => { this.image = node; }}
+              onLoad={this.props.onImageLoad}
             />
           </ProgressiveImage>
         </LazyLoad>

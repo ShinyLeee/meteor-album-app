@@ -51,14 +51,16 @@ export default class NotesContent extends PureComponent {
 
   render() {
     const { notesNum } = this.props;
-    const isLoadAll = this.state.notes.length === notesNum;
-    return notesNum === 0
+    const isEmpty = notesNum === 0;
+    const isLoadedAll = this.state.notes.length === notesNum;
+    const disabled = isEmpty || isLoadedAll;
+    return isEmpty
       ? <EmptyHolder mainInfo="您还未收到消息" />
       : (
         <InfiniteNoteList
           notes={this.state.notes}
-          notesNum={notesNum}
-          disabled={isLoadAll}
+          disabled={disabled}
+          isLoadedAll={isLoadedAll}
           onInfiniteLoad={this._handleInfiniteLoad}
           showActions
         />

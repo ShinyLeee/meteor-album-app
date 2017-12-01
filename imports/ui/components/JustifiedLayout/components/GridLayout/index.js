@@ -27,6 +27,7 @@ export class JustifiedGridLayout extends PureComponent {
 
   constructor(props) {
     super(props);
+    this._loadedItems = [];
     this._pswpItems = props.showGallery ? this.generateItems(props) : null;
   }
 
@@ -76,9 +77,9 @@ export class JustifiedGridLayout extends PureComponent {
     return pswpItems;
   }
 
-  handleOpenGallery(i) {
+  _handleRenderGallery(i) {
     const { showGallery } = this.props;
-    if (showGallery) {
+    if (showGallery && this._loadedItems.includes(i)) {
       this.props.photoSwipeOpen(
         this._pswpItems,
         {
@@ -97,12 +98,18 @@ export class JustifiedGridLayout extends PureComponent {
     }
   }
 
+  _handleImageLoad(i) {
+    if (!this._loadedItems.includes(i)) {
+      this._loadedItems.push(i);
+    }
+  }
+
   render() {
     const { isEditing, filterType, images } = this.props;
     let filteredImages;
-    if (filterType === 'latest') filteredImages = [...images];
-    if (filterType === 'oldest') filteredImages = [...images].reverse();
-    if (filterType === 'popular') filteredImages = [...images].sort((p, n) => n.liker.length - p.liker.length);
+    if (filterType === 'latest') filteredImages = images;
+    if (filterType === 'oldest') filteredImages = images.reverse();
+    if (filterType === 'popular') filteredImages = images.sort((p, n) => n.liker.length - p.liker.length);
     return (
       <GridLayout>
         {
@@ -114,7 +121,8 @@ export class JustifiedGridLayout extends PureComponent {
               total={images.length}
               dimension={this.generateImageDimension()}
               ref={(node) => { this[`thumbnail${i}`] = node; }}
-              onImageClick={() => this.handleOpenGallery(i)}
+              onImageClick={() => this._handleRenderGallery(i)}
+              onImageLoad={() => this._handleImageLoad(i)}
             />
           ))
         }

@@ -14,15 +14,18 @@ import Tip from './Tip';
 class InfiniteNoteList extends PureComponent {
   static propTypes = {
     notes: PropTypes.array.isRequired,
-    notesNum: PropTypes.number.isRequired,
+    offset: PropTypes.number,
     disabled: PropTypes.bool,
+    isLoadedAll: PropTypes.bool,
     showActions: PropTypes.bool,
     onInfiniteLoad: PropTypes.func.isRequired,
     snackBarOpen: PropTypes.func.isRequired,
   }
 
   static defaultProps = {
+    offset: -32,
     disabled: false,
+    isLoadedAll: false,
     showActions: false,
   }
 
@@ -40,10 +43,6 @@ class InfiniteNoteList extends PureComponent {
       const { notes, heights } = this.generateNotes(nextProps.notes);
       this.setState({ notes, heights });
     }
-  }
-
-  get isDisabled() {
-    return this.props.disabled || this.state.notes.length === this.props.notesNum;
   }
 
   generateNotes(notes) {
@@ -88,6 +87,11 @@ class InfiniteNoteList extends PureComponent {
   }
 
   render() {
+    const {
+      offset,
+      disabled,
+      isLoadedAll,
+    } = this.props;
     return [
       <Infinite
         key="Infinite__NoteList"
@@ -95,12 +99,12 @@ class InfiniteNoteList extends PureComponent {
         elementHeight={this.state.heights}
         onInfiniteLoad={this.props.onInfiniteLoad}
         loadingSpinnerDelegate={<DataLoader bottom />}
-        infiniteLoadBeginEdgeOffset={this.isDisabled ? undefined : -60}
+        infiniteLoadBeginEdgeOffset={disabled ? undefined : offset}
         useWindowAsScrollContainer
       >
         {this.state.notes}
       </Infinite>,
-      this.isDisabled && <Tip key="Infinite_Tip" />,
+      isLoadedAll && <Tip key="Infinite_Tip" />,
     ];
   }
 }
