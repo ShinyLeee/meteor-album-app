@@ -117,16 +117,16 @@ class DiaryViewer extends PureComponent {
   }
 
   _handleEditing = () => {
-    this._handleRequestClose();
+    this._handleClose();
     this.setState({ isEditing: true });
   }
 
-  _handleRequestClose = () => {
+  _handleClose = () => {
     this.setState({ menuOpen: false });
   }
 
   renderPrompt = () => {
-    this._handleRequestClose();
+    this._handleClose();
     Modal.showPrompt({
       message: '您是否确认删除此日记？',
       onCancel: Modal.close,
@@ -175,7 +175,7 @@ class DiaryViewer extends PureComponent {
                             key="moreMenu"
                             open={this.state.menuOpen}
                             anchorEl={this.state.anchorEl}
-                            onRequestClose={this._handleRequestClose}
+                            onClose={this._handleClose}
                           >
                             <MenuItem onClick={this._handleEditing}>编辑</MenuItem>
                             <MenuItem onClick={this.renderPrompt}>删除</MenuItem>

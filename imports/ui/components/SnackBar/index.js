@@ -41,7 +41,7 @@ class SnackBar extends Component {
     }
   }
 
-  _handleRequestClose = () => {
+  _handleClose = () => {
     this.props.snackBarClose();
   }
 
@@ -52,8 +52,8 @@ class SnackBar extends Component {
         open={this.state.open}
         message={this.state.message}
         autoHideDuration={autoHideDuration}
-        onRequestClose={this._handleRequestClose}
-        onExited={this._handleRequestClose}
+        onClose={this._handleClose}
+        onExited={this._handleClose}
       />
     );
   }

@@ -107,7 +107,7 @@ export default class EmailsContent extends PureComponent {
                     <Menu
                       open={this.state[`email_${i}`]}
                       anchorEl={this.state.anchorEl}
-                      onRequestClose={() => this.setState({ [`email_${i}`]: false })}
+                      onClose={() => this.setState({ [`email_${i}`]: false })}
                     >
                       {
                         !email.verified && (

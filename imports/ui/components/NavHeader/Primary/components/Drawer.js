@@ -36,7 +36,7 @@ const { sourceDomain } = settings;
 class NavHeaderDrawer extends PureComponent {
   static propTypes = {
     visible: PropTypes.bool.isRequired,
-    onRequestClose: PropTypes.func.isRequired,
+    onClose: PropTypes.func.isRequired,
     isLoggedIn: PropTypes.bool.isRequired,
     User: PropTypes.object,
     match: PropTypes.object.isRequired,
@@ -67,7 +67,7 @@ class NavHeaderDrawer extends PureComponent {
   _navTo = (to) => () => {
     const { location: { pathname } } = this.props;
     if (pathname === to) {
-      this.props.onRequestClose();
+      this.props.onClose();
     }
     if (to === '/login') {
       this.props.snackBarOpen('您还尚未登录');
@@ -76,7 +76,7 @@ class NavHeaderDrawer extends PureComponent {
   }
 
   _handleLogout = async () => {
-    this.props.onRequestClose();
+    this.props.onClose();
     await Modal.showLoader('登出中');
     await this.props.userLogout();
     Modal.close();
@@ -96,7 +96,7 @@ class NavHeaderDrawer extends PureComponent {
       User,
       match,
       classes,
-      onRequestClose,
+      onClose,
     } = this.props;
     const isIndexPage = match.path === '/';
     const isUserPage = !!match.params.username;
@@ -104,7 +104,7 @@ class NavHeaderDrawer extends PureComponent {
       <Drawer
         open={visible}
         classes={{ paper: classes.drawer }}
-        onRequestClose={onRequestClose}
+        onClose={onClose}
       >
         <DrawerProfile>
           <ResponsiveCover
@@ -124,13 +124,13 @@ class NavHeaderDrawer extends PureComponent {
               isLoggedIn && (
                 <DrawerEmail>
                   <span>{get(User, 'emails[0].address') || User.username}</span>
-                  <ArrowDropdownIcon color="#fff" onClick={this.renderPopover} />
+                  <ArrowDropdownIcon onClick={this.renderPopover} />
                   <Popover
                     open={this.state.popover}
                     anchorEl={this.state.popoverAnchor}
                     anchorOrigin={{ horizontal: 'center', vertical: 'bottom' }}
                     transformOrigin={{ horizontal: 'center', vertical: 'top' }}
-                    onRequestClose={() => this.setState({ popover: false })}
+                    onClose={() => this.setState({ popover: false })}
                   >
                     <List>
                       <ListItem onClick={this._handleLogout}>

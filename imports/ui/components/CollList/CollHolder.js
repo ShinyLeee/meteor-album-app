@@ -48,19 +48,19 @@ class CollHolder extends Component {
     anchorEl: undefined,
   }
 
-  _handleRequestClose = () => {
+  _handleClose = () => {
     this.setState({ menuOpen: false });
   }
 
   _handleToggleLock = () => {
     const { coll } = this.props;
-    this._handleRequestClose();
+    this._handleClose();
     this.props.onToggleLock(coll);
   }
 
   _handleToggleRemove = () => {
     const { coll } = this.props;
-    this._handleRequestClose();
+    this._handleClose();
     this.props.onRemove(coll);
   }
 
@@ -84,11 +84,9 @@ class CollHolder extends Component {
       : `${coll.cover}?imageView2/2/w/${rWidth}`;
     return (
       <Wrapper>
-        <Cover>
-          <Link to={`/user/${coll.user}/collection/${coll.name}`}>
-            <img src={fastSrc} alt="" />
-          </Link>
-        </Cover>
+        <Link to={`/user/${coll.user}/collection/${coll.name}`}>
+          <Cover><img src={fastSrc} alt="" /></Cover>
+        </Link>
         <Info>
           <Avatar classes={{ root: classes.avatar }} src={get(owner, 'profile.avatar')} alt="" />
           <CollName>{coll.name}</CollName>
@@ -111,7 +109,7 @@ class CollHolder extends Component {
                 key="actionMenu"
                 open={this.state.menuOpen}
                 anchorEl={this.state.anchorEl}
-                onRequestClose={this._handleRequestClose}
+                onClose={this._handleClose}
               >
                 {/* <MenuItem
                 leftIcon={<InfoIcon />}

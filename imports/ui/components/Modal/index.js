@@ -62,10 +62,10 @@ class Modal extends PureComponent {
     return Store.dispatch(modalClose());
   }
 
-  _handleRequestClose = () => {
-    const onRequestClose = get(this, 'props.ops.onRequestClose');
-    if (onRequestClose) {
-      onRequestClose();
+  _handleClose = () => {
+    const onClose = get(this, 'props.ops.onClose');
+    if (onClose) {
+      onClose();
     } else {
       this.props.modalClose();
     }
@@ -77,7 +77,7 @@ class Modal extends PureComponent {
       <Dialog
         {...ops}
         open={open}
-        onRequestClose={this._handleRequestClose}
+        onClose={this._handleClose}
       >
         { !!title && <DialogTitle>{title}</DialogTitle> }
         <DialogContent>

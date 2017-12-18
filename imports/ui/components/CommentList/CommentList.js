@@ -1,9 +1,6 @@
 import get from 'lodash/get';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import TimeAgo from 'react-timeago';
-import CNStrings from 'react-timeago/lib/language-strings/zh-CN';
-import buildFormatter from 'react-timeago/lib/formatters/buildFormatter';
+import React, { PureComponent } from 'react';
 import Avatar from 'material-ui/Avatar';
 import Button from 'material-ui/Button';
 import Collapse from 'material-ui/transitions/Collapse';
@@ -11,14 +8,12 @@ import Popover from 'material-ui/Popover';
 import Input from 'material-ui/Input';
 import List, {
   ListItem,
-  ListItemAvatar,
   ListItemText,
 } from 'material-ui/List';
 import { insertComment, removeComment } from '/imports/api/comments/methods';
 import settings from '/imports/utils/settings';
+import CommentListItem from './CommentListItem';
 import {
-  CommentsContent,
-  CommentsTime,
   PublishSection,
   PublishContent,
   PublishFooter,
@@ -26,12 +21,9 @@ import {
 
 const { sourceDomain } = settings;
 
-const formatter = buildFormatter(CNStrings);
-
-export default class CommentList extends Component {
+export default class CommentList extends PureComponent {
   static propTypes = {
     open: PropTypes.bool.isRequired,
-    owner: PropTypes.object.isRequired,
     discId: PropTypes.string.isRequired,
     comments: PropTypes.array.isRequired,
     User: PropTypes.object, // not required bc guest can visit it
@@ -51,7 +43,7 @@ export default class CommentList extends Component {
     return User ? User.profile.avatar : defaultAvatar;
   }
 
-  _handleCommentClick(e, comment) {
+  _handleCommentClick = (e, comment) => {
     this.setState({ [comment._id]: true, popoverAnchor: e.currentTarget });
   }
 
@@ -115,7 +107,6 @@ export default class CommentList extends Component {
   render() {
     const {
       open,
-      owner,
       comments,
       User,
       classes,
@@ -129,27 +120,16 @@ export default class CommentList extends Component {
         {
           comments.length > 0 && comments.map((comment) => (
             <List key={comment._id} className={classes.list}>
-              <ListItem
-                onClick={(e) => this._handleCommentClick(e, comment)}
-                button
-              >
-                <ListItemAvatar>
-                  <Avatar src={get(owner, 'profile.avatar')} />
-                </ListItemAvatar>
-                <CommentsContent>
-                  <h3>{comment.user}</h3>
-                  <div dangerouslySetInnerHTML={{ __html: comment.content }} />
-                </CommentsContent>
-                <CommentsTime>
-                  <TimeAgo date={comment.createdAt} formatter={formatter} />
-                </CommentsTime>
-              </ListItem>
+              <CommentListItem
+                comment={comment}
+                onClick={this._handleCommentClick}
+              />
               <Popover
                 open={this.state[comment._id]}
                 anchorEl={this.state.popoverAnchor}
                 anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
                 transformOrigin={{ horizontal: 'right', vertical: 'center' }}
-                onRequestClose={() => this.setState({ [comment._id]: false })}
+                onClose={() => this.setState({ [comment._id]: false })}
               >
                 <List>
                   <ListItem onClick={() => this._handleReplyComment(comment)}>

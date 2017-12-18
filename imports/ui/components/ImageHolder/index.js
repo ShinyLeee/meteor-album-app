@@ -26,6 +26,7 @@ const styles = {
 
 const mapStateToProps = ({ sessions, device }) => ({
   device,
+  isLoggedIn: sessions.isLoggedIn,
   User: sessions.User,
 });
 
@@ -33,7 +34,7 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
   snackBarOpen,
 }, dispatch);
 
-const trackHandler = ({ User, image }) => {
+const trackHandler = ({ isLoggedIn, User, image }) => {
   // discussion_id from comment
   const imageId = image._id;
 
@@ -41,7 +42,7 @@ const trackHandler = ({ User, image }) => {
   Meteor.subscribe('Comments.inImage', imageId);
 
   let owner;
-  if (User && User.username === image.user) {
+  if (isLoggedIn && User.username === image.user) {
     owner = User;
   } else {
     Meteor.subscribe('Users.all');

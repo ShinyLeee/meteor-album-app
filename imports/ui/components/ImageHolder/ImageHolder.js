@@ -132,7 +132,6 @@ export default class ImageHolder extends PureComponent {
           <CommentList
             open={this.state.isCommentOpen}
             discId={image._id}
-            owner={owner}
           />
         </Card>
       </Wrapper>

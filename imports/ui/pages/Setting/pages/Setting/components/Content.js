@@ -28,7 +28,7 @@ import {
   Username,
 } from '../styles';
 
-const { domain } = settings;
+const { imageDomain } = settings;
 
 const uploadURL = window.location.protocol === 'https:' ? 'https://up.qbox.me/' : 'http://upload.qiniu.com';
 
@@ -70,7 +70,7 @@ export default class SettingContent extends PureComponent {
       });
       Modal.close();
       this.props.snackBarOpen('上传封面成功');
-      this.updateProfile({ cover: `${domain}/${data.key}` });
+      this.updateProfile({ cover: `${imageDomain}/${data.key}` });
     } catch (err) {
       console.warn(err);
       Modal.close();
@@ -79,35 +79,27 @@ export default class SettingContent extends PureComponent {
   }
 
   _handleSetAvatar = async (e) => {
+    const { User, token } = this.props;
+    const avatar = e.target.files[0];
+    if (!avatar) {
+      return;
+    }
     try {
       await Modal.showLoader('上传头像中');
-      const avatar = e.target.files[0];
-      const size = Math.round(avatar.size / 1024);
-      if (size < 200) {
-        const reader = new FileReader();
-        reader.onload = (evt) => {
-          Modal.close();
-          this.props.snackBarOpen('上传头像成功');
-          this.updateProfile({ avatar: evt.target.result });
-        };
-        reader.readAsDataURL(avatar);
-      } else {
-        const { User, token } = this.props;
-        const key = `${User.username}/setting/avatar/${avatar.name}`;
-        const formData = new FormData();
-        formData.append('file', avatar);
-        formData.append('key', key);
-        formData.append('token', token);
+      const key = `${User.username}/setting/avatar/${avatar.name}`;
+      const formData = new FormData();
+      formData.append('file', avatar);
+      formData.append('key', key);
+      formData.append('token', token);
 
-        const { data } = await axios({
-          method: 'POST',
-          url: uploadURL,
-          data: formData,
-        });
-        Modal.close();
-        this.props.snackBarOpen('上传头像成功');
-        this.updateProfile({ avatar: `${domain}/${data.key}?imageView2/1/w/240/h/240` });
-      }
+      const { data } = await axios({
+        method: 'POST',
+        url: uploadURL,
+        data: formData,
+      });
+      Modal.close();
+      this.props.snackBarOpen('上传头像成功');
+      this.updateProfile({ avatar: `${imageDomain}/${data.key}?imageView2/1/w/240/h/240` });
     } catch (err) {
       console.warn(err);
       Modal.close();

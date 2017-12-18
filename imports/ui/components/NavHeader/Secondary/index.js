@@ -84,7 +84,7 @@ class SecondaryNavHeader extends PureComponent {
                 color="inherit"
                 onClick={() => scrollTo(0, 1500)}
               >
-                {title}
+                {title || '返回'}
               </Typography>
             </Content>
 

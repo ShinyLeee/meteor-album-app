@@ -7,7 +7,12 @@ import {
   Toolbar,
   ToolbarLeft,
 } from '/imports/ui/components/JustifiedLayout/components/ToolBar/ToolBar.style';
-import { Header, Title, SubTitle } from '../../Collection/pages/Collection/styles';
+import {
+  Header,
+  Title,
+  SubTitle,
+} from '../../Collection/pages/Collection/styles';
+import { Wrapper } from '../styles';
 
 export default class RecycleContent extends PureComponent {
   static propTypes = {
@@ -47,10 +52,11 @@ export default class RecycleContent extends PureComponent {
 
   render() {
     const { images } = this.props;
-    return images.length === 0
+    const isEmpty = images.length === 0;
+    return isEmpty
       ? <EmptyHolder mainInfo="您的回收站是空的" />
       : (
-        <div className="recycle__content">
+        <Wrapper>
           <Header>
             <Title>回收站</Title>
             <SubTitle>回收站中的内容会在 30 天后永久删除</SubTitle>
@@ -65,7 +71,7 @@ export default class RecycleContent extends PureComponent {
             images={images}
             isEditing
           />
-        </div>
+        </Wrapper>
       );
   }
 }

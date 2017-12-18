@@ -145,9 +145,9 @@ export default class UserContent extends PureComponent {
                   key="Popover"
                   open={this.state.popover}
                   anchorEl={this.state.anchorEl}
-                  anchorOrigin={{ horizontal: 'top', vertical: 'left' }}
-                  transformOrigin={{ horizontal: 'bottom', vertical: 'left' }}
-                  onRequestClose={() => this.setState({ popover: false })}
+                  anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                  transformOrigin={{ horizontal: 'center', vertical: 'top' }}
+                  onClose={() => this.setState({ popover: false })}
                 >
                   <List>
                     <ListItem onClick={this._navTo(`/note/${curUser.username}`)}>

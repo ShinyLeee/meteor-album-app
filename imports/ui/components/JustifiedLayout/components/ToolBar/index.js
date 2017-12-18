@@ -44,7 +44,7 @@ export default class JustifiedToolBar extends PureComponent {
     this.setState({ anchorEl: evt.currentTarget });
   }
 
-  _handleRequestClose = () => {
+  _handleClose = () => {
     this.setState({ anchorEl: null });
   }
 
@@ -67,10 +67,10 @@ export default class JustifiedToolBar extends PureComponent {
         </ToolbarLeft>
         <div>
           <IconButton onClick={() => onLayoutChange('group')}>
-            <CompactIcon color={isGroupLayout ? '#111' : '#757575'} />
+            <CompactIcon style={{ color: isGroupLayout ? '#111' : '#757575' }} />
           </IconButton>
           <IconButton onClick={() => onLayoutChange('grid')}>
-            <ComfyIcon color={isGroupLayout ? '#757575' : '#111'} />
+            <ComfyIcon style={{ color: isGroupLayout ? '#757575' : '#111' }} />
           </IconButton>
           <IconButton onClick={this._handleRenderMenu}>
             <FilterIcon />
@@ -78,7 +78,7 @@ export default class JustifiedToolBar extends PureComponent {
           <Menu
             open={!!this.state.anchorEl}
             anchorEl={this.state.anchorEl}
-            onRequestClose={this._handleRequestClose}
+            onClose={this._handleClose}
             anchorOrigin={{ horizontal: 'left', vertical: 'top' }}
             transformOrigin={{ horizontal: 'left', vertical: 'top' }}
           >

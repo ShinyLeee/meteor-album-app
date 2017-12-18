@@ -78,7 +78,7 @@ export default class NotesPage extends Component {
           anchorEl={this.state.popoverAnchor}
           anchorOrigin={{ horizontal: 'left', vertical: 'top' }}
           transformOrigin={{ horizontal: 'left', vertical: 'top' }}
-          onRequestClose={() => this.setState({ popover: false })}
+          onClose={() => this.setState({ popover: false })}
         >
           <List>
             <ListItem onClick={this._handleReadAll}>

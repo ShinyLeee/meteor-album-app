@@ -43,7 +43,7 @@ class PrimaryNavHeader extends PureComponent {
     this.setState(prevState => ({ drawer: !prevState.drawer }));
   }
 
-  _handleRequestClose = () => {
+  _handleClose = () => {
     this.setState({ drawer: false });
   }
 
@@ -68,7 +68,7 @@ class PrimaryNavHeader extends PureComponent {
               </IconButton>
               <Drawer
                 visible={this.state.drawer}
-                onRequestClose={this._handleRequestClose}
+                onClose={this._handleClose}
               />
             </LeftContent>
 

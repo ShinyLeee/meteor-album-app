@@ -63,6 +63,14 @@ export default class LoginContent extends Component {
 
   _handleLogin = async () => {
     const { account, password } = this.state;
+    if (!account) {
+      this.props.snackBarOpen('请输入账号');
+      return;
+    }
+    if (!password) {
+      this.props.snackBarOpen('请输入密码');
+      return;
+    }
     await Modal.showLoader('登录中');
     await this.props.userLogin({ account, password });
     Modal.close();
