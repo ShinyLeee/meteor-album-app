@@ -2,9 +2,6 @@ import styled from 'styled-components';
 
 export const Wrapper = styled.figure`
   position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   margin: 0;
   overflow: hidden;
   & > span { /* Aspect Ratio Filler */

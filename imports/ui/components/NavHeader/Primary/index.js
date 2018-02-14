@@ -8,7 +8,6 @@ import Toolbar from 'material-ui/Toolbar';
 import Typography from 'material-ui/Typography';
 import MenuIcon from 'material-ui-icons/Menu';
 import IconButton from 'material-ui/IconButton';
-import scrollTo from '/imports/vendor/scrollTo';
 import NavHeader from '../NavHeader';
 import Drawer from './components/Drawer';
 import RightContent from './components/RightContent';
@@ -30,10 +29,12 @@ class PrimaryNavHeader extends PureComponent {
 
   _handleTitleClick = () => {
     const { location, history } = this.props;
-    scrollTo(0, 1500);
     if (location.pathname !== '/') {
       history.push('/');
+    } else {
+      window.scrollTo(0, 0);
     }
+
     if (this.props.onTitleClick) {
       this.props.onTitleClick();
     }
