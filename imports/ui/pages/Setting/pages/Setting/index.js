@@ -83,7 +83,7 @@ export default class SettingPage extends PureComponent {
         })
         .catch((err) => {
           console.warn(err);
-          this.props.snackBarOpen(`设置保存失败 ${err.reason}`);
+          this.props.snackBarOpen(`设置保存失败 ${err.error}`);
         });
     }
   }

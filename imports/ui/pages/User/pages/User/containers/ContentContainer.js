@@ -11,6 +11,11 @@ import withDataReadyHandler from '/imports/ui/hocs/withDataReadyHandler';
 import { userLogout, snackBarOpen } from '/imports/ui/redux/actions';
 import UserContent from '../components/Content';
 
+const mapStateToProps = ({ sessions }) => ({
+  isLoggedIn: sessions.isLoggedIn,
+  User: sessions.User,
+});
+
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   userLogout,
   snackBarOpen,
@@ -78,7 +83,7 @@ const styles = {
 export default compose(
   setDisplayName('UserContentContainer'),
   withRouter,
-  connect(null, mapDispatchToProps),
+  connect(mapStateToProps, mapDispatchToProps),
   withTracker(trackerHandler),
   withStyles(styles),
   withDataReadyHandler(),

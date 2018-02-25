@@ -9,20 +9,17 @@ import blue from 'material-ui/colors/blue';
 import FanListItem from '../components/FanListItem';
 
 const mapStateToProps = ({ sessions }) => ({
+  isLoggedIn: sessions.isLoggedIn,
   User: sessions.User,
 });
 
-const trackHandler = ({ User, fan: fanName, match }) => {
-  const { username: curUserName } = match.params;
-
-  const isOwner = !!User && (User.username === curUserName);
+const trackHandler = ({ fan: fanName }) => {
   const userHandler = Meteor.subscribe('Users.all');
   const dataIsReady = userHandler.ready();
   const fan = Meteor.users.findOne({ username: fanName });
 
   return {
     dataIsReady,
-    isOwner,
     fan,
   };
 };

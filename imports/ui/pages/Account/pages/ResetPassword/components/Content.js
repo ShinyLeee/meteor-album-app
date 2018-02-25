@@ -56,7 +56,7 @@ export default class ResetPasswordContent extends PureComponent {
     } catch (err) {
       console.warn(err);
       Modal.close();
-      this.props.snackBarOpen(`修改密码失败 ${err.reason}`);
+      this.props.snackBarOpen(`修改密码失败 ${err.error}`);
     }
   }
 

@@ -65,7 +65,7 @@ export const isAllowVisitHome = async ({ location, computedMatch: { params } }) 
       state: {
         from: location.pathname,
         redirect: `/${err.error}`,
-        message: err.reason,
+        message: err.error,
       },
     };
   }
@@ -93,7 +93,7 @@ export const isAllowVisitColl = async ({ location, computedMatch: { params } }) 
       state: {
         from: location.pathname,
         redirect: `/${err.error}`,
-        message: err.reason,
+        message: err.error,
       },
     };
   }

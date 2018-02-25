@@ -21,7 +21,12 @@ class UserLikesPage extends PureComponent {
     const isOwner = !!User && (User.username === curUserName);
     return (
       <ViewLayout
-        Topbar={<SecondaryNavHeader title={isOwner ? '我喜欢的' : `${curUserName}喜欢的`} />}
+        Topbar={
+          <SecondaryNavHeader
+            title={isOwner ? '我喜欢的' : `${curUserName}喜欢的`}
+            onTitleClick={() => window.scrollTo(0, 0)}
+          />
+      }
       >
         <AsyncUserLikesContent isOwner={isOwner} />
       </ViewLayout>

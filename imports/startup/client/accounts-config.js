@@ -9,7 +9,7 @@ Accounts.onEmailVerificationLink((token) => {
       console.warn(err);
       return history.replace({
         pathname: `/${err.error || 500}`,
-        state: { message: `服务器内部错误 ${err.reason}` },
+        state: { message: `服务器内部错误 ${err.error}` },
       });
     }
     return history.replace('/accounts/verifyEmail');

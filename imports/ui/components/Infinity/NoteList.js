@@ -82,7 +82,7 @@ class InfiniteNoteList extends PureComponent {
       await readNote.callPromise({ noteId: id });
     } catch (err) {
       console.warn(err);
-      this.props.snackBarOpen(`标记已读失败 ${err.reason}`);
+      this.props.snackBarOpen(`标记已读失败 ${err.error}`);
     }
   }
 

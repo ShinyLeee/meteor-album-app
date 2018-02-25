@@ -104,7 +104,7 @@ export default class CollectionPage extends Component {
     } catch (err) {
       console.warn(err);
       Modal.close();
-      this.props.snackBarOpen(`转移照片失败 ${err.reason}`);
+      this.props.snackBarOpen(`转移照片失败 ${err.error}`);
     }
   }
 
@@ -124,7 +124,7 @@ export default class CollectionPage extends Component {
     } catch (err) {
       console.warn(err);
       Modal.close();
-      this.props.snackBarOpen(`更换封面失败 ${err.reason}`);
+      this.props.snackBarOpen(`更换封面失败 ${err.error}`);
     }
   }
 
@@ -140,7 +140,7 @@ export default class CollectionPage extends Component {
     } catch (err) {
       console.warn(err);
       Modal.close();
-      this.props.snackBarOpen(`删除相片失败 ${err.reason}`);
+      this.props.snackBarOpen(`删除相片失败 ${err.error}`);
     }
   }
 

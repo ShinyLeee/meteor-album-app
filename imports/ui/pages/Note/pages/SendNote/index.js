@@ -66,7 +66,7 @@ export default class SendNotePage extends Component {
     } catch (err) {
       console.warn(err);
       Modal.close();
-      this.props.snackBarOpen(`发送失败 ${err.reason}`);
+      this.props.snackBarOpen(`发送失败 ${err.error}`);
     }
   }
 

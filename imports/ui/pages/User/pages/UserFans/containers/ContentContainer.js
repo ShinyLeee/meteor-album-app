@@ -12,6 +12,7 @@ import { snackBarOpen } from '/imports/ui/redux/actions';
 import UserFansContent from '../components/Content';
 
 const mapStateToProps = ({ sessions }) => ({
+  isLoggedIn: sessions.isLoggedIn,
   User: sessions.User,
 });
 

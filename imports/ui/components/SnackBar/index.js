@@ -33,7 +33,7 @@ class SnackBar extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (this.props.open !== nextProps.open) {
+    if (this.state.open !== nextProps.open) {
       this.setState({
         open: nextProps.open,
         message: nextProps.message,
@@ -42,7 +42,9 @@ class SnackBar extends Component {
   }
 
   _handleClose = () => {
-    this.props.snackBarClose();
+    if (this.state.open) {
+      this.props.snackBarClose();
+    }
   }
 
   renderDefault() {

@@ -47,7 +47,7 @@ export default class NotesPage extends Component {
     } catch (err) {
       console.warn(err);
       Modal.close();
-      this.props.snackBarOpen(`标记已读失败 ${err.reason}`);
+      this.props.snackBarOpen(`标记已读失败 ${err.error}`);
     }
   }
 

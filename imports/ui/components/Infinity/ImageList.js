@@ -50,7 +50,7 @@ class InfiniteImageList extends PureComponent {
       await api.callPromise(model);
     } catch (err) {
       console.warn(err);
-      const msg = like ? `点赞失败 ${err.reason}` : `撤销点赞失败 ${err.reason}`;
+      const msg = like ? `点赞失败 ${err.error}` : `撤销点赞失败 ${err.error}`;
       this.props.snackBarOpen(msg);
     }
   }

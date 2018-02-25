@@ -155,7 +155,7 @@ export const fetchAuth = (policy, args) => async (dispatch) => {
   } catch (err) {
     dispatch(authFail(err.error || '/500'));
     dispatch(replace(`/${err.error || 500}`));
-    dispatch(snackBarOpen(err.reason || '服务器内部错误'));
+    dispatch(snackBarOpen(err.error || '服务器内部错误'));
     console.warn(err);
   }
 };
@@ -199,7 +199,7 @@ export const userLogout = () => async (dispatch) => {
     dispatch(clearUptoken());
   } catch (err) {
     console.warn(err);
-    dispatch(snackBarOpen(`登出失败 ${err.reason}`));
+    dispatch(snackBarOpen(`登出失败 ${err.error}`));
   }
 };
 

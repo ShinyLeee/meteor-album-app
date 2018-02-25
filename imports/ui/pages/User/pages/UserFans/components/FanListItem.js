@@ -8,8 +8,8 @@ import Button from 'material-ui/Button';
 
 export default class UserFansContent extends PureComponent {
   static propTypes = {
+    isLoggedIn: PropTypes.bool.isRequired,
     User: PropTypes.object,
-    isOwner: PropTypes.bool.isRequired,
     fan: PropTypes.object.isRequired,
     onToggleFollow: PropTypes.func.isRequired,
     history: PropTypes.object.isRequired,
@@ -18,13 +18,13 @@ export default class UserFansContent extends PureComponent {
 
   render() {
     const {
+      isLoggedIn,
       User,
-      isOwner,
       fan,
       classes,
     } = this.props;
     const followers = get(fan, 'profile.followers');
-    const isFollowed = isOwner && followers && followers.indexOf(User.username) !== -1;
+    const isFollowed = isLoggedIn && followers && followers.indexOf(User.username) !== -1;
     return (
       <ListItem
         disableRipple

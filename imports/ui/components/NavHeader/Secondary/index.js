@@ -32,10 +32,20 @@ class SecondaryNavHeader extends PureComponent {
       PropTypes.bool,
       PropTypes.element,
     ]),
+    onTitleClick: PropTypes.func,
     classes: PropTypes.object.isRequired,
     history: PropTypes.object.isRequired,
     children: PropTypes.element,
   }
+
+  _handleTitleClick = () => {
+    if (this.props.onTitleClick) {
+      this.props.onTitleClick();
+    } else {
+      scrollTo(0, 1500);
+    }
+  }
+
   render() {
     const {
       height,
@@ -82,7 +92,7 @@ class SecondaryNavHeader extends PureComponent {
                 className={classes.title}
                 type="title"
                 color="inherit"
-                onClick={() => scrollTo(0, 1500)}
+                onClick={this._handleTitleClick}
               >
                 {title || '返回'}
               </Typography>

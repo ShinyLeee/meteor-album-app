@@ -65,7 +65,7 @@ export default class RegisterContent extends PureComponent {
     } catch (err) {
       console.warn(err);
       Modal.close();
-      this.props.snackBarOpen(`注册失败 ${err.reason}`);
+      this.props.snackBarOpen(`注册失败 ${err.error}`);
     }
   }
 

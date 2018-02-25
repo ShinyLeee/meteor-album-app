@@ -84,7 +84,7 @@ class DiaryViewer extends PureComponent {
     } catch (err) {
       console.warn(err);
       Modal.close();
-      this.props.snackBarOpen(`删除失败 ${err.reason}`);
+      this.props.snackBarOpen(`删除失败 ${err.error}`);
     }
   }
 
@@ -105,7 +105,7 @@ class DiaryViewer extends PureComponent {
     } catch (err) {
       console.warn(err);
       Modal.close();
-      this.props.snackBarOpen(`修改失败 ${err.reason}`);
+      this.props.snackBarOpen(`修改失败 ${err.error}`);
     }
   }
 

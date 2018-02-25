@@ -69,7 +69,7 @@ export default class OwnView extends PureComponent {
     } catch (err) {
       console.warn(err);
       this.closeModal('remove');
-      this.props.snackBarOpen(`删除相册失败 ${err.reason}`);
+      this.props.snackBarOpen(`删除相册失败 ${err.error}`);
     }
   }
 
@@ -90,7 +90,7 @@ export default class OwnView extends PureComponent {
     } catch (err) {
       console.warn(err);
       Modal.close();
-      this.props.snackBarOpen(`${msg}相册失败 ${err.reason}`);
+      this.props.snackBarOpen(`${msg}相册失败 ${err.error}`);
     }
   }
 

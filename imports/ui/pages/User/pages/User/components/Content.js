@@ -24,6 +24,7 @@ import {
 
 export default class UserContent extends PureComponent {
   static propTypes = {
+    isLoggedIn: PropTypes.bool.isRequired,
     User: PropTypes.object,
     isOwner: PropTypes.bool.isRequired,
     curUser: PropTypes.object.isRequired,
@@ -44,9 +45,9 @@ export default class UserContent extends PureComponent {
   }
 
   get isFollowed() {
-    const { User, curUser } = this.props;
+    const { isLoggedIn, User, curUser } = this.props;
     const followers = get(curUser, 'profile.followers');
-    return User && followers && followers.indexOf(User.username) >= 0;
+    return isLoggedIn && followers && followers.indexOf(User.username) >= 0;
   }
 
   _navTo = (location) => () => {
@@ -54,8 +55,8 @@ export default class UserContent extends PureComponent {
   }
 
   _handleFollow = async () => {
-    const { User, curUser } = this.props;
-    if (!User) {
+    const { isLoggedIn, curUser } = this.props;
+    if (!isLoggedIn) {
       this.props.snackBarOpen('您还尚未登录');
       return;
     }
@@ -64,13 +65,13 @@ export default class UserContent extends PureComponent {
       this.props.snackBarOpen('关注成功');
     } catch (err) {
       console.warn(err);
-      this.props.snackBarOpen(`关注失败 ${err.reason}`);
+      this.props.snackBarOpen(`关注失败 ${err.error}`);
     }
   }
 
   _handleUnFollow = async () => {
-    const { User, curUser } = this.props;
-    if (!User) {
+    const { isLoggedIn, curUser } = this.props;
+    if (!isLoggedIn) {
       this.props.snackBarOpen('您还尚未登录');
       return;
     }
@@ -79,7 +80,7 @@ export default class UserContent extends PureComponent {
       this.props.snackBarOpen('取消关注成功');
     } catch (err) {
       console.warn(err);
-      this.props.snackBarOpen(`取消关注失败 ${err.reason}`);
+      this.props.snackBarOpen(`取消关注失败 ${err.error}`);
     }
   }
 

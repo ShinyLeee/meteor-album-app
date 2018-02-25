@@ -43,7 +43,7 @@ export default class RecyclePage extends PureComponent {
       this.props.disableSelectAll();
     } catch (err) {
       Modal.close();
-      this.props.snackBarOpen(`恢复相片失败 ${err.reason}`);
+      this.props.snackBarOpen(`恢复相片失败 ${err.error}`);
     }
   }
 
@@ -63,7 +63,7 @@ export default class RecyclePage extends PureComponent {
     } catch (err) {
       console.warn(err);
       Modal.close();
-      this.props.snackBarOpen(`删除相片失败 ${err.reason}`);
+      this.props.snackBarOpen(`删除相片失败 ${err.error}`);
     }
   }
 
