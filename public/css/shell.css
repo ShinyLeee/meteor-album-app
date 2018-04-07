@@ -1,0 +1,120 @@
+.shell-header {
+  position: fixed;
+  left: auto;
+  top: 0;
+  right: 0;
+  display: flex;
+  width: 100%;
+  min-height: 64px;
+  box-sizing: border-box;
+  flex-direction: column;
+  background-color: #764ba2;
+  background-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
+  color: #fff;
+  z-index: 1100;
+}
+
+.shell-header button {
+  width: 48px;
+  height: 48px;
+  text-align: center;
+}
+
+.shell-header button svg {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  fill: #fff;
+}
+
+.shell-header-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+}
+
+.shell-header-left {
+  margin-right: 8px;
+}
+
+.shell-header-title {
+  -webkit-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
+}
+
+.shell-header-title > h2 {
+  display: inline;
+  font-size: 1.3125rem;
+  font-weight: 500;
+  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+  line-height: 1.16667em;
+  color: #fff;
+}
+
+.shell-header-right {
+  display: flex;
+  align-items: center;
+}
+
+.shell-header-right > .shell-header-login {
+  min-width: 88px;
+  min-height: 36px;
+  padding: 8px 16px;
+  box-sizing: border-box;
+  line-height: 1.4em;
+  font-size: 0.875rem;
+  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+  font-weight: 500;
+  text-align: center;
+}
+
+.shell-content {
+  position: relative;
+  top: 64px;
+  text-align: center;
+}
+
+.shell-content > .shell-loader {
+  padding-top: 64px;
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  color: rgb(63, 81, 181);
+}
+
+.shell-content > .shell-loader > svg {
+  animation: progress-circular-rotate 1.4s linear infinite;
+}
+
+.shell-content > .shell-loader > svg > circle {
+  animation: progress-circular-dash 1.4s ease-in-out infinite;
+  stroke-dasharray: 80,200;
+  stroke-dashoffset: 0;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-width: 2.5;
+}
+
+@keyframes progress-circular-rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes progress-circular-dash {
+  0% {
+    stroke-dasharray: 1,200;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 100,200;
+    stroke-dashoffset: -15;
+  }
+  100% {
+    stroke-dasharray: 100,200;
+    stroke-dashoffset: -120;
+  }
+}

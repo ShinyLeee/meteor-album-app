@@ -13,7 +13,6 @@ export const Wrapper = styled.div`
 
 export const Body = styled.div`
   min-height: 100%;
-  margin-top: 64px;
 `;
 
 export const Article = styled.article`

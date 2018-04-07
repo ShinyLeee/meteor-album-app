@@ -121,7 +121,7 @@ class DiaryViewer extends PureComponent {
     this.setState({ isEditing: true });
   }
 
-  _handleClose = () => {
+  _handleCloseMenu = () => {
     this.setState({ menuOpen: false });
   }
 
@@ -175,7 +175,7 @@ class DiaryViewer extends PureComponent {
                             key="moreMenu"
                             open={this.state.menuOpen}
                             anchorEl={this.state.anchorEl}
-                            onClose={this._handleClose}
+                            onClose={this._handleCloseMenu}
                           >
                             <MenuItem onClick={this._handleEditing}>编辑</MenuItem>
                             <MenuItem onClick={this.renderPrompt}>删除</MenuItem>

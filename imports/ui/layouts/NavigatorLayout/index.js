@@ -7,7 +7,6 @@ import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
 import Modal from '/imports/ui/components/Modal';
 import SnackBar from '/imports/ui/components/SnackBar';
-import AppLoader from '/imports/ui/components/Loader/AppLoader';
 import { userLogin } from '/imports/ui/redux/actions';
 import withLoadable from '/imports/ui/hocs/withLoadable';
 import history from '/imports/utils/history';
@@ -30,17 +29,11 @@ class NavigatorLayout extends PureComponent {
     const { appIsReady, isLoggedIn } = this.props;
     return (
       <div className="router">
-        {
-          appIsReady
-          ? (
-            <ConnectedRouter history={history}>
-              <ScrollToTop>
-                <Routes />
-              </ScrollToTop>
-            </ConnectedRouter>
-          )
-          : <AppLoader />
-        }
+        <ConnectedRouter history={history}>
+          <ScrollToTop>
+            <Routes />
+          </ScrollToTop>
+        </ConnectedRouter>
 
         <DeviceWatcher />
 
@@ -69,12 +62,11 @@ export default compose(
     if (!isLoggedIn && User) {
       props.userLogin({ inExpiration: true });
     }
-    // if User is logging, User is undefined, else User is a Object or null.
+    // if User is logging, User is a Object or null, else User is undefined.
     const appIsReady = typeof User === 'object';
 
     return {
       appIsReady,
-      User,
     };
   }),
 )(NavigatorLayout);

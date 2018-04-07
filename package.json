@@ -1,5 +1,5 @@
 {
-  "version": "1.5.0-rc.0",
+  "version": "1.5.0-rc.1",
   "name": "galleryplus",
   "private": false,
   "repository": "git@github.com:ShinyLeee/meteor-album-app.git",
@@ -12,7 +12,7 @@
     "test-app-watch": "meteor test --settings settings-test.json --full-app --driver-package practicalmeteor:mocha --port 3100",
     "lint": "eslint --ext .js,.jsx .",
     "lint-fix": "eslint --fix .js,.jsx .",
-    "build": "python ./build/build.py"
+    "build": "python3 ./build/build.py"
   },
   "dependencies": {
     "axios": "^0.16.2",

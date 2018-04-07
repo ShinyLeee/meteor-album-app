@@ -11,18 +11,74 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="msapplication-tap-highlight" content="no">
   <meta http-equiv="x-dns-prefetch-control" content="on">
+  <meta name="apple-mobile-web-app-status-bar-style" content="white">
+  <meta name="theme-color" content="#ffffff">
+  <noscript>
+    <p>Gallery Plus need JavaScript, please enable JavaScript in your browser :)</p>
+  </noscript>
   <link rel="dns-prefetch" href="//images.yehuihui.cn">
   <link rel="dns-prefetch" href="//source.yehuihui.cn">
   <title>Gallery Plus</title>
   <link rel="manifest" href="/manifest-site.json">
   <link rel="shortcut icon" href="/favicon.ico">
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-180x180.png">
+  <!-- iPhone (Retina) -->
+  <link rel="apple-touch-startup-image" href="/img/splash/splash-640x920.png" media="(device-width: 320px) and (device-height: 460px) and (-webkit-device-pixel-ratio: 2)">
+  <!-- iPhone 5 (Retina) -->
+  <link rel="apple-touch-startup-image" href="/img/splash/splash-640x1096.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)">
+  <!-- iPhone 6/7/8 -->
+  <link rel="apple-touch-startup-image" href="/img/splash/splash-750x1334.png" media="(device-width: 375px) and (-webkit-device-pixel-ratio: 2)" />
+  <!-- iPhone 6 Plus/7 Plus/8 Plus -->
+  <link rel="apple-touch-startup-image" href="/img/splash/splash-1242x2208.png" media="(device-width: 414px) and (-webkit-device-pixel-ratio: 3)" />
+  <!-- iPad (non-Retina) -->
+  <link rel="apple-touch-startup-image" href="/img/splash/splash-768x1004.png" media="screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:portrait)" />
+  <!-- iPad (Retina) -->
+  <link rel="apple-touch-startup-image" href="/img/splash/splash-1536x2008.png" media="screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:portrait) and (-webkit-min-device-pixel-ratio: 2)" />
   <link rel="preload" href="https://gstatic.loli.net/s/pacifico/v12/FwZY7-Qmy14u9lezJ-6H6Mk.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="stylesheet" type="text/css" href="/css/shell.css">
 </head>
 
 <body>
-
-  <div id="app"></div>
+  <div id="app">
+    <div class="shell">
+      <header class="shell-header">
+        <div class="shell-header-content">
+          <div class="shell-header-left">
+            <button tabindex="0" type="button" role="button">
+              <span>
+                <svg focusable="false" viewBox="0 0 24 24">
+                  <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path>
+                </svg>
+              </span>
+            </button>
+          </div>
+          <div class="shell-header-title">
+            <h2>Gallery</h2>
+            <sup>+</sup>
+          </div>
+          <div class="shell-header-right">
+            <button tabindex="0" type="button" role="button">
+              <span>
+                <svg focusable="false" viewBox="0 0 24 24">
+                  <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path>
+                </svg>
+              </span>
+            </button>
+            <div class="shell-header-login">
+              <span>登录</span>
+            </div>
+          </div>
+        </div>
+      </header>
+      <main class="shell-content">
+        <div class="shell-loader" role="progressbar">
+          <svg viewBox="0 0 50 50">
+            <circle cx="25" cy="25" r="20" fill="none"></circle>
+          </svg>
+        </div>
+      </main>
+    </div>
+  </div>
   <div id="portals"></div>
   <script>
     if (document.location.hostname.search("yehuihui.cn") !== -1) {

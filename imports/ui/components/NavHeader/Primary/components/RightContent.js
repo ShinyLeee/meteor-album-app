@@ -20,6 +20,7 @@ const { sourceDomain } = settings;
 
 class RightContentComp extends PureComponent {
   static propTypes = {
+    isLoggedIn: PropTypes.bool.isRequired,
     User: PropTypes.object,
     noteNum: PropTypes.number,
     history: PropTypes.object.isRequired,
@@ -27,9 +28,9 @@ class RightContentComp extends PureComponent {
   }
 
   get avatarSrc() {
-    const { User } = this.props;
+    const { isLoggedIn, User } = this.props;
     const defaultAvatar = `${sourceDomain}/GalleryPlus/Default/default-avatar.jpg`;
-    return User ? User.profile.avatar : defaultAvatar;
+    return isLoggedIn ? User.profile.avatar : defaultAvatar;
   }
 
   _navTo = (location) => () => {
@@ -37,7 +38,7 @@ class RightContentComp extends PureComponent {
   }
 
   render() {
-    const { User, noteNum, classes } = this.props;
+    const { isLoggedIn, User, noteNum, classes } = this.props;
     return (
       <RightContent>
         <IconButton
@@ -48,7 +49,7 @@ class RightContentComp extends PureComponent {
         ><SearchIcon />
         </IconButton>
         {
-          User && (
+          isLoggedIn && (
             <IconButton
               className={classes.iconBtn}
               aria-label="Note"
@@ -67,7 +68,7 @@ class RightContentComp extends PureComponent {
           )
         }
         {
-          User
+          isLoggedIn
           ? (
             <IconButton
               className={classes.avatar}

@@ -1,11 +1,25 @@
 import { Meteor } from 'meteor/meteor';
-import React from 'react';
-import { render } from 'react-dom';
-import App_Mobile from '/imports/ui/App';
-import App_PC from '/imports/ui/App_PC';
 import { platform } from '/imports/utils';
+// import React from 'react';
+// import { render } from 'react-dom';
+// import App_Mobile from '/imports/ui/App';
+// import App_PC from '/imports/ui/App_PC';
 
-const RootApp = platform().mobile ? App_Mobile : App_PC;
+// const App = platform().mobile ? App_Mobile : App_PC;
+
+async function renderAsync() {
+  const [
+    React,
+    { render },
+    { default: App },
+  ] = await Promise.all([
+    import('react'),
+    import('react-dom'),
+    platform().mobile ? import('/imports/ui/App') : import('/imports/ui/App_PC'),
+  ]);
+
+  render(<App />, document.getElementById('app'));
+}
 
 // This is Use of Disabling User zooming the Page in IOS10
 const noScalable = () => {
@@ -27,5 +41,13 @@ const noScalable = () => {
 
 Meteor.startup(() => {
   noScalable();
-  render(<RootApp />, document.getElementById('app'));
+  const renderStart = Date.now();
+  const startupTime = renderStart - window.performance.timing.responseStart;
+  console.log(`Meteor.startup took: ${startupTime}ms`);
+
+  renderAsync().then(() => {
+    const renderTime = Date.now() - renderStart;
+    console.log(`renderAsync took: ${renderTime}ms`);
+    console.log(`Total time: ${startupTime + renderTime}ms`);
+  });
 });
