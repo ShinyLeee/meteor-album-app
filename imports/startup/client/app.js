@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { platform } from '/imports/utils';
-// import React from 'react';
-// import { render } from 'react-dom';
+import React from 'react';
+import { render } from 'react-dom';
 // import App_Mobile from '/imports/ui/App';
 // import App_PC from '/imports/ui/App_PC';
 
@@ -9,12 +9,12 @@ import { platform } from '/imports/utils';
 
 async function renderAsync() {
   const [
-    React,
-    { render },
+    // React,
+    // { render },
     { default: App },
   ] = await Promise.all([
-    import('react'),
-    import('react-dom'),
+    // import('react'),
+    // import('react-dom'),
     platform().mobile ? import('/imports/ui/App') : import('/imports/ui/App_PC'),
   ]);
 

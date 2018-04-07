@@ -4,6 +4,7 @@
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",
+  "theme_color": "#667eea",
   "background_color": "#fff",
   "description": "Personal cloud album storage web app",
   "icons": [{
